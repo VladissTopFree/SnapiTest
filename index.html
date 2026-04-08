@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.0(1)";
+  const APP_VERSION = "v2.3.1";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -86,7 +86,7 @@
       }
 
       container.style.display = 'block';
-      let html = '<div class="ios-section-title" style="margin-top: 0; margin-left: 14px; margin-bottom: 12px;">МОИ ТРАНЗАКЦИИ</div>';
+      let html = '<div class="ios-section-title" style="margin-top: 0; margin-left: 14px; margin-bottom: 46px;">МОИ ТРАНЗАКЦИИ</div>';
       html += '<div class="ios-layer-group" style="padding: 0 20px; margin-bottom: 8px;">'; 
       
       userTrans.forEach((t, index) => {
@@ -1853,7 +1853,7 @@ async function hashTelegramId(id) {
 <div id="fankit-overlay">
   <div class="fankit-sheet" id="fankit-sheet">
     <div class="fankit-drag-pill"></div>
-    <div class="fankit-title">Выбери 1 фон из Fankit.</div>
+    <div class="fankit-title">Выбери фон из Fankit.</div>
     <div class="fankit-grid-container">
         <div class="fankit-grid" id="fankit-grid">
             </div>
@@ -2039,12 +2039,28 @@ let isCurrentProjectSaved = false;
 
 if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
     window.Telegram.WebApp.BackButton.onClick(() => {
+        let fankitOverlay = document.getElementById('fankit-overlay');
+        if (fankitOverlay && fankitOverlay.classList.contains('show')) {
+            fankitOverlay.classList.remove('show');
+            let fankitSheet = document.getElementById('fankit-sheet');
+            if (fankitSheet) fankitSheet.style.transform = ''; 
+            setTimeout(() => {
+                fankitOverlay.style.display = 'none';
+            }, 300);
+            return; 
+        }
+
         document.getElementById('wizard-overlay').style.display = 'none';
         document.getElementById('result-box').style.display = 'none';
         document.getElementById('download-overlay').style.display = 'none';
         document.getElementById('saved-projects-overlay').style.display = 'none';
         document.getElementById('settings-overlay').style.display = 'none';
         document.getElementById('subscription-overlay').style.display = 'none';
+        
+        if (fankitOverlay) {
+            fankitOverlay.classList.remove('show');
+            fankitOverlay.style.display = 'none';
+        }
         
         let btnWrap = document.getElementById('download-btn-wrap');
         if (btnWrap) btnWrap.style.display = 'none';
