@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.4";
+  const APP_VERSION = "v2.3.5";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -20,7 +20,7 @@
   }
 
 
-  const MANUAL_FALLBACK_DATE = "6 Apr 2026";
+  const MANUAL_FALLBACK_DATE = "8 Apr 2026";
 
 
 
@@ -1134,6 +1134,39 @@ async function hashTelegramId(id) {
   .bp-style-title { font-size: 16px; font-weight: 500; color: var(--tg-theme-text-color, #000); margin-bottom: 2px; }
   .bp-style-desc { font-size: 12px; color: var(--tg-theme-subtitle-text-color, #8E8E93); line-height: 1.2; }
 
+  .bp-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      width: 100%;
+  }
+  .bp-price-label {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--tg-theme-text-color, #000);
+      width: 80px;
+      text-align: right;
+      text-transform: uppercase;
+  }
+  .bp-price-input {
+      background: var(--tg-theme-section-bg-color, #ffffff);
+      border: none;
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-size: 16px;
+      color: var(--tg-theme-text-color, #000);
+      width: 180px;
+      outline: none;
+      text-align: left;
+      font-family: inherit;
+      -webkit-appearance: none;
+  }
+  .bp-price-input::placeholder {
+      color: var(--tg-theme-subtitle-text-color, #8E8E93);
+  }
+
   .ios-color-presets { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
   .ios-color-btn-wrap { padding: 4px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: border-color 0.4s ease-in-out; }
   .ios-color-btn-wrap.selected[data-color="green"] { border-color: #5ee568; }
@@ -1695,6 +1728,8 @@ async function hashTelegramId(id) {
     <div class="step small" id="prog-step2">2</div>
     <div class="line" id="prog-line2"></div>
     <div class="step small" id="prog-step3">3</div>
+    <div class="line" id="prog-line3" style="display: none;"></div>
+    <div class="step small" id="prog-step4" style="display: none;">4</div>
   </div>
 
   <div id="wizard-step0" class="wizard-step active">
@@ -1794,7 +1829,7 @@ async function hashTelegramId(id) {
   </div>
   
   <div id="wizard-step2" class="wizard-step">
-    <div class="ios-wizard-title">Создание акции</div>
+    <div class="ios-wizard-title" id="step2-title">Создание акции</div>
     <div class="ios-wizard-subtitle">Ник. Напишите свой ник, который<br>будет располагаться на Вашей работе.</div>
     
     <div class="wizard-input-wrapper">
@@ -1824,6 +1859,65 @@ async function hashTelegramId(id) {
     <input type="file" id="file-add-screens" accept="image/*" multiple style="display:none;">
     <button id="wizard-next-btn3" class="ios-action-btn ios-btn-next">Далее</button>
   </div>
+
+  <div id="wizard-step3-bp" class="wizard-step">
+    <div class="ios-wizard-title">Создание Brawl Pass</div>
+    <div class="ios-wizard-subtitle">Цены. Напишите в поля для ввода<br>цены для Brawl Pass и Brawl Pass Plus.</div>
+    
+    <div style="margin-top: 30px; width: 100%;">
+        <div class="bp-price-row">
+            <div class="bp-price-label">BP</div>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" class="bp-price-input" id="bp-input-price-1" placeholder="Введите цену..." maxlength="5">
+        </div>
+        <div class="bp-price-row">
+            <div class="bp-price-label">BP Plus</div>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" class="bp-price-input" id="bp-input-price-2" placeholder="Введите цену..." maxlength="5">
+        </div>
+    </div>
+
+    <button id="wizard-next-btn3-bp" class="ios-action-btn ios-btn-next">Далее</button>
+  </div>
+
+  <div id="wizard-step4-bp" class="wizard-step">
+    <div class="ios-wizard-title">Создание Brawl Pass</div>
+    <div class="ios-wizard-subtitle">Сезон. Выберите, для какого сезона<br>Brawl Pass делается картинка.</div>
+    
+    <div class="bp-style-list" style="margin-top: 10px;">
+        <div class="bp-style-card" onclick="selectBpSeason(50)">
+            <div class="radio-circle" id="bp-season-radio-50">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <img src="miniprewiev.png" class="bp-style-img">
+            <div class="bp-style-info">
+                <div class="bp-style-title">50 сезон</div>
+                <div class="bp-style-desc">Новый сезон Brawl Pass.<br>Выйдет 19 апреля.</div>
+            </div>
+        </div>
+        <div class="bp-style-card" onclick="selectBpSeason(49)">
+            <div class="radio-circle" id="bp-season-radio-49">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <img src="miniprewiev.png" class="bp-style-img">
+            <div class="bp-style-info">
+                <div class="bp-style-title">49 сезон</div>
+                <div class="bp-style-desc">Прошлый сезон Brawl Pass.<br>Вышел 5 марта.</div>
+            </div>
+        </div>
+        <div class="bp-style-card" onclick="selectBpSeason(48)">
+            <div class="radio-circle" id="bp-season-radio-48">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <img src="miniprewiev.png" class="bp-style-img">
+            <div class="bp-style-info">
+                <div class="bp-style-title">48 сезон</div>
+                <div class="bp-style-desc">Старый сезон Brawl Pass.<br>Вышел 6 февраля.</div>
+            </div>
+        </div>
+    </div>
+
+    <button id="wizard-next-btn4-bp" class="ios-action-btn ios-btn-next">Далее</button>
+  </div>
+
 </div>
 
 <div id="result-box">
@@ -2632,6 +2726,24 @@ window.selectBpStyle = function(index) {
     document.getElementById('wizard-next-btn-bp').classList.add('show');
 };
 
+let selectedBpSeason = null;
+
+window.selectBpSeason = function(index) {
+    window.triggerHaptic();
+    if (selectedBpSeason === index) return;
+    selectedBpSeason = index;
+    
+    [50, 49, 48].forEach(i => {
+        let circle = document.getElementById('bp-season-radio-' + i);
+        if (circle) circle.classList.remove('selected');
+    });
+    
+    let selectedCircle = document.getElementById('bp-season-radio-' + index);
+    if (selectedCircle) selectedCircle.classList.add('selected');
+    
+    document.getElementById('wizard-next-btn4-bp').classList.add('show');
+};
+
 document.getElementById('ios-btn-create').addEventListener('click', async function() {
   window.triggerHaptic();
   const limit = await checkUsageLimit();
@@ -2668,6 +2780,9 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
   stagedFiles = [];
   updateDropzoneUI();
 
+  if (document.getElementById('bp-input-price-1')) document.getElementById('bp-input-price-1').value = '';
+  if (document.getElementById('bp-input-price-2')) document.getElementById('bp-input-price-2').value = '';
+
   document.getElementById('wizard-overlay').style.display = 'flex';
   window.scrollTo(0,0);
   if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
@@ -2679,8 +2794,10 @@ document.getElementById('wizard-next-btn0').onclick = () => {
     
     if (selectedSection === 'actions') {
         let step1 = document.getElementById('wizard-step1');
-        
         document.getElementById('step1-title').innerText = 'Создание акции';
+
+        document.getElementById('prog-line3').style.display = 'none';
+        document.getElementById('prog-step4').style.display = 'none';
 
         step0.classList.add('fade-out');
         setTimeout(() => {
@@ -2712,6 +2829,9 @@ document.getElementById('wizard-next-btn-bp').onclick = () => {
     let step1 = document.getElementById('wizard-step1');
 
     document.getElementById('step1-title').innerText = 'Создание Brawl Pass';
+
+    document.getElementById('prog-line3').style.display = 'block';
+    document.getElementById('prog-step4').style.display = 'flex';
 
     stepBp.classList.add('fade-out');
     setTimeout(() => {
@@ -4662,15 +4782,10 @@ function drawBeautifulNick(ctx, text, w, h) {
     }, 300);
   }
 
-  wizardNextBtn1.onclick = () => {
+wizardNextBtn1.onclick = () => {
     window.triggerHaptic();
-
-    if (selectedSection === 'bp') {
-        alert('Дальнейшие шаги для Brawl Pass в разработке!');
-        return; 
-    }
     
-    if (uploadMode === 'ready_bg') {
+    if (uploadMode === 'ready_bg' && selectedSection === 'actions') {
         step1.classList.add('fade-out');
         setTimeout(() => {
             step1.classList.remove('active', 'fade-out');
@@ -4688,6 +4803,12 @@ function drawBeautifulNick(ctx, text, w, h) {
             document.getElementById('prog-step3').classList.add('active');
         }, 300);
     } else {
+        
+        let titleEl = document.getElementById('step2-title');
+        if (titleEl) {
+            titleEl.innerText = (selectedSection === 'bp') ? 'Создание Brawl Pass' : 'Создание акции';
+        }
+
         transitionStep(step1, step2, document.getElementById('prog-step1'), document.getElementById('prog-step2'), document.getElementById('prog-line1'));
     }
   };
@@ -4752,6 +4873,7 @@ function drawBeautifulNick(ctx, text, w, h) {
 
   wizardNextBtn2.onclick = () => {
     window.triggerHaptic();
+    
     let currentNick = wizardNickInput.value.trim();
     if (currentNick) {
         localStorage.setItem('Snapi_last_nick', currentNick);
@@ -4760,7 +4882,13 @@ function drawBeautifulNick(ctx, text, w, h) {
         wizardInsertBtn.style.display = 'flex';
     }
     wizardNickInput.blur(); 
-    transitionStep(step2, step3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
+
+    if (selectedSection === 'bp') {
+        let stepBp3 = document.getElementById('wizard-step3-bp');
+        transitionStep(step2, stepBp3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
+    } else {
+        transitionStep(step2, step3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
+    }
   };
 
   wizardUploadScreensBtn.onclick = () => fileInput.click();
@@ -5118,6 +5246,57 @@ function androidFallback2(blob) {
     }
 }
   window.updateSavedCount();
+
+  const bpPriceInput1 = document.getElementById('bp-input-price-1');
+  const bpPriceInput2 = document.getElementById('bp-input-price-2');
+  const wizardNextBtn3Bp = document.getElementById('wizard-next-btn3-bp');
+
+  function validateBpPrices() {
+      bpPriceInput1.value = bpPriceInput1.value.replace(/[^0-9]/g, '');
+      bpPriceInput2.value = bpPriceInput2.value.replace(/[^0-9]/g, '');
+
+      if (parseInt(bpPriceInput1.value) > 99999) bpPriceInput1.value = '99999';
+      if (parseInt(bpPriceInput2.value) > 99999) bpPriceInput2.value = '99999';
+
+      if (bpPriceInput1.value.trim().length > 0 && bpPriceInput2.value.trim().length > 0) {
+          wizardNextBtn3Bp.classList.add('show');
+      } else {
+          wizardNextBtn3Bp.classList.remove('show');
+      }
+  }
+
+  if (bpPriceInput1) bpPriceInput1.addEventListener('input', validateBpPrices);
+  if (bpPriceInput2) bpPriceInput2.addEventListener('input', validateBpPrices);
+
+  document.addEventListener('pointerdown', (e) => {
+      if (document.activeElement && document.activeElement.classList.contains('bp-price-input')) {
+          if (!e.target.classList.contains('bp-price-input')) {
+              document.activeElement.blur();
+          }
+      }
+  });
+
+  if (wizardNextBtn3Bp) {
+      wizardNextBtn3Bp.onclick = () => {
+          window.triggerHaptic();
+          bpPriceInput1.blur();
+          bpPriceInput2.blur();
+          
+          let stepBp3 = document.getElementById('wizard-step3-bp');
+          let stepBp4 = document.getElementById('wizard-step4-bp');
+          
+          transitionStep(stepBp3, stepBp4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
+      };
+  }
+
+  const wizardNextBtn4Bp = document.getElementById('wizard-next-btn4-bp');
+  if (wizardNextBtn4Bp) {
+      wizardNextBtn4Bp.onclick = () => {
+          window.triggerHaptic();
+          alert('Генерация Brawl Pass находится в разработке!');
+      };
+  }
+
 })();
 </script>
 </body>
