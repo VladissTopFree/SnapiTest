@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.1";
+  const APP_VERSION = "v2.3.2";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -1061,6 +1061,40 @@ async function hashTelegramId(id) {
   .ios-wizard-title { font-size: 32px; font-weight: 700; color: var(--tg-theme-text-color, #000000); margin-bottom: 10px; text-align: center; }
   .ios-wizard-subtitle { font-size: 15px; color: var(--tg-theme-subtitle-text-color, #8E8E93); text-align: center; line-height: 1.35; margin-bottom: 12px; font-weight: 400; max-width: 300px;}
 
+  .section-list { width: 100%; display: flex; flex-direction: column; }
+  .section-card {
+    display: flex; gap: 14px; padding: 16px 0; border-bottom: 0.5px solid var(--tg-theme-section-separator-color, #E5E5EA);
+    cursor: pointer; transition: opacity 0.2s, transform 0.1s; position: relative;
+    border-bottom-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
+  }
+  .section-card:last-child { border-bottom: none; }
+  .section-card:active { opacity: 0.7; transform: scale(0.98); }
+  
+  .section-img {
+    width: 140px; height: 80px; border-radius: 12px; object-fit: cover; flex-shrink: 0; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: var(--tg-theme-section-separator-color, #E5E5EA);
+  }
+  
+  .section-info { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
+  .section-title { font-size: 17px; font-weight: 600; color: var(--tg-theme-text-color, #000); margin-bottom: 4px; text-align: left; line-height: 1.2; }
+  .section-desc { font-size: 11px; color: var(--tg-theme-subtitle-text-color, #8E8E93); line-height: 1.3; text-align: left; margin-bottom: 8px; }
+  
+  .section-badge {
+    background: var(--tg-theme-accent-text-color); color: var(--tg-theme-button-text-color, #fff); 
+    font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 12px; display: none;
+  }
+
+  @keyframes badgeBlurIn {
+    0% { filter: blur(8px); opacity: 0; transform: scale(0.9); }
+    100% { filter: blur(0px); opacity: 1; transform: scale(1); }
+  }
+  @keyframes badgeBlurOut {
+    0% { filter: blur(0px); opacity: 1; transform: scale(1); }
+    100% { filter: blur(8px); opacity: 0; transform: scale(0.9); }
+  }
+  .blur-in-badge { animation: badgeBlurIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  .blur-out-badge { animation: badgeBlurOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
   .ios-color-presets { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
   .ios-color-btn-wrap { padding: 4px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: border-color 0.4s ease-in-out; }
   .ios-color-btn-wrap.selected[data-color="green"] { border-color: #5ee568; }
@@ -1616,6 +1650,40 @@ async function hashTelegramId(id) {
 
 <div id="wizard-overlay">
 
+  <div class="ios-progress" id="shared-progress" style="display: none;">
+    <div class="step active" id="prog-step1">1</div>
+    <div class="line" id="prog-line1"></div>
+    <div class="step small" id="prog-step2">2</div>
+    <div class="line" id="prog-line2"></div>
+    <div class="step small" id="prog-step3">3</div>
+  </div>
+
+  <div id="wizard-step0" class="wizard-step active">
+    <div class="ios-wizard-title" style="text-align: left; width: 100%; font-size: 28px; margin-bottom: 24px;">Выбери раздел</div>
+    
+    <div class="section-list">
+        <div class="section-card" onclick="selectSection('actions')">
+            <img src="miniprewiev.png" class="section-img">
+            <div class="section-info">
+                <div class="section-title">Создание акции</div>
+                <div class="section-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
+                <div class="section-badge" id="badge-actions">выбрано</div>
+            </div>
+        </div>
+
+        <div class="section-card" onclick="selectSection('bp')">
+            <img src="miniprewiev.png" class="section-img">
+            <div class="section-info">
+                <div class="section-title">Создание Brawl Pass</div>
+                <div class="section-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
+                <div class="section-badge" id="badge-bp">выбрано</div>
+            </div>
+        </div>
+    </div>
+
+    <button id="wizard-next-btn0" class="ios-action-btn ios-btn-next">Далее</button>
+  </div>
+  
   <div class="ios-progress" id="shared-progress">
     <div class="step active" id="prog-step1">1</div>
     <div class="line" id="prog-line1"></div>
@@ -2438,16 +2506,65 @@ window.loadProject = async (id) => {
     calculateLayoutTarget();
 };
 
-document.getElementById('ios-btn-create').addEventListener('click', async function() {
-    window.triggerHaptic();
-    const limit = await checkUsageLimit();
-    if (!limit.allowed) return; 
+let selectedSection = null; 
 
-    isCurrentProjectSaved = false; 
-    document.getElementById('ios-dashboard').style.display = 'none';
+function animateBadge(badgeEl, show) {
+    if (show) {
+        badgeEl.style.display = 'inline-block';
+        badgeEl.classList.remove('blur-out-badge');
+        void badgeEl.offsetWidth; 
+        badgeEl.classList.add('blur-in-badge');
+    } else {
+        if (badgeEl.style.display !== 'none') {
+            badgeEl.classList.remove('blur-in-badge');
+            void badgeEl.offsetWidth;
+            badgeEl.classList.add('blur-out-badge');
+            setTimeout(() => { badgeEl.style.display = 'none'; }, 300);
+        }
+    }
+}
+
+window.selectSection = function(type) {
+    window.triggerHaptic();
+    let badgeA = document.getElementById('badge-actions');
+    let badgeB = document.getElementById('badge-bp');
+    let nextBtn = document.getElementById('wizard-next-btn0');
+
+    if (type === 'bp') {
+        alert('Этот раздел находится в разработке!');
+        return;
+    }
+
+    if (type === 'actions') {
+        if (selectedSection === 'actions') return; 
+        
+        selectedSection = 'actions';
+        
+        animateBadge(badgeB, false); 
+        animateBadge(badgeA, true);  
+        
+        nextBtn.classList.add('show'); 
+    }
+};
+
+document.getElementById('ios-btn-create').addEventListener('click', async function() {
+  window.triggerHaptic();
+  const limit = await checkUsageLimit();
+  if (!limit.allowed) return; 
+
+  isCurrentProjectSaved = false; 
+  document.getElementById('ios-dashboard').style.display = 'none';
 
   document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
-  document.getElementById('wizard-step1').classList.add('active');
+  document.getElementById('wizard-step0').classList.add('active');
+  
+  document.getElementById('shared-progress').style.display = 'none';
+
+  selectedSection = null;
+  document.getElementById('badge-actions').style.display = 'none';
+  document.getElementById('badge-actions').classList.remove('blur-in-badge', 'blur-out-badge');
+  document.getElementById('badge-bp').style.display = 'none';
+  document.getElementById('wizard-next-btn0').classList.remove('show');
 
   document.getElementById('prog-step1').className = 'step active';
   document.getElementById('prog-line1').className = 'line';
@@ -2462,6 +2579,31 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
   window.scrollTo(0,0);
   if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
 });
+
+document.getElementById('wizard-next-btn0').onclick = () => {
+    window.triggerHaptic();
+    if(selectedSection === 'actions') {
+        let step0 = document.getElementById('wizard-step0');
+        let step1 = document.getElementById('wizard-step1');
+        
+        step0.classList.add('fade-out');
+        setTimeout(() => {
+            step0.classList.remove('active', 'fade-out');
+            step1.classList.add('active');
+            
+            let prog = document.getElementById('shared-progress');
+            prog.style.display = 'flex';
+            prog.style.opacity = '0';
+            prog.style.transform = 'translateY(-10px)';
+            prog.style.transition = 'all 0.4s ease';
+            
+            void prog.offsetWidth;
+            
+            prog.style.opacity = '1';
+            prog.style.transform = 'translateY(0)';
+        }, 300);
+    }
+};
 
 function createGradientBg(colorType) {
     const c = document.createElement('canvas');
