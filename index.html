@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6";
+  const APP_VERSION = "v2.3.6(1)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4324,9 +4324,9 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
         target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 }, cache: null
     });
 
-    window.globalAssets.bpBrawlers = [];
-    if (brawler2) window.globalAssets.bpBrawlers.push({ img: brawler2, x: 1920/2 - 250, y: 1080/2 + 50, scale: 1.0 }); // Слева
-    if (brawler1) window.globalAssets.bpBrawlers.push({ img: brawler1, x: 1920/2 + 250, y: 1080/2 + 50, scale: 1.0 }); // Справа
+    globalAssets.bpBrawlers = [];
+    if (brawler2) globalAssets.bpBrawlers.push({ img: brawler2, x: 1920/2 - 250, y: 1080/2 + 50, scale: 1.0 }); // Слева
+    if (brawler1) globalAssets.bpBrawlers.push({ img: brawler1, x: 1920/2 + 250, y: 1080/2 + 50, scale: 1.0 }); // Справа
 
     setupPersistentCanvas();
     renderLayerPanel(true);
@@ -4557,10 +4557,10 @@ function drawScene() {
         drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
     }
 
-    if (window.layerState.isBrawlPass && window.globalAssets.bpBrawlers) {
+    if (window.layerState.isBrawlPass && globalAssets.bpBrawlers) {
         let hdScale = getHDScale();
         persistentCtx.save();
-        window.globalAssets.bpBrawlers.forEach(b => {
+        globalAssets.bpBrawlers.forEach(b => {
             if (b.img) {
                 let drawX = (b.x / 1920) * w;
                 let drawY = (b.y / 1080) * h;
