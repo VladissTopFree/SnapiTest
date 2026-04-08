@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.5(1)";
+  const APP_VERSION = "v2.3.6";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3254,7 +3254,7 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `
             <div class="ios-layer-row">
                 <div style="width: 24px; flex-shrink: 0;"></div> <!-- Заглушка для глазика -->
-                <div class="ios-layer-name">Обводка у акций</div>
+                <div class="ios-layer-name">${window.layerState.isBrawlPass ? "Обводка у плашек" : "Обводка у акций"}</div>
                 <div class="ios-layer-action-text">размер</div>
                 <div class="ios-stroke-control">
                     <button class="ios-stroke-btn" onclick="changeGlobalStroke(-1)">-</button>
@@ -3275,8 +3275,7 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" onclick="toggleOffer(${idx})">
                         ${getEyeSVG(offer.visible)}
                     </div>
-                    <div class="ios-layer-name">Акция ${idx + 1}</div>
-                    <div class="ios-layer-action-text">цена</div>
+                    <div class="ios-layer-name">${window.layerState.isBrawlPass ? (idx === 0 ? "Brawl Pass" : "Brawl Pass Plus") : `Акция ${idx + 1}`}</div>                    <div class="ios-layer-action-text">цена</div>
                     <input type="text" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5"
                            style="background: ${priceBg};" oninput="updateOfferPriceFromLayer(${idx}, this.value)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
@@ -4234,7 +4233,166 @@ window.updateCachedTextCanvas = () => {
     drawBeautifulNick(cachedTextCanvas.getContext('2d'), window.layerState.textValue, persistentCanvas.width, persistentCanvas.height);
 };
 
+window.generateBrawlPass = async function(priceLeft, priceRight) {
+    document.body.style.background = "#F2F2F7";
+    document.body.style.color = "#000";
+    
+    document.getElementById('wizard-overlay').style.display = 'none';
+    resultBox.style.display = 'block';
+    window.scrollTo(0,0);
+    
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = `
+        <div class="skeleton-panel-wrapper fade-in-anim">
+            <div class="skeleton-box skeleton-row"></div>
+            <div class="skeleton-box skeleton-row"></div>
+            <div class="skeleton-box skeleton-row"></div>
+        </div>
+    `;
+
+    allGeneratedCards = [];
+    window.layerState.offers = [];
+    
+    globalAssets.luchImg = await loadImage('Luch.png');
+    globalAssets.starImg = await loadImage('Star.png');
+    globalAssets.pointsImg = await loadImage('points.png');
+
+    if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+        rawBgImage = await createGradientBg(window.layerState.bgColorType);
+    }
+
+    const season = window.layerState.bpSeason || 50;
+    const brawler1 = await loadImage(`BP/brawler_s${season}_1.png`); 
+    const brawler2 = await loadImage(`BP/brawler_s${season}_2.png`); 
+    const panelLeft = await loadImage('BP/bp_panel_left.png');
+    const panelRight = await loadImage('BP/bp_panel_right.png');
+    const tagLeft = await loadImage('BP/bp_price_bg_left.png');
+    const tagRight = await loadImage('BP/bp_price_bg_right.png');
+
+    let cLeft = document.createElement('canvas');
+    let wL = panelLeft ? panelLeft.width : 500;
+    let hL = panelLeft ? panelLeft.height : 700;
+    let tagHL = tagLeft ? tagLeft.height : 150;
+    cLeft.width = wL;
+    cLeft.height = hL + tagHL;
+    let ctxL = cLeft.getContext('2d', { willReadFrequently: true });
+    
+    if (panelLeft) ctxL.drawImage(panelLeft, 0, 0);
+    if (tagLeft) ctxL.drawImage(tagLeft, wL/2 - tagLeft.width/2, hL - 20); 
+    
+    let infoLeft = {
+        blankedImgData: ctxL.getImageData(0, 0, cLeft.width, cLeft.height),
+        textX: cLeft.width / 2,
+        textY: cLeft.height - tagHL/2,
+        boxHeight: tagHL
+    };
+    drawPriceText(ctxL, cLeft.width, cLeft.height, priceLeft, infoLeft);
+    
+    let offerLeft = { canvas: cLeft, x: 0, y: 0, info: infoLeft };
+    allGeneratedCards.push(offerLeft);
+    window.layerState.offers.push({
+        id: 0, visible: true, hasStroke: true, price: priceLeft, ref: offerLeft,
+        anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
+        target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 }, cache: null
+    });
+
+    let cRight = document.createElement('canvas');
+    let wR = panelRight ? panelRight.width : 500;
+    let hR = panelRight ? panelRight.height : 700;
+    let tagHR = tagRight ? tagRight.height : 150;
+    cRight.width = wR;
+    cRight.height = hR + tagHR;
+    let ctxR = cRight.getContext('2d', { willReadFrequently: true });
+    
+    if (panelRight) ctxR.drawImage(panelRight, 0, 0);
+    if (tagRight) ctxR.drawImage(tagRight, wR/2 - tagRight.width/2, hR - 20);
+    
+    let infoRight = {
+        blankedImgData: ctxR.getImageData(0, 0, cRight.width, cRight.height),
+        textX: cRight.width / 2,
+        textY: cRight.height - tagHR/2,
+        boxHeight: tagHR
+    };
+    drawPriceText(ctxR, cRight.width, cRight.height, priceRight, infoRight);
+    
+    let offerRight = { canvas: cRight, x: 0, y: 0, info: infoRight };
+    allGeneratedCards.push(offerRight);
+    window.layerState.offers.push({
+        id: 1, visible: true, hasStroke: true, price: priceRight, ref: offerRight,
+        anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
+        target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 }, cache: null
+    });
+
+    window.globalAssets.bpBrawlers = [];
+    if (brawler2) window.globalAssets.bpBrawlers.push({ img: brawler2, x: 1920/2 - 250, y: 1080/2 + 50, scale: 1.0 }); // Слева
+    if (brawler1) window.globalAssets.bpBrawlers.push({ img: brawler1, x: 1920/2 + 250, y: 1080/2 + 50, scale: 1.0 }); // Справа
+
+    setupPersistentCanvas();
+    renderLayerPanel(true);
+    calculateLayoutTarget(); 
+};
+
+window.calculateBpLayoutTarget = function() {
+    if (!rawBgImage) return;
+
+    let scale = getHDScale();
+    let bgW = rawBgImage.width * scale;
+    let bgH = rawBgImage.height * scale;
+    
+    animText.targetScale = window.layerState.textVisible ? 1 : 0.5;
+    animText.targetAlpha = window.layerState.textVisible ? 1 : 0;
+
+    let targetH = bgH * 0.72; 
+    let marginX = bgW * 0.03; 
+    let centerY = bgH * 0.5;
+
+    if (window.layerState.offers[0]) {
+        let o = window.layerState.offers[0];
+        let ratio = o.ref.canvas.width / o.ref.canvas.height;
+        let targetW = targetH * ratio;
+        o.target = { 
+            x: Math.round(marginX), 
+            y: Math.round(centerY - targetH/2 + (bgH * 0.05)), 
+            w: Math.round(targetW), 
+            h: Math.round(targetH), 
+            scale: o.visible ? 1 : 0, 
+            alpha: o.visible ? 1 : 0 
+        };
+        if (o.anim.w === null) { o.anim = { ...o.target, scale: 0, alpha: 0 }; }
+        if (!o.cache || o.cache.tW !== o.target.w || o.cache.tH !== o.target.h) {
+            generateOfferCache(o, o.target.w, o.target.h);
+        }
+    }
+
+    if (window.layerState.offers[1]) {
+        let o = window.layerState.offers[1];
+        let ratio = o.ref.canvas.width / o.ref.canvas.height;
+        let targetW = targetH * ratio;
+        o.target = { 
+            x: Math.round(bgW - marginX - targetW), 
+            y: Math.round(centerY - targetH/2 + (bgH * 0.05)), 
+            w: Math.round(targetW), 
+            h: Math.round(targetH), 
+            scale: o.visible ? 1 : 0, 
+            alpha: o.visible ? 1 : 0 
+        };
+        if (o.anim.w === null) { o.anim = { ...o.target, scale: 0, alpha: 0 }; }
+        if (!o.cache || o.cache.tW !== o.target.w || o.cache.tH !== o.target.h) {
+            generateOfferCache(o, o.target.w, o.target.h);
+        }
+    }
+
+    startAnimation();
+};
+
 function calculateLayoutTarget() {
+
+  if (window.layerState.isBrawlPass) {
+      calculateBpLayoutTarget();
+      return;
+  }
+
   if (!rawBgImage) return;
 
   let scale = getHDScale();
@@ -4397,6 +4555,26 @@ function drawScene() {
     
     if (window.layerState.watermarksVisible && window.layerState.textValue) {
         drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
+    }
+
+    if (window.layerState.isBrawlPass && window.globalAssets.bpBrawlers) {
+        let hdScale = getHDScale();
+        persistentCtx.save();
+        window.globalAssets.bpBrawlers.forEach(b => {
+            if (b.img) {
+                let drawX = (b.x / 1920) * w;
+                let drawY = (b.y / 1080) * h;
+                let drawW = b.img.width * hdScale * b.scale;
+                let drawH = b.img.height * hdScale * b.scale;
+                
+                persistentCtx.shadowColor = "rgba(0, 0, 0, 0.4)";
+                persistentCtx.shadowBlur = 20 * hdScale;
+                persistentCtx.shadowOffsetY = 15 * hdScale;
+                
+                persistentCtx.drawImage(b.img, drawX - drawW/2, drawY - drawH/2, drawW, drawH);
+            }
+        });
+        persistentCtx.restore();
     }
     
     if (cachedTextCanvas && animText.alpha > 0.01) {
@@ -5292,9 +5470,52 @@ function androidFallback2(blob) {
 
   const wizardNextBtn4Bp = document.getElementById('wizard-next-btn4-bp');
   if (wizardNextBtn4Bp) {
-      wizardNextBtn4Bp.onclick = () => {
+      wizardNextBtn4Bp.onclick = async () => {
           window.triggerHaptic();
-          alert('Генерация Brawl Pass находится в разработке!');
+          
+          if (!selectedBpSeason) {
+              alert('Пожалуйста, выберите сезон!');
+              return;
+          }
+
+          const priceLeft = document.getElementById('bp-input-price-1').value || "899";
+          const priceRight = document.getElementById('bp-input-price-2').value || "1249";
+          const nick = document.getElementById('wizard-nick-input').value.trim().substring(0, 16) || "Snapi";
+
+          window.layerState.isBrawlPass = true;
+          window.layerState.bpSeason = selectedBpSeason;
+          window.layerState.textValue = nick;
+          window.layerState.bgColorType = selectedColor; 
+          
+          if (uploadMode === 'ready_bg') {
+              window.layerState.isReadyBg = true;
+              window.layerState.isGeneratedBg = false;
+              rawBgImage = uploadedReadyBaseImg;
+              window.layerState.textVisible = false;
+              window.layerState.luchVisible = false;
+              window.layerState.starsVisible = false;
+              window.layerState.pointsVisible = false;
+              window.layerState.watermarksVisible = false;
+          } else if (selectedColor) {
+              window.layerState.isReadyBg = false;
+              window.layerState.isGeneratedBg = true;
+              window.layerState.textVisible = true;
+              window.layerState.luchVisible = true;
+              window.layerState.starsVisible = true;
+              window.layerState.pointsVisible = true;
+              window.layerState.watermarksVisible = true;
+          } else {
+              window.layerState.isReadyBg = false;
+              window.layerState.isGeneratedBg = false;
+              rawBgImage = uploadedBaseImg;
+              window.layerState.textVisible = true;
+              window.layerState.luchVisible = true;
+              window.layerState.starsVisible = true;
+              window.layerState.pointsVisible = true;
+              window.layerState.watermarksVisible = true;
+          }
+
+          await generateBrawlPass(priceLeft, priceRight);
       };
   }
 
