@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6(1)";
+  const APP_VERSION = "v2.3.6(2)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4247,7 +4247,6 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
         <div class="skeleton-panel-wrapper fade-in-anim">
             <div class="skeleton-box skeleton-row"></div>
             <div class="skeleton-box skeleton-row"></div>
-            <div class="skeleton-box skeleton-row"></div>
         </div>
     `;
 
@@ -4270,26 +4269,38 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
     const tagLeft = await loadImage('BP/bp_price_bg_left.png');
     const tagRight = await loadImage('BP/bp_price_bg_right.png');
 
-    let cLeft = document.createElement('canvas');
-    let wL = panelLeft ? panelLeft.width : 500;
-    let hL = panelLeft ? panelLeft.height : 700;
-    let tagHL = tagLeft ? tagLeft.height : 150;
-    cLeft.width = wL;
-    cLeft.height = hL + tagHL;
-    let ctxL = cLeft.getContext('2d', { willReadFrequently: true });
-    
-    if (panelLeft) ctxL.drawImage(panelLeft, 0, 0);
-    if (tagLeft) ctxL.drawImage(tagLeft, wL/2 - tagLeft.width/2, hL - 20); 
-    
-    let infoLeft = {
-        blankedImgData: ctxL.getImageData(0, 0, cLeft.width, cLeft.height),
-        textX: cLeft.width / 2,
-        textY: cLeft.height - tagHL/2,
-        boxHeight: tagHL
-    };
-    drawPriceText(ctxL, cLeft.width, cLeft.height, priceLeft, infoLeft);
-    
-    let offerLeft = { canvas: cLeft, x: 0, y: 0, info: infoLeft };
+    function buildBpPanel(panelImg, tagImg, priceText) {
+        let c = document.createElement('canvas');
+        let pW = panelImg ? panelImg.width : 500;
+        let pH = panelImg ? panelImg.height : 700;
+        let tW = tagImg ? tagImg.width : 350;
+        let tH = tagImg ? tagImg.height : 120;
+
+        let canvasW = Math.max(pW, tW);
+        let canvasH = pH + tH * 0.70; 
+
+        c.width = canvasW;
+        c.height = canvasH;
+        let ctx = c.getContext('2d', { willReadFrequently: true });
+
+        let tagY = pH - tH * 0.30;
+
+        if (tagImg) ctx.drawImage(tagImg, canvasW/2 - tW/2, tagY, tW, tH);
+        if (panelImg) ctx.drawImage(panelImg, canvasW/2 - pW/2, 0, pW, pH);
+
+        let info = {
+            blankedImgData: ctx.getImageData(0, 0, canvasW, canvasH),
+            textX: canvasW / 2,
+            textY: tagY + tH * 0.55, 
+            boxHeight: tH * 1.15 
+        };
+        drawPriceText(ctx, canvasW, canvasH, priceText, info);
+
+        return { canvas: c, info: info };
+    }
+
+    let leftData = buildBpPanel(panelLeft, tagLeft, priceLeft);
+    let offerLeft = { canvas: leftData.canvas, x: 0, y: 0, info: leftData.info };
     allGeneratedCards.push(offerLeft);
     window.layerState.offers.push({
         id: 0, visible: true, hasStroke: true, price: priceLeft, ref: offerLeft,
@@ -4297,26 +4308,8 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
         target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 }, cache: null
     });
 
-    let cRight = document.createElement('canvas');
-    let wR = panelRight ? panelRight.width : 500;
-    let hR = panelRight ? panelRight.height : 700;
-    let tagHR = tagRight ? tagRight.height : 150;
-    cRight.width = wR;
-    cRight.height = hR + tagHR;
-    let ctxR = cRight.getContext('2d', { willReadFrequently: true });
-    
-    if (panelRight) ctxR.drawImage(panelRight, 0, 0);
-    if (tagRight) ctxR.drawImage(tagRight, wR/2 - tagRight.width/2, hR - 20);
-    
-    let infoRight = {
-        blankedImgData: ctxR.getImageData(0, 0, cRight.width, cRight.height),
-        textX: cRight.width / 2,
-        textY: cRight.height - tagHR/2,
-        boxHeight: tagHR
-    };
-    drawPriceText(ctxR, cRight.width, cRight.height, priceRight, infoRight);
-    
-    let offerRight = { canvas: cRight, x: 0, y: 0, info: infoRight };
+    let rightData = buildBpPanel(panelRight, tagRight, priceRight);
+    let offerRight = { canvas: rightData.canvas, x: 0, y: 0, info: rightData.info };
     allGeneratedCards.push(offerRight);
     window.layerState.offers.push({
         id: 1, visible: true, hasStroke: true, price: priceRight, ref: offerRight,
@@ -4325,8 +4318,10 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
     });
 
     globalAssets.bpBrawlers = [];
-    if (brawler2) globalAssets.bpBrawlers.push({ img: brawler2, x: 1920/2 - 250, y: 1080/2 + 50, scale: 1.0 }); // Слева
-    if (brawler1) globalAssets.bpBrawlers.push({ img: brawler1, x: 1920/2 + 250, y: 1080/2 + 50, scale: 1.0 }); // Справа
+    if (brawler2) globalAssets.bpBrawlers.push({ img: brawler2, xPct: 0.38, yPct: 0.52, scale: 1.0 }); // Левый
+    if (brawler1) globalAssets.bpBrawlers.push({ img: brawler1, xPct: 0.62, yPct: 0.52, scale: 1.0 }); // Правый
+
+    window.layerState.textPosition = 'bottom';
 
     setupPersistentCanvas();
     renderLayerPanel(true);
@@ -4343,9 +4338,9 @@ window.calculateBpLayoutTarget = function() {
     animText.targetScale = window.layerState.textVisible ? 1 : 0.5;
     animText.targetAlpha = window.layerState.textVisible ? 1 : 0;
 
-    let targetH = bgH * 0.72; 
+    let targetH = bgH * 0.70; 
     let marginX = bgW * 0.03; 
-    let centerY = bgH * 0.5;
+    let centerY = bgH * 0.45; 
 
     if (window.layerState.offers[0]) {
         let o = window.layerState.offers[0];
@@ -4353,16 +4348,14 @@ window.calculateBpLayoutTarget = function() {
         let targetW = targetH * ratio;
         o.target = { 
             x: Math.round(marginX), 
-            y: Math.round(centerY - targetH/2 + (bgH * 0.05)), 
+            y: Math.round(centerY - targetH/2), 
             w: Math.round(targetW), 
             h: Math.round(targetH), 
             scale: o.visible ? 1 : 0, 
             alpha: o.visible ? 1 : 0 
         };
         if (o.anim.w === null) { o.anim = { ...o.target, scale: 0, alpha: 0 }; }
-        if (!o.cache || o.cache.tW !== o.target.w || o.cache.tH !== o.target.h) {
-            generateOfferCache(o, o.target.w, o.target.h);
-        }
+        if (!o.cache || o.cache.tW !== o.target.w || o.cache.tH !== o.target.h) generateOfferCache(o, o.target.w, o.target.h);
     }
 
     if (window.layerState.offers[1]) {
@@ -4371,16 +4364,14 @@ window.calculateBpLayoutTarget = function() {
         let targetW = targetH * ratio;
         o.target = { 
             x: Math.round(bgW - marginX - targetW), 
-            y: Math.round(centerY - targetH/2 + (bgH * 0.05)), 
+            y: Math.round(centerY - targetH/2), 
             w: Math.round(targetW), 
             h: Math.round(targetH), 
             scale: o.visible ? 1 : 0, 
             alpha: o.visible ? 1 : 0 
         };
         if (o.anim.w === null) { o.anim = { ...o.target, scale: 0, alpha: 0 }; }
-        if (!o.cache || o.cache.tW !== o.target.w || o.cache.tH !== o.target.h) {
-            generateOfferCache(o, o.target.w, o.target.h);
-        }
+        if (!o.cache || o.cache.tW !== o.target.w || o.cache.tH !== o.target.h) generateOfferCache(o, o.target.w, o.target.h);
     }
 
     startAnimation();
@@ -4558,18 +4549,20 @@ function drawScene() {
     }
 
     if (window.layerState.isBrawlPass && globalAssets.bpBrawlers) {
-        let hdScale = getHDScale();
         persistentCtx.save();
         globalAssets.bpBrawlers.forEach(b => {
             if (b.img) {
-                let drawX = (b.x / 1920) * w;
-                let drawY = (b.y / 1080) * h;
-                let drawW = b.img.width * hdScale * b.scale;
-                let drawH = b.img.height * hdScale * b.scale;
+                let targetH = h * 0.85 * b.scale;
+                let bScale = targetH / b.img.height;
+                let drawW = b.img.width * bScale;
+                let drawH = targetH;
+                
+                let drawX = w * b.xPct;
+                let drawY = h * b.yPct;
                 
                 persistentCtx.shadowColor = "rgba(0, 0, 0, 0.4)";
-                persistentCtx.shadowBlur = 20 * hdScale;
-                persistentCtx.shadowOffsetY = 15 * hdScale;
+                persistentCtx.shadowBlur = 25;
+                persistentCtx.shadowOffsetY = 15;
                 
                 persistentCtx.drawImage(b.img, drawX - drawW/2, drawY - drawH/2, drawW, drawH);
             }
