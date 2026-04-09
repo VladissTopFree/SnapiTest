@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6(2)";
+  const APP_VERSION = "v2.3.6(3)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3862,65 +3862,83 @@ function autoReplacePrice(ctx, w, h) {
   }
 
   ctx.putImageData(imgData, 0, 0);
-  let blankedImgData = ctx.getImageData(0, 0, w, h);
+  let blankedImgData = ctx.getImageData(0, 0, w, h);
 
-  let boxHeight = maxBoxY - minBoxY;
-  let textY = minBoxY + boxHeight * 0.45; 
-  let sumX = 0; let validRows = 0; let scanRange = Math.floor(boxHeight * 0.2);
-  
-  for(let y = Math.floor(textY - scanRange); y <= Math.floor(textY + scanRange); y++) {
-    let firstX = -1, lastX = -1;
-    if(y >= 0 && y < h) {
-      for(let x = minBoxX; x <= maxBoxX; x++) {
-        if(!outsideMask[y*w + x]) { if(firstX === -1) firstX = x; lastX = x; }
-      }
-      if(firstX !== -1) { sumX += (firstX + lastX) / 2; validRows++; }
-    }
-  }
+  let boxHeight = maxBoxY - minBoxY;
+  let boxWidth = maxBoxX - minBoxX; 
 
-  let textX = validRows > 0 ? (sumX / validRows) : ((minBoxX + maxBoxX) / 2);
-  return { blankedImgData, textX, textY, boxHeight };
+  let textY = minBoxY + boxHeight * 0.45; 
+  let sumX = 0; let validRows = 0; let scanRange = Math.floor(boxHeight * 0.2);
+  
+  for(let y = Math.floor(textY - scanRange); y <= Math.floor(textY + scanRange); y++) {
+    let firstX = -1, lastX = -1;
+    if(y >= 0 && y < h) {
+      for(let x = minBoxX; x <= maxBoxX; x++) {
+        if(!outsideMask[y*w + x]) { if(firstX === -1) firstX = x; lastX = x; }
+      }
+      if(firstX !== -1) { sumX += (firstX + lastX) / 2; validRows++; }
+    }
+  }
+
+  let textX = validRows > 0 ? (sumX / validRows) : ((minBoxX + maxBoxX) / 2);
+  return { blankedImgData, textX, textY, boxHeight, boxWidth }; 
 }
 
 function drawPriceText(ctx, w, h, textStr, info) {
-  if (!textStr || textStr.trim() === "") return;
-  let { textX, textY, boxHeight } = info;
-  let fontSize = Math.floor(boxHeight * 0.60); 
-  if (fontSize < 22) fontSize = 22;
+    if (!textStr || textStr.trim() === "") return;
+    let { textX, textY, boxHeight, boxWidth } = info;
+    
+    let fontSize = Math.floor(boxHeight * 0.50); 
+    if (fontSize < 22) fontSize = 22;
 
-  let isFree = textStr.trim().toUpperCase() === 'FREE';
-  let isNumber = !isNaN(textStr.trim()) && textStr.trim() !== '';
-  let numStr = textStr.trim(); 
-  let symStr = isNumber ? " ₽" : ""; 
-  let mainColor = isFree ? "#3bf83b" : "#ffffff";
-  let fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
-  let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
+    let isFree = textStr.trim().toUpperCase() === 'FREE';
+    let isNumber = !isNaN(textStr.trim()) && textStr.trim() !== '';
+    let numStr = textStr.trim(); 
+    let symStr = isNumber ? " ₽" : ""; 
+    let mainColor = isFree ? "#3bf83b" : "#ffffff";
 
-  ctx.font = fontNum; let wNum = ctx.measureText(numStr).width;
-  ctx.font = fontSym; let wSym = ctx.measureText(symStr).width;
-  let totalW = wNum + wSym;
-  let startX = Math.round(textX - totalW / 2); 
-  let symStartX = Math.round(startX + wNum);
+    let maxTextWidth = boxWidth ? boxWidth * 0.80 : w * 0.80;
+    let fontNum, fontSym, wNum, wSym, totalW;
 
-  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; 
-  ctx.lineWidth = Math.max(2, Math.floor(fontSize * 0.075)); 
-  ctx.strokeStyle = '#000000'; ctx.lineJoin = 'round';
+    do {
+      fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
+      fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
 
-  let textBaseY = Math.round(textY + fontSize * 0.33);
-  let shadowOffset = Math.max(3, Math.floor(fontSize * 0.075) + 1);
+      ctx.font = fontNum; 
+      wNum = ctx.measureText(numStr).width;
+      ctx.font = fontSym; 
+      wSym = ctx.measureText(symStr).width;
+      totalW = wNum + wSym;
 
-  const drawTextParts = (offsetX, offsetY, isFill, color) => {
-    ctx.font = fontNum;
-    if(isFill) { ctx.fillStyle = color; ctx.fillText(numStr, startX + offsetX, textBaseY + offsetY); }
-    else { ctx.strokeText(numStr, startX + offsetX, textBaseY + offsetY); }
-    ctx.font = fontSym;
-    if(isFill) { ctx.fillStyle = color; ctx.fillText(symStr, symStartX + offsetX, textBaseY + offsetY); }
-    else { ctx.strokeText(symStr, symStartX + offsetX, textBaseY + offsetY); }
-  };
+      if (totalW > maxTextWidth && fontSize > 22) {
+          fontSize -= 2; 
+      } else {
+          break; 
+      }
+    } while (fontSize > 22);
 
-  drawTextParts(0, shadowOffset, false, ''); drawTextParts(0, shadowOffset, true, '#000000');
-  drawTextParts(0, 0, false, ''); drawTextParts(0, 0, true, mainColor);
-}
+    let startX = Math.round(textX - totalW / 2); 
+    let symStartX = Math.round(startX + wNum);
+
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; 
+    ctx.lineWidth = Math.max(2, Math.floor(fontSize * 0.075)); 
+    ctx.strokeStyle = '#000000'; ctx.lineJoin = 'round';
+
+    let textBaseY = Math.round(textY + fontSize * 0.33);
+    let shadowOffset = Math.max(3, Math.floor(fontSize * 0.075) + 1);
+
+    const drawTextParts = (offsetX, offsetY, isFill, color) => {
+      ctx.font = fontNum;
+      if(isFill) { ctx.fillStyle = color; ctx.fillText(numStr, startX + offsetX, textBaseY + offsetY); }
+      else { ctx.strokeText(numStr, startX + offsetX, textBaseY + offsetY); }
+      ctx.font = fontSym;
+      if(isFill) { ctx.fillStyle = color; ctx.fillText(symStr, symStartX + offsetX, textBaseY + offsetY); }
+      else { ctx.strokeText(symStr, symStartX + offsetX, textBaseY + offsetY); }
+    };
+
+    drawTextParts(0, shadowOffset, false, ''); drawTextParts(0, shadowOffset, true, '#000000');
+    drawTextParts(0, 0, false, ''); drawTextParts(0, 0, true, mainColor);
+  }
 
 function runMagicLogic(img) {
   const w = img.width; const h = img.height;
@@ -4134,10 +4152,13 @@ function runMagicLogic(img) {
     cx.putImageData(layerData, 0, 0);
 
     let eraseResult = autoReplacePrice(cx, cW, cH);
-    let drawInfo = eraseResult || {
-        blankedImgData: cx.getImageData(0, 0, cW, cH),
-        textX: cW / 2, textY: cH - cH * 0.1, boxHeight: Math.max(20, cH * 0.15)
-    };
+    let drawInfo = eraseResult || {
+        blankedImgData: cx.getImageData(0, 0, cW, cH),
+        textX: cW / 2, 
+        textY: cH - cH * 0.1, 
+        boxHeight: Math.max(20, cH * 0.15), 
+        boxWidth: cW * 0.8 
+    };
 
     drawPriceText(cx, cW, cH, "FREE", drawInfo);
 
@@ -4270,34 +4291,35 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
     const tagRight = await loadImage('BP/bp_price_bg_right.png');
 
     function buildBpPanel(panelImg, tagImg, priceText) {
-        let c = document.createElement('canvas');
-        let pW = panelImg ? panelImg.width : 500;
-        let pH = panelImg ? panelImg.height : 700;
-        let tW = tagImg ? tagImg.width : 350;
-        let tH = tagImg ? tagImg.height : 120;
+        let c = document.createElement('canvas');
+        let pW = panelImg ? panelImg.width : 500;
+        let pH = panelImg ? panelImg.height : 700;
+        let tW = tagImg ? tagImg.width : 350;
+        let tH = tagImg ? tagImg.height : 120;
 
-        let canvasW = Math.max(pW, tW);
-        let canvasH = pH + tH * 0.70; 
+        let canvasW = Math.max(pW, tW);
+        let canvasH = pH + tH * 0.70; 
 
-        c.width = canvasW;
-        c.height = canvasH;
-        let ctx = c.getContext('2d', { willReadFrequently: true });
+        c.width = canvasW;
+        c.height = canvasH;
+        let ctx = c.getContext('2d', { willReadFrequently: true });
 
-        let tagY = pH - tH * 0.30;
+        let tagY = pH - tH * 0.30;
 
-        if (tagImg) ctx.drawImage(tagImg, canvasW/2 - tW/2, tagY, tW, tH);
-        if (panelImg) ctx.drawImage(panelImg, canvasW/2 - pW/2, 0, pW, pH);
+        if (tagImg) ctx.drawImage(tagImg, canvasW/2 - tW/2, tagY, tW, tH);
+        if (panelImg) ctx.drawImage(panelImg, canvasW/2 - pW/2, 0, pW, pH);
 
-        let info = {
-            blankedImgData: ctx.getImageData(0, 0, canvasW, canvasH),
-            textX: canvasW / 2,
-            textY: tagY + tH * 0.45, 
-            boxHeight: tH * 0.85 
-        };
-        drawPriceText(ctx, canvasW, canvasH, priceText, info);
+        let info = {
+            blankedImgData: ctx.getImageData(0, 0, canvasW, canvasH),
+            textX: canvasW / 2,
+            textY: tagY + tH * 0.45, 
+            boxHeight: tH * 0.85,
+            boxWidth: tW * 0.8 
+        };
+        drawPriceText(ctx, canvasW, canvasH, priceText, info);
 
-        return { canvas: c, info: info };
-    }
+        return { canvas: c, info: info };
+    }
 
     let leftData = buildBpPanel(panelLeft, tagLeft, priceLeft);
     let offerLeft = { canvas: leftData.canvas, x: 0, y: 0, info: leftData.info };
