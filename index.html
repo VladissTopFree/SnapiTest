@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6(9)";
+  const APP_VERSION = "v2.3.6(10)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3886,6 +3886,7 @@ function autoReplacePrice(ctx, w, h) {
 
 function drawPriceText(ctx, w, h, textStr, info) {
     if (!textStr || textStr.trim() === "") return;
+    // Достаем координаты центра (textX) и ширину плажки (boxWidth)
     let { textX, textY, boxHeight, boxWidth } = info;
     
     let fontSize = Math.floor(boxHeight * 0.50); 
@@ -3897,10 +3898,12 @@ function drawPriceText(ctx, w, h, textStr, info) {
     let symStr = isNumber ? " ₽" : ""; 
     let mainColor = isFree ? "#3bf83b" : "#ffffff";
 
+    // Ограничиваем максимальную ширину текста (80% от ширины плажки)
     let maxTextWidth = boxWidth ? boxWidth * 0.80 : w * 0.80;
     let fontNum, fontSym, wNum, wSym, totalW;
 
-    // Подгоняем размер по ширине
+    // 1. ДИНАМИЧЕСКОЕ УМЕНЬШЕНИЕ ШРИФТА
+    // Измеряем ширину текста. Если он шире плажки (как 99999) — уменьшаем шрифт
     do {
       fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
       fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
@@ -3912,22 +3915,27 @@ function drawPriceText(ctx, w, h, textStr, info) {
       totalW = wNum + wSym;
 
       if (totalW > maxTextWidth && fontSize > 22) {
-          fontSize -= 2;
+          fontSize -= 2; // Уменьшаем на 2 пикселя и проверяем заново
       } else {
-          break;
+          break; // Текст отлично влезает
       }
     } while (fontSize > 22);
 
+    // 2. ДИНАМИЧЕСКОЕ ЦЕНТРИРОВАНИЕ
+    // Отнимаем половину ширины текста от центра плажки. 
+    // Благодаря этому и "99", и "99999" будут всегда ровно посередине!
     let startX = Math.round(textX - totalW / 2); 
     let symStartX = Math.round(startX + wNum);
 
     ctx.textAlign = 'left'; 
-    ctx.textBaseline = 'alphabetic'; 
+    ctx.textBaseline = 'alphabetic'; // Оставляем для правильной отрисовки теней
     ctx.lineWidth = Math.max(2, Math.floor(fontSize * 0.075)); 
     ctx.strokeStyle = '#000000'; 
     ctx.lineJoin = 'round';
 
-    let textBaseY = Math.round(textY + fontSize * 0.50); 
+    // 3. ВЕРТИКАЛЬНОЕ СМЕЩЕНИЕ
+    // Множитель 0.45 опускает текст так, чтобы он не налезал на верхний край
+    let textBaseY = Math.round(textY + fontSize * 0.45); 
     let shadowOffset = Math.max(3, Math.floor(fontSize * 0.075) + 1);
 
     const drawTextParts = (offsetX, offsetY, isFill, color) => {
