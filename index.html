@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6(3)";
+  const APP_VERSION = "v2.3.6(4)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3867,7 +3867,7 @@ function autoReplacePrice(ctx, w, h) {
   let boxHeight = maxBoxY - minBoxY;
   let boxWidth = maxBoxX - minBoxX; 
 
-  let textY = minBoxY + boxHeight * 0.45; 
+  let textY = minBoxY + boxHeight * 0.5; 
   let sumX = 0; let validRows = 0; let scanRange = Math.floor(boxHeight * 0.2);
   
   for(let y = Math.floor(textY - scanRange); y <= Math.floor(textY + scanRange); y++) {
@@ -3911,20 +3911,22 @@ function drawPriceText(ctx, w, h, textStr, info) {
       totalW = wNum + wSym;
 
       if (totalW > maxTextWidth && fontSize > 22) {
-          fontSize -= 2; 
+          fontSize -= 2;
       } else {
-          break; 
+          break;
       }
     } while (fontSize > 22);
 
     let startX = Math.round(textX - totalW / 2); 
     let symStartX = Math.round(startX + wNum);
 
-    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; 
+    ctx.textAlign = 'left'; 
+    ctx.textBaseline = 'middle'; // <--- ВАЖНО: Рисуем ровно из центра
     ctx.lineWidth = Math.max(2, Math.floor(fontSize * 0.075)); 
-    ctx.strokeStyle = '#000000'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#000000'; 
+    ctx.lineJoin = 'round';
 
-    let textBaseY = Math.round(textY + fontSize * 0.33);
+    let textBaseY = Math.round(textY); // <--- Убрали кривые смещения, просто берем Y
     let shadowOffset = Math.max(3, Math.floor(fontSize * 0.075) + 1);
 
     const drawTextParts = (offsetX, offsetY, isFill, color) => {
@@ -3939,7 +3941,6 @@ function drawPriceText(ctx, w, h, textStr, info) {
     drawTextParts(0, shadowOffset, false, ''); drawTextParts(0, shadowOffset, true, '#000000');
     drawTextParts(0, 0, false, ''); drawTextParts(0, 0, true, mainColor);
   }
-
 function runMagicLogic(img) {
   const w = img.width; const h = img.height;
   const tmpCanvas = document.createElement('canvas');
@@ -4312,7 +4313,7 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
         let info = {
             blankedImgData: ctx.getImageData(0, 0, canvasW, canvasH),
             textX: canvasW / 2,
-            textY: tagY + tH * 0.45, 
+            textY: tagY + tH * 0.5, 
             boxHeight: tH * 0.85,
             boxWidth: tW * 0.8 
         };
