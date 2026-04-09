@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6(7)";
+  const APP_VERSION = "v2.3.6(8)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3927,7 +3927,7 @@ function drawPriceText(ctx, w, h, textStr, info) {
     ctx.strokeStyle = '#000000'; 
     ctx.lineJoin = 'round';
 
-    let textBaseY = Math.round(textY + fontSize * 0.80); 
+    let textBaseY = Math.round(textY + fontSize * 0.60); 
     let shadowOffset = Math.max(3, Math.floor(fontSize * 0.075) + 1);
 
     const drawTextParts = (offsetX, offsetY, isFill, color) => {
@@ -4314,7 +4314,7 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
         let info = {
             blankedImgData: ctx.getImageData(0, 0, canvasW, canvasH),
             textX: canvasW / 2,
-            textY: tagY + tH * 0.80, 
+            textY: tagY + tH * 0.60, 
             boxHeight: tH * 0.85,
             boxWidth: tW * 0.8 
         };
