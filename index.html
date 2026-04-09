@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6(3)";
+  const APP_VERSION = "v2.3.6(4)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3885,29 +3885,48 @@ function autoReplacePrice(ctx, w, h) {
 function drawPriceText(ctx, w, h, textStr, info) {
   if (!textStr || textStr.trim() === "") return;
   let { textX, textY, boxHeight } = info;
-  let fontSize = Math.floor(boxHeight * 0.60); 
-  if (fontSize < 22) fontSize = 22;
+  
+  let fontSize = Math.floor(boxHeight * 0.35); 
+  if (fontSize < 16) fontSize = 16;
 
   let isFree = textStr.trim().toUpperCase() === 'FREE';
   let isNumber = !isNaN(textStr.trim()) && textStr.trim() !== '';
   let numStr = textStr.trim(); 
   let symStr = isNumber ? " ₽" : ""; 
   let mainColor = isFree ? "#3bf83b" : "#ffffff";
-  let fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
-  let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
+  
+  let fontNum, fontSym, wNum, wSym, totalW;
+  
+  let maxWidth = boxHeight * 2.0; 
+  
+  do {
+      fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
+      fontSym = `normal ${Math.max(fontSize - 4, 12)}px 'Rockwell', serif`;
 
-  ctx.font = fontNum; let wNum = ctx.measureText(numStr).width;
-  ctx.font = fontSym; let wSym = ctx.measureText(symStr).width;
-  let totalW = wNum + wSym;
+      ctx.font = fontNum; 
+      wNum = ctx.measureText(numStr).width;
+      ctx.font = fontSym; 
+      wSym = ctx.measureText(symStr).width;
+      totalW = wNum + wSym;
+      
+      if (totalW > maxWidth && fontSize > 12) {
+          fontSize -= 2;
+      } else {
+          break;
+      }
+  } while (fontSize > 12);
+
   let startX = Math.round(textX - totalW / 2); 
   let symStartX = Math.round(startX + wNum);
 
-  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; 
+  ctx.textAlign = 'left'; 
+  ctx.textBaseline = 'alphabetic'; 
   ctx.lineWidth = Math.max(2, Math.floor(fontSize * 0.075)); 
-  ctx.strokeStyle = '#000000'; ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#000000'; 
+  ctx.lineJoin = 'round';
 
   let textBaseY = Math.round(textY + fontSize * 0.33);
-  let shadowOffset = Math.max(3, Math.floor(fontSize * 0.075) + 1);
+  let shadowOffset = Math.max(2, Math.floor(fontSize * 0.075) + 1);
 
   const drawTextParts = (offsetX, offsetY, isFill, color) => {
     ctx.font = fontNum;
@@ -3918,8 +3937,10 @@ function drawPriceText(ctx, w, h, textStr, info) {
     else { ctx.strokeText(symStr, symStartX + offsetX, textBaseY + offsetY); }
   };
 
-  drawTextParts(0, shadowOffset, false, ''); drawTextParts(0, shadowOffset, true, '#000000');
-  drawTextParts(0, 0, false, ''); drawTextParts(0, 0, true, mainColor);
+  drawTextParts(0, shadowOffset, false, ''); 
+  drawTextParts(0, shadowOffset, true, '#000000');
+  drawTextParts(0, 0, false, ''); 
+  drawTextParts(0, 0, true, mainColor);
 }
 
 function runMagicLogic(img) {
