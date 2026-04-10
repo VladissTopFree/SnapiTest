@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6(11)";
+  const APP_VERSION = "v2.3.1";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -20,7 +20,7 @@
   }
 
 
-  const MANUAL_FALLBACK_DATE = "8 Apr 2026";
+  const MANUAL_FALLBACK_DATE = "6 Apr 2026";
 
 
 
@@ -1061,113 +1061,6 @@ async function hashTelegramId(id) {
   .ios-wizard-title { font-size: 32px; font-weight: 700; color: var(--tg-theme-text-color, #000000); margin-bottom: 10px; text-align: center; }
   .ios-wizard-subtitle { font-size: 15px; color: var(--tg-theme-subtitle-text-color, #8E8E93); text-align: center; line-height: 1.35; margin-bottom: 12px; font-weight: 400; max-width: 300px;}
 
-  .section-list { width: 100%; display: flex; flex-direction: column; }
-  .section-card {
-    display: flex; gap: 14px; padding: 16px 0; border-bottom: 0.5px solid var(--tg-theme-section-separator-color, #E5E5EA);
-    cursor: pointer; transition: opacity 0.2s, transform 0.1s; position: relative;
-    border-bottom-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
-  }
-  .section-card:last-child { border-bottom: none; }
-  .section-card:active { opacity: 0.7; transform: scale(0.98); }
-  
-  .section-img {
-    width: 140px; height: 80px; border-radius: 12px; object-fit: cover; flex-shrink: 0; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: var(--tg-theme-section-separator-color, #E5E5EA);
-  }
-  
-  .section-info { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
-  .section-title { font-size: 17px; font-weight: 600; color: var(--tg-theme-text-color, #000); margin-bottom: 4px; text-align: left; line-height: 1.2; }
-  .section-desc { font-size: 11px; color: var(--tg-theme-subtitle-text-color, #8E8E93); line-height: 1.3; text-align: left; margin-bottom: 8px; }
-  
-  .section-badge {
-    background: var(--tg-theme-accent-text-color); color: var(--tg-theme-button-text-color, #fff); 
-    font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 12px; display: none;
-  }
-
-  @keyframes badgeBlurIn {
-    0% { filter: blur(8px); opacity: 0; transform: scale(0.9); }
-    100% { filter: blur(0px); opacity: 1; transform: scale(1); }
-  }
-  @keyframes badgeBlurOut {
-    0% { filter: blur(0px); opacity: 1; transform: scale(1); }
-    100% { filter: blur(8px); opacity: 0; transform: scale(0.9); }
-  }
-  .blur-in-badge { animation: badgeBlurIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-  .blur-out-badge { animation: badgeBlurOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-
-  .bp-style-list { width: 100%; display: flex; flex-direction: column; }
-  .bp-style-card {
-    display: flex; align-items: center; gap: 14px; padding: 16px 0; 
-    border-bottom: 0.5px solid var(--tg-theme-section-separator-color, #E5E5EA);
-    cursor: pointer; transition: opacity 0.2s, transform 0.1s;
-    border-bottom-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
-  }
-  .bp-style-card:last-child { border-bottom: none; }
-  .bp-style-card:active { opacity: 0.7; transform: scale(0.98); }
-  
-  .radio-circle {
-    width: 24px; height: 24px; border-radius: 50%; 
-    border: 2px solid var(--tg-theme-subtitle-text-color, #C7C7CC);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: transparent;
-  }
-
-  .radio-circle svg {
-    width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 2.5; 
-    stroke-linecap: round; stroke-linejoin: round;
-    opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .radio-circle.selected {
-    border-color: var(--tg-theme-accent-text-color);
-    background: var(--tg-theme-accent-text-color);
-  }
-  .radio-circle.selected svg {
-    opacity: 1; transform: scale(1);
-  }
-
-  .bp-style-img {
-    width: 100px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: var(--tg-theme-section-separator-color, #E5E5EA);
-  }
-
-  .bp-style-info { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; }
-  .bp-style-title { font-size: 16px; font-weight: 500; color: var(--tg-theme-text-color, #000); margin-bottom: 2px; text-align: left; width: 100%; }
-  .bp-style-desc { font-size: 12px; color: var(--tg-theme-subtitle-text-color, #8E8E93); line-height: 1.3; text-align: left; width: 100%; }
-
-  .bp-price-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 16px;
-      width: 100%;
-  }
-  .bp-price-label {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--tg-theme-text-color, #000);
-      width: 80px;
-      text-align: right;
-      text-transform: uppercase;
-  }
-  .bp-price-input {
-      background: var(--tg-theme-section-bg-color, #ffffff);
-      border: none;
-      border-radius: 16px;
-      padding: 16px 20px;
-      font-size: 16px;
-      color: var(--tg-theme-text-color, #000);
-      width: 180px;
-      outline: none;
-      text-align: left;
-      font-family: inherit;
-      -webkit-appearance: none;
-  }
-  .bp-price-input::placeholder {
-      color: var(--tg-theme-subtitle-text-color, #8E8E93);
-  }
-
   .ios-color-presets { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
   .ios-color-btn-wrap { padding: 4px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: border-color 0.4s ease-in-out; }
   .ios-color-btn-wrap.selected[data-color="green"] { border-color: #5ee568; }
@@ -1643,6 +1536,50 @@ async function hashTelegramId(id) {
     border-color: var(--tg-theme-accent-text-color);
   }
 
+  /* ===== СТИЛИ BRAWL PASS ===== */
+        .shop-container {
+            position: relative;
+            width: 1200px;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform-origin: center;
+            transform: scale(0.3); /* Масштаб для мобилок, чтобы влезло в экран */
+        }
+        @media (min-width: 768px) { .shop-container { transform: scale(0.6); } }
+
+        .bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover, cover; background-position: center, center; background-blend-mode: overlay; }
+        .bg-orange { background-image: url('bg/bg3.png'), linear-gradient(100deg, #ff4e00 0%, #ff8a00 100%); clip-path: polygon(0 0, 39% 0, 34% 50%, 37% 46%, 31.6% 100%, 0 100%); }
+        .bg-purple { background-image: url('bg/bg3.png'), linear-gradient(100deg, #6420c2 0%, #390d8a 100%); clip-path: polygon(100% 0, 39% 0, 34% 50%, 37% 46%, 31.6% 100%, 100% 100%); }
+        .bg-rays { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; mix-blend-mode: overlay; object-fit: cover; pointer-events: none; opacity: 0.5; }
+        .bg-star-eff { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; object-fit: contain; pointer-events: none; mix-blend-mode: overlay; }
+        .bg-point-eff { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; object-fit: contain; pointer-events: none; }
+        .divider-line { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; }
+        .divider-line polyline { fill: none; stroke: #f09e41; stroke-width: 9px; stroke-linejoin: miter; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 8px rgba(0, 255, 76, 0.7)); }
+        .bg-star { position: absolute; bottom: calc(16% + 56px); left: 50%; transform: translateX(-50%); height: 70%; width: auto; z-index: 5; object-fit: contain; object-position: bottom; }
+        .brawler-glow { position: absolute; bottom: calc(16% + 56px + 10%); width: 280px; height: 280px; background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0) 70%); filter: blur(20px); z-index: 10; pointer-events: none; mix-blend-mode: screen; transform: translateX(-50%); }
+        .glow-left { left: 39%; }
+        .glow-right { right: calc(23.5% + 26px + 15.5%); transform: translateX(50%); }
+        .brawler-shadow { position: absolute; bottom: calc(16% + 56px - 10px); height: 25px; background: rgba(0,0,0,0.3); border-radius: 50%; z-index: 14; transform: translateX(-50%); pointer-events: none; }
+        .shadow-left { left: calc(23.5% + 15.5%); width: 18%; }
+        .shadow-right { right: calc(23.5% + 26px + 15.5%); transform: translateX(50%); width: 18%; }
+        .panel-container { position: absolute; top: 50px; bottom: 160px; z-index: 10; display: flex; justify-content: center; }
+        .panel-left { left: 14px; width: 28%; }
+        .panel-right { right: 14px; width: 32%; }
+        .panel-bg { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+        .brawler { position: absolute; bottom: calc(16% + 56px); z-index: 15; object-fit: contain; object-position: bottom; filter: drop-shadow(2px 0 0 #000) drop-shadow(-2px 0 0 #000) drop-shadow(0 2px 0 #000) drop-shadow(0 -2px 0 #000); }
+        .brawler-left { left: 23.5%; width: 31%; height: 58%; z-index: 16; }
+        .brawler-right { right: calc(23.5% + 26px); width: 31%; height: 58%; z-index: 15; }
+        .price-container { position: absolute; bottom: 30px; z-index: 20; }
+        .price-left { left: calc(5.5% - 22px); width: 20%; }
+        .price-right { right: calc(5.5% + 18px); width: 24%; }
+        .price-bg { width: 100%; height: auto; display: block; }
+        .price-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; font-family: 'LilitaOneRus', sans-serif; font-size: clamp(16px, 3.2vw, 44px); color: #fff; white-space: nowrap; -webkit-text-stroke: 6px #000; paint-order: stroke fill; filter: drop-shadow(0 4px 0 #000); transform: translateY(-7px); padding-bottom: 2%; }
+        #wm-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9; pointer-events: none; mix-blend-mode: overlay; opacity: 0.8; }
+        #main-text-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1708,6 +1645,7 @@ async function hashTelegramId(id) {
     </div>
 
     <button id="ios-btn-create" class="ios-action-btn">Создать</button>
+    <button id="ios-btn-create-bp" class="ios-action-btn" style="margin-top: 12px; background: #666; animation: none; align-self: center;" onclick="openBPOverlay()">Создать БП (Тест)</button>
   </div>
 </div>
 
@@ -1723,85 +1661,18 @@ async function hashTelegramId(id) {
 
 <div id="wizard-overlay">
 
-  <div class="ios-progress" id="shared-progress" style="display: none;">
+  <div class="ios-progress" id="shared-progress">
     <div class="step active" id="prog-step1">1</div>
     <div class="line" id="prog-line1"></div>
     <div class="step small" id="prog-step2">2</div>
     <div class="line" id="prog-line2"></div>
     <div class="step small" id="prog-step3">3</div>
-    <div class="line" id="prog-line3" style="display: none;"></div>
-    <div class="step small" id="prog-step4" style="display: none;">4</div>
   </div>
 
-  <div id="wizard-step0" class="wizard-step active">
-    <div class="ios-wizard-title" style="text-align: left; width: 100%; font-size: 28px; margin-bottom: 12px;">Выберите раздел</div>
-    
-    <div class="section-list">
-        <div class="section-card" onclick="selectSection('actions')">
-            <img src="miniprewiev.png" class="section-img">
-            <div class="section-info">
-                <div class="section-title">Создание акции</div>
-                <div class="section-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
-                <div class="section-badge" id="badge-actions">выбрано</div>
-            </div>
-        </div>
-
-        <div class="section-card" onclick="selectSection('bp')">
-            <img src="miniprewiev.png" class="section-img">
-            <div class="section-info">
-                <div class="section-title">Создание Brawl Pass</div>
-                <div class="section-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
-                <div class="section-badge" id="badge-bp">выбрано</div>
-            </div>
-        </div>
-    </div>
-
-    <button id="wizard-next-btn0" class="ios-action-btn ios-btn-next">Далее</button>
-  </div>
-
-  <div id="wizard-step-bp-style" class="wizard-step">
-    <div class="ios-wizard-title" style="text-align: left; width: 100%; font-size: 28px; margin-bottom: 12px;">Выберите стиль Brawl Pass</div>
-    
-    <div class="bp-style-list">
-        <div class="bp-style-card" onclick="selectBpStyle(1)">
-            <div class="radio-circle" id="bp-radio-1">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <img src="miniprewiev.png" class="bp-style-img">
-            <div class="bp-style-info">
-                <div class="bp-style-title">Стиль #1</div>
-                <div class="bp-style-desc">Более детализированная работа.</div>
-            </div>
-        </div>
-        <div class="bp-style-card" onclick="selectBpStyle(2)">
-            <div class="radio-circle" id="bp-radio-2">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <img src="miniprewiev.png" class="bp-style-img">
-            <div class="bp-style-info">
-                <div class="bp-style-title">Стиль #2</div>
-                <div class="bp-style-desc">Более детализированная работа.</div>
-            </div>
-        </div>
-        <div class="bp-style-card" onclick="selectBpStyle(3)">
-            <div class="radio-circle" id="bp-radio-3">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <img src="miniprewiev.png" class="bp-style-img">
-            <div class="bp-style-info">
-                <div class="bp-style-title">Стиль #3</div>
-                <div class="bp-style-desc">Более детализированная работа.</div>
-            </div>
-        </div>
-    </div>
-
-    <button id="wizard-next-btn-bp" class="ios-action-btn ios-btn-next">Далее</button>
-  </div>
-
-  <div id="wizard-step1" class="wizard-step">
-    <div class="ios-wizard-title" id="step1-title">Создание акции</div>
+  <div id="wizard-step1" class="wizard-step active">
+    <div class="ios-wizard-title">Создание акции</div>
     <div class="ios-wizard-subtitle">Фон. Выберите один из готовых цветов<br>или загрузите свой готовый фон.</div>
-        
+    
     <div class="ios-color-presets" id="wizard-color-presets">
        <div class="ios-color-btn-wrap" data-color="green"><div class="ios-color-btn" style="background: linear-gradient(135deg, #5ee568 49.5%, #168625 50.5%)"></div></div>
        <div class="ios-color-btn-wrap" data-color="blue"><div class="ios-color-btn" style="background: linear-gradient(135deg, #46b3ff 49.5%, #004d9c 50.5%)"></div></div>
@@ -1830,7 +1701,7 @@ async function hashTelegramId(id) {
   </div>
   
   <div id="wizard-step2" class="wizard-step">
-    <div class="ios-wizard-title" id="step2-title">Создание акции</div>
+    <div class="ios-wizard-title">Создание акции</div>
     <div class="ios-wizard-subtitle">Ник. Напишите свой ник, который<br>будет располагаться на Вашей работе.</div>
     
     <div class="wizard-input-wrapper">
@@ -1860,65 +1731,6 @@ async function hashTelegramId(id) {
     <input type="file" id="file-add-screens" accept="image/*" multiple style="display:none;">
     <button id="wizard-next-btn3" class="ios-action-btn ios-btn-next">Далее</button>
   </div>
-
-  <div id="wizard-step3-bp" class="wizard-step">
-    <div class="ios-wizard-title">Создание Brawl Pass</div>
-    <div class="ios-wizard-subtitle">Цены. Напишите в поля для ввода<br>цены для Brawl Pass и Brawl Pass Plus.</div>
-    
-    <div style="margin-top: 30px; width: 100%;">
-        <div class="bp-price-row">
-            <div class="bp-price-label">BP</div>
-            <input type="text" inputmode="numeric" pattern="[0-9]*" class="bp-price-input" id="bp-input-price-1" placeholder="Введите цену..." maxlength="5">
-        </div>
-        <div class="bp-price-row">
-            <div class="bp-price-label">BP Plus</div>
-            <input type="text" inputmode="numeric" pattern="[0-9]*" class="bp-price-input" id="bp-input-price-2" placeholder="Введите цену..." maxlength="5">
-        </div>
-    </div>
-
-    <button id="wizard-next-btn3-bp" class="ios-action-btn ios-btn-next">Далее</button>
-  </div>
-
-  <div id="wizard-step4-bp" class="wizard-step">
-    <div class="ios-wizard-title">Создание Brawl Pass</div>
-    <div class="ios-wizard-subtitle">Сезон. Выберите, для какого сезона<br>Brawl Pass делается картинка.</div>
-    
-    <div class="bp-style-list" style="margin-top: 10px;">
-        <div class="bp-style-card" onclick="selectBpSeason(50)">
-            <div class="radio-circle" id="bp-season-radio-50">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <img src="miniprewiev.png" class="bp-style-img">
-            <div class="bp-style-info">
-                <div class="bp-style-title">50 сезон</div>
-                <div class="bp-style-desc">Новый сезон Brawl Pass.<br>Выйдет 19 апреля.</div>
-            </div>
-        </div>
-        <div class="bp-style-card" onclick="selectBpSeason(49)">
-            <div class="radio-circle" id="bp-season-radio-49">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <img src="miniprewiev.png" class="bp-style-img">
-            <div class="bp-style-info">
-                <div class="bp-style-title">49 сезон</div>
-                <div class="bp-style-desc">Прошлый сезон Brawl Pass.<br>Вышел 5 марта.</div>
-            </div>
-        </div>
-        <div class="bp-style-card" onclick="selectBpSeason(48)">
-            <div class="radio-circle" id="bp-season-radio-48">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <img src="miniprewiev.png" class="bp-style-img">
-            <div class="bp-style-info">
-                <div class="bp-style-title">48 сезон</div>
-                <div class="bp-style-desc">Старый сезон Brawl Pass.<br>Вышел 6 февраля.</div>
-            </div>
-        </div>
-    </div>
-
-    <button id="wizard-next-btn4-bp" class="ios-action-btn ios-btn-next">Далее</button>
-  </div>
-
 </div>
 
 <div id="result-box">
@@ -2025,7 +1837,7 @@ async function hashTelegramId(id) {
       Время ответа составляет не более 72 часов.    
     </div>
 
-    <div id="transactions-container" style="display: none; width: 100%; box-sizing: border-box; margin-top: 46px;"></div>
+    <div id="transactions-container" style="display: none; width: 100%; box-sizing: border-box; margin-top: 16px;"></div>
 
     <div style="margin-top: auto; display: flex; align-items: center; justify-content: flex-start; padding: 20px 20px 40px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; width: 100%; box-sizing: border-box;">
         <span id="app-version-display" style="font-size: 18px; font-weight: 600; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-right: 6px;"></span>
@@ -2086,12 +1898,51 @@ async function hashTelegramId(id) {
 <div id="fankit-overlay">
   <div class="fankit-sheet" id="fankit-sheet">
     <div class="fankit-drag-pill"></div>
-    <div class="fankit-title">Выберите фон из Fankit.</div>
+    <div class="fankit-title">Выбери 1 фон из Fankit.</div>
     <div class="fankit-grid-container">
         <div class="fankit-grid" id="fankit-grid">
             </div>
     </div>
   </div>
+</div>
+
+<div id="bp-overlay" style="display: none; width: 100%; height: 100dvh; background: #1a1a1a; position: fixed; top: 0; left: 0; z-index: 200; justify-content: center; align-items: center; overflow: hidden;">
+    <div class="shop-container" id="shop">
+        <div class="bg-layer bg-orange"></div>
+        <div class="bg-layer bg-purple"></div>
+        <img src="BP/Luch.png" class="bg-rays" alt="">
+        <img src="BP/bp_starsEff.png" class="bg-star-eff" alt="">
+        <img src="BP/bp_pointEff.png" class="bg-point-eff" alt="">
+        <svg class="divider-line" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polyline points="39,0 34,50 37,46 31.6,100" />
+        </svg>
+        <img src="BP/bp_star.png" class="bg-star" alt="">
+        <div class="brawler-glow glow-left"></div>
+        <div class="brawler-glow glow-right"></div>
+        <div class="brawler-shadow shadow-left"></div>
+        <div class="brawler-shadow shadow-right"></div>
+        <img src="BP/brawler_s50_2.png" class="brawler brawler-left" alt="">
+        <img src="BP/brawler_s50_1.png" class="brawler brawler-right" alt="">
+        
+        <div class="panel-container panel-left">
+            <img src="BP/bp_panel_left.png" class="panel-bg" alt="">
+        </div>
+        <div class="price-container price-left">
+            <img src="BP/bp_price_bg_left.png" class="price-bg" alt="">
+            <div class="price-text">999 р</div>
+        </div>
+        
+        <div class="panel-container panel-right">
+            <img src="BP/bp_panel_right.png" class="panel-bg" alt="">
+        </div>
+        <div class="price-container price-right">
+            <img src="BP/bp_price_bg_right.png" class="price-bg" alt="">
+            <div class="price-text">9999 р</div>
+        </div>
+
+        <canvas id="wm-canvas"></canvas>
+        <canvas id="main-text-canvas"></canvas>
+    </div>
 </div>
 <script>
 window.triggerHaptic = function() {
@@ -2272,28 +2123,13 @@ let isCurrentProjectSaved = false;
 
 if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
     window.Telegram.WebApp.BackButton.onClick(() => {
-        let fankitOverlay = document.getElementById('fankit-overlay');
-        if (fankitOverlay && fankitOverlay.classList.contains('show')) {
-            fankitOverlay.classList.remove('show');
-            let fankitSheet = document.getElementById('fankit-sheet');
-            if (fankitSheet) fankitSheet.style.transform = ''; 
-            setTimeout(() => {
-                fankitOverlay.style.display = 'none';
-            }, 300);
-            return; 
-        }
-
         document.getElementById('wizard-overlay').style.display = 'none';
         document.getElementById('result-box').style.display = 'none';
         document.getElementById('download-overlay').style.display = 'none';
         document.getElementById('saved-projects-overlay').style.display = 'none';
         document.getElementById('settings-overlay').style.display = 'none';
         document.getElementById('subscription-overlay').style.display = 'none';
-        
-        if (fankitOverlay) {
-            fankitOverlay.classList.remove('show');
-            fankitOverlay.style.display = 'none';
-        }
+        document.getElementById('bp-overlay').style.display = 'none'; 
         
         let btnWrap = document.getElementById('download-btn-wrap');
         if (btnWrap) btnWrap.style.display = 'none';
@@ -2330,7 +2166,7 @@ const localDB = {
     async init() {
         if (this.db) return;
         return new Promise((resolve, reject) => {
-            const req = indexedDB.open('SnapiDBTest', 1); 
+            const req = indexedDB.open('SnapiDBTest1', 1); 
             req.onupgradeneeded = e => {
                 const db = e.target.result;
                 if (!db.objectStoreNames.contains('projects')) db.createObjectStore('projects', { keyPath: 'id' });
@@ -2425,6 +2261,97 @@ window.closeSubscription = () => {
     document.getElementById('ios-dashboard').style.display = 'flex';
     document.body.style.overflow = ''; 
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.hide();
+};
+
+window.openBPOverlay = () => {
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('bp-overlay').style.display = 'flex';
+    window.scrollTo(0,0);
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+        window.Telegram.WebApp.BackButton.show();
+    }
+
+    const wmCanvas = document.getElementById('wm-canvas');
+    const wmCtx = wmCanvas.getContext('2d');
+    const textCanvas = document.getElementById('main-text-canvas');
+    const textCtx = textCanvas.getContext('2d');
+
+    const WIDTH = 1200;
+    const HEIGHT = 675;
+
+    wmCanvas.width = WIDTH; wmCanvas.height = HEIGHT;
+    textCanvas.width = WIDTH; textCanvas.height = HEIGHT;
+
+    function drawBrawlText(ctx, text, x, y, fontSize, styleIndex) {
+        const style = TEXT_STYLES[styleIndex];
+        ctx.save();
+        ctx.font = `${fontSize}px 'Font16103', 'Arial Black', sans-serif`; // Используем твой загруженный шрифт
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.lineJoin = "round";
+        ctx.miterLimit = 2;
+
+        if (style.shadow) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.shadow; ctx.strokeText(text, x, y + fontSize * 0.08); }
+        if (style.outer2) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.outer2; ctx.strokeText(text, x, y); }
+        if (style.outer) { ctx.lineWidth = fontSize * 0.2; ctx.strokeStyle = style.outer; ctx.strokeText(text, x, y); }
+        if (style.inner) { ctx.lineWidth = fontSize * 0.08; ctx.strokeStyle = style.inner; ctx.strokeText(text, x, y); }
+
+        if (style.grad) {
+            const grad = ctx.createLinearGradient(0, y - fontSize * 0.4, 0, y + fontSize * 0.4);
+            grad.addColorStop(0, style.grad[0]);
+            grad.addColorStop(0.5, style.grad[1] || style.grad[0]);
+            grad.addColorStop(1, style.grad[2] || style.grad[1] || style.grad[0]);
+            ctx.fillStyle = grad;
+        } else { ctx.fillStyle = "#ffffff"; }
+        
+        ctx.fillText(text, x, y);
+        ctx.restore();
+    }
+
+    function drawWatermarks(ctx, text, w, h, forExport = false) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.save(); 
+        ctx.globalCompositeOperation = forExport ? "overlay" : "source-over"; 
+        ctx.fillStyle = "#ffffff";
+        ctx.textBaseline = "top"; 
+        if ('letterSpacing' in ctx) ctx.letterSpacing = "0.05em";
+
+        const marks = [
+            { top: 0.069, left: 0.029, size: 13 }, { top: 0.000, left: 0.156, size: 17 },
+            { top: 0.018, left: 0.535, size: 20 }, { top: 0.046, left: 0.804, size: 15 },
+            { top: 0.013, left: 0.404, size: 9 },  { top: 0.123, left: 0.522, size: 9 },
+            { top: 0.102, left: 0.292, size: 9 },  { top: 0.776, left: 0.243, size: 10 },
+            { top: 0.351, left: 0.970, size: 9 },  { top: 0.630, left: 0.080, size: 13 },
+            { top: 0.599, left: 0.970, size: 9 },  { top: 0.770, left: 0.013, size: 15 },
+            { top: 0.950, left: 0.237, size: 9 },  { top: 0.769, left: 0.928, size: 15 },
+            { top: 0.950, left: 0.521, size: 22 }, { top: 0.950, left: 0.930, size: 9 }
+        ];
+
+        marks.forEach(mark => {
+            ctx.save();
+            ctx.translate(w * mark.left, h * mark.top);
+            ctx.transform(1, 0, -0.2, 1, 0, 0); 
+            ctx.font = `${mark.size}px 'Font16103', 'Arial Black', sans-serif`;
+            ctx.fillText(text.toUpperCase(), 0, 0);
+            ctx.restore();
+        });
+        ctx.restore(); 
+    }
+
+    document.fonts.ready.then(() => {
+        drawWatermarks(wmCtx, "ARTZA DONATE", WIDTH, HEIGHT, false);
+        textCtx.clearRect(0, 0, WIDTH, HEIGHT);
+        textCtx.save();
+        
+        const textX = (WIDTH / 2) - 12;
+        const textY = (HEIGHT * 0.78) + 3; 
+        textCtx.translate(textX, textY);
+        textCtx.transform(1, 0, -0.15, 1, 0, 0); 
+        textCtx.rotate(-0.03); 
+
+        drawBrawlText(textCtx, "SNAPI", 0, 0, 145, 6); 
+        textCtx.restore();
+    });
 };
 
 window.closeSavedProjects = () => {
@@ -2671,106 +2598,16 @@ window.loadProject = async (id) => {
     calculateLayoutTarget();
 };
 
-let selectedSection = null; 
-let selectedBpStyle = null; 
-
-function animateBadge(badgeEl, show) {
-    if (show) {
-        badgeEl.style.display = 'inline-block';
-        badgeEl.classList.remove('blur-out-badge');
-        void badgeEl.offsetWidth; 
-        badgeEl.classList.add('blur-in-badge');
-    } else {
-        if (badgeEl.style.display !== 'none') {
-            badgeEl.classList.remove('blur-in-badge');
-            void badgeEl.offsetWidth;
-            badgeEl.classList.add('blur-out-badge');
-            setTimeout(() => { badgeEl.style.display = 'none'; }, 300);
-        }
-    }
-}
-
-window.selectSection = function(type) {
-    window.triggerHaptic();
-    let badgeA = document.getElementById('badge-actions');
-    let badgeB = document.getElementById('badge-bp');
-    let nextBtn = document.getElementById('wizard-next-btn0');
-
-    if (type === 'actions') {
-        if (selectedSection === 'actions') return; 
-        selectedSection = 'actions';
-        animateBadge(badgeB, false); 
-        animateBadge(badgeA, true);  
-        nextBtn.classList.add('show'); 
-    } else if (type === 'bp') {
-        if (selectedSection === 'bp') return; 
-        selectedSection = 'bp';
-        animateBadge(badgeA, false); 
-        animateBadge(badgeB, true);  
-        nextBtn.classList.add('show'); 
-    }
-};
-
-window.selectBpStyle = function(index) {
-    window.triggerHaptic();
-    if (selectedBpStyle === index) return;
-    selectedBpStyle = index;
-    
-    for (let i = 1; i <= 3; i++) {
-        let circle = document.getElementById('bp-radio-' + i);
-        if (circle) circle.classList.remove('selected');
-    }
-    
-    let selectedCircle = document.getElementById('bp-radio-' + index);
-    if (selectedCircle) selectedCircle.classList.add('selected');
-    
-    document.getElementById('wizard-next-btn-bp').classList.add('show');
-};
-
-let selectedBpSeason = null;
-
-window.selectBpSeason = function(index) {
-    window.triggerHaptic();
-    if (selectedBpSeason === index) return;
-    selectedBpSeason = index;
-    
-    [50, 49, 48].forEach(i => {
-        let circle = document.getElementById('bp-season-radio-' + i);
-        if (circle) circle.classList.remove('selected');
-    });
-    
-    let selectedCircle = document.getElementById('bp-season-radio-' + index);
-    if (selectedCircle) selectedCircle.classList.add('selected');
-    
-    document.getElementById('wizard-next-btn4-bp').classList.add('show');
-};
-
 document.getElementById('ios-btn-create').addEventListener('click', async function() {
-  window.triggerHaptic();
-  const limit = await checkUsageLimit();
-  if (!limit.allowed) return; 
+    window.triggerHaptic();
+    const limit = await checkUsageLimit();
+    if (!limit.allowed) return; 
 
-  isCurrentProjectSaved = false; 
-  document.getElementById('ios-dashboard').style.display = 'none';
+    isCurrentProjectSaved = false; 
+    document.getElementById('ios-dashboard').style.display = 'none';
 
   document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
-  document.getElementById('wizard-step0').classList.add('active');
-  
-  document.getElementById('shared-progress').style.display = 'none';
-
-  selectedSection = null;
-  document.getElementById('badge-actions').style.display = 'none';
-  document.getElementById('badge-actions').classList.remove('blur-in-badge', 'blur-out-badge');
-  document.getElementById('badge-bp').style.display = 'none';
-  document.getElementById('badge-bp').classList.remove('blur-in-badge', 'blur-out-badge');
-  document.getElementById('wizard-next-btn0').classList.remove('show');
-
-  selectedBpStyle = null;
-  for (let i = 1; i <= 3; i++) {
-      let circle = document.getElementById('bp-radio-' + i);
-      if (circle) circle.classList.remove('selected');
-  }
-  document.getElementById('wizard-next-btn-bp').classList.remove('show');
+  document.getElementById('wizard-step1').classList.add('active');
 
   document.getElementById('prog-step1').className = 'step active';
   document.getElementById('prog-line1').className = 'line';
@@ -2781,74 +2618,10 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
   stagedFiles = [];
   updateDropzoneUI();
 
-  if (document.getElementById('bp-input-price-1')) document.getElementById('bp-input-price-1').value = '';
-  if (document.getElementById('bp-input-price-2')) document.getElementById('bp-input-price-2').value = '';
-
   document.getElementById('wizard-overlay').style.display = 'flex';
   window.scrollTo(0,0);
   if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
 });
-
-document.getElementById('wizard-next-btn0').onclick = () => {
-    window.triggerHaptic();
-    let step0 = document.getElementById('wizard-step0');
-    
-    if (selectedSection === 'actions') {
-        let step1 = document.getElementById('wizard-step1');
-        document.getElementById('step1-title').innerText = 'Создание акции';
-
-        document.getElementById('prog-line3').style.display = 'none';
-        document.getElementById('prog-step4').style.display = 'none';
-
-        step0.classList.add('fade-out');
-        setTimeout(() => {
-            step0.classList.remove('active', 'fade-out');
-            step1.classList.add('active');
-            
-            let prog = document.getElementById('shared-progress');
-            prog.style.display = 'flex';
-            prog.style.opacity = '0';
-            prog.style.transform = 'translateY(-10px)';
-            prog.style.transition = 'all 0.4s ease';
-            void prog.offsetWidth;
-            prog.style.opacity = '1';
-            prog.style.transform = 'translateY(0)';
-        }, 300);
-    } else if (selectedSection === 'bp') {
-        let stepBp = document.getElementById('wizard-step-bp-style');
-        step0.classList.add('fade-out');
-        setTimeout(() => {
-            step0.classList.remove('active', 'fade-out');
-            stepBp.classList.add('active');
-        }, 300);
-    }
-};
-
-document.getElementById('wizard-next-btn-bp').onclick = () => {
-    window.triggerHaptic();
-    let stepBp = document.getElementById('wizard-step-bp-style');
-    let step1 = document.getElementById('wizard-step1');
-
-    document.getElementById('step1-title').innerText = 'Создание Brawl Pass';
-
-    document.getElementById('prog-line3').style.display = 'block';
-    document.getElementById('prog-step4').style.display = 'flex';
-
-    stepBp.classList.add('fade-out');
-    setTimeout(() => {
-        stepBp.classList.remove('active', 'fade-out');
-        step1.classList.add('active');
-        
-        let prog = document.getElementById('shared-progress');
-        prog.style.display = 'flex';
-        prog.style.opacity = '0';
-        prog.style.transform = 'translateY(-10px)';
-        prog.style.transition = 'all 0.4s ease';
-        void prog.offsetWidth;
-        prog.style.opacity = '1';
-        prog.style.transform = 'translateY(0)';
-    }, 300);
-};
 
 function createGradientBg(colorType) {
     const c = document.createElement('canvas');
@@ -3254,7 +3027,7 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `
             <div class="ios-layer-row">
                 <div style="width: 24px; flex-shrink: 0;"></div> <!-- Заглушка для глазика -->
-                <div class="ios-layer-name">${window.layerState.isBrawlPass ? "Обводка у плашек" : "Обводка у акций"}</div>
+                <div class="ios-layer-name">Обводка у акций</div>
                 <div class="ios-layer-action-text">размер</div>
                 <div class="ios-stroke-control">
                     <button class="ios-stroke-btn" onclick="changeGlobalStroke(-1)">-</button>
@@ -3275,7 +3048,8 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" onclick="toggleOffer(${idx})">
                         ${getEyeSVG(offer.visible)}
                     </div>
-                    <div class="ios-layer-name">${window.layerState.isBrawlPass ? (idx === 0 ? "Brawl Pass" : "Brawl Pass Plus") : `Акция ${idx + 1}`}</div>                    <div class="ios-layer-action-text">цена</div>
+                    <div class="ios-layer-name">Акция ${idx + 1}</div>
+                    <div class="ios-layer-action-text">цена</div>
                     <input type="text" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5"
                            style="background: ${priceBg};" oninput="updateOfferPriceFromLayer(${idx}, this.value)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
@@ -3862,94 +3636,66 @@ function autoReplacePrice(ctx, w, h) {
   }
 
   ctx.putImageData(imgData, 0, 0);
-  let blankedImgData = ctx.getImageData(0, 0, w, h);
+  let blankedImgData = ctx.getImageData(0, 0, w, h);
 
-  let boxHeight = maxBoxY - minBoxY;
-  let boxWidth = maxBoxX - minBoxX; 
+  let boxHeight = maxBoxY - minBoxY;
+  let textY = minBoxY + boxHeight * 0.45; 
+  let sumX = 0; let validRows = 0; let scanRange = Math.floor(boxHeight * 0.2);
+  
+  for(let y = Math.floor(textY - scanRange); y <= Math.floor(textY + scanRange); y++) {
+    let firstX = -1, lastX = -1;
+    if(y >= 0 && y < h) {
+      for(let x = minBoxX; x <= maxBoxX; x++) {
+        if(!outsideMask[y*w + x]) { if(firstX === -1) firstX = x; lastX = x; }
+      }
+      if(firstX !== -1) { sumX += (firstX + lastX) / 2; validRows++; }
+    }
+  }
 
-  let textY = minBoxY + boxHeight * 0.45; 
-  let sumX = 0; let validRows = 0; let scanRange = Math.floor(boxHeight * 0.2);
-  
-  for(let y = Math.floor(textY - scanRange); y <= Math.floor(textY + scanRange); y++) {
-    let firstX = -1, lastX = -1;
-    if(y >= 0 && y < h) {
-      for(let x = minBoxX; x <= maxBoxX; x++) {
-        if(!outsideMask[y*w + x]) { if(firstX === -1) firstX = x; lastX = x; }
-      }
-      if(firstX !== -1) { sumX += (firstX + lastX) / 2; validRows++; }
-    }
-  }
-
-  let textX = validRows > 0 ? (sumX / validRows) : ((minBoxX + maxBoxX) / 2);
-  return { blankedImgData, textX, textY, boxHeight, boxWidth }; 
+  let textX = validRows > 0 ? (sumX / validRows) : ((minBoxX + maxBoxX) / 2);
+  return { blankedImgData, textX, textY, boxHeight };
 }
 
 function drawPriceText(ctx, w, h, textStr, info) {
-    if (!textStr || textStr.trim() === "") return;
-    // Достаем координаты центра (textX) и ширину плажки (boxWidth)
-    let { textX, textY, boxHeight, boxWidth } = info;
-    
-    let fontSize = Math.floor(boxHeight * 0.50); 
-    if (fontSize < 22) fontSize = 22;
+  if (!textStr || textStr.trim() === "") return;
+  let { textX, textY, boxHeight } = info;
+  let fontSize = Math.floor(boxHeight * 0.60); 
+  if (fontSize < 22) fontSize = 22;
 
-    let isFree = textStr.trim().toUpperCase() === 'FREE';
-    let isNumber = !isNaN(textStr.trim()) && textStr.trim() !== '';
-    let numStr = textStr.trim(); 
-    let symStr = isNumber ? " ₽" : ""; 
-    let mainColor = isFree ? "#3bf83b" : "#ffffff";
+  let isFree = textStr.trim().toUpperCase() === 'FREE';
+  let isNumber = !isNaN(textStr.trim()) && textStr.trim() !== '';
+  let numStr = textStr.trim(); 
+  let symStr = isNumber ? " ₽" : ""; 
+  let mainColor = isFree ? "#3bf83b" : "#ffffff";
+  let fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
+  let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
 
-    // Ограничиваем максимальную ширину текста (80% от ширины плажки)
-    let maxTextWidth = boxWidth ? boxWidth * 0.80 : w * 0.80;
-    let fontNum, fontSym, wNum, wSym, totalW;
+  ctx.font = fontNum; let wNum = ctx.measureText(numStr).width;
+  ctx.font = fontSym; let wSym = ctx.measureText(symStr).width;
+  let totalW = wNum + wSym;
+  let startX = Math.round(textX - totalW / 2); 
+  let symStartX = Math.round(startX + wNum);
 
-    // 1. ДИНАМИЧЕСКОЕ УМЕНЬШЕНИЕ ШРИФТА
-    // Измеряем ширину текста. Если он шире плажки (как 99999) — уменьшаем шрифт
-    do {
-      fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
-      fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; 
+  ctx.lineWidth = Math.max(2, Math.floor(fontSize * 0.075)); 
+  ctx.strokeStyle = '#000000'; ctx.lineJoin = 'round';
 
-      ctx.font = fontNum; 
-      wNum = ctx.measureText(numStr).width;
-      ctx.font = fontSym; 
-      wSym = ctx.measureText(symStr).width;
-      totalW = wNum + wSym;
+  let textBaseY = Math.round(textY + fontSize * 0.33);
+  let shadowOffset = Math.max(3, Math.floor(fontSize * 0.075) + 1);
 
-      if (totalW > maxTextWidth && fontSize > 22) {
-          fontSize -= 2; // Уменьшаем на 2 пикселя и проверяем заново
-      } else {
-          break; // Текст отлично влезает
-      }
-    } while (fontSize > 22);
+  const drawTextParts = (offsetX, offsetY, isFill, color) => {
+    ctx.font = fontNum;
+    if(isFill) { ctx.fillStyle = color; ctx.fillText(numStr, startX + offsetX, textBaseY + offsetY); }
+    else { ctx.strokeText(numStr, startX + offsetX, textBaseY + offsetY); }
+    ctx.font = fontSym;
+    if(isFill) { ctx.fillStyle = color; ctx.fillText(symStr, symStartX + offsetX, textBaseY + offsetY); }
+    else { ctx.strokeText(symStr, symStartX + offsetX, textBaseY + offsetY); }
+  };
 
-    // 2. ДИНАМИЧЕСКОЕ ЦЕНТРИРОВАНИЕ
-    // Отнимаем половину ширины текста от центра плажки. 
-    // Благодаря этому и "99", и "99999" будут всегда ровно посередине!
-    let startX = Math.round(textX - totalW / 2); 
-    let symStartX = Math.round(startX + wNum);
+  drawTextParts(0, shadowOffset, false, ''); drawTextParts(0, shadowOffset, true, '#000000');
+  drawTextParts(0, 0, false, ''); drawTextParts(0, 0, true, mainColor);
+}
 
-    ctx.textAlign = 'left'; 
-    ctx.textBaseline = 'alphabetic'; // Оставляем для правильной отрисовки теней
-    ctx.lineWidth = Math.max(2, Math.floor(fontSize * 0.075)); 
-    ctx.strokeStyle = '#000000'; 
-    ctx.lineJoin = 'round';
-
-    // 3. ВЕРТИКАЛЬНОЕ СМЕЩЕНИЕ
-    // Множитель 0.45 опускает текст так, чтобы он не налезал на верхний край
-    let textBaseY = Math.round(textY + fontSize * 0.45); 
-    let shadowOffset = Math.max(3, Math.floor(fontSize * 0.075) + 1);
-
-    const drawTextParts = (offsetX, offsetY, isFill, color) => {
-      ctx.font = fontNum;
-      if(isFill) { ctx.fillStyle = color; ctx.fillText(numStr, startX + offsetX, textBaseY + offsetY); }
-      else { ctx.strokeText(numStr, startX + offsetX, textBaseY + offsetY); }
-      ctx.font = fontSym;
-      if(isFill) { ctx.fillStyle = color; ctx.fillText(symStr, symStartX + offsetX, textBaseY + offsetY); }
-      else { ctx.strokeText(symStr, symStartX + offsetX, textBaseY + offsetY); }
-    };
-
-    drawTextParts(0, shadowOffset, false, ''); drawTextParts(0, shadowOffset, true, '#000000');
-    drawTextParts(0, 0, false, ''); drawTextParts(0, 0, true, mainColor);
-  }
 function runMagicLogic(img) {
   const w = img.width; const h = img.height;
   const tmpCanvas = document.createElement('canvas');
@@ -4162,13 +3908,10 @@ function runMagicLogic(img) {
     cx.putImageData(layerData, 0, 0);
 
     let eraseResult = autoReplacePrice(cx, cW, cH);
-    let drawInfo = eraseResult || {
-        blankedImgData: cx.getImageData(0, 0, cW, cH),
-        textX: cW / 2, 
-        textY: cH - cH * 0.1, 
-        boxHeight: Math.max(20, cH * 0.15), 
-        boxWidth: cW * 0.8 
-    };
+    let drawInfo = eraseResult || {
+        blankedImgData: cx.getImageData(0, 0, cW, cH),
+        textX: cW / 2, textY: cH - cH * 0.1, boxHeight: Math.max(20, cH * 0.15)
+    };
 
     drawPriceText(cx, cW, cH, "FREE", drawInfo);
 
@@ -4264,203 +4007,7 @@ window.updateCachedTextCanvas = () => {
     drawBeautifulNick(cachedTextCanvas.getContext('2d'), window.layerState.textValue, persistentCanvas.width, persistentCanvas.height);
 };
 
-window.generateBrawlPass = async function(priceLeft, priceRight) {
-    document.body.style.background = "#F2F2F7";
-    document.body.style.color = "#000";
-    
-    document.getElementById('wizard-overlay').style.display = 'none';
-    resultBox.style.display = 'block';
-    window.scrollTo(0,0);
-    
-    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
-    layerPanel.style.display = 'flex';
-    layerPanel.innerHTML = `
-        <div class="skeleton-panel-wrapper fade-in-anim">
-            <div class="skeleton-box skeleton-row"></div>
-            <div class="skeleton-box skeleton-row"></div>
-        </div>
-    `;
-
-    allGeneratedCards = [];
-    window.layerState.offers = [];
-    
-    globalAssets.luchImg = await loadImage('Luch.png');
-    globalAssets.starImg = await loadImage('Star.png');
-    globalAssets.pointsImg = await loadImage('points.png');
-
-    // Твои новые ассеты из HTML
-    globalAssets.bg3 = await loadImage('bg/bg3.png');
-    globalAssets.starEffImg = await loadImage('BP/bp_starsEff.png');
-    globalAssets.pointEffImg = await loadImage('BP/bp_pointEff.png');
-    globalAssets.bpStarImg = await loadImage('BP/bp_star.png');
-
-    // Рисуем разделенный фон и градиенты напрямую в холст!
-    const bgCanvas = document.createElement('canvas');
-    bgCanvas.width = 1920; bgCanvas.height = 1080;
-    const bgCtx = bgCanvas.getContext('2d');
-
-    // Левая (Оранжевая) часть
-    bgCtx.save();
-    bgCtx.beginPath();
-    bgCtx.moveTo(0, 0); bgCtx.lineTo(1920 * 0.39, 0); bgCtx.lineTo(1920 * 0.34, 1080 * 0.50);
-    bgCtx.lineTo(1920 * 0.37, 1080 * 0.46); bgCtx.lineTo(1920 * 0.316, 1080); bgCtx.lineTo(0, 1080);
-    bgCtx.closePath();
-    bgCtx.clip();
-    if (globalAssets.bg3) bgCtx.drawImage(globalAssets.bg3, 0, 0, 1920, 1080);
-    let gradO = bgCtx.createLinearGradient(0, 0, 1920, 0);
-    gradO.addColorStop(0, '#ff4e00'); gradO.addColorStop(1, '#ff8a00');
-    bgCtx.globalCompositeOperation = 'overlay';
-    bgCtx.fillStyle = gradO;
-    bgCtx.fillRect(0,0,1920,1080);
-    bgCtx.restore();
-
-    // Правая (Фиолетовая) часть
-    bgCtx.save();
-    bgCtx.beginPath();
-    bgCtx.moveTo(1920, 0); bgCtx.lineTo(1920 * 0.39, 0); bgCtx.lineTo(1920 * 0.34, 1080 * 0.50);
-    bgCtx.lineTo(1920 * 0.37, 1080 * 0.46); bgCtx.lineTo(1920 * 0.316, 1080); bgCtx.lineTo(1920, 1080);
-    bgCtx.closePath();
-    bgCtx.clip();
-    if (globalAssets.bg3) bgCtx.drawImage(globalAssets.bg3, 0, 0, 1920, 1080);
-    let gradP = bgCtx.createLinearGradient(0, 0, 1920, 0);
-    gradP.addColorStop(0, '#6420c2'); gradP.addColorStop(1, '#390d8a');
-    bgCtx.globalCompositeOperation = 'overlay';
-    bgCtx.fillStyle = gradP;
-    bgCtx.fillRect(0,0,1920,1080);
-    bgCtx.restore();
-
-    // Линия-разделитель по центру
-    bgCtx.beginPath();
-    bgCtx.moveTo(1920 * 0.39, 0); bgCtx.lineTo(1920 * 0.34, 1080 * 0.50);
-    bgCtx.lineTo(1920 * 0.37, 1080 * 0.46); bgCtx.lineTo(1920 * 0.316, 1080);
-    bgCtx.strokeStyle = '#f09e41';
-    bgCtx.lineWidth = 14; 
-    bgCtx.shadowColor = 'rgba(0, 255, 76, 0.7)';
-    bgCtx.shadowBlur = 12;
-    bgCtx.stroke();
-
-    rawBgImage = bgCanvas; // Устанавливаем сгенерированный холст как основной фон!
-
-    const season = window.layerState.bpSeason || 50;
-    const brawler1 = await loadImage(`BP/brawler_s${season}_1.png`); 
-    const brawler2 = await loadImage(`BP/brawler_s${season}_2.png`); 
-    const panelLeft = await loadImage('BP/bp_panel_left.png');
-    const panelRight = await loadImage('BP/bp_panel_right.png');
-    const tagLeft = await loadImage('BP/bp_price_bg_left.png');
-    const tagRight = await loadImage('BP/bp_price_bg_right.png');
-
-    function buildBpPanel(panelImg, tagImg, priceText) {
-        let c = document.createElement('canvas');
-        let pW = panelImg ? panelImg.width : 500;
-        let pH = panelImg ? panelImg.height : 700;
-        let tW = tagImg ? tagImg.width : 350;
-        let tH = tagImg ? tagImg.height : 120;
-
-        let canvasW = Math.max(pW, tW);
-        let canvasH = pH + tH * 0.70; 
-
-        c.width = canvasW; c.height = canvasH;
-        let ctx = c.getContext('2d', { willReadFrequently: true });
-
-        let tagY = pH - tH * 0.30;
-        if (tagImg) ctx.drawImage(tagImg, canvasW/2 - tW/2, tagY, tW, tH);
-        if (panelImg) ctx.drawImage(panelImg, canvasW/2 - pW/2, 0, pW, pH);
-
-        let info = {
-            blankedImgData: ctx.getImageData(0, 0, canvasW, canvasH),
-            textX: canvasW / 2, textY: tagY + tH * 0.50, 
-            boxHeight: tH * 0.85, boxWidth: tW * 0.8 
-        };
-        drawPriceText(ctx, canvasW, canvasH, priceText, info);
-        return { canvas: c, info: info };
-    }
-
-    let leftData = buildBpPanel(panelLeft, tagLeft, priceLeft);
-    let offerLeft = { canvas: leftData.canvas, x: 0, y: 0, info: leftData.info };
-    allGeneratedCards.push(offerLeft);
-    window.layerState.offers.push({
-        id: 0, visible: true, hasStroke: true, price: priceLeft, ref: offerLeft,
-        anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
-        target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 }, cache: null
-    });
-
-    let rightData = buildBpPanel(panelRight, tagRight, priceRight);
-    let offerRight = { canvas: rightData.canvas, x: 0, y: 0, info: rightData.info };
-    allGeneratedCards.push(offerRight);
-    window.layerState.offers.push({
-        id: 1, visible: true, hasStroke: true, price: priceRight, ref: offerRight,
-        anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
-        target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 }, cache: null
-    });
-
-    globalAssets.bpBrawlers = [];
-    if (brawler2) globalAssets.bpBrawlers.push({ img: brawler2 }); 
-    if (brawler1) globalAssets.bpBrawlers.push({ img: brawler1 }); 
-
-    window.layerState.textPosition = 'bottom';
-    window.layerState.textStyleIndex = 6; // Включаем стиль #6 (желтый) по умолчанию
-
-    setupPersistentCanvas();
-    renderLayerPanel(true);
-    calculateLayoutTarget(); 
-};
-
-window.calculateBpLayoutTarget = function() {
-    if (!rawBgImage) return;
-
-    let scale = getHDScale();
-    let bgW = rawBgImage.width * scale;
-    let bgH = rawBgImage.height * scale;
-    
-    animText.targetScale = window.layerState.textVisible ? 1 : 0.5;
-    animText.targetAlpha = window.layerState.textVisible ? 1 : 0;
-
-    let targetH = bgH * 0.70; 
-    let marginX = bgW * 0.03; 
-    let centerY = bgH * 0.45; 
-
-    if (window.layerState.offers[0]) {
-        let o = window.layerState.offers[0];
-        let ratio = o.ref.canvas.width / o.ref.canvas.height;
-        let targetW = targetH * ratio;
-        o.target = { 
-            x: Math.round(marginX), 
-            y: Math.round(centerY - targetH/2), 
-            w: Math.round(targetW), 
-            h: Math.round(targetH), 
-            scale: o.visible ? 1 : 0, 
-            alpha: o.visible ? 1 : 0 
-        };
-        if (o.anim.w === null) { o.anim = { ...o.target, scale: 0, alpha: 0 }; }
-        if (!o.cache || o.cache.tW !== o.target.w || o.cache.tH !== o.target.h) generateOfferCache(o, o.target.w, o.target.h);
-    }
-
-    if (window.layerState.offers[1]) {
-        let o = window.layerState.offers[1];
-        let ratio = o.ref.canvas.width / o.ref.canvas.height;
-        let targetW = targetH * ratio;
-        o.target = { 
-            x: Math.round(bgW - marginX - targetW), 
-            y: Math.round(centerY - targetH/2), 
-            w: Math.round(targetW), 
-            h: Math.round(targetH), 
-            scale: o.visible ? 1 : 0, 
-            alpha: o.visible ? 1 : 0 
-        };
-        if (o.anim.w === null) { o.anim = { ...o.target, scale: 0, alpha: 0 }; }
-        if (!o.cache || o.cache.tW !== o.target.w || o.cache.tH !== o.target.h) generateOfferCache(o, o.target.w, o.target.h);
-    }
-
-    startAnimation();
-};
-
 function calculateLayoutTarget() {
-
-  if (window.layerState.isBrawlPass) {
-      calculateBpLayoutTarget();
-      return;
-  }
-
   if (!rawBgImage) return;
 
   let scale = getHDScale();
@@ -4624,70 +4171,6 @@ function drawScene() {
     if (window.layerState.watermarksVisible && window.layerState.textValue) {
         drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
     }
-
-if (window.layerState.isBrawlPass) {
-        if (globalAssets.starEffImg) {
-            persistentCtx.save();
-            persistentCtx.globalCompositeOperation = 'overlay';
-            persistentCtx.drawImage(globalAssets.starEffImg, 0, 0, w, h);
-            persistentCtx.restore();
-        }
-        if (globalAssets.pointEffImg) {
-            persistentCtx.drawImage(globalAssets.pointEffImg, 0, 0, w, h);
-        }
-        if (globalAssets.bpStarImg) {
-            let starH = h * 0.7;
-            let starW = (globalAssets.bpStarImg.width / globalAssets.bpStarImg.height) * starH;
-            persistentCtx.drawImage(globalAssets.bpStarImg, w/2 - starW/2, h - starH - h*0.06, starW, starH); 
-        }
-    }
-    
-    if (window.layerState.isBrawlPass && globalAssets.bpBrawlers) {
-        persistentCtx.save();
-        globalAssets.bpBrawlers.forEach((b, index) => {
-            if (b.img) {
-                let isLeft = index === 0;
-                let drawW = w * 0.31;
-                let drawH = h * 0.58;
-                let drawX = isLeft ? (w * 0.235) : (w - (w * 0.235) - 26 - drawW);
-                let drawY = h - drawH - (h * 0.16); 
-                
-                let brawlerCenter = drawX + drawW / 2;
-
-                // 1. Свечение (glow)
-                let glowGradient = persistentCtx.createRadialGradient(brawlerCenter, drawY + drawH*0.9, 0, brawlerCenter, drawY + drawH*0.9, w*0.15);
-                glowGradient.addColorStop(0, 'rgba(255,255,255,0.9)');
-                glowGradient.addColorStop(0.4, 'rgba(255,255,255,0.3)');
-                glowGradient.addColorStop(0.7, 'rgba(255,255,255,0)');
-                persistentCtx.save();
-                persistentCtx.globalCompositeOperation = 'screen';
-                persistentCtx.fillStyle = glowGradient;
-                persistentCtx.fillRect(brawlerCenter - w*0.15, drawY + drawH*0.9 - w*0.15, w*0.3, w*0.3);
-                persistentCtx.restore();
-                
-                // 2. Тень на полу (shadow)
-                persistentCtx.save();
-                persistentCtx.fillStyle = 'rgba(0,0,0,0.3)';
-                persistentCtx.beginPath();
-                persistentCtx.ellipse(brawlerCenter, drawY + drawH - 5, drawW*0.3, 12, 0, 0, Math.PI * 2);
-                persistentCtx.fill();
-                persistentCtx.restore();
-
-                // 3. Обводка браулера
-                persistentCtx.shadowColor = "#000";
-                persistentCtx.shadowBlur = 0;
-                persistentCtx.shadowOffsetX = 3; persistentCtx.shadowOffsetY = 0; persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
-                persistentCtx.shadowOffsetX = -3; persistentCtx.shadowOffsetY = 0; persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
-                persistentCtx.shadowOffsetX = 0; persistentCtx.shadowOffsetY = 3; persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
-                persistentCtx.shadowOffsetX = 0; persistentCtx.shadowOffsetY = -3; persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
-                
-                // Отрисовка самого браулера поверх
-                persistentCtx.shadowColor = "transparent";
-                persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
-            }
-        });
-        persistentCtx.restore();
-    }
     
     if (cachedTextCanvas && animText.alpha > 0.01) {
         persistentCtx.save();
@@ -4751,38 +4234,25 @@ function drawFallbackRays(ctx, w, h, opacity = 1.0) {
 
 function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
     ctx.save(); 
-    // Режим наложения из твоего CSS
     ctx.globalCompositeOperation = forExport ? "source-over" : "overlay"; 
     ctx.globalAlpha = opacity; 
     ctx.fillStyle = "#ffffff";
-    ctx.textBaseline = "top";
-    if ('letterSpacing' in ctx) ctx.letterSpacing = "0.05em";
     
-    // Твои новые координаты
-    const marks = [
-        { top: 0.069, left: 0.029, size: 13 }, { top: 0.000, left: 0.156, size: 17 },
-        { top: 0.018, left: 0.535, size: 20 }, { top: 0.046, left: 0.804, size: 15 },
-        { top: 0.013, left: 0.404, size: 9 },  { top: 0.123, left: 0.522, size: 9 },
-        { top: 0.102, left: 0.292, size: 9 },  { top: 0.776, left: 0.243, size: 10 },
-        { top: 0.351, left: 0.970, size: 9 },  { top: 0.630, left: 0.080, size: 13 },
-        { top: 0.599, left: 0.970, size: 9 },  { top: 0.770, left: 0.013, size: 15 },
-        { top: 0.950, left: 0.237, size: 9 },  { top: 0.769, left: 0.928, size: 15 },
-        { top: 0.950, left: 0.521, size: 22 }, { top: 0.950, left: 0.930, size: 9 }
+    let baseFontSize = Math.floor(h * 0.022); if (baseFontSize < 10) baseFontSize = 10;
+    ctx.textBaseline = "middle";
+    
+    const watermarks = [
+      { x: w * 0.04, y: h * 0.18, scale: 1.50, align: "left" }, { x: w * 0.02, y: h * 0.43, scale: 0.60, align: "left" }, 
+      { x: w * 0.03, y: h * 0.88, scale: 1.10, align: "left" }, { x: w * 0.96, y: h * 0.22, scale: 0.80, align: "right" }, 
+      { x: w * 0.98, y: h * 0.45, scale: 1.60, align: "right" }, { x: w * 0.97, y: h * 0.85, scale: 0.70, align: "right" }  
     ];
-
-    // Динамический масштаб для разных разрешений
-    let scaleMult = Math.min(w / 1200, h / 675); 
     
-    marks.forEach(mark => {
-        ctx.save();
-        ctx.translate(w * mark.left, h * mark.top);
-        ctx.transform(1, 0, -0.2, 1, 0, 0); 
-        let currentFontSize = Math.floor(mark.size * scaleMult * 1.5);
-        ctx.font = `${currentFontSize}px '${window.layerState.watermarksFont}', sans-serif`;
-        ctx.fillText(text.toUpperCase(), 0, 0);
-        ctx.restore();
+    watermarks.forEach(wm => {
+      ctx.save(); ctx.textAlign = wm.align; let currentFontSize = Math.floor(baseFontSize * wm.scale);
+      ctx.font = `${currentFontSize}px '${window.layerState.watermarksFont}', sans-serif`;
+      ctx.translate(Math.round(wm.x), Math.round(wm.y)); ctx.transform(1, 0, -0.10, 1, 0, 0); ctx.fillText(text, 0, 0); ctx.restore();
     });
-    ctx.restore(); 
+    ctx.restore();
 }
 
 function drawStars(ctx, starImg, w, h, opacity = 1.0, forExport = false) {
@@ -4807,85 +4277,74 @@ function drawStars(ctx, starImg, w, h, opacity = 1.0, forExport = false) {
 }
 
 function drawBeautifulNick(ctx, text, w, h) {
+    let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
+    let x = Math.round(w / 2); 
+    let y = window.layerState.textPosition === 'bottom' 
+        ? Math.round(h * 0.92 - (fontSize / 2))
+        : Math.round(h * 0.06 + (fontSize / 2)); 
+    let shadowDepth = Math.max(1, Math.floor(fontSize * 0.10));
+
     let style = TEXT_STYLES[window.layerState.textStyleIndex || 0];
-    
-    let fontSize, x, y;
 
-    // Новые позиции и размер для Brawl Pass
-    if (window.layerState.isBrawlPass) {
-        fontSize = Math.floor(h * 0.21); 
-        x = Math.round(w / 2) - 12;
-        y = Math.round(h * 0.78) + 3;
-    } else {
-        fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
-        x = Math.round(w / 2); 
-        y = window.layerState.textPosition === 'bottom' 
-            ? Math.round(h * 0.92 - (fontSize / 2))
-            : Math.round(h * 0.06 + (fontSize / 2)); 
-    }
+    let textCanvas = document.createElement('canvas'); textCanvas.width = w; textCanvas.height = h; let txCtx = textCanvas.getContext('2d');
+    txCtx.textAlign = "center"; txCtx.textBaseline = "middle"; txCtx.font = `${fontSize}px '${window.layerState.textFont}', sans-serif`;
+    txCtx.lineJoin = "round"; txCtx.lineCap = "round";
 
-    let textCanvas = document.createElement('canvas'); textCanvas.width = w; textCanvas.height = h; 
-    let txCtx = textCanvas.getContext('2d');
+    txCtx.save(); txCtx.translate(x, y); txCtx.transform(1, 0, -0.10, 1, 0, 0); 
     
-    txCtx.textAlign = "center"; 
-    txCtx.textBaseline = "middle"; 
-    txCtx.font = `${fontSize}px '${window.layerState.textFont}', 'Arial Black', sans-serif`;
-    txCtx.lineJoin = "round"; 
-    txCtx.miterLimit = 2;
-
-    txCtx.save(); 
-    txCtx.translate(x, y); 
-    
-    // Применяем наклон из твоего макета только для BP
-    if (window.layerState.isBrawlPass) {
-        txCtx.transform(1, 0, -0.15, 1, 0, 0); 
-        txCtx.rotate(-0.03);
+    if (style.isClassic) {
+        txCtx.lineWidth = fontSize * 0.18; txCtx.strokeStyle = "#ffffff"; for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+        txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = "#42003d"; for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+        txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = "#61005a"; for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
     } else {
-        txCtx.transform(1, 0, -0.10, 1, 0, 0); 
+        if (style.outer2) {
+            txCtx.lineWidth = fontSize * 0.18; txCtx.strokeStyle = style.outer2; 
+            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+            
+            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
+            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+            
+            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
+            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+        } else if (style.outer) {
+            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
+            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+            
+            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
+            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+        } else {
+            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
+            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+        }
     }
     
-    // Отрисовка 5 слоев (из твоей логики)
-    if (style.shadow) {
-        txCtx.lineWidth = fontSize * 0.28;
-        txCtx.strokeStyle = style.shadow;
-        txCtx.strokeText(text, 0, fontSize * 0.08);
-    }
-    if (style.outer2) {
-        txCtx.lineWidth = fontSize * 0.28;
-        txCtx.strokeStyle = style.outer2;
-        txCtx.strokeText(text, 0, 0);
-    }
-    if (style.outer) {
-        txCtx.lineWidth = fontSize * 0.2;
-        txCtx.strokeStyle = style.outer;
-        txCtx.strokeText(text, 0, 0);
-    }
-    if (style.inner) {
-        txCtx.lineWidth = fontSize * 0.08;
-        txCtx.strokeStyle = style.inner;
-        txCtx.strokeText(text, 0, 0);
-    }
-    if (style.grad) {
-        const grad = txCtx.createLinearGradient(0, -fontSize * 0.4, 0, fontSize * 0.4);
-        grad.addColorStop(0, style.grad[0]);
-        grad.addColorStop(0.5, style.grad[1] || style.grad[0]);
-        grad.addColorStop(1, style.grad[2] || style.grad[1] || style.grad[0]);
-        txCtx.fillStyle = grad;
-    } else {
-        txCtx.fillStyle = "#ffffff";
-    }
-    txCtx.fillText(text, 0, 0);
     txCtx.restore();
 
+    let tempCanvas = document.createElement('canvas'); tempCanvas.width = w; tempCanvas.height = h; let tCtx = tempCanvas.getContext('2d');
+    tCtx.textAlign = "center"; tCtx.textBaseline = "middle"; tCtx.font = `${fontSize}px '${window.layerState.textFont}', sans-serif`;
+    tCtx.save(); tCtx.translate(x, y); tCtx.transform(1, 0, -0.10, 1, 0, 0); 
+
+    let grad = tCtx.createLinearGradient(0, -fontSize * 0.4, 0, fontSize * 0.4);
+    grad.addColorStop(0, style.grad[0]); 
+    grad.addColorStop(style.isClassic ? 0.48 : 0.52, style.grad[1]); 
+    grad.addColorStop(1, style.grad[2]);
+    tCtx.fillStyle = grad; tCtx.fillText(text, 0, 0);
+    
+    tCtx.globalCompositeOperation = "source-atop"; 
+    tCtx.lineWidth = fontSize * 0.06; 
+    tCtx.strokeStyle = style.isClassic ? "#fcff00" : style.inner; 
+    tCtx.lineJoin = "round"; 
+    tCtx.strokeText(text, 0, 0);
+    tCtx.restore();
+
+    txCtx.drawImage(tempCanvas, 0, 0);
+
     ctx.save();
-    // Старая внешняя тень остается только для обычных акций
-    if (!window.layerState.isBrawlPass) {
-        let scaleMult = h / 1080;
-        ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
-        ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult)); 
-        ctx.shadowOffsetX = 0; 
-        ctx.shadowOffsetY = Math.max(4, Math.round(16 * scaleMult));
-    }
+    let scaleMult = h / 1080;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
+    ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult)); 
+    ctx.shadowOffsetX = 0; 
+    ctx.shadowOffsetY = Math.max(4, Math.round(16 * scaleMult));                
     ctx.drawImage(textCanvas, 0, 0);
     ctx.restore();
 }
@@ -4938,7 +4397,7 @@ function drawBeautifulNick(ctx, text, w, h) {
          uploadMode = 'color';
          uploadedBaseImg.removeAttribute('src');
          uploadedReadyBaseImg.removeAttribute('src');
-         document.getElementById('wizard-upload-text').innerText = "Фон с Fankit";
+         document.getElementById('wizard-upload-text').innerText = "Загрузить фон";
          document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
          checkStep1Ready();
      };
@@ -5071,7 +4530,7 @@ function drawBeautifulNick(ctx, text, w, h) {
       selectedColor = null;
       uploadMode = 'ready_bg';
       wizardColorWraps.forEach(w => w.classList.remove('selected'));
-      document.getElementById('wizard-upload-text').innerText = "Фон с Fankit";
+      document.getElementById('wizard-upload-text').innerText = "Загрузить фон";
       uploadedBaseImg.removeAttribute('src');
 
       uploadedReadyBaseImg.onload = () => {
@@ -5097,10 +4556,9 @@ function drawBeautifulNick(ctx, text, w, h) {
     }, 300);
   }
 
-wizardNextBtn1.onclick = () => {
+  wizardNextBtn1.onclick = () => {
     window.triggerHaptic();
-    
-    if (uploadMode === 'ready_bg' && selectedSection === 'actions') {
+    if (uploadMode === 'ready_bg') {
         step1.classList.add('fade-out');
         setTimeout(() => {
             step1.classList.remove('active', 'fade-out');
@@ -5118,12 +4576,6 @@ wizardNextBtn1.onclick = () => {
             document.getElementById('prog-step3').classList.add('active');
         }, 300);
     } else {
-        
-        let titleEl = document.getElementById('step2-title');
-        if (titleEl) {
-            titleEl.innerText = (selectedSection === 'bp') ? 'Создание Brawl Pass' : 'Создание акции';
-        }
-
         transitionStep(step1, step2, document.getElementById('prog-step1'), document.getElementById('prog-step2'), document.getElementById('prog-line1'));
     }
   };
@@ -5188,7 +4640,6 @@ wizardNextBtn1.onclick = () => {
 
   wizardNextBtn2.onclick = () => {
     window.triggerHaptic();
-    
     let currentNick = wizardNickInput.value.trim();
     if (currentNick) {
         localStorage.setItem('Snapi_last_nick', currentNick);
@@ -5197,13 +4648,7 @@ wizardNextBtn1.onclick = () => {
         wizardInsertBtn.style.display = 'flex';
     }
     wizardNickInput.blur(); 
-
-    if (selectedSection === 'bp') {
-        let stepBp3 = document.getElementById('wizard-step3-bp');
-        transitionStep(step2, stepBp3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
-    } else {
-        transitionStep(step2, step3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
-    }
+    transitionStep(step2, step3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
   };
 
   wizardUploadScreensBtn.onclick = () => fileInput.click();
@@ -5561,100 +5006,6 @@ function androidFallback2(blob) {
     }
 }
   window.updateSavedCount();
-
-  const bpPriceInput1 = document.getElementById('bp-input-price-1');
-  const bpPriceInput2 = document.getElementById('bp-input-price-2');
-  const wizardNextBtn3Bp = document.getElementById('wizard-next-btn3-bp');
-
-  function validateBpPrices() {
-      bpPriceInput1.value = bpPriceInput1.value.replace(/[^0-9]/g, '');
-      bpPriceInput2.value = bpPriceInput2.value.replace(/[^0-9]/g, '');
-
-      if (parseInt(bpPriceInput1.value) > 99999) bpPriceInput1.value = '99999';
-      if (parseInt(bpPriceInput2.value) > 99999) bpPriceInput2.value = '99999';
-
-      if (bpPriceInput1.value.trim().length > 0 && bpPriceInput2.value.trim().length > 0) {
-          wizardNextBtn3Bp.classList.add('show');
-      } else {
-          wizardNextBtn3Bp.classList.remove('show');
-      }
-  }
-
-  if (bpPriceInput1) bpPriceInput1.addEventListener('input', validateBpPrices);
-  if (bpPriceInput2) bpPriceInput2.addEventListener('input', validateBpPrices);
-
-  document.addEventListener('pointerdown', (e) => {
-      if (document.activeElement && document.activeElement.classList.contains('bp-price-input')) {
-          if (!e.target.classList.contains('bp-price-input')) {
-              document.activeElement.blur();
-          }
-      }
-  });
-
-  if (wizardNextBtn3Bp) {
-      wizardNextBtn3Bp.onclick = () => {
-          window.triggerHaptic();
-          bpPriceInput1.blur();
-          bpPriceInput2.blur();
-          
-          let stepBp3 = document.getElementById('wizard-step3-bp');
-          let stepBp4 = document.getElementById('wizard-step4-bp');
-          
-          transitionStep(stepBp3, stepBp4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
-      };
-  }
-
-  const wizardNextBtn4Bp = document.getElementById('wizard-next-btn4-bp');
-  if (wizardNextBtn4Bp) {
-      wizardNextBtn4Bp.onclick = async () => {
-          window.triggerHaptic();
-          
-          if (!selectedBpSeason) {
-              alert('Пожалуйста, выберите сезон!');
-              return;
-          }
-
-          const priceLeft = document.getElementById('bp-input-price-1').value || "899";
-          const priceRight = document.getElementById('bp-input-price-2').value || "1249";
-          const nick = document.getElementById('wizard-nick-input').value.trim().substring(0, 16) || "Snapi";
-
-          window.layerState.isBrawlPass = true;
-          window.layerState.bpSeason = selectedBpSeason;
-          window.layerState.textValue = nick;
-          window.layerState.bgColorType = selectedColor; 
-          
-          if (uploadMode === 'ready_bg') {
-              window.layerState.isReadyBg = true;
-              window.layerState.isGeneratedBg = false;
-              rawBgImage = uploadedReadyBaseImg;
-              window.layerState.textVisible = false;
-              window.layerState.luchVisible = false;
-              window.layerState.starsVisible = false;
-              window.layerState.pointsVisible = false;
-              window.layerState.watermarksVisible = false;
-          } else if (selectedColor) {
-              window.layerState.isReadyBg = false;
-              window.layerState.isGeneratedBg = true;
-              window.layerState.textVisible = true;
-              window.layerState.luchVisible = true;
-              window.layerState.starsVisible = true;
-              window.layerState.pointsVisible = true;
-              window.layerState.watermarksVisible = true;
-          } else {
-              window.layerState.isReadyBg = false;
-              window.layerState.isGeneratedBg = false;
-              rawBgImage = uploadedBaseImg;
-              window.layerState.textVisible = true;
-              window.layerState.luchVisible = true;
-              window.layerState.starsVisible = true;
-              window.layerState.pointsVisible = true;
-              window.layerState.watermarksVisible = true;
-          }
-
-          await generateBrawlPass(priceLeft, priceRight);
-      };
-  }
-
 })();
 </script>
 </body>
