@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.6(10)";
+  const APP_VERSION = "v2.3.6(11)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4288,9 +4288,58 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
     globalAssets.starImg = await loadImage('Star.png');
     globalAssets.pointsImg = await loadImage('points.png');
 
-    if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
-        rawBgImage = await createGradientBg(window.layerState.bgColorType);
-    }
+    // Твои новые ассеты из HTML
+    globalAssets.bg3 = await loadImage('bg/bg3.png');
+    globalAssets.starEffImg = await loadImage('BP/bp_starsEff.png');
+    globalAssets.pointEffImg = await loadImage('BP/bp_pointEff.png');
+    globalAssets.bpStarImg = await loadImage('BP/bp_star.png');
+
+    // Рисуем разделенный фон и градиенты напрямую в холст!
+    const bgCanvas = document.createElement('canvas');
+    bgCanvas.width = 1920; bgCanvas.height = 1080;
+    const bgCtx = bgCanvas.getContext('2d');
+
+    // Левая (Оранжевая) часть
+    bgCtx.save();
+    bgCtx.beginPath();
+    bgCtx.moveTo(0, 0); bgCtx.lineTo(1920 * 0.39, 0); bgCtx.lineTo(1920 * 0.34, 1080 * 0.50);
+    bgCtx.lineTo(1920 * 0.37, 1080 * 0.46); bgCtx.lineTo(1920 * 0.316, 1080); bgCtx.lineTo(0, 1080);
+    bgCtx.closePath();
+    bgCtx.clip();
+    if (globalAssets.bg3) bgCtx.drawImage(globalAssets.bg3, 0, 0, 1920, 1080);
+    let gradO = bgCtx.createLinearGradient(0, 0, 1920, 0);
+    gradO.addColorStop(0, '#ff4e00'); gradO.addColorStop(1, '#ff8a00');
+    bgCtx.globalCompositeOperation = 'overlay';
+    bgCtx.fillStyle = gradO;
+    bgCtx.fillRect(0,0,1920,1080);
+    bgCtx.restore();
+
+    // Правая (Фиолетовая) часть
+    bgCtx.save();
+    bgCtx.beginPath();
+    bgCtx.moveTo(1920, 0); bgCtx.lineTo(1920 * 0.39, 0); bgCtx.lineTo(1920 * 0.34, 1080 * 0.50);
+    bgCtx.lineTo(1920 * 0.37, 1080 * 0.46); bgCtx.lineTo(1920 * 0.316, 1080); bgCtx.lineTo(1920, 1080);
+    bgCtx.closePath();
+    bgCtx.clip();
+    if (globalAssets.bg3) bgCtx.drawImage(globalAssets.bg3, 0, 0, 1920, 1080);
+    let gradP = bgCtx.createLinearGradient(0, 0, 1920, 0);
+    gradP.addColorStop(0, '#6420c2'); gradP.addColorStop(1, '#390d8a');
+    bgCtx.globalCompositeOperation = 'overlay';
+    bgCtx.fillStyle = gradP;
+    bgCtx.fillRect(0,0,1920,1080);
+    bgCtx.restore();
+
+    // Линия-разделитель по центру
+    bgCtx.beginPath();
+    bgCtx.moveTo(1920 * 0.39, 0); bgCtx.lineTo(1920 * 0.34, 1080 * 0.50);
+    bgCtx.lineTo(1920 * 0.37, 1080 * 0.46); bgCtx.lineTo(1920 * 0.316, 1080);
+    bgCtx.strokeStyle = '#f09e41';
+    bgCtx.lineWidth = 14; 
+    bgCtx.shadowColor = 'rgba(0, 255, 76, 0.7)';
+    bgCtx.shadowBlur = 12;
+    bgCtx.stroke();
+
+    rawBgImage = bgCanvas; // Устанавливаем сгенерированный холст как основной фон!
 
     const season = window.layerState.bpSeason || 50;
     const brawler1 = await loadImage(`BP/brawler_s${season}_1.png`); 
@@ -4301,35 +4350,30 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
     const tagRight = await loadImage('BP/bp_price_bg_right.png');
 
     function buildBpPanel(panelImg, tagImg, priceText) {
-        let c = document.createElement('canvas');
-        let pW = panelImg ? panelImg.width : 500;
-        let pH = panelImg ? panelImg.height : 700;
-        let tW = tagImg ? tagImg.width : 350;
-        let tH = tagImg ? tagImg.height : 120;
+        let c = document.createElement('canvas');
+        let pW = panelImg ? panelImg.width : 500;
+        let pH = panelImg ? panelImg.height : 700;
+        let tW = tagImg ? tagImg.width : 350;
+        let tH = tagImg ? tagImg.height : 120;
 
-        let canvasW = Math.max(pW, tW);
-        let canvasH = pH + tH * 0.70; 
+        let canvasW = Math.max(pW, tW);
+        let canvasH = pH + tH * 0.70; 
 
-        c.width = canvasW;
-        c.height = canvasH;
-        let ctx = c.getContext('2d', { willReadFrequently: true });
+        c.width = canvasW; c.height = canvasH;
+        let ctx = c.getContext('2d', { willReadFrequently: true });
 
-        let tagY = pH - tH * 0.30;
+        let tagY = pH - tH * 0.30;
+        if (tagImg) ctx.drawImage(tagImg, canvasW/2 - tW/2, tagY, tW, tH);
+        if (panelImg) ctx.drawImage(panelImg, canvasW/2 - pW/2, 0, pW, pH);
 
-        if (tagImg) ctx.drawImage(tagImg, canvasW/2 - tW/2, tagY, tW, tH);
-        if (panelImg) ctx.drawImage(panelImg, canvasW/2 - pW/2, 0, pW, pH);
-
-        let info = {
-            blankedImgData: ctx.getImageData(0, 0, canvasW, canvasH),
-            textX: canvasW / 2,
-            textY: tagY + tH * 0.50, 
-            boxHeight: tH * 0.85,
-            boxWidth: tW * 0.8 
-        };
-        drawPriceText(ctx, canvasW, canvasH, priceText, info);
-
-        return { canvas: c, info: info };
-    }
+        let info = {
+            blankedImgData: ctx.getImageData(0, 0, canvasW, canvasH),
+            textX: canvasW / 2, textY: tagY + tH * 0.50, 
+            boxHeight: tH * 0.85, boxWidth: tW * 0.8 
+        };
+        drawPriceText(ctx, canvasW, canvasH, priceText, info);
+        return { canvas: c, info: info };
+    }
 
     let leftData = buildBpPanel(panelLeft, tagLeft, priceLeft);
     let offerLeft = { canvas: leftData.canvas, x: 0, y: 0, info: leftData.info };
@@ -4350,10 +4394,11 @@ window.generateBrawlPass = async function(priceLeft, priceRight) {
     });
 
     globalAssets.bpBrawlers = [];
-    if (brawler2) globalAssets.bpBrawlers.push({ img: brawler2, xPct: 0.38, yPct: 0.52, scale: 1.0 }); // Левый
-    if (brawler1) globalAssets.bpBrawlers.push({ img: brawler1, xPct: 0.62, yPct: 0.52, scale: 1.0 }); // Правый
+    if (brawler2) globalAssets.bpBrawlers.push({ img: brawler2 }); 
+    if (brawler1) globalAssets.bpBrawlers.push({ img: brawler1 }); 
 
     window.layerState.textPosition = 'bottom';
+    window.layerState.textStyleIndex = 6; // Включаем стиль #6 (желтый) по умолчанию
 
     setupPersistentCanvas();
     renderLayerPanel(true);
@@ -4580,23 +4625,65 @@ function drawScene() {
         drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
     }
 
+if (window.layerState.isBrawlPass) {
+        if (globalAssets.starEffImg) {
+            persistentCtx.save();
+            persistentCtx.globalCompositeOperation = 'overlay';
+            persistentCtx.drawImage(globalAssets.starEffImg, 0, 0, w, h);
+            persistentCtx.restore();
+        }
+        if (globalAssets.pointEffImg) {
+            persistentCtx.drawImage(globalAssets.pointEffImg, 0, 0, w, h);
+        }
+        if (globalAssets.bpStarImg) {
+            let starH = h * 0.7;
+            let starW = (globalAssets.bpStarImg.width / globalAssets.bpStarImg.height) * starH;
+            persistentCtx.drawImage(globalAssets.bpStarImg, w/2 - starW/2, h - starH - h*0.06, starW, starH); 
+        }
+    }
+    
     if (window.layerState.isBrawlPass && globalAssets.bpBrawlers) {
         persistentCtx.save();
-        globalAssets.bpBrawlers.forEach(b => {
+        globalAssets.bpBrawlers.forEach((b, index) => {
             if (b.img) {
-                let targetH = h * 0.85 * b.scale;
-                let bScale = targetH / b.img.height;
-                let drawW = b.img.width * bScale;
-                let drawH = targetH;
+                let isLeft = index === 0;
+                let drawW = w * 0.31;
+                let drawH = h * 0.58;
+                let drawX = isLeft ? (w * 0.235) : (w - (w * 0.235) - 26 - drawW);
+                let drawY = h - drawH - (h * 0.16); 
                 
-                let drawX = w * b.xPct;
-                let drawY = h * b.yPct;
+                let brawlerCenter = drawX + drawW / 2;
+
+                // 1. Свечение (glow)
+                let glowGradient = persistentCtx.createRadialGradient(brawlerCenter, drawY + drawH*0.9, 0, brawlerCenter, drawY + drawH*0.9, w*0.15);
+                glowGradient.addColorStop(0, 'rgba(255,255,255,0.9)');
+                glowGradient.addColorStop(0.4, 'rgba(255,255,255,0.3)');
+                glowGradient.addColorStop(0.7, 'rgba(255,255,255,0)');
+                persistentCtx.save();
+                persistentCtx.globalCompositeOperation = 'screen';
+                persistentCtx.fillStyle = glowGradient;
+                persistentCtx.fillRect(brawlerCenter - w*0.15, drawY + drawH*0.9 - w*0.15, w*0.3, w*0.3);
+                persistentCtx.restore();
                 
-                persistentCtx.shadowColor = "rgba(0, 0, 0, 0.4)";
-                persistentCtx.shadowBlur = 25;
-                persistentCtx.shadowOffsetY = 15;
+                // 2. Тень на полу (shadow)
+                persistentCtx.save();
+                persistentCtx.fillStyle = 'rgba(0,0,0,0.3)';
+                persistentCtx.beginPath();
+                persistentCtx.ellipse(brawlerCenter, drawY + drawH - 5, drawW*0.3, 12, 0, 0, Math.PI * 2);
+                persistentCtx.fill();
+                persistentCtx.restore();
+
+                // 3. Обводка браулера
+                persistentCtx.shadowColor = "#000";
+                persistentCtx.shadowBlur = 0;
+                persistentCtx.shadowOffsetX = 3; persistentCtx.shadowOffsetY = 0; persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
+                persistentCtx.shadowOffsetX = -3; persistentCtx.shadowOffsetY = 0; persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
+                persistentCtx.shadowOffsetX = 0; persistentCtx.shadowOffsetY = 3; persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
+                persistentCtx.shadowOffsetX = 0; persistentCtx.shadowOffsetY = -3; persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
                 
-                persistentCtx.drawImage(b.img, drawX - drawW/2, drawY - drawH/2, drawW, drawH);
+                // Отрисовка самого браулера поверх
+                persistentCtx.shadowColor = "transparent";
+                persistentCtx.drawImage(b.img, drawX, drawY, drawW, drawH);
             }
         });
         persistentCtx.restore();
@@ -4664,25 +4751,38 @@ function drawFallbackRays(ctx, w, h, opacity = 1.0) {
 
 function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
     ctx.save(); 
+    // Режим наложения из твоего CSS
     ctx.globalCompositeOperation = forExport ? "source-over" : "overlay"; 
     ctx.globalAlpha = opacity; 
     ctx.fillStyle = "#ffffff";
+    ctx.textBaseline = "top";
+    if ('letterSpacing' in ctx) ctx.letterSpacing = "0.05em";
     
-    let baseFontSize = Math.floor(h * 0.022); if (baseFontSize < 10) baseFontSize = 10;
-    ctx.textBaseline = "middle";
-    
-    const watermarks = [
-      { x: w * 0.04, y: h * 0.18, scale: 1.50, align: "left" }, { x: w * 0.02, y: h * 0.43, scale: 0.60, align: "left" }, 
-      { x: w * 0.03, y: h * 0.88, scale: 1.10, align: "left" }, { x: w * 0.96, y: h * 0.22, scale: 0.80, align: "right" }, 
-      { x: w * 0.98, y: h * 0.45, scale: 1.60, align: "right" }, { x: w * 0.97, y: h * 0.85, scale: 0.70, align: "right" }  
+    // Твои новые координаты
+    const marks = [
+        { top: 0.069, left: 0.029, size: 13 }, { top: 0.000, left: 0.156, size: 17 },
+        { top: 0.018, left: 0.535, size: 20 }, { top: 0.046, left: 0.804, size: 15 },
+        { top: 0.013, left: 0.404, size: 9 },  { top: 0.123, left: 0.522, size: 9 },
+        { top: 0.102, left: 0.292, size: 9 },  { top: 0.776, left: 0.243, size: 10 },
+        { top: 0.351, left: 0.970, size: 9 },  { top: 0.630, left: 0.080, size: 13 },
+        { top: 0.599, left: 0.970, size: 9 },  { top: 0.770, left: 0.013, size: 15 },
+        { top: 0.950, left: 0.237, size: 9 },  { top: 0.769, left: 0.928, size: 15 },
+        { top: 0.950, left: 0.521, size: 22 }, { top: 0.950, left: 0.930, size: 9 }
     ];
+
+    // Динамический масштаб для разных разрешений
+    let scaleMult = Math.min(w / 1200, h / 675); 
     
-    watermarks.forEach(wm => {
-      ctx.save(); ctx.textAlign = wm.align; let currentFontSize = Math.floor(baseFontSize * wm.scale);
-      ctx.font = `${currentFontSize}px '${window.layerState.watermarksFont}', sans-serif`;
-      ctx.translate(Math.round(wm.x), Math.round(wm.y)); ctx.transform(1, 0, -0.10, 1, 0, 0); ctx.fillText(text, 0, 0); ctx.restore();
+    marks.forEach(mark => {
+        ctx.save();
+        ctx.translate(w * mark.left, h * mark.top);
+        ctx.transform(1, 0, -0.2, 1, 0, 0); 
+        let currentFontSize = Math.floor(mark.size * scaleMult * 1.5);
+        ctx.font = `${currentFontSize}px '${window.layerState.watermarksFont}', sans-serif`;
+        ctx.fillText(text.toUpperCase(), 0, 0);
+        ctx.restore();
     });
-    ctx.restore();
+    ctx.restore(); 
 }
 
 function drawStars(ctx, starImg, w, h, opacity = 1.0, forExport = false) {
@@ -4707,74 +4807,85 @@ function drawStars(ctx, starImg, w, h, opacity = 1.0, forExport = false) {
 }
 
 function drawBeautifulNick(ctx, text, w, h) {
-    let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
-    let x = Math.round(w / 2); 
-    let y = window.layerState.textPosition === 'bottom' 
-        ? Math.round(h * 0.92 - (fontSize / 2))
-        : Math.round(h * 0.06 + (fontSize / 2)); 
-    let shadowDepth = Math.max(1, Math.floor(fontSize * 0.10));
-
     let style = TEXT_STYLES[window.layerState.textStyleIndex || 0];
-
-    let textCanvas = document.createElement('canvas'); textCanvas.width = w; textCanvas.height = h; let txCtx = textCanvas.getContext('2d');
-    txCtx.textAlign = "center"; txCtx.textBaseline = "middle"; txCtx.font = `${fontSize}px '${window.layerState.textFont}', sans-serif`;
-    txCtx.lineJoin = "round"; txCtx.lineCap = "round";
-
-    txCtx.save(); txCtx.translate(x, y); txCtx.transform(1, 0, -0.10, 1, 0, 0); 
     
-    if (style.isClassic) {
-        txCtx.lineWidth = fontSize * 0.18; txCtx.strokeStyle = "#ffffff"; for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-        txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = "#42003d"; for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-        txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = "#61005a"; for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+    let fontSize, x, y;
+
+    // Новые позиции и размер для Brawl Pass
+    if (window.layerState.isBrawlPass) {
+        fontSize = Math.floor(h * 0.21); 
+        x = Math.round(w / 2) - 12;
+        y = Math.round(h * 0.78) + 3;
     } else {
-        if (style.outer2) {
-            txCtx.lineWidth = fontSize * 0.18; txCtx.strokeStyle = style.outer2; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-            
-            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-            
-            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-        } else if (style.outer) {
-            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-            
-            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-        } else {
-            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-        }
+        fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
+        x = Math.round(w / 2); 
+        y = window.layerState.textPosition === 'bottom' 
+            ? Math.round(h * 0.92 - (fontSize / 2))
+            : Math.round(h * 0.06 + (fontSize / 2)); 
+    }
+
+    let textCanvas = document.createElement('canvas'); textCanvas.width = w; textCanvas.height = h; 
+    let txCtx = textCanvas.getContext('2d');
+    
+    txCtx.textAlign = "center"; 
+    txCtx.textBaseline = "middle"; 
+    txCtx.font = `${fontSize}px '${window.layerState.textFont}', 'Arial Black', sans-serif`;
+    txCtx.lineJoin = "round"; 
+    txCtx.miterLimit = 2;
+
+    txCtx.save(); 
+    txCtx.translate(x, y); 
+    
+    // Применяем наклон из твоего макета только для BP
+    if (window.layerState.isBrawlPass) {
+        txCtx.transform(1, 0, -0.15, 1, 0, 0); 
+        txCtx.rotate(-0.03);
+    } else {
+        txCtx.transform(1, 0, -0.10, 1, 0, 0); 
     }
     
+    // Отрисовка 5 слоев (из твоей логики)
+    if (style.shadow) {
+        txCtx.lineWidth = fontSize * 0.28;
+        txCtx.strokeStyle = style.shadow;
+        txCtx.strokeText(text, 0, fontSize * 0.08);
+    }
+    if (style.outer2) {
+        txCtx.lineWidth = fontSize * 0.28;
+        txCtx.strokeStyle = style.outer2;
+        txCtx.strokeText(text, 0, 0);
+    }
+    if (style.outer) {
+        txCtx.lineWidth = fontSize * 0.2;
+        txCtx.strokeStyle = style.outer;
+        txCtx.strokeText(text, 0, 0);
+    }
+    if (style.inner) {
+        txCtx.lineWidth = fontSize * 0.08;
+        txCtx.strokeStyle = style.inner;
+        txCtx.strokeText(text, 0, 0);
+    }
+    if (style.grad) {
+        const grad = txCtx.createLinearGradient(0, -fontSize * 0.4, 0, fontSize * 0.4);
+        grad.addColorStop(0, style.grad[0]);
+        grad.addColorStop(0.5, style.grad[1] || style.grad[0]);
+        grad.addColorStop(1, style.grad[2] || style.grad[1] || style.grad[0]);
+        txCtx.fillStyle = grad;
+    } else {
+        txCtx.fillStyle = "#ffffff";
+    }
+    txCtx.fillText(text, 0, 0);
     txCtx.restore();
 
-    let tempCanvas = document.createElement('canvas'); tempCanvas.width = w; tempCanvas.height = h; let tCtx = tempCanvas.getContext('2d');
-    tCtx.textAlign = "center"; tCtx.textBaseline = "middle"; tCtx.font = `${fontSize}px '${window.layerState.textFont}', sans-serif`;
-    tCtx.save(); tCtx.translate(x, y); tCtx.transform(1, 0, -0.10, 1, 0, 0); 
-
-    let grad = tCtx.createLinearGradient(0, -fontSize * 0.4, 0, fontSize * 0.4);
-    grad.addColorStop(0, style.grad[0]); 
-    grad.addColorStop(style.isClassic ? 0.48 : 0.52, style.grad[1]); 
-    grad.addColorStop(1, style.grad[2]);
-    tCtx.fillStyle = grad; tCtx.fillText(text, 0, 0);
-    
-    tCtx.globalCompositeOperation = "source-atop"; 
-    tCtx.lineWidth = fontSize * 0.06; 
-    tCtx.strokeStyle = style.isClassic ? "#fcff00" : style.inner; 
-    tCtx.lineJoin = "round"; 
-    tCtx.strokeText(text, 0, 0);
-    tCtx.restore();
-
-    txCtx.drawImage(tempCanvas, 0, 0);
-
     ctx.save();
-    let scaleMult = h / 1080;
-    ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
-    ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult)); 
-    ctx.shadowOffsetX = 0; 
-    ctx.shadowOffsetY = Math.max(4, Math.round(16 * scaleMult));                
+    // Старая внешняя тень остается только для обычных акций
+    if (!window.layerState.isBrawlPass) {
+        let scaleMult = h / 1080;
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
+        ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult)); 
+        ctx.shadowOffsetX = 0; 
+        ctx.shadowOffsetY = Math.max(4, Math.round(16 * scaleMult));
+    }
     ctx.drawImage(textCanvas, 0, 0);
     ctx.restore();
 }
