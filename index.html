@@ -5134,41 +5134,53 @@ async function generateBrawlPassTest() {
 
     const drawPrice = (img, numText, x, w) => {
         if(!img) return;
-        let h = img.height * (w / img.width); let y = HEIGHT - 30 - h;
+        let h = img.height * (w / img.width); 
+        let y = HEIGHT - 30 - h;
         ctx.drawImage(img, x, y, w, h);
         ctx.save();
-        
+
         let fontSize = Math.max(16, WIDTH * 0.035);
         let fontNum = `normal ${fontSize}px 'LilitaOneRus', 'Arial Black', sans-serif`;
+        // Знак рубля делаем чуть меньше
         let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
         let symText = " ₽";
 
+        // Измеряем ширину для идеального центрирования
         ctx.font = fontNum;
         let wNum = ctx.measureText(numText).width;
         ctx.font = fontSym;
         let wSym = ctx.measureText(symText).width;
         let totalW = wNum + wSym;
-        
+
         let startX = x + w/2 - totalW/2;
         let symStartX = startX + wNum;
 
         ctx.textAlign = 'left'; 
         ctx.textBaseline = 'middle';
-        ctx.lineWidth = 6; 
-        ctx.strokeStyle = '#000'; 
-        ctx.fillStyle = '#fff';
+        
+        // ВАЖНО: Делает углы обводки круглыми, как на оригинале слева
         ctx.lineJoin = 'round'; 
         
         let textY = y + h/2 - 7;
 
-        ctx.shadowColor = '#000'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.shadowBlur = 0;
+        // 1. Рисуем ОЧЕНЬ ЖИРНУЮ обводку с небольшим смещением вниз (эффект объема)
+        ctx.shadowColor = '#000000'; 
+        ctx.shadowOffsetX = 0; 
+        ctx.shadowOffsetY = 4; // Смещение черного блока вниз
+        ctx.shadowBlur = 0;
         
+        ctx.lineWidth = 14; // Задаем жирность контура
+        ctx.strokeStyle = '#000000'; 
+
         ctx.font = fontNum;
         ctx.strokeText(numText, startX, textY);
         ctx.font = fontSym;
         ctx.strokeText(symText, symStartX, textY);
 
+        // 2. Отключаем тень и заливаем текст белым цветом поверх черного контура
         ctx.shadowColor = 'transparent'; 
+        ctx.fillStyle = '#ffffff';
+
         ctx.font = fontNum;
         ctx.fillText(numText, startX, textY);
         ctx.font = fontSym;
@@ -5177,6 +5189,7 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
     
+    // Вызовы функции остаются такими же (передаем только цифры)
     drawPrice(priceL, "999", WIDTH * 0.055 - 22, WIDTH * 0.20);
     drawPrice(priceR, "9999", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
 
