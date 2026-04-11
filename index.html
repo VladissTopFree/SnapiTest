@@ -4428,7 +4428,7 @@ function drawScene() {
         
         if (globalAssets.bpPriceR) {
             // Вычисляем сдвиг в 16px пропорционально огромному HD-холсту
-            let shiftLeft = 16 * (w / 1200); 
+            let shiftLeft = 36 * (w / 1200); 
             let rightX = w - marginX - priceW - shiftLeft;
             
             drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
