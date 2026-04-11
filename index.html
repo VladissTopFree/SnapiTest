@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.6(3)";
+  const APP_VERSION = "v2.4.6(4)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3000,7 +3000,6 @@ window.setWmFont = async (fontFamily) => {
 // Функция отрисовки цены для БП
 function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     if(!img) return;
-    // Расчет высоты пропорционально ширине
     let h = img.height * (targetW / img.width); 
     ctx.drawImage(img, x, y, targetW, h);
     
@@ -3017,7 +3016,6 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     let wSym = ctx.measureText(symText).width;
     let totalW = wNum + wSym;
 
-    // Центрирование относительно ширины плашки
     let startX = x + (targetW / 2) - (totalW / 2);
     let symStartX = startX + wNum + (canvasW * 0.005);
 
@@ -3025,10 +3023,12 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round'; 
     
-    // Выравниваем Y строго по центру плашки (подняли ещё на 3px выше, итого -5)
-    let textY = y + (h / 2) - (canvasH * 0.005) - 5; 
+    // Вычисляем множитель масштаба высоты (базовая высота была 675)
+    let scaleMult = canvasH / 675;
+    
+    // Выравниваем по центру и поднимаем ВВЕРХ на 4 пикселя (умноженные на масштаб)
+    let textY = y + (h / 2) - (4 * scaleMult); 
 
-    // Вычисляем толщину обводки и смещение тени
     let strokeWidth = Math.max(3, canvasW * 0.005);
     let shadowOffsetY = Math.max(2, canvasW * 0.004);
 
@@ -4427,7 +4427,11 @@ function drawScene() {
         }
         
         if (globalAssets.bpPriceR) {
-            drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - marginX - priceW - 16, priceY, priceW, w, h);
+            // Вычисляем сдвиг в 16px пропорционально огромному HD-холсту
+            let shiftLeft = 16 * (w / 1200); 
+            let rightX = w - marginX - priceW - shiftLeft;
+            
+            drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
         }
 
         // 5. ARTZA DONATE
