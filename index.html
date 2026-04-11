@@ -5117,24 +5117,7 @@ async function generateBrawlPassTest() {
         ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
-    // 6. Свечения и тени (под персонажами, сдвиг влево на 16px)
-    let cxL = (WIDTH * 0.39) - 16; let cxR = (WIDTH * 0.589) - 16; 
-    const drawGlow = (x, y) => {
-        ctx.save(); ctx.globalCompositeOperation = 'screen';
-        let rg = ctx.createRadialGradient(x, y, 0, x, y, 140);
-        rg.addColorStop(0, 'rgba(255,255,255,0.9)'); rg.addColorStop(0.4, 'rgba(255,255,255,0.3)'); rg.addColorStop(0.7, 'rgba(255,255,255,0)');
-        ctx.fillStyle = rg; ctx.fillRect(x - 140, y - 140, 280, 280); ctx.restore();
-    };
-    drawGlow(cxL, starY - HEIGHT * 0.1); drawGlow(cxR, starY - HEIGHT * 0.1);
-    
-    const drawShadow = (x, y) => {
-        ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-    };
-    drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
-
-    // ====================================================
-    // 7. СНАЧАЛА РИСУЕМ ПАНЕЛИ И ЦЕНЫ (СЗАДИ персонажей)
-    // ====================================================
+    // 6. ПАНЕЛИ И ЦЕНЫ (СЗАДИ персонажей и свечения)
     if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
     if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
 
@@ -5154,9 +5137,30 @@ async function generateBrawlPassTest() {
     drawPrice(priceL, "999 р", WIDTH * 0.055 - 22, WIDTH * 0.20);
     drawPrice(priceR, "9999 р", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
 
-    // ====================================================
-    // 8. ЗАТЕМ РИСУЕМ ПЕРСОНАЖЕЙ (сдвиг влево на 16px)
-    // ====================================================
+    // 7. СВЕЧЕНИЕ ЗА ПЕРСОНАЖАМИ (Белое, большое и круглое, выпирает из-под них)
+    let cxL = (WIDTH * 0.39) - 16; let cxR = (WIDTH * 0.589) - 16; 
+    const drawLargeGlow = (x, y, radius) => {
+        ctx.save(); 
+        ctx.globalCompositeOperation = 'screen';
+        let rg = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        rg.addColorStop(0, 'rgba(255,255,255,1)');
+        rg.addColorStop(0.3, 'rgba(255,255,255,0.8)');
+        rg.addColorStop(0.7, 'rgba(255,255,255,0.2)');
+        rg.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rg; 
+        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2); 
+        ctx.restore();
+    };
+    drawLargeGlow(cxL + 40, starY - HEIGHT * 0.2, 280); 
+    drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
+
+    // 8. ТЕНИ ПОД ПЕРСОНАЖАМИ
+    const drawShadow = (x, y) => {
+        ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    };
+    drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
+
+    // 9. ПЕРСОНАЖИ (сдвиг влево на 16px)
     const drawBrawler = (img, x, targetH) => {
         if (!img) return;
         let bh = targetH;
@@ -5177,7 +5181,7 @@ async function generateBrawlPassTest() {
     drawBrawler(brawler2, (WIDTH * 0.58) - 16, HEIGHT * 0.48); 
     drawBrawler(brawler1, (WIDTH * 0.42) - 16, HEIGHT * 0.55); 
 
-    // 9. Водяные знаки (ОСТАВЛЯЕМ ТОЛЬКО ARTZA DONATE)
+    // 10. ВОДЯНЫЕ ЗНАКИ
     ctx.save();
     ctx.globalCompositeOperation = "overlay"; ctx.fillStyle = "#ffffff"; ctx.textBaseline = "top";
     const marks = [
@@ -5197,24 +5201,18 @@ async function generateBrawlPassTest() {
     rawBgImage.onload = () => {
         window.layerState.isReadyBg = true;
         
-        // ЖЕСТКО ВЫКЛЮЧАЕМ СТАРЫЙ ТЕКСТ И ОЧИЩАЕМ ЕГО ЗНАЧЕНИЕ
         window.layerState.textVisible = false; 
         window.layerState.textValue = ""; 
-        
-        // Выключаем остальные слои движка
         window.layerState.luchVisible = false;
         window.layerState.starsVisible = false;
         window.layerState.pointsVisible = false;
         window.layerState.watermarksVisible = false;
         window.layerState.offers = [];
 
-        // Полностью глушим анимации старого движка
         animText.scale = 0; 
         animText.alpha = 0;
         animText.targetScale = 0; 
         animText.targetAlpha = 0;
-        
-        // Убиваем старый Canvas текста, чтобы не висел "призраком"
         cachedTextCanvas = null;
 
         setupPersistentCanvas();
