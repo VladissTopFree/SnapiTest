@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.3.5";
+  const APP_VERSION = "v2.3.6";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5117,8 +5117,8 @@ async function generateBrawlPassTest() {
         ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
-    // 6. Свечения и тени
-    let cxL = WIDTH * 0.39; let cxR = WIDTH * 0.589;
+    // 6. Свечения и тени (под персонажами)
+    let cxL = (WIDTH * 0.39) - 12; let cxR = (WIDTH * 0.589) - 12; // Сдвиг теней тоже на 12px
     const drawGlow = (x, y) => {
         ctx.save(); ctx.globalCompositeOperation = 'screen';
         let rg = ctx.createRadialGradient(x, y, 0, x, y, 140);
@@ -5132,7 +5132,31 @@ async function generateBrawlPassTest() {
     };
     drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
 
-    // 7. Отрисовка Бравлеров (Уменьшены размеры и поменяны местами)
+    // ====================================================
+    // 7. СНАЧАЛА РИСУЕМ ПАНЕЛИ И ЦЕНЫ (чтобы они были СЗАДИ персонажей)
+    // ====================================================
+    if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
+    if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
+
+    const drawPrice = (img, text, x, w) => {
+        if(!img) return;
+        let h = img.height * (w / img.width); let y = HEIGHT - 30 - h;
+        ctx.drawImage(img, x, y, w, h);
+        ctx.save();
+        ctx.font = `${Math.max(16, WIDTH * 0.035)}px 'LilitaOneRus', sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.lineWidth = 6; ctx.strokeStyle = '#000'; ctx.fillStyle = '#fff';
+        ctx.shadowColor = '#000'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.shadowBlur = 0;
+        ctx.strokeText(text, x + w/2, y + h/2 - 7);
+        ctx.shadowColor = 'transparent'; ctx.fillText(text, x + w/2, y + h/2 - 7);
+        ctx.restore();
+    };
+    drawPrice(priceL, "999 р", WIDTH * 0.055 - 22, WIDTH * 0.20);
+    drawPrice(priceR, "9999 р", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
+
+    // ====================================================
+    // 8. ЗАТЕМ РИСУЕМ ПЕРСОНАЖЕЙ (поверх панелей, увеличенные в 2 раза, сдвиг влево 12px)
+    // ====================================================
     const drawBrawler = (img, x, targetH) => {
         if (!img) return;
         let bh = targetH;
@@ -5150,32 +5174,12 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
-    // Сначала рисуем 8-Бита (справа, меньше), потом Байрона (слева, больше, перекрывает 8-Бита)
-    drawBrawler(brawler2, WIDTH * 0.58, HEIGHT * 0.48); 
-    drawBrawler(brawler1, WIDTH * 0.42, HEIGHT * 0.55); 
+    // 8-Бит (справа) - высота была 0.48, теперь 0.96 (х2). Сдвиг: (0.58 * WIDTH) - 12
+    drawBrawler(brawler2, (WIDTH * 0.58) - 12, HEIGHT * 0.96); 
+    // Байрон (слева, перекрывает 8-Бита) - высота была 0.55, теперь 1.10 (х2). Сдвиг: (0.42 * WIDTH) - 12
+    drawBrawler(brawler1, (WIDTH * 0.42) - 12, HEIGHT * 1.10); 
 
-    // 8. Панели
-    if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
-    if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
-
-    // 9. Цены
-    const drawPrice = (img, text, x, w) => {
-        if(!img) return;
-        let h = img.height * (w / img.width); let y = HEIGHT - 30 - h;
-        ctx.drawImage(img, x, y, w, h);
-        ctx.save();
-        ctx.font = `${Math.max(16, WIDTH * 0.035)}px 'LilitaOneRus', sans-serif`;
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.lineWidth = 6; ctx.strokeStyle = '#000'; ctx.fillStyle = '#fff';
-        ctx.shadowColor = '#000'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.shadowBlur = 0;
-        ctx.strokeText(text, x + w/2, y + h/2 - 7);
-        ctx.shadowColor = 'transparent'; ctx.fillText(text, x + w/2, y + h/2 - 7);
-        ctx.restore();
-    };
-    drawPrice(priceL, "999 р", WIDTH * 0.055 - 22, WIDTH * 0.20);
-    drawPrice(priceR, "9999 р", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
-
-    // 10. Водяные знаки
+    // 9. Водяные знаки
     ctx.save();
     ctx.globalCompositeOperation = "overlay"; ctx.fillStyle = "#ffffff"; ctx.textBaseline = "top";
     const marks = [
@@ -5195,22 +5199,20 @@ async function generateBrawlPassTest() {
     rawBgImage.onload = () => {
         window.layerState.isReadyBg = true;
         
-        // ВАЖНО: Включаем стандартный текст движка, ставим его СНИЗУ и делаем Стиль №9
         window.layerState.textVisible = true;
         window.layerState.textPosition = 'bottom'; 
         window.layerState.textStyleIndex = 9; 
         
-        // Выключаем остальные слои, так как они уже нарисованы
         window.layerState.luchVisible = false;
         window.layerState.starsVisible = false;
         window.layerState.pointsVisible = false;
         window.layerState.watermarksVisible = false;
         window.layerState.offers = [];
 
-        // Восстанавливаем анимацию для текста
-        animText.scale = 0.5;
+        // ДЕЛАЕМ ТЕКСТ В 2 РАЗА БОЛЬШЕ (targetScale = 2)
+        animText.scale = 0.5; // Начинаем с маленького для анимации
         animText.alpha = 0;
-        animText.targetScale = 1;
+        animText.targetScale = 2; // Финальный размер х2
         animText.targetAlpha = 1;
         if (typeof cachedTextCanvas !== 'undefined') cachedTextCanvas = null;
 
