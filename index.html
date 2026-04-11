@@ -4428,7 +4428,7 @@ function drawScene() {
         
         if (globalAssets.bpPriceR) {
             // Вычисляем сдвиг в 16px пропорционально огромному HD-холсту
-            let shiftLeft = 36 * (w / 1200); 
+            let shiftLeft = 26 * (w / 1200); 
             let rightX = w - marginX - priceW - shiftLeft;
             
             drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
@@ -5467,12 +5467,16 @@ async function generateBrawlPassTest() {
         };
 
         // --- ПРАВЫЙ ПЕРСОНАЖ (Рисуем ПЕРВЫМ, чтобы он был на заднем плане) ---
+        // Мы сохраняем его свечение как было: cxR - 40, radius 280
         drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
         drawShadow(cxR, starY - 10 + 12.5);
         drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48);
 
         // --- ЛЕВЫЙ ПЕРСОНАЖ (Рисуем ВТОРЫМ, чтобы он перекрыл правого) ---
-        drawLargeGlow(cxL + 40, starY - HEIGHT * 0.2, 280); 
+        // !!! ОБНОВЛЕННЫЙ КОД ДЛЯ СВЕЧЕНИЯ brawler1 !!!
+        // Изменено: смещение x стало +20 вместо +40, радиус стал 180 вместо 280.
+        // Это делает свет значительно уже и компактнее.
+        drawLargeGlow(cxL + 20, starY - HEIGHT * 0.2, 180); 
         drawShadow(cxL, starY - 10 + 12.5);
         drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
 
