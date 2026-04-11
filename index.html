@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.3.7";
+  const APP_VERSION = "v2.3.8";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5117,8 +5117,8 @@ async function generateBrawlPassTest() {
         ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
-    // 6. Свечения и тени (под персонажами)
-    let cxL = (WIDTH * 0.39) - 12; let cxR = (WIDTH * 0.589) - 12; 
+    // 6. Свечения и тени (под персонажами, сдвиг влево на 16px)
+    let cxL = (WIDTH * 0.39) - 16; let cxR = (WIDTH * 0.589) - 16; 
     const drawGlow = (x, y) => {
         ctx.save(); ctx.globalCompositeOperation = 'screen';
         let rg = ctx.createRadialGradient(x, y, 0, x, y, 140);
@@ -5155,7 +5155,7 @@ async function generateBrawlPassTest() {
     drawPrice(priceR, "9999 р", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
 
     // ====================================================
-    // 8. ЗАТЕМ РИСУЕМ ПЕРСОНАЖЕЙ (поверх панелей, размер нормальный, сдвиг влево 12px)
+    // 8. ЗАТЕМ РИСУЕМ ПЕРСОНАЖЕЙ (сдвиг влево на 16px)
     // ====================================================
     const drawBrawler = (img, x, targetH) => {
         if (!img) return;
@@ -5174,12 +5174,10 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
-    // 8-Бит (справа) - нормальный размер (0.48). Сдвиг: (0.58 * WIDTH) - 12
-    drawBrawler(brawler2, (WIDTH * 0.58) - 12, HEIGHT * 0.48); 
-    // Байрон (слева, перекрывает 8-Бита) - нормальный размер (0.55). Сдвиг: (0.42 * WIDTH) - 12
-    drawBrawler(brawler1, (WIDTH * 0.42) - 12, HEIGHT * 0.55); 
+    drawBrawler(brawler2, (WIDTH * 0.58) - 16, HEIGHT * 0.48); 
+    drawBrawler(brawler1, (WIDTH * 0.42) - 16, HEIGHT * 0.55); 
 
-    // 9. Водяные знаки
+    // 9. Водяные знаки (ОСТАВЛЯЕМ ТОЛЬКО ARTZA DONATE)
     ctx.save();
     ctx.globalCompositeOperation = "overlay"; ctx.fillStyle = "#ffffff"; ctx.textBaseline = "top";
     const marks = [
@@ -5199,27 +5197,27 @@ async function generateBrawlPassTest() {
     rawBgImage.onload = () => {
         window.layerState.isReadyBg = true;
         
-        // ВАЖНО: Включаем стандартный текст движка, ставим его СНИЗУ и делаем Стиль №9
-        window.layerState.textVisible = true;
-        window.layerState.textPosition = 'bottom'; 
-        window.layerState.textStyleIndex = 9; 
+        // ЖЕСТКО ВЫКЛЮЧАЕМ СТАРЫЙ ТЕКСТ И ОЧИЩАЕМ ЕГО ЗНАЧЕНИЕ
+        window.layerState.textVisible = false; 
+        window.layerState.textValue = ""; 
         
-        // Выключаем остальные слои
+        // Выключаем остальные слои движка
         window.layerState.luchVisible = false;
         window.layerState.starsVisible = false;
         window.layerState.pointsVisible = false;
         window.layerState.watermarksVisible = false;
         window.layerState.offers = [];
 
-        // ДЕЛАЕМ ТЕКСТ В 2 РАЗА БОЛЬШЕ (targetScale = 2) без деформации стилей
-        animText.scale = 0.5; 
+        // Полностью глушим анимации старого движка
+        animText.scale = 0; 
         animText.alpha = 0;
-        animText.targetScale = 2; // ТЕКСТ Х2
-        animText.targetAlpha = 1;
-        if (typeof cachedTextCanvas !== 'undefined') cachedTextCanvas = null;
+        animText.targetScale = 0; 
+        animText.targetAlpha = 0;
+        
+        // Убиваем старый Canvas текста, чтобы не висел "призраком"
+        cachedTextCanvas = null;
 
         setupPersistentCanvas();
-        window.updateCachedTextCanvas();
         
         layerPanel.innerHTML = `
             <div class="ios-section-title">BRAWL PASS УСПЕШНО СОЗДАН</div>
