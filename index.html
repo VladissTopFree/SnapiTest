@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.1";
+  const APP_VERSION = "v2.4.2";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5128,25 +5128,57 @@ async function generateBrawlPassTest() {
         ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
-    // 6. ПАНЕЛИ И ЦЕНЫ (СЗАДИ персонажей и свечения)
+// 6. ПАНЕЛИ И ЦЕНЫ (СЗАДИ персонажей и свечения)
     if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
     if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
 
-    const drawPrice = (img, text, x, w) => {
+    const drawPrice = (img, numText, x, w) => {
         if(!img) return;
         let h = img.height * (w / img.width); let y = HEIGHT - 30 - h;
         ctx.drawImage(img, x, y, w, h);
         ctx.save();
-        ctx.font = `${Math.max(16, WIDTH * 0.035)}px 'LilitaOneRus', sans-serif`;
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.lineWidth = 6; ctx.strokeStyle = '#000'; ctx.fillStyle = '#fff';
+        
+        let fontSize = Math.max(16, WIDTH * 0.035);
+        let fontNum = `normal ${fontSize}px 'LilitaOneRus', 'Arial Black', sans-serif`;
+        let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
+        let symText = " ₽";
+
+        ctx.font = fontNum;
+        let wNum = ctx.measureText(numText).width;
+        ctx.font = fontSym;
+        let wSym = ctx.measureText(symText).width;
+        let totalW = wNum + wSym;
+        
+        let startX = x + w/2 - totalW/2;
+        let symStartX = startX + wNum;
+
+        ctx.textAlign = 'left'; 
+        ctx.textBaseline = 'middle';
+        ctx.lineWidth = 6; 
+        ctx.strokeStyle = '#000'; 
+        ctx.fillStyle = '#fff';
+        ctx.lineJoin = 'round'; 
+        
+        let textY = y + h/2 - 7;
+
         ctx.shadowColor = '#000'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.shadowBlur = 0;
-        ctx.strokeText(text, x + w/2, y + h/2 - 7);
-        ctx.shadowColor = 'transparent'; ctx.fillText(text, x + w/2, y + h/2 - 7);
+        
+        ctx.font = fontNum;
+        ctx.strokeText(numText, startX, textY);
+        ctx.font = fontSym;
+        ctx.strokeText(symText, symStartX, textY);
+
+        ctx.shadowColor = 'transparent'; 
+        ctx.font = fontNum;
+        ctx.fillText(numText, startX, textY);
+        ctx.font = fontSym;
+        ctx.fillText(symText, symStartX, textY);
+        
         ctx.restore();
     };
-    drawPrice(priceL, "999 р", WIDTH * 0.055 - 22, WIDTH * 0.20);
-    drawPrice(priceR, "9999 р", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
+    
+    drawPrice(priceL, "999", WIDTH * 0.055 - 22, WIDTH * 0.20);
+    drawPrice(priceR, "9999", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
 
     // 7. СВЕЧЕНИЕ ЗА ПЕРСОНАЖАМИ (Белое, большое и круглое, выпирает из-под них)
     let cxL = (WIDTH * 0.39) - 16; let cxR = (WIDTH * 0.589) - 16; 
