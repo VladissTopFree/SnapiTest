@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0";
+  const APP_VERSION = "v2.4.1";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2122,13 +2122,25 @@ let isCurrentProjectSaved = false;
 
 if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
     window.Telegram.WebApp.BackButton.onClick(() => {
+        
+        let fankitOverlay = document.getElementById('fankit-overlay');
+        if (fankitOverlay && fankitOverlay.classList.contains('show')) {
+            fankitOverlay.classList.remove('show');
+            let fankitSheet = document.getElementById('fankit-sheet');
+            if (fankitSheet) fankitSheet.style.transform = '';
+            setTimeout(() => {
+                fankitOverlay.style.display = 'none';
+            }, 300);
+            
+            return; 
+        }
         document.getElementById('wizard-overlay').style.display = 'none';
         document.getElementById('result-box').style.display = 'none';
         document.getElementById('download-overlay').style.display = 'none';
         document.getElementById('saved-projects-overlay').style.display = 'none';
         document.getElementById('settings-overlay').style.display = 'none';
         document.getElementById('subscription-overlay').style.display = 'none';
-        document.getElementById('bp-overlay').style.display = 'none'; 
+        document.getElementById('bp-overlay').style.display = 'none';
         
         let btnWrap = document.getElementById('download-btn-wrap');
         if (btnWrap) btnWrap.style.display = 'none';
@@ -5284,32 +5296,50 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const lineGap = 0;
 
     const bpTextX = WIDTH / 2 + (bpFontSize * 0.07 * 0.5); 
-    const blockCenterY = line2 ? HEIGHT * 0.84 - 16 : HEIGHT * 0.84;
-    
-    // Измеряем реальную высоту текста
-    mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
-    const metrics1 = mCtx.measureText(line1);
-    const actualH1 = metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent;
-    const actualH2 = line2 ? (() => { const m = mCtx.measureText(line2); return m.actualBoundingBoxAscent + m.actualBoundingBoxDescent; })() : 0;
-    const maxLineH = Math.max(actualH1, actualH2);
 
-    const y1 = line2 ? blockCenterY - maxLineH / 2 - lineGap : blockCenterY;
-    const y2 = blockCenterY + maxLineH / 2;
-    // Верхняя и нижняя границы (зона между персонажами и ценами)
+    // === ЖЕСТКАЯ НИЖНЯЯ ГРАНИЦА ===
+    // 0.94 = 94% от высоты картинки. Если нужно опустить текст ниже, сделай 0.95 или 0.96.
+    // Если нужно поднять выше — 0.93 или 0.92.
+    const FIXED_BOTTOM_Y = HEIGHT * 0.91; 
     const BOUND_TOP = HEIGHT * 0.62;
-    const BOUND_BOTTOM = HEIGHT * 0.97;
 
-    // Проверяем выход за границы и уменьшаем шрифт если надо
-    const topEdge = line2 ? y1 - bpFontSize / 2 : y1 - bpFontSize / 2;
-    const bottomEdge = line2 ? y2 + bpFontSize / 2 : y1 + bpFontSize / 2;
+    // 1. Измеряем текст при текущем размере шрифта
+    mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    let metrics1 = mCtx.measureText(line1);
+    let maxLineH = Math.max(
+        metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent,
+        line2 ? (() => { const m = mCtx.measureText(line2); return m.actualBoundingBoxAscent + m.actualBoundingBoxDescent; })() : 0
+    );
 
-    if (topEdge < BOUND_TOP || bottomEdge > BOUND_BOTTOM) {
-        const availableH = BOUND_BOTTOM - BOUND_TOP;
+    // Где будет находиться самый верх текста (строим снизу вверх)
+    let topEdge = line2 ? (FIXED_BOTTOM_Y - maxLineH * 2 - lineGap) : (FIXED_BOTTOM_Y - maxLineH);
+
+    // 2. Если верх текста налезает на персонажей, сжимаем шрифт
+    if (topEdge < BOUND_TOP) {
+        const availableH = FIXED_BOTTOM_Y - BOUND_TOP;
         const neededLines = line2 ? 2 : 1;
         const maxFontByHeight = Math.floor((availableH - lineGap * (neededLines - 1)) / neededLines);
+        
         if (maxFontByHeight < bpFontSize) {
             bpFontSize = maxFontByHeight;
+            // Обязательно пересчитываем высоту с новым размером шрифта
+            mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+            metrics1 = mCtx.measureText(line1);
+            maxLineH = Math.max(
+                metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent,
+                line2 ? (() => { const m = mCtx.measureText(line2); return m.actualBoundingBoxAscent + m.actualBoundingBoxDescent; })() : 0
+            );
         }
+    }
+
+    // 3. Высчитываем финальные y1 и y2. 
+    // Теперь они всегда выравниваются так, чтобы низ строго касался FIXED_BOTTOM_Y
+    let y1, y2;
+    if (line2) {
+        y2 = FIXED_BOTTOM_Y - (maxLineH / 2); // Низ второй строки упирается в границу
+        y1 = y2 - maxLineH - lineGap;         // Первая строка строится строго над второй
+    } else {
+        y1 = FIXED_BOTTOM_Y - (maxLineH / 2); // Низ единственной строки упирается в границу
     }
 
     const lines = line2 ? [{ text: line1, y: y1 }, { text: line2, y: y2 }] : [{ text: line1, y: y1 }];
