@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.3.6";
+  const APP_VERSION = "v2.3.7";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -20,7 +20,7 @@
   }
 
 
-  const MANUAL_FALLBACK_DATE = "6 Apr 2026";
+  const MANUAL_FALLBACK_DATE = "11 Apr 2026";
 
 
 
@@ -5118,7 +5118,7 @@ async function generateBrawlPassTest() {
     }
 
     // 6. Свечения и тени (под персонажами)
-    let cxL = (WIDTH * 0.39) - 12; let cxR = (WIDTH * 0.589) - 12; // Сдвиг теней тоже на 12px
+    let cxL = (WIDTH * 0.39) - 12; let cxR = (WIDTH * 0.589) - 12; 
     const drawGlow = (x, y) => {
         ctx.save(); ctx.globalCompositeOperation = 'screen';
         let rg = ctx.createRadialGradient(x, y, 0, x, y, 140);
@@ -5133,7 +5133,7 @@ async function generateBrawlPassTest() {
     drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
 
     // ====================================================
-    // 7. СНАЧАЛА РИСУЕМ ПАНЕЛИ И ЦЕНЫ (чтобы они были СЗАДИ персонажей)
+    // 7. СНАЧАЛА РИСУЕМ ПАНЕЛИ И ЦЕНЫ (СЗАДИ персонажей)
     // ====================================================
     if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
     if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
@@ -5155,7 +5155,7 @@ async function generateBrawlPassTest() {
     drawPrice(priceR, "9999 р", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
 
     // ====================================================
-    // 8. ЗАТЕМ РИСУЕМ ПЕРСОНАЖЕЙ (поверх панелей, увеличенные в 2 раза, сдвиг влево 12px)
+    // 8. ЗАТЕМ РИСУЕМ ПЕРСОНАЖЕЙ (поверх панелей, размер нормальный, сдвиг влево 12px)
     // ====================================================
     const drawBrawler = (img, x, targetH) => {
         if (!img) return;
@@ -5174,10 +5174,10 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
-    // 8-Бит (справа) - высота была 0.48, теперь 0.96 (х2). Сдвиг: (0.58 * WIDTH) - 12
-    drawBrawler(brawler2, (WIDTH * 0.58) - 12, HEIGHT * 0.96); 
-    // Байрон (слева, перекрывает 8-Бита) - высота была 0.55, теперь 1.10 (х2). Сдвиг: (0.42 * WIDTH) - 12
-    drawBrawler(brawler1, (WIDTH * 0.42) - 12, HEIGHT * 1.10); 
+    // 8-Бит (справа) - нормальный размер (0.48). Сдвиг: (0.58 * WIDTH) - 12
+    drawBrawler(brawler2, (WIDTH * 0.58) - 12, HEIGHT * 0.48); 
+    // Байрон (слева, перекрывает 8-Бита) - нормальный размер (0.55). Сдвиг: (0.42 * WIDTH) - 12
+    drawBrawler(brawler1, (WIDTH * 0.42) - 12, HEIGHT * 0.55); 
 
     // 9. Водяные знаки
     ctx.save();
@@ -5199,20 +5199,22 @@ async function generateBrawlPassTest() {
     rawBgImage.onload = () => {
         window.layerState.isReadyBg = true;
         
+        // ВАЖНО: Включаем стандартный текст движка, ставим его СНИЗУ и делаем Стиль №9
         window.layerState.textVisible = true;
         window.layerState.textPosition = 'bottom'; 
         window.layerState.textStyleIndex = 9; 
         
+        // Выключаем остальные слои
         window.layerState.luchVisible = false;
         window.layerState.starsVisible = false;
         window.layerState.pointsVisible = false;
         window.layerState.watermarksVisible = false;
         window.layerState.offers = [];
 
-        // ДЕЛАЕМ ТЕКСТ В 2 РАЗА БОЛЬШЕ (targetScale = 2)
-        animText.scale = 0.5; // Начинаем с маленького для анимации
+        // ДЕЛАЕМ ТЕКСТ В 2 РАЗА БОЛЬШЕ (targetScale = 2) без деформации стилей
+        animText.scale = 0.5; 
         animText.alpha = 0;
-        animText.targetScale = 2; // Финальный размер х2
+        animText.targetScale = 2; // ТЕКСТ Х2
         animText.targetAlpha = 1;
         if (typeof cachedTextCanvas !== 'undefined') cachedTextCanvas = null;
 
@@ -5223,7 +5225,6 @@ async function generateBrawlPassTest() {
             <div class="ios-section-title">BRAWL PASS УСПЕШНО СОЗДАН</div>
             <div class="sp-info-text" style="padding: 0 20px; font-size: 14px; margin-top: 10px;">
                 Вы можете сохранить проект и скачать картинку прямо сейчас, используя стандартные кнопки внизу.<br><br>
-                <i>Редактирование слоев БП будет добавлено в следующих обновлениях.</i>
             </div>
         `;
         startAnimation();
