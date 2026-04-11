@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.3.4";
+  const APP_VERSION = "v2.3.5";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1897,7 +1897,7 @@ async function hashTelegramId(id) {
 <div id="fankit-overlay">
   <div class="fankit-sheet" id="fankit-sheet">
     <div class="fankit-drag-pill"></div>
-    <div class="fankit-title">Выбери 1 фон из Fankit.</div>
+    <div class="fankit-title">Выберите фон из Fankit.</div>
     <div class="fankit-grid-container">
         <div class="fankit-grid" id="fankit-grid">
             </div>
@@ -5132,7 +5132,7 @@ async function generateBrawlPassTest() {
     };
     drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
 
-    // 7. Отрисовка Бравлеров
+    // 7. Отрисовка Бравлеров (Уменьшены размеры и поменяны местами)
     const drawBrawler = (img, x, targetH) => {
         if (!img) return;
         let bh = targetH;
@@ -5150,8 +5150,9 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
-    drawBrawler(brawler2, WIDTH * 0.38, HEIGHT * 0.65); 
-    drawBrawler(brawler1, WIDTH * 0.60, HEIGHT * 0.60); 
+    // Сначала рисуем 8-Бита (справа, меньше), потом Байрона (слева, больше, перекрывает 8-Бита)
+    drawBrawler(brawler2, WIDTH * 0.58, HEIGHT * 0.48); 
+    drawBrawler(brawler1, WIDTH * 0.42, HEIGHT * 0.55); 
 
     // 8. Панели
     if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
@@ -5189,16 +5190,14 @@ async function generateBrawlPassTest() {
     });
     ctx.restore();
 
-    // ШАГ 11 (Наклонный текст) ПОЛНОСТЬЮ УДАЛЕН. 
-    // Движок сам отрисует свой стандартный прямой текст поверх фона.
-
     // === ИНТЕГРАЦИЯ В СТАНДАРТНЫЙ ДВИЖОК ===
     rawBgImage = new Image();
     rawBgImage.onload = () => {
         window.layerState.isReadyBg = true;
         
-        // ВАЖНО: Включаем стандартный текст движка и ставим Стиль №9
+        // ВАЖНО: Включаем стандартный текст движка, ставим его СНИЗУ и делаем Стиль №9
         window.layerState.textVisible = true;
+        window.layerState.textPosition = 'bottom'; 
         window.layerState.textStyleIndex = 9; 
         
         // Выключаем остальные слои, так как они уже нарисованы
@@ -5208,21 +5207,21 @@ async function generateBrawlPassTest() {
         window.layerState.watermarksVisible = false;
         window.layerState.offers = [];
 
-        // Восстанавливаем плавную анимацию появления текста
+        // Восстанавливаем анимацию для текста
         animText.scale = 0.5;
         animText.alpha = 0;
         animText.targetScale = 1;
         animText.targetAlpha = 1;
+        if (typeof cachedTextCanvas !== 'undefined') cachedTextCanvas = null;
 
         setupPersistentCanvas();
-        
-        // Принудительно генерируем текст движка с новым фиолетовым стилем
         window.updateCachedTextCanvas();
         
         layerPanel.innerHTML = `
             <div class="ios-section-title">BRAWL PASS УСПЕШНО СОЗДАН</div>
             <div class="sp-info-text" style="padding: 0 20px; font-size: 14px; margin-top: 10px;">
                 Вы можете сохранить проект и скачать картинку прямо сейчас, используя стандартные кнопки внизу.<br><br>
+                <i>Редактирование слоев БП будет добавлено в следующих обновлениях.</i>
             </div>
         `;
         startAnimation();
