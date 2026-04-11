@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.3.8";
+  const APP_VERSION = "v2.3.9";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5194,6 +5194,58 @@ async function generateBrawlPassTest() {
         ctx.save(); ctx.translate(WIDTH * mark.left, HEIGHT * mark.top); ctx.transform(1, 0, -0.2, 1, 0, 0);
         ctx.font = `${mark.size}px 'Font16103', 'Arial Black', sans-serif`; ctx.fillText("ARTZA DONATE", 0, 0); ctx.restore();
     });
+    ctx.restore();
+
+    // 11. ТЕКСТ SNAPI В ЦЕНТРЕ
+    await document.fonts.ready;
+    const bpTextX = WIDTH / 2;
+    const bpTextY = HEIGHT * 0.88 - 26;
+    const bpFontSize = 145;
+    const bpStyle = TEXT_STYLES[9];
+    const bpText = "SNAPI";
+
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+
+    ctx.translate(bpTextX, bpTextY);
+    ctx.transform(1, 0, -0.15, 1, 0, 0);
+    ctx.rotate(-0.03);
+
+    const bpShadowDepth = Math.floor(bpFontSize * 0.10);
+
+    if (bpStyle.outer2) {
+        ctx.lineWidth = bpFontSize * 0.24; ctx.strokeStyle = bpStyle.outer2;
+        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
+        ctx.lineWidth = bpFontSize * 0.16; ctx.strokeStyle = bpStyle.outer;
+        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
+        ctx.lineWidth = bpFontSize * 0.0154; ctx.strokeStyle = bpStyle.shadow;
+        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
+    } else if (bpStyle.outer) {
+        ctx.lineWidth = bpFontSize * 0.12; ctx.strokeStyle = bpStyle.outer;
+        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
+        ctx.lineWidth = bpFontSize * 0.0154; ctx.strokeStyle = bpStyle.shadow;
+        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
+    } else {
+        ctx.lineWidth = bpFontSize * 0.0154; ctx.strokeStyle = bpStyle.shadow;
+        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
+    }
+
+    let bpGrad = ctx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
+    bpGrad.addColorStop(0, bpStyle.grad[0]);
+    bpGrad.addColorStop(0.52, bpStyle.grad[1]);
+    bpGrad.addColorStop(1, bpStyle.grad[2]);
+    ctx.fillStyle = bpGrad;
+    ctx.fillText(bpText, 0, 0);
+
+    ctx.globalCompositeOperation = "source-atop";
+    ctx.lineWidth = bpFontSize * 0.06;
+    ctx.strokeStyle = bpStyle.inner;
+    ctx.strokeText(bpText, 0, 0);
+
     ctx.restore();
 
     // === ИНТЕГРАЦИЯ В СТАНДАРТНЫЙ ДВИЖОК ===
