@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.6";
+  const APP_VERSION = "v2.4.6(1)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3026,7 +3026,7 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     ctx.lineJoin = 'round'; 
     
     // Выравниваем Y строго по центру плашки
-    let textY = y + (h / 2) - (canvasH * 0.005); 
+    let textY = y + (h / 2) - (canvasH * 0.005) - 2; 
 
     // Вычисляем толщину обводки и смещение тени
     let strokeWidth = Math.max(3, canvasW * 0.005); // Жирная обводка
@@ -3062,7 +3062,6 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     ctx.restore();
 }
 
-// Отрисовка маленьких водяных знаков специально для Brawl Pass
 function drawBPWatermarks(ctx, text, w, h, opacity) {
     ctx.save();
     ctx.globalCompositeOperation = "overlay";
@@ -3070,8 +3069,9 @@ function drawBPWatermarks(ctx, text, w, h, opacity) {
     ctx.fillStyle = "#ffffff";
     ctx.textBaseline = "top";
     
-    // Высчитываем множитель масштаба (базовый холст был 1200x675)
     let scaleMult = h / 675;
+    // Используем выбранный пользователем шрифт для водяных знаков
+    let fontName = window.layerState.watermarksFont || 'Font16103';
 
     const marks = [
         { top: 0.069, left: 0.029, size: 13 }, { top: 0.000, left: 0.156, size: 17 }, { top: 0.018, left: 0.535, size: 20 }, { top: 0.046, left: 0.804, size: 15 },
@@ -3085,7 +3085,8 @@ function drawBPWatermarks(ctx, text, w, h, opacity) {
         ctx.translate(w * mark.left, h * mark.top); 
         ctx.transform(1, 0, -0.2, 1, 0, 0);
         let currentSize = Math.max(8, mark.size * scaleMult);
-        ctx.font = `${currentSize}px '${window.layerState.watermarksFont || 'Font16103'}', 'Arial Black', sans-serif`; 
+        // Применяем шрифт
+        ctx.font = `${currentSize}px '${fontName}', 'Arial Black', sans-serif`; 
         ctx.fillText(text, 0, 0); 
         ctx.restore();
     });
@@ -3200,18 +3201,14 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div class="ios-layer-action-text">прозрачность</div>
                 <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.watermarksOpacity}" oninput="changeOpacity('watermarks', this.value)">
             </div>
+            <div class="ios-font-label">Шрифт ARTZA DONATE</div>
+            <div class="ios-font-grid" style="border-bottom:none; padding-bottom:10px;">
         `;
-        html += `</div>`;
-
-        // Группа 4: Фон
-        html += `<div class="ios-layer-group ${animCls}">
-            <div class="ios-layer-row" style="border-bottom:none;">
-                <div class="ios-icon-btn ios-eye-icon">
-                     ${getEyeSVG(true)}
-                </div>
-                <div class="ios-layer-name" style="color: var(--tg-theme-subtitle-text-color, #8E8E93);">Фон (редактирование недоступно)</div>
-            </div>
-        </div>`;
+        FONT_OPTIONS.forEach((f) => {
+            let activeCls = window.layerState.watermarksFont === f.family ? 'active' : '';
+            html += `<div class="ios-font-item wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setWmFont('${f.family}')">ARTZA</div>`;
+        });
+        html += `</div></div>`;
 
         layerPanel.innerHTML = html;
         layerPanel.style.display = 'flex';
@@ -4388,13 +4385,22 @@ function drawScene() {
     let w = persistentCanvas.width; let h = persistentCanvas.height;
     persistentCtx.clearRect(0, 0, w, h);
     
-    // Рисуем базу (в БП это фон + персонажи + панели)
-    if (window.layerState.bgVisible && rawBgImage) {
-        persistentCtx.drawImage(rawBgImage, 0, 0, w, h);
-    }
+    // Слой с фоном полностью удален из отрисовки в режиме БП
 
-    // --- РЕЖИМ BRAWL PASS ---
     if (window.layerState.isBrawlPassMode) {
+        // Проверка панелей на растягивание
+        // Рисуем панели с сохранением аспект ратио
+        const drawFixedPanel = (img, x, y, targetW) => {
+            if (!img) return;
+            let aspect = img.height / img.width;
+            let targetH = targetW * aspect;
+            persistentCtx.drawImage(img, x, y, targetW, targetH);
+        };
+
+        // Рисуем левую и правую панели (теперь не стянуты)
+        if (globalAssets.panelL) drawFixedPanel(globalAssets.panelL, 14, 50, w * 0.28);
+        if (globalAssets.panelR) drawFixedPanel(globalAssets.panelR, w - 14 - w * 0.32, 50, w * 0.32);
+
         // 1. Лучи
         if (window.layerState.luchVisible && globalAssets.luchImg) {
             persistentCtx.save();
@@ -4404,7 +4410,7 @@ function drawScene() {
             persistentCtx.restore();
         }
 
-        // 2. Звезды (Эффект)
+        // 2. Звезды
         if (window.layerState.starsVisible && globalAssets.starsEff) {
             persistentCtx.save();
             persistentCtx.globalCompositeOperation = "overlay";
@@ -4422,22 +4428,15 @@ function drawScene() {
         }
 
         // 4. Цены
-
-        let priceW = w * 0.24; // Ширина плашки (24% от ширины холста)
-        let marginX = w * 0.02; // Отступ от левого и правого края
-        
-        // Вычисляем высоту плашки, чтобы правильно прижать её к низу
+        let priceW = w * 0.24;
+        let marginX = w * 0.02;
         let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : h * 0.15;
-        let priceY = h - tempH - (h * 0.04); // Отступ снизу 4%
+        let priceY = h - tempH - (h * 0.04);
 
-        if (globalAssets.bpPriceL) {
-            drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, w, h);
-        }
-        if (globalAssets.bpPriceR) {
-            drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - marginX - priceW, priceY, priceW, w, h);
-        }
+        if (globalAssets.bpPriceL) drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, w, h);
+        if (globalAssets.bpPriceR) drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - marginX - priceW, priceY, priceW, w, h);
 
-        // 5. Водяные знаки ARTZA DONATE (используем новую БП-функцию)
+        // 5. ARTZA DONATE
         if (window.layerState.watermarksVisible) {
             drawBPWatermarks(persistentCtx, "ARTZA DONATE", w, h, window.layerState.watermarksOpacity);
         }
@@ -4450,15 +4449,11 @@ function drawScene() {
             persistentCtx.translate(tw2, th2);
             persistentCtx.scale(animText.scale, animText.scale);
             persistentCtx.translate(-tw2, -th2);
-            persistentCtx.imageSmoothingEnabled = true;
-            persistentCtx.imageSmoothingQuality = 'high';
             persistentCtx.drawImage(cachedTextCanvas, 0, 0);
             persistentCtx.restore();
         }
-
         return; 
     }
-
     // --- СТАНДАРТНАЯ ОТРИСОВКА (Акции) ---
     if (window.layerState.isGeneratedBg && window.layerState.pointsVisible && globalAssets.pointsImg) {
         persistentCtx.save();
@@ -5393,6 +5388,9 @@ async function generateBrawlPassTest() {
     globalAssets.bpPriceL = priceL;
     globalAssets.bpPriceR = priceR;
 
+    globalAssets.panelL = panelL;
+    globalAssets.panelR = panelR;
+
     // --- РИСУЕМ ТОЛЬКО БАЗОВЫЙ СТАТИЧНЫЙ ФОН ---
     
     // 1. Оранжевый фон (Левый)
@@ -5436,8 +5434,11 @@ async function generateBrawlPassTest() {
     if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
     if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
 
-    // 6. СВЕЧЕНИЕ ЗА ПЕРСОНАЖАМИ
-    let cxL = (WIDTH * 0.39) - 16; let cxR = (WIDTH * 0.589) - 16; 
+    // 6-8. ПЕРСОНАЖИ И ИХ ЭФФЕКТЫ (Порядок: Левый свет -> Левый перс -> Правый свет -> Правый перс)
+    let cxL = (WIDTH * 0.39) - 16; 
+    let cxR = (WIDTH * 0.589) - 16; 
+
+    // Функция отрисовки свечения
     const drawLargeGlow = (x, y, radius) => {
         ctx.save(); 
         ctx.globalCompositeOperation = 'screen';
@@ -5450,16 +5451,18 @@ async function generateBrawlPassTest() {
         ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2); 
         ctx.restore();
     };
-    drawLargeGlow(cxL + 40, starY - HEIGHT * 0.2, 280); 
-    drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
 
-    // 7. ТЕНИ ПОД ПЕРСОНАЖАМИ
+    // Функция отрисовки тени
     const drawShadow = (x, y) => {
-        ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        ctx.save(); 
+        ctx.fillStyle = 'rgba(0,0,0,0.2)'; 
+        ctx.beginPath(); 
+        ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); 
+        ctx.fill(); 
+        ctx.restore();
     };
-    drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
 
-    // 8. ПЕРСОНАЖИ
+    // Функция отрисовки персонажа
     const drawBrawler = (img, x, targetH) => {
         if (!img) return;
         let bh = targetH;
@@ -5476,8 +5479,22 @@ async function generateBrawlPassTest() {
         ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
         ctx.restore();
     };
-    drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48); 
+
+    // --- ЛЕВЫЙ ПЕРСОНАЖ ---
+    // 1. Свечение левого
+    drawLargeGlow(cxL + 40, starY - HEIGHT * 0.2, 280); 
+    // 2. Тень левого
+    drawShadow(cxL, starY - 10 + 12.5);
+    // 3. Левый персонаж (brawler1)
     drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
+
+    // --- ПРАВЫЙ ПЕРСОНАЖ ---
+    // 4. Свечение правого (оно теперь будет поверх левого персонажа, если они пересекаются)
+    drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
+    // 5. Тень правого
+    drawShadow(cxR, starY - 10 + 12.5);
+    // 6. Правый персонаж (brawler2)
+    drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48);
 
     // === СОХРАНЯЕМ ФОН И ПЕРЕДАЕМ УПРАВЛЕНИЕ ДВИЖКУ СЛОЕВ ===
     rawBgImage = new Image();
@@ -5545,8 +5562,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const bpShadowDepth = Math.floor(bpFontSize * 0.10);
     const lineGap = 0;
 
-    const bpTextX = WIDTH / 2 + (bpFontSize * 0.07 * 0.5); 
-
+    const bpTextX = (WIDTH / 2 + (bpFontSize * 0.07 * 0.5)) - 12;
     const FIXED_BOTTOM_Y = HEIGHT * 0.91; 
     const BOUND_TOP = HEIGHT * 0.62;
 
