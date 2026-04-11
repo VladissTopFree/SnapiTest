@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.3.9";
+  const APP_VERSION = "v2.4.0";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5103,7 +5103,6 @@ async function generateBrawlPassTest() {
 
     // 4. Линия разделения
     ctx.save();
-    ctx.shadowColor = 'rgba(0, 255, 76, 0.7)'; ctx.shadowBlur = 8;
     ctx.strokeStyle = '#f09e41'; ctx.lineWidth = 9; ctx.lineJoin = 'miter';
     ctx.beginPath();
     ctx.moveTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT);
@@ -5196,57 +5195,15 @@ async function generateBrawlPassTest() {
     });
     ctx.restore();
 
+    // Сохраняем canvas до ника
+    window.bpBaseCanvas = document.createElement('canvas');
+    window.bpBaseCanvas.width = WIDTH;
+    window.bpBaseCanvas.height = HEIGHT;
+    window.bpBaseCanvas.getContext('2d').drawImage(c, 0, 0);
+
     // 11. ТЕКСТ SNAPI В ЦЕНТРЕ
     await document.fonts.ready;
-    const bpTextX = WIDTH / 2 - 26;
-    const bpTextY = HEIGHT * 0.88 - 46;
-    const bpFontSize = 145;
-    const bpStyle = TEXT_STYLES[9];
-    const bpText = "SNAPI";
-
-    ctx.save();
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = `${bpFontSize}px 'Font16103', sans-serif`;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-
-    ctx.translate(bpTextX, bpTextY);
-    ctx.transform(1, 0, -0.15, 1, 0, 0);
-    ctx.rotate(-0.03);
-
-    const bpShadowDepth = Math.floor(bpFontSize * 0.10);
-
-    if (bpStyle.outer2) {
-        ctx.lineWidth = bpFontSize * 0.24; ctx.strokeStyle = bpStyle.outer2;
-        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
-        ctx.lineWidth = bpFontSize * 0.16; ctx.strokeStyle = bpStyle.outer;
-        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
-        ctx.lineWidth = bpFontSize * 0.0154; ctx.strokeStyle = bpStyle.shadow;
-        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
-    } else if (bpStyle.outer) {
-        ctx.lineWidth = bpFontSize * 0.12; ctx.strokeStyle = bpStyle.outer;
-        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
-        ctx.lineWidth = bpFontSize * 0.0154; ctx.strokeStyle = bpStyle.shadow;
-        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
-    } else {
-        ctx.lineWidth = bpFontSize * 0.0154; ctx.strokeStyle = bpStyle.shadow;
-        for (let i = bpShadowDepth; i >= 0; i--) ctx.strokeText(bpText, 0, i);
-    }
-
-    let bpGrad = ctx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
-    bpGrad.addColorStop(0, bpStyle.grad[0]);
-    bpGrad.addColorStop(0.52, bpStyle.grad[1]);
-    bpGrad.addColorStop(1, bpStyle.grad[2]);
-    ctx.fillStyle = bpGrad;
-    ctx.fillText(bpText, 0, 0);
-
-    ctx.globalCompositeOperation = "source-atop";
-    ctx.lineWidth = bpFontSize * 0.06;
-    ctx.strokeStyle = bpStyle.inner;
-    ctx.strokeText(bpText, 0, 0);
-
-    ctx.restore();
+    drawBPNickText(ctx, window.layerState.textValue || "SNAPI", WIDTH, HEIGHT);
 
     // === ИНТЕГРАЦИЯ В СТАНДАРТНЫЙ ДВИЖОК ===
     rawBgImage = new Image();
@@ -5269,17 +5226,173 @@ async function generateBrawlPassTest() {
 
         setupPersistentCanvas();
         
+        const savedBPNick = window.layerState.textValue || 'SNAPI';
         layerPanel.innerHTML = `
             <div class="ios-section-title">BRAWL PASS УСПЕШНО СОЗДАН</div>
-            <div class="sp-info-text" style="padding: 0 20px; font-size: 14px; margin-top: 10px;">
-                Вы можете сохранить проект и скачать картинку прямо сейчас, используя стандартные кнопки внизу.<br><br>
+            <div class="ios-layer-group" style="padding: 0 20px; margin-top: 8px;">
+                <div class="ios-layer-row" style="border-bottom: none;">
+                    <div class="ios-layer-name" style="flex-grow: 0; margin-right: 12px; font-size: 15px; white-space: nowrap;">Ник</div>
+                    <input type="text" id="bp-nick-input"
+                        style="flex-grow:1; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 14px; font-size: 17px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
+                        maxlength="16" placeholder="Введите ник..." value="${savedBPNick}">
+                </div>
+            </div>
+            <div class="sp-info-text" style="padding: 0 14px; font-size: 13px; margin-top: 0; padding-bottom: 0;">
+                Максимум 16 символов. Размер подстраивается автоматически.
             </div>
         `;
+        document.getElementById('bp-nick-input').addEventListener('input', function() {
+            window.layerState.textValue = this.value;
+            window.redrawBPNick(this.value);
+        });
         startAnimation();
     };
     rawBgImage.src = c.toDataURL('image/png');
 }
 
+function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
+    const bpStyle = TEXT_STYLES[9];
+    const bpText = (nick || "SNAPI").substring(0, 16);
+
+    let line1 = bpText;
+    let line2 = "";
+    if (bpText.length > 5) {
+        const spaceIndex = bpText.indexOf(' ');
+        if (spaceIndex !== -1) {
+            line1 = bpText.substring(0, spaceIndex);
+            line2 = bpText.substring(spaceIndex + 1);
+        } else {
+            const mid = Math.ceil(bpText.length / 2);
+            line1 = bpText.substring(0, mid);
+            line2 = bpText.substring(mid);
+        }
+    }
+    const BP_MAX_TEXT_WIDTH = line2 ? WIDTH * 0.30 : WIDTH * 0.38;
+
+    const measureC = document.createElement('canvas');
+    const mCtx = measureC.getContext('2d');
+    let bpFontSize = 30; // начинаем с минимума и растём вверх
+    const longestLine = line2.length > line1.length ? line2 : line1;
+    mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    while (mCtx.measureText(longestLine).width < BP_MAX_TEXT_WIDTH && bpFontSize < 145) {
+        bpFontSize += 2;
+        mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    }
+    bpFontSize -= 2; // шаг назад чтобы не вылезть
+
+    const bpShadowDepth = Math.floor(bpFontSize * 0.10);
+    const lineGap = 0;
+
+    const bpTextX = WIDTH / 2 + (bpFontSize * 0.07 * 0.5); 
+    const blockCenterY = line2 ? HEIGHT * 0.84 - 16 : HEIGHT * 0.84;
+    
+    // Измеряем реальную высоту текста
+    mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    const metrics1 = mCtx.measureText(line1);
+    const actualH1 = metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent;
+    const actualH2 = line2 ? (() => { const m = mCtx.measureText(line2); return m.actualBoundingBoxAscent + m.actualBoundingBoxDescent; })() : 0;
+    const maxLineH = Math.max(actualH1, actualH2);
+
+    const y1 = line2 ? blockCenterY - maxLineH / 2 - lineGap : blockCenterY;
+    const y2 = blockCenterY + maxLineH / 2;
+    // Верхняя и нижняя границы (зона между персонажами и ценами)
+    const BOUND_TOP = HEIGHT * 0.62;
+    const BOUND_BOTTOM = HEIGHT * 0.97;
+
+    // Проверяем выход за границы и уменьшаем шрифт если надо
+    const topEdge = line2 ? y1 - bpFontSize / 2 : y1 - bpFontSize / 2;
+    const bottomEdge = line2 ? y2 + bpFontSize / 2 : y1 + bpFontSize / 2;
+
+    if (topEdge < BOUND_TOP || bottomEdge > BOUND_BOTTOM) {
+        const availableH = BOUND_BOTTOM - BOUND_TOP;
+        const neededLines = line2 ? 2 : 1;
+        const maxFontByHeight = Math.floor((availableH - lineGap * (neededLines - 1)) / neededLines);
+        if (maxFontByHeight < bpFontSize) {
+            bpFontSize = maxFontByHeight;
+        }
+    }
+
+    const lines = line2 ? [{ text: line1, y: y1 }, { text: line2, y: y2 }] : [{ text: line1, y: y1 }];
+
+    const strokeC = document.createElement('canvas');
+    strokeC.width = WIDTH; strokeC.height = HEIGHT;
+    const sCtx = strokeC.getContext('2d');
+    sCtx.textAlign = "center";
+    sCtx.textBaseline = "middle";
+    sCtx.lineJoin = "round";
+    sCtx.lineCap = "round";
+    sCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+
+    lines.forEach(({ text, y }) => {
+        sCtx.save();
+        sCtx.translate(bpTextX, y);
+        sCtx.transform(1, 0, -0.07, 1, 0, 0);
+        sCtx.rotate(-0.02);
+        sCtx.lineWidth = bpFontSize * 0.24; sCtx.strokeStyle = bpStyle.outer2;
+        for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+        sCtx.lineWidth = bpFontSize * 0.16; sCtx.strokeStyle = bpStyle.outer;
+        for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+        sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow;
+        for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+        sCtx.restore();
+    });
+
+    const fillC = document.createElement('canvas');
+    fillC.width = WIDTH; fillC.height = HEIGHT;
+    const fCtx = fillC.getContext('2d');
+    fCtx.textAlign = "center";
+    fCtx.textBaseline = "middle";
+    fCtx.lineJoin = "round";
+    fCtx.lineCap = "round";
+    fCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+
+    lines.forEach(({ text, y }) => {
+        fCtx.save();
+        fCtx.translate(bpTextX, y);
+        fCtx.transform(1, 0, -0.07, 1, 0, 0);
+        fCtx.rotate(-0.02);
+        let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
+        bpGrad.addColorStop(0, bpStyle.grad[0]);
+        bpGrad.addColorStop(0.52, bpStyle.grad[1]);
+        bpGrad.addColorStop(1, bpStyle.grad[2]);
+        fCtx.fillStyle = bpGrad;
+        fCtx.fillText(text, 0, 0);
+        fCtx.globalCompositeOperation = "source-atop";
+        fCtx.lineWidth = bpFontSize * 0.06;
+        fCtx.strokeStyle = bpStyle.inner;
+        fCtx.strokeText(text, 0, 0);
+        fCtx.restore();
+    });
+
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+    ctx.shadowBlur = Math.round(21 * (HEIGHT / 1080));
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = Math.round(16 * (HEIGHT / 1080));
+    ctx.drawImage(strokeC, 0, 0);
+    ctx.restore();
+    ctx.drawImage(fillC, 0, 0);
+}
+
+window.redrawBPNick = async function(nick) {
+    if (!window.bpBaseCanvas) return;
+    const WIDTH = 1200, HEIGHT = 675;
+    const c2 = document.createElement('canvas');
+    c2.width = WIDTH; c2.height = HEIGHT;
+    const ctx2 = c2.getContext('2d');
+    ctx2.drawImage(window.bpBaseCanvas, 0, 0);
+
+    await document.fonts.ready;
+    drawBPNickText(ctx2, nick, WIDTH, HEIGHT);
+
+    rawBgImage = new Image();
+    rawBgImage.onload = () => {
+        persistentCanvas.width = rawBgImage.width;
+        persistentCanvas.height = rawBgImage.height;
+        startAnimation();
+    };
+    rawBgImage.src = c2.toDataURL('image/png');
+};
 </script>
 </body>
 </html>
