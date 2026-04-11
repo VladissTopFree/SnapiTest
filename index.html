@@ -3,10 +3,10 @@
 <head> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-<title>Snapi</title>
+<title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.3.2";
+  const APP_VERSION = "v2.3.3";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5014,8 +5014,10 @@ function androidFallback2(blob) {
 window.addEventListener('DOMContentLoaded', () => {
     const dashboard = document.querySelector('.ios-container');
     const createBtn = document.getElementById('ios-btn-create');
-    if (dashboard && createBtn) {
+    // Проверка, чтобы кнопка не дублировалась при перезагрузках
+    if (dashboard && createBtn && !document.getElementById('ios-btn-create-bp')) {
         const bpBtn = document.createElement('div');
+        bpBtn.id = 'ios-btn-create-bp';
         bpBtn.className = 'ios-card ios-menu-item';
         bpBtn.style.borderRadius = '100px';
         bpBtn.style.marginBottom = '24px';
@@ -5027,16 +5029,15 @@ window.addEventListener('DOMContentLoaded', () => {
             <div class="ios-menu-text">Создать БП (Тест)</div>
             <div class="ios-chevron"><svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         `;
-        // Вставляем новую кнопку прямо перед основной кнопкой "Создать"
         dashboard.insertBefore(bpBtn, createBtn);
     }
 });
 
-// 2. Логика генерации БП (отрисовка макета прямо на Canvas движка)
+// 2. Логика генерации БП (Отрисовка макета прямо на Canvas)
 async function generateBrawlPassTest() {
     if (window.triggerHaptic) window.triggerHaptic();
     
-    // Переключаем интерфейс на экран результата с анимацией загрузки
+    // Переключаем интерфейс на экран результата
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
@@ -5048,14 +5049,12 @@ async function generateBrawlPassTest() {
     layerPanel.style.display = 'flex';
     layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div></div>';
 
-    // Создаем холст ровно в размерах твоего БП
     const WIDTH = 1200;
     const HEIGHT = 675;
     const c = document.createElement('canvas');
     c.width = WIDTH; c.height = HEIGHT;
     const ctx = c.getContext('2d');
 
-    // Помощник для загрузки ассетов (берем картинки из твоего пути)
     const loadImg = (src) => new Promise(r => { 
         const img = new Image(); 
         img.crossOrigin = "anonymous"; 
@@ -5093,7 +5092,7 @@ async function generateBrawlPassTest() {
     if (bg3) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(bg3, 0, 0, WIDTH, HEIGHT); }
     ctx.restore();
 
-    // 3. Эффекты лучей, точек и звезд
+    // 3. Эффекты
     ctx.save();
     ctx.globalCompositeOperation = 'overlay';
     ctx.globalAlpha = 0.5;
@@ -5134,21 +5133,29 @@ async function generateBrawlPassTest() {
     };
     drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
 
-    // 7. Отрисовка Бравлеров
-    const drawBrawler = (img, x) => {
+    // 7. Отрисовка Бравлеров (ИСПРАВЛЕНО: строгие пропорции + наложение)
+    const drawBrawler = (img, x, targetH) => {
         if (!img) return;
-        let bw = WIDTH * 0.31; let bh = HEIGHT * 0.58;
+        // Считаем ширину ПРОПОРЦИОНАЛЬНО высоте картинки (никаких сплющиваний!)
+        let bh = targetH;
+        let bw = bh * (img.width / img.height);
+        
         ctx.save();
         ctx.shadowColor = '#000'; ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 0; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
-        ctx.shadowOffsetX = -2; ctx.shadowOffsetY = 0; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
-        ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 2; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
-        ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -2; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
-        ctx.shadowColor = 'transparent'; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        // Делаем толстую плотную обводку 3px
+        const offsets = [[3,0], [-3,0], [0,3], [0,-3], [2,2], [-2,-2], [2,-2], [-2,2]];
+        offsets.forEach(([dx, dy]) => {
+            ctx.shadowOffsetX = dx; ctx.shadowOffsetY = dy; 
+            ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        });
+        ctx.shadowColor = 'transparent'; 
+        ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
         ctx.restore();
     };
-    drawBrawler(brawler2, cxL);
-    drawBrawler(brawler1, cxR);
+
+    // Отрисовываем сначала Байрона, потом 8-Бита поверх него
+    drawBrawler(brawler2, WIDTH * 0.38, HEIGHT * 0.65); 
+    drawBrawler(brawler1, WIDTH * 0.60, HEIGHT * 0.60); 
 
     // 8. Панели
     if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
@@ -5186,13 +5193,15 @@ async function generateBrawlPassTest() {
     });
     ctx.restore();
 
-    // 11. Текст SNAPI
-    const style = TEXT_STYLES[6]; // Классика Бравла (Индекс 6)
+    // 11. Текст SNAPI (ИСПРАВЛЕНО: Сверху, стиль №9 - фиолетовая обводка)
+    const style = TEXT_STYLES[9]; 
     ctx.save();
-    let fontSize = 145;
+    let fontSize = 105; 
     ctx.font = `${fontSize}px 'Font16103', 'Arial Black', sans-serif`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round"; ctx.miterLimit = 2;
-    ctx.translate((WIDTH / 2) - 12, (HEIGHT * 0.78) + 3);
+    
+    // Ставим строго по центру сверху
+    ctx.translate((WIDTH / 2), HEIGHT * 0.14);
     ctx.transform(1, 0, -0.15, 1, 0, 0); ctx.rotate(-0.03);
 
     if (style.shadow) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.shadow; ctx.strokeText("SNAPI", 0, fontSize * 0.08); }
@@ -5205,10 +5214,8 @@ async function generateBrawlPassTest() {
     ctx.restore();
 
     // === ИНТЕГРАЦИЯ В СТАНДАРТНЫЙ ДВИЖОК ===
-    // Делаем из сгенерированного холста картинку и скармливаем ее движку как "готовую работу"
     rawBgImage = new Image();
     rawBgImage.onload = () => {
-        // Выключаем слои, чтобы движок не пытался рисовать свои элементы поверх
         window.layerState.isReadyBg = true;
         window.layerState.textVisible = false;
         window.layerState.luchVisible = false;
@@ -5217,10 +5224,8 @@ async function generateBrawlPassTest() {
         window.layerState.watermarksVisible = false;
         window.layerState.offers = [];
 
-        // Перезапускаем холст, он сам впишет его в мобильный экран!
         setupPersistentCanvas();
         
-        // Показываем заглушку вместо слоев
         layerPanel.innerHTML = `
             <div class="ios-section-title">BRAWL PASS УСПЕШНО СОЗДАН</div>
             <div class="sp-info-text" style="padding: 0 20px; font-size: 14px; margin-top: 10px;">
