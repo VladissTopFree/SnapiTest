@@ -5156,7 +5156,7 @@ async function generateBrawlPassTest() {
 
     // 8. ТЕНИ ПОД ПЕРСОНАЖАМИ
     const drawShadow = (x, y) => {
-        ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
     };
     drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
 
@@ -5178,8 +5178,8 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
-    drawBrawler(brawler2, (WIDTH * 0.58) - 16, HEIGHT * 0.48); 
-    drawBrawler(brawler1, (WIDTH * 0.42) - 16, HEIGHT * 0.55); 
+    drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48); 
+    drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
 
     // 10. ВОДЯНЫЕ ЗНАКИ
     ctx.save();
