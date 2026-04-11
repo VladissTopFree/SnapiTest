@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.5";
+  const APP_VERSION = "v2.4.6";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -20,7 +20,7 @@
   }
 
 
-  const MANUAL_FALLBACK_DATE = "11 Apr 2026";
+  const MANUAL_FALLBACK_DATE = "12 Apr 2026";
 
 
 
@@ -2998,16 +2998,18 @@ window.setWmFont = async (fontFamily) => {
 };
 
 // Функция отрисовки цены для БП
-function drawBPPrice(ctx, img, numText, x, targetW, canvasW, canvasH) {
+function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     if(!img) return;
+    // Расчет высоты пропорционально ширине
     let h = img.height * (targetW / img.width); 
-    let y = canvasH - 30 - h;
     ctx.drawImage(img, x, y, targetW, h);
+    
     ctx.save();
 
-    let fontSize = Math.max(16, canvasW * 0.035);
+    let fontSize = Math.max(18, canvasW * 0.045); 
+    // Используем один шрифт для гармоничности, как на скриншоте
     let fontNum = `normal ${fontSize}px 'LilitaOneRus', 'Arial Black', sans-serif`;
-    let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
+    let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'LilitaOneRus', 'Arial Black', sans-serif`;
     let symText = " ₽";
 
     ctx.font = fontNum;
@@ -3016,37 +3018,41 @@ function drawBPPrice(ctx, img, numText, x, targetW, canvasW, canvasH) {
     let wSym = ctx.measureText(symText).width;
     let totalW = wNum + wSym;
 
-    let startX = x + targetW/2 - totalW/2;
-    let symStartX = startX + wNum;
+    // Центрирование относительно ширины плашки
+    let startX = x + (targetW / 2) - (totalW / 2);
+    let symStartX = startX + wNum + (canvasW * 0.005); // Микро-отступ перед рублем
 
     ctx.textAlign = 'left'; 
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round'; 
     
-    let textY = y + h/2 - 7;
-    let symTextY = textY + 7; 
+    // Выравниваем Y строго по центру плашки (чуть-чуть корректируем оптический центр)
+    let textY = y + (h / 2) - (canvasH * 0.005); 
 
-    // Тень (обводка)
+    // 1. Рисуем жесткую тень без размытия, как в игре
     ctx.shadowColor = '#000000'; 
-    ctx.shadowOffsetX = 0; 
-    ctx.shadowOffsetY = 4;
+    ctx.shadowOffsetX = Math.max(1, canvasW * 0.0015); 
+    ctx.shadowOffsetY = Math.max(2, canvasW * 0.004); 
     ctx.shadowBlur = 0;
-    ctx.lineWidth = 6; 
+    
+    // Тонкая аккуратная обводка
+    ctx.lineWidth = Math.max(2, canvasW * 0.0025); 
     ctx.strokeStyle = '#000000'; 
 
+    // Отрисовываем контур (он же отбросит тень)
     ctx.font = fontNum;
     ctx.strokeText(numText, startX, textY);
     ctx.font = fontSym;
-    ctx.strokeText(symText, symStartX, symTextY); 
+    ctx.strokeText(symText, symStartX, textY); // Рубль на том же уровне Y!
 
-    // Заливка текста
+    // 2. Заливка белым поверх (без тени, чтобы текст был чистым)
     ctx.shadowColor = 'transparent'; 
     ctx.fillStyle = '#ffffff';
 
     ctx.font = fontNum;
     ctx.fillText(numText, startX, textY);
     ctx.font = fontSym;
-    ctx.fillText(symText, symStartX, symTextY); 
+    ctx.fillText(symText, symStartX, textY); 
     
     ctx.restore();
 }
@@ -4411,8 +4417,20 @@ function drawScene() {
         }
 
         // 4. Цены
-        if (globalAssets.bpPriceL) drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, w * 0.055 - 22, w * 0.20, w, h);
-        if (globalAssets.bpPriceR) drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - (w * 0.055 + 18) - w * 0.24, w * 0.24, w, h);
+
+        let priceW = w * 0.24; // Ширина плашки (24% от ширины холста)
+        let marginX = w * 0.02; // Отступ от левого и правого края
+        
+        // Вычисляем высоту плашки, чтобы правильно прижать её к низу
+        let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : h * 0.15;
+        let priceY = h - tempH - (h * 0.04); // Отступ снизу 4%
+
+        if (globalAssets.bpPriceL) {
+            drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, w, h);
+        }
+        if (globalAssets.bpPriceR) {
+            drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - marginX - priceW, priceY, priceW, w, h);
+        }
 
         // 5. Водяные знаки ARTZA DONATE (используем новую БП-функцию)
         if (window.layerState.watermarksVisible) {
