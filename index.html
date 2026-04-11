@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.6(4)";
+  const APP_VERSION = "v2.4.6(5)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3027,7 +3027,7 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     let scaleMult = canvasH / 675;
     
     // Выравниваем по центру и поднимаем ВВЕРХ на 4 пикселя (умноженные на масштаб)
-    let textY = y + (h / 2) - (4 * scaleMult); 
+    let textY = y + (h / 2) - (12 * scaleMult); 
 
     let strokeWidth = Math.max(3, canvasW * 0.005);
     let shadowOffsetY = Math.max(2, canvasW * 0.004);
@@ -5429,7 +5429,7 @@ async function generateBrawlPassTest() {
         if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
         if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
 
-        // 6. ПЕРСОНАЖИ И ЭФФЕКТЫ (Правильный порядок: Свет Л -> Перс Л -> Свет П -> Перс П)
+        // 6. ПЕРСОНАЖИ И ЭФФЕКТЫ
         let cxL = (WIDTH * 0.39) - 16; 
         let cxR = (WIDTH * 0.589) - 16; 
 
@@ -5466,20 +5466,19 @@ async function generateBrawlPassTest() {
             ctx.restore();
         };
 
-        // Левый
-        drawLargeGlow(cxL + 40, starY - HEIGHT * 0.2, 280); 
-        drawShadow(cxL, starY - 10 + 12.5);
-        drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
-        
-        // Правый
+        // --- ПРАВЫЙ ПЕРСОНАЖ (Рисуем ПЕРВЫМ, чтобы он был на заднем плане) ---
         drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
         drawShadow(cxR, starY - 10 + 12.5);
         drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48);
 
+        // --- ЛЕВЫЙ ПЕРСОНАЖ (Рисуем ВТОРЫМ, чтобы он перекрыл правого) ---
+        drawLargeGlow(cxL + 40, starY - HEIGHT * 0.2, 280); 
+        drawShadow(cxL, starY - 10 + 12.5);
+        drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
+
         // СОХРАНЯЕМ ВЕСЬ ЭТОТ ФОН
         rawBgImage = new Image();
         rawBgImage.onload = () => {
-        // ... дальше твой код: window.layerState.isBrawlPassMode = true; и т.д.
         window.layerState.isBrawlPassMode = true; // Включаем режим БП
         window.layerState.isReadyBg = false;
         window.layerState.isGeneratedBg = false;
@@ -5533,21 +5532,18 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const longestLine = line2.length > line1.length ? line2 : line1;
     mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
     
-    // 1. Считаем стандартный размер шрифта
     while (mCtx.measureText(longestLine).width < BP_MAX_TEXT_WIDTH && bpFontSize < maxAllowedFontSize) {
         bpFontSize += 2 * scaleMult;
         mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
     }
     bpFontSize -= 2 * scaleMult;
 
-    // --- ПРОВЕРКА НА 5 СИМВОЛОВ ---
     if (bpText.length === 5) {
-        bpFontSize = bpFontSize * 0.88; // Уменьшаем размер на 12%
-        mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`; // Обновляем в контексте
+        bpFontSize = bpFontSize * 0.88; 
+        mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`; 
     }
-    // ------------------------------
 
-    const bpShadowDepth = Math.floor(bpFontSize * 0.10);
+    const bpShadowDepth = Math.max(1, Math.floor(bpFontSize * 0.10));
     const lineGap = 0;
 
     const bpTextX = (WIDTH / 2 + (bpFontSize * 0.07 * 0.5)) - 12; 
@@ -5589,6 +5585,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     const lines = line2 ? [{ text: line1, y: y1 }, { text: line2, y: y2 }] : [{ text: line1, y: y1 }];
 
+    // --- ОТРИСОВКА ОБВОДОК И ТЕНЕЙ (КАК В АКЦИЯХ) ---
     const strokeC = document.createElement('canvas');
     strokeC.width = WIDTH; strokeC.height = HEIGHT;
     const sCtx = strokeC.getContext('2d');
@@ -5600,15 +5597,39 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         sCtx.translate(bpTextX, y);
         sCtx.transform(1, 0, -0.07, 1, 0, 0);
         sCtx.rotate(-0.02);
-        sCtx.lineWidth = bpFontSize * 0.24; sCtx.strokeStyle = bpStyle.outer2 || '#ffffff';
-        for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-        sCtx.lineWidth = bpFontSize * 0.16; sCtx.strokeStyle = bpStyle.outer || '#000000';
-        for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-        sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow || '#000000';
-        for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+        
+        if (bpStyle.isClassic) {
+            sCtx.lineWidth = bpFontSize * 0.18; sCtx.strokeStyle = "#ffffff"; 
+            for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+            sCtx.lineWidth = bpFontSize * 0.12; sCtx.strokeStyle = "#42003d"; 
+            for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+            sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = "#61005a"; 
+            for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+        } else {
+            if (bpStyle.outer2) {
+                sCtx.lineWidth = bpFontSize * 0.18; sCtx.strokeStyle = bpStyle.outer2; 
+                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+                
+                sCtx.lineWidth = bpFontSize * 0.12; sCtx.strokeStyle = bpStyle.outer; 
+                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+                
+                sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow; 
+                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+            } else if (bpStyle.outer) {
+                sCtx.lineWidth = bpFontSize * 0.12; sCtx.strokeStyle = bpStyle.outer; 
+                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+                
+                sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow; 
+                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+            } else {
+                sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow; 
+                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
+            }
+        }
         sCtx.restore();
     });
 
+    // --- ОТРИСОВКА ЗАЛИВКИ И ВНУТРЕННЕГО КОНТУРА (КАК В АКЦИЯХ) ---
     const fillC = document.createElement('canvas');
     fillC.width = WIDTH; fillC.height = HEIGHT;
     const fCtx = fillC.getContext('2d');
@@ -5620,24 +5641,26 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         fCtx.translate(bpTextX, y);
         fCtx.transform(1, 0, -0.07, 1, 0, 0);
         fCtx.rotate(-0.02);
+        
         let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
         bpGrad.addColorStop(0, bpStyle.grad[0]);
-        bpGrad.addColorStop(0.52, bpStyle.grad[1] || bpStyle.grad[0]);
-        bpGrad.addColorStop(1, bpStyle.grad[2] || bpStyle.grad[0]);
+        bpGrad.addColorStop(bpStyle.isClassic ? 0.48 : 0.52, bpStyle.grad[1]);
+        bpGrad.addColorStop(1, bpStyle.grad[2]);
         fCtx.fillStyle = bpGrad;
         fCtx.fillText(text, 0, 0);
+        
         fCtx.globalCompositeOperation = "source-atop";
         fCtx.lineWidth = bpFontSize * 0.06;
-        fCtx.strokeStyle = bpStyle.inner || '#ffffff';
+        fCtx.strokeStyle = bpStyle.isClassic ? "#fcff00" : bpStyle.inner;
         fCtx.strokeText(text, 0, 0);
         fCtx.restore();
     });
 
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
-    ctx.shadowBlur = Math.round(21 * scaleMult);
+    ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult));
     ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = Math.round(16 * scaleMult);
+    ctx.shadowOffsetY = Math.max(4, Math.round(16 * scaleMult));
     ctx.drawImage(strokeC, 0, 0);
     ctx.restore();
     ctx.drawImage(fillC, 0, 0);
