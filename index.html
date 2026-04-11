@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.6(2)";
+  const APP_VERSION = "v2.4.6(3)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3025,14 +3025,13 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round'; 
     
-    // Выравниваем Y строго по центру плашки
-    let textY = y + (h / 2) - (canvasH * 0.005) - 2; 
+    // Выравниваем Y строго по центру плашки (подняли ещё на 3px выше, итого -5)
+    let textY = y + (h / 2) - (canvasH * 0.005) - 5; 
 
     // Вычисляем толщину обводки и смещение тени
-    let strokeWidth = Math.max(3, canvasW * 0.005); // Жирная обводка
-    let shadowOffsetY = Math.max(2, canvasW * 0.004); // Смещение тени вниз
+    let strokeWidth = Math.max(3, canvasW * 0.005);
+    let shadowOffsetY = Math.max(2, canvasW * 0.004);
 
-    // Вспомогательная функция для отрисовки обоих кусков текста
     const drawTextLayer = (offsetX, offsetY, isStroke, isFill) => {
         ctx.font = fontNum;
         if (isStroke) ctx.strokeText(numText, startX + offsetX, textY + offsetY);
@@ -3043,19 +3042,18 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
         if (isFill)   ctx.fillText(symText, symStartX + offsetX, textY + offsetY);
     };
 
-    // 1. СЛОЙ ТЕНИ: Рисуем черную заливку и черную обводку со смещением вниз.
-    // Это создаст плотную 100% черную подложку без прозрачных дырок внутри.
+    // 1. СЛОЙ ТЕНИ
     ctx.fillStyle = '#000000';
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = strokeWidth;
     drawTextLayer(0, shadowOffsetY, true, true);
 
-    // 2. СЛОЙ ОБВОДКИ: Рисуем только черную обводку на нормальной позиции.
+    // 2. СЛОЙ ОБВОДКИ
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = strokeWidth;
     drawTextLayer(0, 0, true, false);
 
-    // 3. СЛОЙ ЗАЛИВКИ: Рисуем чисто белый текст сверху.
+    // 3. СЛОЙ ЗАЛИВКИ
     ctx.fillStyle = '#ffffff';
     drawTextLayer(0, 0, false, true);
     
@@ -4418,14 +4416,19 @@ function drawScene() {
             persistentCtx.restore();
         }
 
-        // 4. Цены (Панелей тут больше нет, они в фоне. Рисуем только сами кнопки с ценами)
+        // 4. Цены
         let priceW = w * 0.24;
         let marginX = w * 0.02;
         let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : h * 0.15;
         let priceY = h - tempH - (h * 0.04);
 
-        if (globalAssets.bpPriceL) drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, w, h);
-        if (globalAssets.bpPriceR) drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - marginX - priceW, priceY, priceW, w, h);
+        if (globalAssets.bpPriceL) {
+            drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, w, h);
+        }
+        
+        if (globalAssets.bpPriceR) {
+            drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - marginX - priceW - 16, priceY, priceW, w, h);
+        }
 
         // 5. ARTZA DONATE
         if (window.layerState.watermarksVisible) {
@@ -5499,7 +5502,7 @@ async function generateBrawlPassTest() {
 
 function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const bpStyle = TEXT_STYLES[window.layerState.textStyleIndex !== undefined ? window.layerState.textStyleIndex : 9];
-    const bpText = (nick || "SNAPI").substring(0, 16);
+    const bpText = (nick || "SNAPI").trim().substring(0, 16);
 
     let line1 = bpText;
     let line2 = "";
@@ -5519,7 +5522,6 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const measureC = document.createElement('canvas');
     const mCtx = measureC.getContext('2d');
     
-    // Масштабируем стартовый размер и максимальный лимит шрифта
     let scaleMult = HEIGHT / 675;
     let maxAllowedFontSize = 145 * scaleMult;
     let bpFontSize = 30 * scaleMult; 
@@ -5527,20 +5529,28 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const longestLine = line2.length > line1.length ? line2 : line1;
     mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
     
+    // 1. Считаем стандартный размер шрифта
     while (mCtx.measureText(longestLine).width < BP_MAX_TEXT_WIDTH && bpFontSize < maxAllowedFontSize) {
         bpFontSize += 2 * scaleMult;
         mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
     }
     bpFontSize -= 2 * scaleMult;
 
+    // --- ПРОВЕРКА НА 5 СИМВОЛОВ ---
+    if (bpText.length === 5) {
+        bpFontSize = bpFontSize * 0.88; // Уменьшаем размер на 12%
+        mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`; // Обновляем в контексте
+    }
+    // ------------------------------
+
     const bpShadowDepth = Math.floor(bpFontSize * 0.10);
     const lineGap = 0;
 
-    const bpTextX = (WIDTH / 2 + (bpFontSize * 0.07 * 0.5)) - 12;
+    const bpTextX = (WIDTH / 2 + (bpFontSize * 0.07 * 0.5)) - 12; 
+
     const FIXED_BOTTOM_Y = HEIGHT * 0.91; 
     const BOUND_TOP = HEIGHT * 0.62;
 
-    mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
     let metrics1 = mCtx.measureText(line1);
     let maxLineH = Math.max(
         metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent,
