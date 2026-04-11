@@ -5162,29 +5162,35 @@ async function generateBrawlPassTest() {
         ctx.lineJoin = 'round'; 
         
         let textY = y + h/2 - 7;
+        
+        // --- ДОБАВЛЯЕМ НОВУЮ ПЕРЕМЕННУЮ ДЛЯ РУБЛЯ ---
+        // Увеличьте число 5, чтобы опустить рубль еще ниже, или уменьшите, чтобы поднять
+        let symTextY = textY + 5; 
 
         // 1. Рисуем ОЧЕНЬ ЖИРНУЮ обводку с небольшим смещением вниз (эффект объема)
         ctx.shadowColor = '#000000'; 
         ctx.shadowOffsetX = 0; 
-        ctx.shadowOffsetY = 4; // Смещение черного блока вниз
+        ctx.shadowOffsetY = 4;
         ctx.shadowBlur = 0;
         
-        ctx.lineWidth = 14; // Задаем жирность контура
+        ctx.lineWidth = 14; 
         ctx.strokeStyle = '#000000'; 
 
         ctx.font = fontNum;
         ctx.strokeText(numText, startX, textY);
         ctx.font = fontSym;
-        ctx.strokeText(symText, symStartX, textY);
+        // МЕНЯЕМ textY на symTextY здесь:
+        ctx.strokeText(symText, symStartX, symTextY); 
 
-        // 2. Отключаем тень и заливаем текст белым цветом поверх черного контура
+        // 2. Отключаем тень и заливаем текст белым цветом
         ctx.shadowColor = 'transparent'; 
         ctx.fillStyle = '#ffffff';
 
         ctx.font = fontNum;
         ctx.fillText(numText, startX, textY);
         ctx.font = fontSym;
-        ctx.fillText(symText, symStartX, textY);
+        // И МЕНЯЕМ textY на symTextY здесь:
+        ctx.fillText(symText, symStartX, symTextY); 
         
         ctx.restore();
     };
