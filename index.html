@@ -3007,7 +3007,6 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     ctx.save();
 
     let fontSize = Math.max(18, canvasW * 0.045); 
-    // Используем один шрифт для гармоничности, как на скриншоте
     let fontNum = `normal ${fontSize}px 'LilitaOneRus', 'Arial Black', sans-serif`;
     let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'LilitaOneRus', 'Arial Black', sans-serif`;
     let symText = " ₽";
@@ -3020,39 +3019,45 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
 
     // Центрирование относительно ширины плашки
     let startX = x + (targetW / 2) - (totalW / 2);
-    let symStartX = startX + wNum + (canvasW * 0.005); // Микро-отступ перед рублем
+    let symStartX = startX + wNum + (canvasW * 0.005);
 
     ctx.textAlign = 'left'; 
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round'; 
     
-    // Выравниваем Y строго по центру плашки (чуть-чуть корректируем оптический центр)
+    // Выравниваем Y строго по центру плашки
     let textY = y + (h / 2) - (canvasH * 0.005); 
 
-    // 1. Рисуем жесткую тень без размытия, как в игре
-    ctx.shadowColor = '#000000'; 
-    ctx.shadowOffsetX = Math.max(1, canvasW * 0.0015); 
-    ctx.shadowOffsetY = Math.max(2, canvasW * 0.004); 
-    ctx.shadowBlur = 0;
-    
-    // Тонкая аккуратная обводка
-    ctx.lineWidth = Math.max(2, canvasW * 0.0025); 
-    ctx.strokeStyle = '#000000'; 
+    // Вычисляем толщину обводки и смещение тени
+    let strokeWidth = Math.max(3, canvasW * 0.005); // Жирная обводка
+    let shadowOffsetY = Math.max(2, canvasW * 0.004); // Смещение тени вниз
 
-    // Отрисовываем контур (он же отбросит тень)
-    ctx.font = fontNum;
-    ctx.strokeText(numText, startX, textY);
-    ctx.font = fontSym;
-    ctx.strokeText(symText, symStartX, textY); // Рубль на том же уровне Y!
+    // Вспомогательная функция для отрисовки обоих кусков текста
+    const drawTextLayer = (offsetX, offsetY, isStroke, isFill) => {
+        ctx.font = fontNum;
+        if (isStroke) ctx.strokeText(numText, startX + offsetX, textY + offsetY);
+        if (isFill)   ctx.fillText(numText, startX + offsetX, textY + offsetY);
 
-    // 2. Заливка белым поверх (без тени, чтобы текст был чистым)
-    ctx.shadowColor = 'transparent'; 
+        ctx.font = fontSym;
+        if (isStroke) ctx.strokeText(symText, symStartX + offsetX, textY + offsetY);
+        if (isFill)   ctx.fillText(symText, symStartX + offsetX, textY + offsetY);
+    };
+
+    // 1. СЛОЙ ТЕНИ: Рисуем черную заливку и черную обводку со смещением вниз.
+    // Это создаст плотную 100% черную подложку без прозрачных дырок внутри.
+    ctx.fillStyle = '#000000';
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = strokeWidth;
+    drawTextLayer(0, shadowOffsetY, true, true);
+
+    // 2. СЛОЙ ОБВОДКИ: Рисуем только черную обводку на нормальной позиции.
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = strokeWidth;
+    drawTextLayer(0, 0, true, false);
+
+    // 3. СЛОЙ ЗАЛИВКИ: Рисуем чисто белый текст сверху.
     ctx.fillStyle = '#ffffff';
-
-    ctx.font = fontNum;
-    ctx.fillText(numText, startX, textY);
-    ctx.font = fontSym;
-    ctx.fillText(symText, symStartX, textY); 
+    drawTextLayer(0, 0, false, true);
     
     ctx.restore();
 }
