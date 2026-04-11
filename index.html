@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.4";
+  const APP_VERSION = "v2.4.5";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3051,6 +3051,36 @@ function drawBPPrice(ctx, img, numText, x, targetW, canvasW, canvasH) {
     ctx.restore();
 }
 
+// Отрисовка маленьких водяных знаков специально для Brawl Pass
+function drawBPWatermarks(ctx, text, w, h, opacity) {
+    ctx.save();
+    ctx.globalCompositeOperation = "overlay";
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = "#ffffff";
+    ctx.textBaseline = "top";
+    
+    // Высчитываем множитель масштаба (базовый холст был 1200x675)
+    let scaleMult = h / 675;
+
+    const marks = [
+        { top: 0.069, left: 0.029, size: 13 }, { top: 0.000, left: 0.156, size: 17 }, { top: 0.018, left: 0.535, size: 20 }, { top: 0.046, left: 0.804, size: 15 },
+        { top: 0.013, left: 0.404, size: 9 },  { top: 0.123, left: 0.522, size: 9 }, { top: 0.102, left: 0.292, size: 9 },  { top: 0.776, left: 0.243, size: 10 },
+        { top: 0.351, left: 0.970, size: 9 },  { top: 0.630, left: 0.080, size: 13 }, { top: 0.599, left: 0.970, size: 9 },  { top: 0.770, left: 0.013, size: 15 },
+        { top: 0.950, left: 0.237, size: 9 },  { top: 0.769, left: 0.928, size: 15 }, { top: 0.950, left: 0.521, size: 22 }, { top: 0.950, left: 0.930, size: 9 }
+    ];
+    
+    marks.forEach(mark => {
+        ctx.save(); 
+        ctx.translate(w * mark.left, h * mark.top); 
+        ctx.transform(1, 0, -0.2, 1, 0, 0);
+        let currentSize = Math.max(8, mark.size * scaleMult);
+        ctx.font = `${currentSize}px '${window.layerState.watermarksFont || 'Font16103'}', 'Arial Black', sans-serif`; 
+        ctx.fillText(text, 0, 0); 
+        ctx.restore();
+    });
+    ctx.restore();
+}
+
 // Обновление цены из панели
 window.updateBPPrice = (side, val, inputEl) => {
     if (/^\d+$/.test(val) && parseInt(val) > 99999) {
@@ -4362,8 +4392,17 @@ function drawScene() {
             persistentCtx.drawImage(globalAssets.luchImg, 0, 0, w, h);
             persistentCtx.restore();
         }
+
+        // 2. Звезды (Эффект)
+        if (window.layerState.starsVisible && globalAssets.starsEff) {
+            persistentCtx.save();
+            persistentCtx.globalCompositeOperation = "overlay";
+            persistentCtx.globalAlpha = window.layerState.starsOpacity;
+            persistentCtx.drawImage(globalAssets.starsEff, 0, 0, w, h);
+            persistentCtx.restore();
+        }
         
-        // 2. Точки
+        // 3. Точки
         if (window.layerState.pointsVisible && globalAssets.bpPointsImg) {
             persistentCtx.save();
             persistentCtx.globalAlpha = window.layerState.pointsOpacity;
@@ -4371,16 +4410,16 @@ function drawScene() {
             persistentCtx.restore();
         }
 
-        // 3. Цены
+        // 4. Цены
         if (globalAssets.bpPriceL) drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, w * 0.055 - 22, w * 0.20, w, h);
         if (globalAssets.bpPriceR) drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - (w * 0.055 + 18) - w * 0.24, w * 0.24, w, h);
 
-        // 4. Водяные знаки ARTZA DONATE
+        // 5. Водяные знаки ARTZA DONATE (используем новую БП-функцию)
         if (window.layerState.watermarksVisible) {
-            drawWatermarks(persistentCtx, "ARTZA DONATE", w, h, window.layerState.watermarksOpacity);
+            drawBPWatermarks(persistentCtx, "ARTZA DONATE", w, h, window.layerState.watermarksOpacity);
         }
 
-        // 5. Главный текст (SNAPI)
+        // 6. Главный текст (SNAPI)
         if (cachedTextCanvas && animText.alpha > 0.01) {
             persistentCtx.save();
             persistentCtx.globalAlpha = animText.alpha;
@@ -4394,7 +4433,7 @@ function drawScene() {
             persistentCtx.restore();
         }
 
-        return; // Прерываем функцию, чтобы старый код акций не сработал
+        return; 
     }
 
     // --- СТАНДАРТНАЯ ОТРИСОВКА (Акции) ---
@@ -5445,7 +5484,7 @@ async function generateBrawlPassTest() {
 }
 
 function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
-    const bpStyle = TEXT_STYLES[9];
+    const bpStyle = TEXT_STYLES[window.layerState.textStyleIndex !== undefined ? window.layerState.textStyleIndex : 9];
     const bpText = (nick || "SNAPI").substring(0, 16);
 
     let line1 = bpText;
@@ -5465,38 +5504,38 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     const measureC = document.createElement('canvas');
     const mCtx = measureC.getContext('2d');
-    let bpFontSize = 30; // начинаем с минимума и растём вверх
+    
+    // Масштабируем стартовый размер и максимальный лимит шрифта
+    let scaleMult = HEIGHT / 675;
+    let maxAllowedFontSize = 145 * scaleMult;
+    let bpFontSize = 30 * scaleMult; 
+    
     const longestLine = line2.length > line1.length ? line2 : line1;
-    mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
-    while (mCtx.measureText(longestLine).width < BP_MAX_TEXT_WIDTH && bpFontSize < 145) {
-        bpFontSize += 2;
-        mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
+    
+    while (mCtx.measureText(longestLine).width < BP_MAX_TEXT_WIDTH && bpFontSize < maxAllowedFontSize) {
+        bpFontSize += 2 * scaleMult;
+        mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
     }
-    bpFontSize -= 2; // шаг назад чтобы не вылезть
+    bpFontSize -= 2 * scaleMult;
 
     const bpShadowDepth = Math.floor(bpFontSize * 0.10);
     const lineGap = 0;
 
     const bpTextX = WIDTH / 2 + (bpFontSize * 0.07 * 0.5); 
 
-    // === ЖЕСТКАЯ НИЖНЯЯ ГРАНИЦА ===
-    // 0.94 = 94% от высоты картинки. Если нужно опустить текст ниже, сделай 0.95 или 0.96.
-    // Если нужно поднять выше — 0.93 или 0.92.
     const FIXED_BOTTOM_Y = HEIGHT * 0.91; 
     const BOUND_TOP = HEIGHT * 0.62;
 
-    // 1. Измеряем текст при текущем размере шрифта
-    mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
     let metrics1 = mCtx.measureText(line1);
     let maxLineH = Math.max(
         metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent,
         line2 ? (() => { const m = mCtx.measureText(line2); return m.actualBoundingBoxAscent + m.actualBoundingBoxDescent; })() : 0
     );
 
-    // Где будет находиться самый верх текста (строим снизу вверх)
     let topEdge = line2 ? (FIXED_BOTTOM_Y - maxLineH * 2 - lineGap) : (FIXED_BOTTOM_Y - maxLineH);
 
-    // 2. Если верх текста налезает на персонажей, сжимаем шрифт
     if (topEdge < BOUND_TOP) {
         const availableH = FIXED_BOTTOM_Y - BOUND_TOP;
         const neededLines = line2 ? 2 : 1;
@@ -5504,8 +5543,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         
         if (maxFontByHeight < bpFontSize) {
             bpFontSize = maxFontByHeight;
-            // Обязательно пересчитываем высоту с новым размером шрифта
-            mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+            mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
             metrics1 = mCtx.measureText(line1);
             maxLineH = Math.max(
                 metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent,
@@ -5514,14 +5552,12 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         }
     }
 
-    // 3. Высчитываем финальные y1 и y2. 
-    // Теперь они всегда выравниваются так, чтобы низ строго касался FIXED_BOTTOM_Y
     let y1, y2;
     if (line2) {
-        y2 = FIXED_BOTTOM_Y - (maxLineH / 2); // Низ второй строки упирается в границу
-        y1 = y2 - maxLineH - lineGap;         // Первая строка строится строго над второй
+        y2 = FIXED_BOTTOM_Y - (maxLineH / 2); 
+        y1 = y2 - maxLineH - lineGap;         
     } else {
-        y1 = FIXED_BOTTOM_Y - (maxLineH / 2); // Низ единственной строки упирается в границу
+        y1 = FIXED_BOTTOM_Y - (maxLineH / 2); 
     }
 
     const lines = line2 ? [{ text: line1, y: y1 }, { text: line2, y: y2 }] : [{ text: line1, y: y1 }];
@@ -5529,22 +5565,19 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const strokeC = document.createElement('canvas');
     strokeC.width = WIDTH; strokeC.height = HEIGHT;
     const sCtx = strokeC.getContext('2d');
-    sCtx.textAlign = "center";
-    sCtx.textBaseline = "middle";
-    sCtx.lineJoin = "round";
-    sCtx.lineCap = "round";
-    sCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    sCtx.textAlign = "center"; sCtx.textBaseline = "middle"; sCtx.lineJoin = "round"; sCtx.lineCap = "round";
+    sCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
 
     lines.forEach(({ text, y }) => {
         sCtx.save();
         sCtx.translate(bpTextX, y);
         sCtx.transform(1, 0, -0.07, 1, 0, 0);
         sCtx.rotate(-0.02);
-        sCtx.lineWidth = bpFontSize * 0.24; sCtx.strokeStyle = bpStyle.outer2;
+        sCtx.lineWidth = bpFontSize * 0.24; sCtx.strokeStyle = bpStyle.outer2 || '#ffffff';
         for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-        sCtx.lineWidth = bpFontSize * 0.16; sCtx.strokeStyle = bpStyle.outer;
+        sCtx.lineWidth = bpFontSize * 0.16; sCtx.strokeStyle = bpStyle.outer || '#000000';
         for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-        sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow;
+        sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow || '#000000';
         for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
         sCtx.restore();
     });
@@ -5552,11 +5585,8 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const fillC = document.createElement('canvas');
     fillC.width = WIDTH; fillC.height = HEIGHT;
     const fCtx = fillC.getContext('2d');
-    fCtx.textAlign = "center";
-    fCtx.textBaseline = "middle";
-    fCtx.lineJoin = "round";
-    fCtx.lineCap = "round";
-    fCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
+    fCtx.textAlign = "center"; fCtx.textBaseline = "middle"; fCtx.lineJoin = "round"; fCtx.lineCap = "round";
+    fCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
 
     lines.forEach(({ text, y }) => {
         fCtx.save();
@@ -5565,22 +5595,22 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         fCtx.rotate(-0.02);
         let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
         bpGrad.addColorStop(0, bpStyle.grad[0]);
-        bpGrad.addColorStop(0.52, bpStyle.grad[1]);
-        bpGrad.addColorStop(1, bpStyle.grad[2]);
+        bpGrad.addColorStop(0.52, bpStyle.grad[1] || bpStyle.grad[0]);
+        bpGrad.addColorStop(1, bpStyle.grad[2] || bpStyle.grad[0]);
         fCtx.fillStyle = bpGrad;
         fCtx.fillText(text, 0, 0);
         fCtx.globalCompositeOperation = "source-atop";
         fCtx.lineWidth = bpFontSize * 0.06;
-        fCtx.strokeStyle = bpStyle.inner;
+        fCtx.strokeStyle = bpStyle.inner || '#ffffff';
         fCtx.strokeText(text, 0, 0);
         fCtx.restore();
     });
 
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
-    ctx.shadowBlur = Math.round(21 * (HEIGHT / 1080));
+    ctx.shadowBlur = Math.round(21 * scaleMult);
     ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = Math.round(16 * (HEIGHT / 1080));
+    ctx.shadowOffsetY = Math.round(16 * scaleMult);
     ctx.drawImage(strokeC, 0, 0);
     ctx.restore();
     ctx.drawImage(fillC, 0, 0);
