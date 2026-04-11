@@ -6,9 +6,9 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.3.3";
+  const APP_VERSION = "v2.3.4";
   const APP_BUILD = "BETA"; 
-  document.title = "Snapi " + APP_VERSION + " BETA";
+  document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -1645,7 +1645,6 @@ async function hashTelegramId(id) {
     </div>
 
     <button id="ios-btn-create" class="ios-action-btn">Создать</button>
-    <button id="ios-btn-create-bp" class="ios-action-btn" style="margin-top: 12px; background: #666; animation: none; align-self: center;" onclick="openBPOverlay()">Создать БП (Тест)</button>
   </div>
 </div>
 
@@ -5133,16 +5132,14 @@ async function generateBrawlPassTest() {
     };
     drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
 
-    // 7. Отрисовка Бравлеров (ИСПРАВЛЕНО: строгие пропорции + наложение)
+    // 7. Отрисовка Бравлеров
     const drawBrawler = (img, x, targetH) => {
         if (!img) return;
-        // Считаем ширину ПРОПОРЦИОНАЛЬНО высоте картинки (никаких сплющиваний!)
         let bh = targetH;
         let bw = bh * (img.width / img.height);
         
         ctx.save();
         ctx.shadowColor = '#000'; ctx.shadowBlur = 0;
-        // Делаем толстую плотную обводку 3px
         const offsets = [[3,0], [-3,0], [0,3], [0,-3], [2,2], [-2,-2], [2,-2], [-2,2]];
         offsets.forEach(([dx, dy]) => {
             ctx.shadowOffsetX = dx; ctx.shadowOffsetY = dy; 
@@ -5153,7 +5150,6 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
-    // Отрисовываем сначала Байрона, потом 8-Бита поверх него
     drawBrawler(brawler2, WIDTH * 0.38, HEIGHT * 0.65); 
     drawBrawler(brawler1, WIDTH * 0.60, HEIGHT * 0.60); 
 
@@ -5193,44 +5189,40 @@ async function generateBrawlPassTest() {
     });
     ctx.restore();
 
-    // 11. Текст SNAPI (ИСПРАВЛЕНО: Сверху, стиль №9 - фиолетовая обводка)
-    const style = TEXT_STYLES[9]; 
-    ctx.save();
-    let fontSize = 105; 
-    ctx.font = `${fontSize}px 'Font16103', 'Arial Black', sans-serif`;
-    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round"; ctx.miterLimit = 2;
-    
-    // Ставим строго по центру сверху
-    ctx.translate((WIDTH / 2), HEIGHT * 0.14);
-    ctx.transform(1, 0, -0.15, 1, 0, 0); ctx.rotate(-0.03);
-
-    if (style.shadow) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.shadow; ctx.strokeText("SNAPI", 0, fontSize * 0.08); }
-    if (style.outer) { ctx.lineWidth = fontSize * 0.2; ctx.strokeStyle = style.outer; ctx.strokeText("SNAPI", 0, 0); }
-    if (style.inner) { ctx.lineWidth = fontSize * 0.08; ctx.strokeStyle = style.inner; ctx.strokeText("SNAPI", 0, 0); }
-
-    const grad = ctx.createLinearGradient(0, -fontSize * 0.4, 0, fontSize * 0.4);
-    grad.addColorStop(0, style.grad[0]); grad.addColorStop(0.5, style.grad[1]); grad.addColorStop(1, style.grad[2]);
-    ctx.fillStyle = grad; ctx.fillText("SNAPI", 0, 0);
-    ctx.restore();
+    // ШАГ 11 (Наклонный текст) ПОЛНОСТЬЮ УДАЛЕН. 
+    // Движок сам отрисует свой стандартный прямой текст поверх фона.
 
     // === ИНТЕГРАЦИЯ В СТАНДАРТНЫЙ ДВИЖОК ===
     rawBgImage = new Image();
     rawBgImage.onload = () => {
         window.layerState.isReadyBg = true;
-        window.layerState.textVisible = false;
+        
+        // ВАЖНО: Включаем стандартный текст движка и ставим Стиль №9
+        window.layerState.textVisible = true;
+        window.layerState.textStyleIndex = 9; 
+        
+        // Выключаем остальные слои, так как они уже нарисованы
         window.layerState.luchVisible = false;
         window.layerState.starsVisible = false;
         window.layerState.pointsVisible = false;
         window.layerState.watermarksVisible = false;
         window.layerState.offers = [];
 
+        // Восстанавливаем плавную анимацию появления текста
+        animText.scale = 0.5;
+        animText.alpha = 0;
+        animText.targetScale = 1;
+        animText.targetAlpha = 1;
+
         setupPersistentCanvas();
+        
+        // Принудительно генерируем текст движка с новым фиолетовым стилем
+        window.updateCachedTextCanvas();
         
         layerPanel.innerHTML = `
             <div class="ios-section-title">BRAWL PASS УСПЕШНО СОЗДАН</div>
             <div class="sp-info-text" style="padding: 0 20px; font-size: 14px; margin-top: 10px;">
                 Вы можете сохранить проект и скачать картинку прямо сейчас, используя стандартные кнопки внизу.<br><br>
-                <i>Редактирование слоев БП будет добавлено в следующих обновлениях.</i>
             </div>
         `;
         startAnimation();
