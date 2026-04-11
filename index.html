@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.3.1";
+  const APP_VERSION = "v2.3.2";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -1874,7 +1874,7 @@ async function hashTelegramId(id) {
         <div class="ios-divider"></div>
         <div class="ios-menu-item" style="cursor: default; min-height: 54px;">
             <div class="ios-icon-box" style="background: linear-gradient(180deg, #97e385 0%, #79c665 100%); color: white; font-family: 'ArialRoundedOld', Arial, sans-serif; font-weight: normal; font-size: 16px;">2</div>
-            <div class="ios-menu-text" style="font-size: 16px; line-height: 1.2;">Сохранение проектов работ 3 → 12</div>
+            <div class="ios-menu-text" style="font-size: 16px; line-height: 1.2;">Сохранение проектов 3 → 12</div>
         </div>
         <div class="ios-divider"></div>
         <div class="ios-menu-item" style="cursor: default; min-height: 54px;">
@@ -5007,6 +5007,232 @@ function androidFallback2(blob) {
 }
   window.updateSavedCount();
 })();
+
+// ====== ИНТЕГРАЦИЯ BRAWL PASS В СТАНДАРТНЫЙ ДВИЖОК ======
+
+// 1. Добавляем красивую кнопку "Создать БП" в главное меню
+window.addEventListener('DOMContentLoaded', () => {
+    const dashboard = document.querySelector('.ios-container');
+    const createBtn = document.getElementById('ios-btn-create');
+    if (dashboard && createBtn) {
+        const bpBtn = document.createElement('div');
+        bpBtn.className = 'ios-card ios-menu-item';
+        bpBtn.style.borderRadius = '100px';
+        bpBtn.style.marginBottom = '24px';
+        bpBtn.onclick = generateBrawlPassTest;
+        bpBtn.innerHTML = `
+            <div class="ios-icon-box" style="background: linear-gradient(180deg, #ff8a00 0%, #ff4e00 100%);">
+                <span style="color:white; font-family:'ArialRoundedOld', sans-serif; font-weight:bold; font-size: 13px;">BP</span>
+            </div>
+            <div class="ios-menu-text">Создать БП (Тест)</div>
+            <div class="ios-chevron"><svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        `;
+        // Вставляем новую кнопку прямо перед основной кнопкой "Создать"
+        dashboard.insertBefore(bpBtn, createBtn);
+    }
+});
+
+// 2. Логика генерации БП (отрисовка макета прямо на Canvas движка)
+async function generateBrawlPassTest() {
+    if (window.triggerHaptic) window.triggerHaptic();
+    
+    // Переключаем интерфейс на экран результата с анимацией загрузки
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    window.scrollTo(0,0);
+    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+
+    const cardsContainer = document.getElementById('cards-container');
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    const layerPanel = document.getElementById('layer-panel');
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div></div>';
+
+    // Создаем холст ровно в размерах твоего БП
+    const WIDTH = 1200;
+    const HEIGHT = 675;
+    const c = document.createElement('canvas');
+    c.width = WIDTH; c.height = HEIGHT;
+    const ctx = c.getContext('2d');
+
+    // Помощник для загрузки ассетов (берем картинки из твоего пути)
+    const loadImg = (src) => new Promise(r => { 
+        const img = new Image(); 
+        img.crossOrigin = "anonymous"; 
+        img.onload = () => r(img); 
+        img.onerror = () => r(null); 
+        img.src = src; 
+    });
+
+    const [bg3, luch, starsEff, pointEff, star, brawler1, brawler2, panelL, priceL, panelR, priceR] = await Promise.all([
+        loadImg('bg/bg3.png'), loadImg('BP/Luch.png'), loadImg('BP/bp_starsEff.png'), loadImg('BP/bp_pointEff.png'), loadImg('BP/bp_star.png'),
+        loadImg('BP/brawler_s50_2.png'), loadImg('BP/brawler_s50_1.png'),
+        loadImg('BP/bp_panel_left.png'), loadImg('BP/bp_price_bg_left.png'),
+        loadImg('BP/bp_panel_right.png'), loadImg('BP/bp_price_bg_right.png')
+    ]);
+
+    // 1. Оранжевый фон (Левый)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(0, HEIGHT); ctx.closePath();
+    ctx.clip();
+    let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+    grad1.addColorStop(0, '#ff4e00'); grad1.addColorStop(1, '#ff8a00');
+    ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    if (bg3) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(bg3, 0, 0, WIDTH, HEIGHT); }
+    ctx.restore();
+
+    // 2. Фиолетовый фон (Правый)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(WIDTH, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(WIDTH, HEIGHT); ctx.closePath();
+    ctx.clip();
+    let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+    grad2.addColorStop(0, '#6420c2'); grad2.addColorStop(1, '#390d8a');
+    ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    if (bg3) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(bg3, 0, 0, WIDTH, HEIGHT); }
+    ctx.restore();
+
+    // 3. Эффекты лучей, точек и звезд
+    ctx.save();
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.globalAlpha = 0.5;
+    if (luch) ctx.drawImage(luch, 0, 0, WIDTH, HEIGHT);
+    ctx.globalAlpha = 1.0;
+    if (starsEff) ctx.drawImage(starsEff, 0, 0, WIDTH, HEIGHT);
+    ctx.restore();
+    if (pointEff) ctx.drawImage(pointEff, 0, 0, WIDTH, HEIGHT);
+
+    // 4. Линия разделения
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 255, 76, 0.7)'; ctx.shadowBlur = 8;
+    ctx.strokeStyle = '#f09e41'; ctx.lineWidth = 9; ctx.lineJoin = 'miter';
+    ctx.beginPath();
+    ctx.moveTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT);
+    ctx.stroke();
+    ctx.restore();
+
+    // 5. Центральная звезда
+    let starH = HEIGHT * 0.70; let starY = HEIGHT - (HEIGHT * 0.16 + 56);
+    if (star) {
+        let sw = starH * (star.width / star.height);
+        ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
+    }
+
+    // 6. Свечения и тени
+    let cxL = WIDTH * 0.39; let cxR = WIDTH * 0.589;
+    const drawGlow = (x, y) => {
+        ctx.save(); ctx.globalCompositeOperation = 'screen';
+        let rg = ctx.createRadialGradient(x, y, 0, x, y, 140);
+        rg.addColorStop(0, 'rgba(255,255,255,0.9)'); rg.addColorStop(0.4, 'rgba(255,255,255,0.3)'); rg.addColorStop(0.7, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rg; ctx.fillRect(x - 140, y - 140, 280, 280); ctx.restore();
+    };
+    drawGlow(cxL, starY - HEIGHT * 0.1); drawGlow(cxR, starY - HEIGHT * 0.1);
+    
+    const drawShadow = (x, y) => {
+        ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    };
+    drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
+
+    // 7. Отрисовка Бравлеров
+    const drawBrawler = (img, x) => {
+        if (!img) return;
+        let bw = WIDTH * 0.31; let bh = HEIGHT * 0.58;
+        ctx.save();
+        ctx.shadowColor = '#000'; ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 0; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        ctx.shadowOffsetX = -2; ctx.shadowOffsetY = 0; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 2; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -2; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        ctx.shadowColor = 'transparent'; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        ctx.restore();
+    };
+    drawBrawler(brawler2, cxL);
+    drawBrawler(brawler1, cxR);
+
+    // 8. Панели
+    if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
+    if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
+
+    // 9. Цены
+    const drawPrice = (img, text, x, w) => {
+        if(!img) return;
+        let h = img.height * (w / img.width); let y = HEIGHT - 30 - h;
+        ctx.drawImage(img, x, y, w, h);
+        ctx.save();
+        ctx.font = `${Math.max(16, WIDTH * 0.035)}px 'LilitaOneRus', sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.lineWidth = 6; ctx.strokeStyle = '#000'; ctx.fillStyle = '#fff';
+        ctx.shadowColor = '#000'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.shadowBlur = 0;
+        ctx.strokeText(text, x + w/2, y + h/2 - 7);
+        ctx.shadowColor = 'transparent'; ctx.fillText(text, x + w/2, y + h/2 - 7);
+        ctx.restore();
+    };
+    drawPrice(priceL, "999 р", WIDTH * 0.055 - 22, WIDTH * 0.20);
+    drawPrice(priceR, "9999 р", WIDTH - (WIDTH * 0.055 + 18) - WIDTH * 0.24, WIDTH * 0.24);
+
+    // 10. Водяные знаки
+    ctx.save();
+    ctx.globalCompositeOperation = "overlay"; ctx.fillStyle = "#ffffff"; ctx.textBaseline = "top";
+    const marks = [
+        { top: 0.069, left: 0.029, size: 13 }, { top: 0.000, left: 0.156, size: 17 }, { top: 0.018, left: 0.535, size: 20 }, { top: 0.046, left: 0.804, size: 15 },
+        { top: 0.013, left: 0.404, size: 9 },  { top: 0.123, left: 0.522, size: 9 }, { top: 0.102, left: 0.292, size: 9 },  { top: 0.776, left: 0.243, size: 10 },
+        { top: 0.351, left: 0.970, size: 9 },  { top: 0.630, left: 0.080, size: 13 }, { top: 0.599, left: 0.970, size: 9 },  { top: 0.770, left: 0.013, size: 15 },
+        { top: 0.950, left: 0.237, size: 9 },  { top: 0.769, left: 0.928, size: 15 }, { top: 0.950, left: 0.521, size: 22 }, { top: 0.950, left: 0.930, size: 9 }
+    ];
+    marks.forEach(mark => {
+        ctx.save(); ctx.translate(WIDTH * mark.left, HEIGHT * mark.top); ctx.transform(1, 0, -0.2, 1, 0, 0);
+        ctx.font = `${mark.size}px 'Font16103', 'Arial Black', sans-serif`; ctx.fillText("ARTZA DONATE", 0, 0); ctx.restore();
+    });
+    ctx.restore();
+
+    // 11. Текст SNAPI
+    const style = TEXT_STYLES[6]; // Классика Бравла (Индекс 6)
+    ctx.save();
+    let fontSize = 145;
+    ctx.font = `${fontSize}px 'Font16103', 'Arial Black', sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round"; ctx.miterLimit = 2;
+    ctx.translate((WIDTH / 2) - 12, (HEIGHT * 0.78) + 3);
+    ctx.transform(1, 0, -0.15, 1, 0, 0); ctx.rotate(-0.03);
+
+    if (style.shadow) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.shadow; ctx.strokeText("SNAPI", 0, fontSize * 0.08); }
+    if (style.outer) { ctx.lineWidth = fontSize * 0.2; ctx.strokeStyle = style.outer; ctx.strokeText("SNAPI", 0, 0); }
+    if (style.inner) { ctx.lineWidth = fontSize * 0.08; ctx.strokeStyle = style.inner; ctx.strokeText("SNAPI", 0, 0); }
+
+    const grad = ctx.createLinearGradient(0, -fontSize * 0.4, 0, fontSize * 0.4);
+    grad.addColorStop(0, style.grad[0]); grad.addColorStop(0.5, style.grad[1]); grad.addColorStop(1, style.grad[2]);
+    ctx.fillStyle = grad; ctx.fillText("SNAPI", 0, 0);
+    ctx.restore();
+
+    // === ИНТЕГРАЦИЯ В СТАНДАРТНЫЙ ДВИЖОК ===
+    // Делаем из сгенерированного холста картинку и скармливаем ее движку как "готовую работу"
+    rawBgImage = new Image();
+    rawBgImage.onload = () => {
+        // Выключаем слои, чтобы движок не пытался рисовать свои элементы поверх
+        window.layerState.isReadyBg = true;
+        window.layerState.textVisible = false;
+        window.layerState.luchVisible = false;
+        window.layerState.starsVisible = false;
+        window.layerState.pointsVisible = false;
+        window.layerState.watermarksVisible = false;
+        window.layerState.offers = [];
+
+        // Перезапускаем холст, он сам впишет его в мобильный экран!
+        setupPersistentCanvas();
+        
+        // Показываем заглушку вместо слоев
+        layerPanel.innerHTML = `
+            <div class="ios-section-title">BRAWL PASS УСПЕШНО СОЗДАН</div>
+            <div class="sp-info-text" style="padding: 0 20px; font-size: 14px; margin-top: 10px;">
+                Вы можете сохранить проект и скачать картинку прямо сейчас, используя стандартные кнопки внизу.<br><br>
+                <i>Редактирование слоев БП будет добавлено в следующих обновлениях.</i>
+            </div>
+        `;
+        startAnimation();
+    };
+    rawBgImage.src = c.toDataURL('image/png');
+}
+
 </script>
 </body>
 </html>
