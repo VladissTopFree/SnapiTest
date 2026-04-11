@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.3";
+  const APP_VERSION = "v2.4.4";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2117,7 +2117,15 @@ layerPanel.addEventListener('input', () => {
 });
 
 let rawBgImage = null; 
-let globalAssets = { luchImg: null, starImg: null, pointsImg: null };
+let globalAssets = { 
+    luchImg: null, 
+    starImg: null, 
+    pointsImg: null,
+    bpPointsImg: null, // Для точек из БП
+    starsEff: null,    // Для эффекта звезд из БП
+    bpPriceL: null,    // Левая подложка цены
+    bpPriceR: null     // Правая подложка цены
+};
 let isCurrentProjectSaved = false; 
 
 if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
@@ -2544,7 +2552,6 @@ window.loadProject = async (id) => {
         rawBgImage = await loadImage(projData.bg);
     }
 
-// 👇 НАЧАЛО ОБНОВЛЕННОГО БЛОКА 👇
     window.layerState = {
         textVisible: s.textVisible,
         textValue: s.textValue,
@@ -2564,26 +2571,8 @@ window.loadProject = async (id) => {
         watermarksOpacity: s.watermarksOpacity,
         watermarksFont: s.watermarksFont,
         pointsVisible: s.pointsVisible,
-        
-        // НОВЫЕ ПЕРЕМЕННЫЕ ДЛЯ БП
-        pointsOpacity: s.pointsOpacity !== undefined ? s.pointsOpacity : 1.0,
-        isBrawlPass: s.isBrawlPass || false,
-        bpPriceLeft: s.bpPriceLeft || "999",
-        bpPriceRight: s.bpPriceRight || "9999",
         offers: []
     };
-
-    // Загружаем картинки, если открыли сохраненный Brawl Pass
-    if (window.layerState.isBrawlPass) {
-        if (!globalAssets.priceL) {
-             globalAssets.luchImg = await loadImage('BP/Luch.png');
-             globalAssets.starsEff = await loadImage('BP/bp_starsEff.png');
-             globalAssets.pointEff = await loadImage('BP/bp_pointEff.png');
-             globalAssets.priceL = await loadImage('BP/bp_price_bg_left.png');
-             globalAssets.priceR = await loadImage('BP/bp_price_bg_right.png');
-        }
-    }
-    // 👆 КОНЕЦ ОБНОВЛЕННОГО БЛОКА 👆
 
     for (let i = 0; i < s.offers.length; i++) {
         let oData = s.offers[i];
@@ -2696,6 +2685,10 @@ function getHDScale() {
 }
 
 window.layerState = {
+    isBrawlPassMode: false, // Флаг режима Brawl Pass
+    bpPriceLeft: "999",     // Левая цена
+    bpPriceRight: "9999",   // Правая цена
+    pointsOpacity: 1.0,     // Прозрачность точек
     textVisible: true,
     textValue: "SNAPI",
     textPosition: "top", 
@@ -2713,60 +2706,8 @@ window.layerState = {
     watermarksFont: 'Font16103',
     pointsVisible: true,
     isGeneratedBg: false,
-    isReadyBg: false,
-    isBrawlPass: false, // <-- НОВОЕ
-    bpPriceLeft: "999", // <-- НОВОЕ
-    bpPriceRight: "9999" // <-- НОВОЕ
+    isReadyBg: false
 };
-
-// Функции для обновления инпутов БП
-window.updateBPText = (val) => {
-    window.layerState.textValue = val;
-    window.updateCachedTextCanvas();
-    startAnimation();
-};
-
-window.updateBPPrice = (side, val) => {
-    // Ограничение максимум 99999
-    if (/^\d+$/.test(val) && parseInt(val) > 99999) val = "99999";
-    if (side === 'left') window.layerState.bpPriceLeft = val;
-    if (side === 'right') window.layerState.bpPriceRight = val;
-    startAnimation();
-};
-
-// Помощник для отрисовки цен БП
-function drawBPPrice(ctx, img, numText, x, w, canvasW, canvasH) {
-    if(!img) return;
-    let h = img.height * (w / img.width); 
-    let y = canvasH - 30 - h;
-    ctx.drawImage(img, x, y, w, h);
-    ctx.save();
-
-    let fontSize = Math.max(16, canvasW * 0.035);
-    let fontNum = `normal ${fontSize}px 'LilitaOneRus', 'Arial Black', sans-serif`;
-    let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
-    let symText = " ₽";
-
-    ctx.font = fontNum; let wNum = ctx.measureText(numText).width;
-    ctx.font = fontSym; let wSym = ctx.measureText(symText).width;
-    let totalW = wNum + wSym;
-    let startX = x + w/2 - totalW/2;
-    let symStartX = startX + wNum;
-
-    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
-    let textY = y + h/2 - 7; let symTextY = textY + 7; 
-
-    ctx.shadowColor = '#000000'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.shadowBlur = 0;
-    ctx.lineWidth = 6; ctx.strokeStyle = '#000000'; 
-
-    ctx.font = fontNum; ctx.strokeText(numText, startX, textY);
-    ctx.font = fontSym; ctx.strokeText(symText, symStartX, symTextY); 
-
-    ctx.shadowColor = 'transparent'; ctx.fillStyle = '#ffffff';
-    ctx.font = fontNum; ctx.fillText(numText, startX, textY);
-    ctx.font = fontSym; ctx.fillText(symText, symStartX, symTextY); 
-    ctx.restore();
-}
 
 const FONT_OPTIONS = [
     { family: 'Font16103' },
@@ -3056,30 +2997,99 @@ window.setWmFont = async (fontFamily) => {
     startAnimation();
 };
 
+// Функция отрисовки цены для БП
+function drawBPPrice(ctx, img, numText, x, targetW, canvasW, canvasH) {
+    if(!img) return;
+    let h = img.height * (targetW / img.width); 
+    let y = canvasH - 30 - h;
+    ctx.drawImage(img, x, y, targetW, h);
+    ctx.save();
+
+    let fontSize = Math.max(16, canvasW * 0.035);
+    let fontNum = `normal ${fontSize}px 'LilitaOneRus', 'Arial Black', sans-serif`;
+    let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
+    let symText = " ₽";
+
+    ctx.font = fontNum;
+    let wNum = ctx.measureText(numText).width;
+    ctx.font = fontSym;
+    let wSym = ctx.measureText(symText).width;
+    let totalW = wNum + wSym;
+
+    let startX = x + targetW/2 - totalW/2;
+    let symStartX = startX + wNum;
+
+    ctx.textAlign = 'left'; 
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round'; 
+    
+    let textY = y + h/2 - 7;
+    let symTextY = textY + 7; 
+
+    // Тень (обводка)
+    ctx.shadowColor = '#000000'; 
+    ctx.shadowOffsetX = 0; 
+    ctx.shadowOffsetY = 4;
+    ctx.shadowBlur = 0;
+    ctx.lineWidth = 6; 
+    ctx.strokeStyle = '#000000'; 
+
+    ctx.font = fontNum;
+    ctx.strokeText(numText, startX, textY);
+    ctx.font = fontSym;
+    ctx.strokeText(symText, symStartX, symTextY); 
+
+    // Заливка текста
+    ctx.shadowColor = 'transparent'; 
+    ctx.fillStyle = '#ffffff';
+
+    ctx.font = fontNum;
+    ctx.fillText(numText, startX, textY);
+    ctx.font = fontSym;
+    ctx.fillText(symText, symStartX, symTextY); 
+    
+    ctx.restore();
+}
+
+// Обновление цены из панели
+window.updateBPPrice = (side, val, inputEl) => {
+    if (/^\d+$/.test(val) && parseInt(val) > 99999) {
+        val = "99999";
+        if(inputEl) inputEl.value = val;
+    }
+    if (side === 'left') window.layerState.bpPriceLeft = val;
+    if (side === 'right') window.layerState.bpPriceRight = val;
+    startAnimation();
+};
+
+// Обновление главного текста (SNAPI) из панели
+window.updateBPText = (val) => {
+    window.layerState.textValue = val;
+    window.updateCachedTextCanvas();
+    startAnimation();
+};
+
 function renderLayerPanel(isInitialLoad = false) {
     layerPanel.innerHTML = '';
     let html = '';
-    
     let animCls = isInitialLoad ? 'fade-in-anim' : '';
 
     html += `<div class="ios-section-title ${animCls}">СЛОИ ДЛЯ РЕДАКТИРОВАНИЯ</div>`;
 
-    if (window.layerState.isBrawlPass) {
-        // --- ПАНЕЛЬ СЛОЕВ ДЛЯ BRAWL PASS ---
+    if (window.layerState.isBrawlPassMode) {
         let textEyeClass = window.layerState.textVisible ? '' : 'hidden';
+        
+        // Группа 1: Текст SNAPI
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
-            <div class="ios-layer-row">
+            <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
                 <div class="ios-icon-btn ios-eye-icon ${textEyeClass}" onclick="toggleTextLayer()">
                     ${getEyeSVG(window.layerState.textVisible)}
                 </div>
-                <div class="ios-layer-name" style="margin-right: 12px; flex-shrink: 0;">Текст</div>
-                <input type="text" class="ios-price-input" style="flex-grow:1; width:auto; text-align:left; background: var(--tg-theme-secondary-bg-color, #F2F2F7); color: var(--tg-theme-text-color, #000);"
-                       value="${window.layerState.textValue}" maxlength="16" placeholder="SNAPI"
-                       oninput="updateBPText(this.value)">
-                <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadTextLayer()">
-                    ${downloadIconSVG}
-                </div>
+                <div class="ios-layer-name" style="flex-grow: 0; margin-right: 12px; font-size: 15px;">Текст</div>
+                <input type="text" id="bp-nick-input"
+                       style="flex-grow:1; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
+                       maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" oninput="updateBPText(this.value)">
             </div>
         `;
         html += `<div class="ios-font-label">Изменить шрифт</div>`;
@@ -3089,6 +3099,7 @@ function renderLayerPanel(isInitialLoad = false) {
             html += `<div class="ios-font-item main-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setFont('${f.family}')">${window.layerState.textValue || 'TEXT'}</div>`;
         });
         html += `</div>`;
+
         html += `<div class="ios-font-label">Изменить стиль</div>`;
         html += `<div class="ios-style-grid">`;
         TEXT_STYLES.forEach((st, sIdx) => {
@@ -3097,23 +3108,27 @@ function renderLayerPanel(isInitialLoad = false) {
             html += `<div class="ios-style-item main-style-item ${activeCls}" data-style="${sIdx}" style="background-image: url(${previewDataUrl});" onclick="setStyle(${sIdx})"></div>`;
         });
         html += `</div>`;
-        html += `</div>`; 
+        html += `</div>`;
 
-        html += `<div class="ios-layer-group ${animCls}">
+        // Группа 2: Цены
+        html += `<div class="ios-layer-group ${animCls}">`;
+        html += `
             <div class="ios-layer-row">
                 <div style="width: 24px; flex-shrink: 0;"></div>
-                <div class="ios-layer-name">Цена (Левая)</div>
-                <input type="text" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5"
-                       oninput="updateBPPrice('left', this.value)">
+                <div class="ios-layer-name">Левая цена</div>
+                <div class="ios-layer-action-text">значение</div>
+                <input type="text" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this.value, this)">
             </div>
             <div class="ios-layer-row" style="border-bottom:none;">
                 <div style="width: 24px; flex-shrink: 0;"></div>
-                <div class="ios-layer-name">Цена (Правая)</div>
-                <input type="text" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5"
-                       oninput="updateBPPrice('right', this.value)">
+                <div class="ios-layer-name">Правая цена</div>
+                <div class="ios-layer-action-text">значение</div>
+                <input type="text" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this.value, this)">
             </div>
-        </div>`;
+        `;
+        html += `</div>`;
 
+        // Группа 3: Косметика (Лучи, Точки, Водяные знаки)
         let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
         let pointsEyeClass = window.layerState.pointsVisible ? '' : 'hidden';
         let wmEyeClass = window.layerState.watermarksVisible ? '' : 'hidden';
@@ -3136,22 +3151,34 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div class="ios-layer-action-text">прозрачность</div>
                 <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.pointsOpacity}" oninput="changeOpacity('points', this.value)">
             </div>
-            <div class="ios-layer-row">
+            <div class="ios-layer-row" style="border-bottom:none;">
                 <div class="ios-icon-btn ios-eye-icon ${wmEyeClass}" onclick="toggleCosmeticLayer('watermarks')">
                      ${getEyeSVG(window.layerState.watermarksVisible)}
                 </div>
-                <div class="ios-layer-name">Текста ARTZA</div>
+                <div class="ios-layer-name">ARTZA DONATE</div>
                 <div class="ios-layer-action-text">прозрачность</div>
                 <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.watermarksOpacity}" oninput="changeOpacity('watermarks', this.value)">
             </div>
+        `;
+        html += `</div>`;
+
+        // Группа 4: Фон
+        html += `<div class="ios-layer-group ${animCls}">
             <div class="ios-layer-row" style="border-bottom:none;">
-                <div style="width: 24px; flex-shrink: 0;"></div>
-                <div class="ios-layer-name">Фон</div>
-                <div class="ios-layer-action-text">ничего сделать нельзя</div>
+                <div class="ios-icon-btn ios-eye-icon">
+                     ${getEyeSVG(true)}
+                </div>
+                <div class="ios-layer-name" style="color: var(--tg-theme-subtitle-text-color, #8E8E93);">Фон (редактирование недоступно)</div>
             </div>
         </div>`;
-    } else {
-    
+
+        layerPanel.innerHTML = html;
+        layerPanel.style.display = 'flex';
+        return; // Завершаем функцию
+    }
+
+    // --- СТАНДАРТНАЯ ОТРИСОВКА ПАНЕЛИ (для акций) ---
+    // Ниже идет твой старый код (if (!window.layerState.isReadyBg) { ... })
     if (!window.layerState.isReadyBg) {
         let isTop = window.layerState.textPosition !== 'bottom';
         let textEyeClass = window.layerState.textVisible ? '' : 'hidden';
@@ -3321,7 +3348,6 @@ function renderLayerPanel(isInitialLoad = false) {
 
     layerPanel.innerHTML = html;
     layerPanel.style.display = 'flex';
-}
 }
 
 window.changeGlobalStroke = (delta) => {
@@ -4175,10 +4201,12 @@ window.updateCachedTextCanvas = () => {
     cachedTextCanvas = document.createElement('canvas');
     cachedTextCanvas.width = persistentCanvas.width; 
     cachedTextCanvas.height = persistentCanvas.height;
-    if (window.layerState.isBrawlPass) {
-        drawBPNickText(cachedTextCanvas.getContext('2d'), window.layerState.textValue, persistentCanvas.width, persistentCanvas.height);
+    let ctx = cachedTextCanvas.getContext('2d');
+    
+    if (window.layerState.isBrawlPassMode) {
+        drawBPNickText(ctx, window.layerState.textValue || "SNAPI", persistentCanvas.width, persistentCanvas.height);
     } else {
-        drawBeautifulNick(cachedTextCanvas.getContext('2d'), window.layerState.textValue, persistentCanvas.width, persistentCanvas.height);
+        drawBeautifulNick(ctx, window.layerState.textValue, persistentCanvas.width, persistentCanvas.height);
     }
 };
 
@@ -4191,6 +4219,11 @@ function calculateLayoutTarget() {
   
   animText.targetScale = window.layerState.textVisible ? 1 : 0.5;
   animText.targetAlpha = window.layerState.textVisible ? 1 : 0;
+
+  if (window.layerState.isBrawlPassMode) {
+        startAnimation();
+        return; 
+    }
   
   let isTop = window.layerState.textPosition !== 'bottom';
   let effectiveTextVisible = window.layerState.textVisible || window.layerState.isReadyBg;
@@ -4314,82 +4347,132 @@ function drawScene() {
     let w = persistentCanvas.width; let h = persistentCanvas.height;
     persistentCtx.clearRect(0, 0, w, h);
     
+    // Рисуем базу (в БП это фон + персонажи + панели)
     if (window.layerState.bgVisible && rawBgImage) {
         persistentCtx.drawImage(rawBgImage, 0, 0, w, h);
     }
 
-    if (window.layerState.isBrawlPass) {
+    // --- РЕЖИМ BRAWL PASS ---
+    if (window.layerState.isBrawlPassMode) {
+        // 1. Лучи
         if (window.layerState.luchVisible && globalAssets.luchImg) {
-            persistentCtx.save(); persistentCtx.globalCompositeOperation = 'overlay'; persistentCtx.globalAlpha = window.layerState.luchOpacity;
+            persistentCtx.save();
+            persistentCtx.globalCompositeOperation = "overlay"; 
+            persistentCtx.globalAlpha = window.layerState.luchOpacity;
             persistentCtx.drawImage(globalAssets.luchImg, 0, 0, w, h);
-            if (globalAssets.starsEff && window.layerState.starsVisible) {
-               persistentCtx.globalAlpha = 1.0; persistentCtx.drawImage(globalAssets.starsEff, 0, 0, w, h);
-            }
             persistentCtx.restore();
         }
-        if (window.layerState.pointsVisible && globalAssets.pointEff) {
-            persistentCtx.save(); persistentCtx.globalAlpha = window.layerState.pointsOpacity;
-            persistentCtx.drawImage(globalAssets.pointEff, 0, 0, w, h); persistentCtx.restore();
-        }
-        if (globalAssets.priceL && globalAssets.priceR) {
-            drawBPPrice(persistentCtx, globalAssets.priceL, window.layerState.bpPriceLeft, w * 0.055 - 22, w * 0.20, w, h);
-            drawBPPrice(persistentCtx, globalAssets.priceR, window.layerState.bpPriceRight, w - (w * 0.055 + 18) - w * 0.24, w * 0.24, w, h);
-        }
-    } else {
-        // Обычные акции
-        if (window.layerState.isGeneratedBg && window.layerState.pointsVisible && globalAssets.pointsImg) {
-            persistentCtx.save(); persistentCtx.globalCompositeOperation = "source-over";
-            persistentCtx.drawImage(globalAssets.pointsImg, 0, 0, w, h); persistentCtx.restore();
-        }
-        if (window.layerState.luchVisible) {
-            persistentCtx.save(); persistentCtx.globalCompositeOperation = "overlay"; 
-            if (globalAssets.luchImg) {
-                persistentCtx.globalAlpha = window.layerState.luchOpacity;
-                let luchW = w * 2; let luchH = h * 2;
-                persistentCtx.drawImage(globalAssets.luchImg, -(luchW-w)/2, -(luchH-h)/2, luchW, luchH);
-            } else { drawFallbackRays(persistentCtx, w, h, window.layerState.luchOpacity); }
+        
+        // 2. Точки
+        if (window.layerState.pointsVisible && globalAssets.bpPointsImg) {
+            persistentCtx.save();
+            persistentCtx.globalAlpha = window.layerState.pointsOpacity;
+            persistentCtx.drawImage(globalAssets.bpPointsImg, 0, 0, w, h);
             persistentCtx.restore();
         }
-        if (window.layerState.starsVisible && globalAssets.starImg) {
-            drawStars(persistentCtx, globalAssets.starImg, w, h, window.layerState.starsOpacity);
+
+        // 3. Цены
+        if (globalAssets.bpPriceL) drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, w * 0.055 - 22, w * 0.20, w, h);
+        if (globalAssets.bpPriceR) drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, w - (w * 0.055 + 18) - w * 0.24, w * 0.24, w, h);
+
+        // 4. Водяные знаки ARTZA DONATE
+        if (window.layerState.watermarksVisible) {
+            drawWatermarks(persistentCtx, "ARTZA DONATE", w, h, window.layerState.watermarksOpacity);
         }
+
+        // 5. Главный текст (SNAPI)
+        if (cachedTextCanvas && animText.alpha > 0.01) {
+            persistentCtx.save();
+            persistentCtx.globalAlpha = animText.alpha;
+            let tw2 = Math.round(w/2); let th2 = Math.round(h/2);
+            persistentCtx.translate(tw2, th2);
+            persistentCtx.scale(animText.scale, animText.scale);
+            persistentCtx.translate(-tw2, -th2);
+            persistentCtx.imageSmoothingEnabled = true;
+            persistentCtx.imageSmoothingQuality = 'high';
+            persistentCtx.drawImage(cachedTextCanvas, 0, 0);
+            persistentCtx.restore();
+        }
+
+        return; // Прерываем функцию, чтобы старый код акций не сработал
     }
 
+    // --- СТАНДАРТНАЯ ОТРИСОВКА (Акции) ---
+    if (window.layerState.isGeneratedBg && window.layerState.pointsVisible && globalAssets.pointsImg) {
+        persistentCtx.save();
+        persistentCtx.globalCompositeOperation = "source-over";
+        persistentCtx.drawImage(globalAssets.pointsImg, 0, 0, w, h);
+        persistentCtx.restore();
+    }
+    
+    if (window.layerState.luchVisible) {
+        persistentCtx.save();
+        persistentCtx.globalCompositeOperation = "overlay"; 
+        
+        if (globalAssets.luchImg) {
+            persistentCtx.globalAlpha = window.layerState.luchOpacity;
+            let luchW = w * 2; let luchH = h * 2;
+            persistentCtx.drawImage(globalAssets.luchImg, -(luchW-w)/2, -(luchH-h)/2, luchW, luchH);
+        } else {
+            drawFallbackRays(persistentCtx, w, h, window.layerState.luchOpacity);
+        }
+        persistentCtx.restore();
+    }
+    
+    if (window.layerState.starsVisible && globalAssets.starImg) {
+        drawStars(persistentCtx, globalAssets.starImg, w, h, window.layerState.starsOpacity);
+    }
+    
     if (window.layerState.watermarksVisible && window.layerState.textValue) {
-        drawWatermarks(persistentCtx, window.layerState.isBrawlPass ? "ARTZA DONATE" : window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
+        drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
     }
-
+    
     if (cachedTextCanvas && animText.alpha > 0.01) {
-        persistentCtx.save(); persistentCtx.globalAlpha = animText.alpha;
-        let tw2 = Math.round(w/2); let th2 = Math.round(h/2);
-        persistentCtx.translate(tw2, th2); persistentCtx.scale(animText.scale, animText.scale); persistentCtx.translate(-tw2, -th2);
-        persistentCtx.imageSmoothingEnabled = true; persistentCtx.imageSmoothingQuality = 'high';
+        persistentCtx.save();
+        persistentCtx.globalAlpha = animText.alpha;
+        let tw2 = Math.round(w/2);
+        let th2 = Math.round(h/2);
+        persistentCtx.translate(tw2, th2);
+        persistentCtx.scale(animText.scale, animText.scale);
+        persistentCtx.translate(-tw2, -th2);
+        persistentCtx.imageSmoothingEnabled = true;
+        persistentCtx.imageSmoothingQuality = 'high';
         persistentCtx.drawImage(cachedTextCanvas, 0, 0);
         persistentCtx.restore();
     }
     
-    // Офферы только для обычных акций
-    if (!window.layerState.isBrawlPass) {
-        let hdScale = getHDScale();
-        window.layerState.offers.forEach(o => {
-            if (o.anim.alpha < 0.01 || o.anim.scale < 0.01) return;
-            let c = o.cache; if (!c) return;
-            
-            persistentCtx.save(); persistentCtx.globalAlpha = o.anim.alpha;
-            persistentCtx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
-            let isAndroid = document.body.classList.contains('os-android');
-            persistentCtx.shadowBlur = isAndroid ? Math.round(8 * hdScale) : Math.round(21 * hdScale);                    
-            persistentCtx.shadowOffsetX = 0; persistentCtx.shadowOffsetY = Math.round(16 * hdScale);  
-            
-            let cx = Math.round(o.anim.x + o.anim.w/2); let cy = Math.round(o.anim.y + o.anim.h/2);
-            persistentCtx.translate(cx, cy); persistentCtx.scale(o.anim.scale, o.anim.scale);
-            persistentCtx.imageSmoothingEnabled = true; persistentCtx.imageSmoothingQuality = 'high';
+    let hdScale = getHDScale();
+    
+    window.layerState.offers.forEach(o => {
+        if (o.anim.alpha < 0.01 || o.anim.scale < 0.01) return;
+        let c = o.cache;
+        if (!c) return;
+        
+        persistentCtx.save();
+        persistentCtx.globalAlpha = o.anim.alpha;
+        
+        persistentCtx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
+        let isAndroid = document.body.classList.contains('os-android');
+        persistentCtx.shadowBlur = isAndroid ? Math.round(8 * hdScale) : Math.round(21 * hdScale);                    
+        persistentCtx.shadowOffsetX = 0;                  
+        persistentCtx.shadowOffsetY = Math.round(16 * hdScale);  
+        
+        let cx = Math.round(o.anim.x + o.anim.w/2);
+        let cy = Math.round(o.anim.y + o.anim.h/2);
+        
+        persistentCtx.translate(cx, cy);
+        persistentCtx.scale(o.anim.scale, o.anim.scale);
 
-            let drawOffsetX = Math.round(-(c.tW / 2) - c.pad); let drawOffsetY = Math.round(-(c.tH / 2) - c.pad);
-            persistentCtx.drawImage(c.canvas, drawOffsetX, drawOffsetY);
-            persistentCtx.restore();
-        });
-    }
+        persistentCtx.imageSmoothingEnabled = true;
+        persistentCtx.imageSmoothingQuality = 'high';
+
+        let drawOffsetX = Math.round(-(c.tW / 2) - c.pad);
+        let drawOffsetY = Math.round(-(c.tH / 2) - c.pad);
+
+        persistentCtx.drawImage(c.canvas, drawOffsetX, drawOffsetY);
+        
+        persistentCtx.restore();
+    });
 }
 
 function drawFallbackRays(ctx, w, h, opacity = 1.0) {
@@ -4910,10 +4993,6 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                 watermarksOpacity: window.layerState.watermarksOpacity,
                 watermarksFont: window.layerState.watermarksFont,
                 pointsVisible: window.layerState.pointsVisible,
-                pointsOpacity: window.layerState.pointsOpacity, // Добавлено
-                isBrawlPass: window.layerState.isBrawlPass, // Добавлено
-                bpPriceLeft: window.layerState.bpPriceLeft, // Добавлено
-                bpPriceRight: window.layerState.bpPriceRight, // Добавлено
                 offers: window.layerState.offers.map(o => {
                     let tempC = document.createElement('canvas');
                     tempC.width = o.ref.canvas.width; tempC.height = o.ref.canvas.height;
@@ -5212,6 +5291,7 @@ window.addEventListener('DOMContentLoaded', () => {
 async function generateBrawlPassTest() {
     if (window.triggerHaptic) window.triggerHaptic();
     
+    // Переключаем интерфейс на экран результата
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
@@ -5230,8 +5310,11 @@ async function generateBrawlPassTest() {
     const ctx = c.getContext('2d');
 
     const loadImg = (src) => new Promise(r => { 
-        const img = new Image(); img.crossOrigin = "anonymous"; 
-        img.onload = () => r(img); img.onerror = () => r(null); img.src = src; 
+        const img = new Image(); 
+        img.crossOrigin = "anonymous"; 
+        img.onload = () => r(img); 
+        img.onerror = () => r(null); 
+        img.src = src; 
     });
 
     const [bg3, luch, starsEff, pointEff, star, brawler1, brawler2, panelL, priceL, panelR, priceR] = await Promise.all([
@@ -5241,14 +5324,16 @@ async function generateBrawlPassTest() {
         loadImg('BP/bp_panel_right.png'), loadImg('BP/bp_price_bg_right.png')
     ]);
 
-    // Сохраняем элементы БП в глобальные ассеты для динамической отрисовки
+    // Сохраняем ассеты глобально, чтобы отрисовывать их как редактируемые слои позже
     globalAssets.luchImg = luch;
     globalAssets.starsEff = starsEff;
-    globalAssets.pointEff = pointEff;
-    globalAssets.priceL = priceL;
-    globalAssets.priceR = priceR;
+    globalAssets.bpPointsImg = pointEff;
+    globalAssets.bpPriceL = priceL;
+    globalAssets.bpPriceR = priceR;
 
-    // Рисуем ТОЛЬКО статичный фон, панели и персонажей
+    // --- РИСУЕМ ТОЛЬКО БАЗОВЫЙ СТАТИЧНЫЙ ФОН ---
+    
+    // 1. Оранжевый фон (Левый)
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(0, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(0, HEIGHT); ctx.closePath();
@@ -5259,6 +5344,7 @@ async function generateBrawlPassTest() {
     if (bg3) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(bg3, 0, 0, WIDTH, HEIGHT); }
     ctx.restore();
 
+    // 2. Фиолетовый фон (Правый)
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(WIDTH, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(WIDTH, HEIGHT); ctx.closePath();
@@ -5269,125 +5355,157 @@ async function generateBrawlPassTest() {
     if (bg3) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(bg3, 0, 0, WIDTH, HEIGHT); }
     ctx.restore();
 
+    // 3. Линия разделения
     ctx.save();
     ctx.strokeStyle = '#f09e41'; ctx.lineWidth = 9; ctx.lineJoin = 'miter';
-    ctx.beginPath(); ctx.moveTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT);
+    ctx.stroke();
     ctx.restore();
 
+    // 4. Центральная звезда
     let starH = HEIGHT * 0.70; let starY = HEIGHT - (HEIGHT * 0.16 + 56);
     if (star) {
         let sw = starH * (star.width / star.height);
         ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
+    // 5. ПАНЕЛИ
     if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
     if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
 
+    // 6. СВЕЧЕНИЕ ЗА ПЕРСОНАЖАМИ
     let cxL = (WIDTH * 0.39) - 16; let cxR = (WIDTH * 0.589) - 16; 
     const drawLargeGlow = (x, y, radius) => {
-        ctx.save(); ctx.globalCompositeOperation = 'screen';
+        ctx.save(); 
+        ctx.globalCompositeOperation = 'screen';
         let rg = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        rg.addColorStop(0, 'rgba(255,255,255,1)'); rg.addColorStop(0.3, 'rgba(255,255,255,0.8)'); rg.addColorStop(0.7, 'rgba(255,255,255,0.2)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.fillStyle = rg; ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2); ctx.restore();
+        rg.addColorStop(0, 'rgba(255,255,255,1)');
+        rg.addColorStop(0.3, 'rgba(255,255,255,0.8)');
+        rg.addColorStop(0.7, 'rgba(255,255,255,0.2)');
+        rg.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rg; 
+        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2); 
+        ctx.restore();
     };
-    drawLargeGlow(cxL + 40, starY - HEIGHT * 0.2, 280); drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
+    drawLargeGlow(cxL + 40, starY - HEIGHT * 0.2, 280); 
+    drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
 
+    // 7. ТЕНИ ПОД ПЕРСОНАЖАМИ
     const drawShadow = (x, y) => {
         ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
     };
     drawShadow(cxL, starY - 10 + 12.5); drawShadow(cxR, starY - 10 + 12.5);
 
+    // 8. ПЕРСОНАЖИ
     const drawBrawler = (img, x, targetH) => {
         if (!img) return;
-        let bh = targetH; let bw = bh * (img.width / img.height); 
-        ctx.save(); ctx.shadowColor = '#000'; ctx.shadowBlur = 0;
+        let bh = targetH;
+        let bw = bh * (img.width / img.height);
+        
+        ctx.save();
+        ctx.shadowColor = '#000'; ctx.shadowBlur = 0;
         const offsets = [[3,0], [-3,0], [0,3], [0,-3], [2,2], [-2,-2], [2,-2], [-2,2]];
         offsets.forEach(([dx, dy]) => {
-            ctx.shadowOffsetX = dx; ctx.shadowOffsetY = dy; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+            ctx.shadowOffsetX = dx; ctx.shadowOffsetY = dy; 
+            ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
         });
-        ctx.shadowColor = 'transparent'; ctx.drawImage(img, x - bw/2, starY - bh, bw, bh); ctx.restore();
+        ctx.shadowColor = 'transparent'; 
+        ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        ctx.restore();
     };
     drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48); 
     drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
 
-    // Загружаем готовый БП в движок
+    // === СОХРАНЯЕМ ФОН И ПЕРЕДАЕМ УПРАВЛЕНИЕ ДВИЖКУ СЛОЕВ ===
     rawBgImage = new Image();
     rawBgImage.onload = () => {
-        window.layerState.isBrawlPass = true;
+        window.layerState.isBrawlPassMode = true; // Включаем режим БП
         window.layerState.isReadyBg = false;
         window.layerState.isGeneratedBg = false;
         
-        window.layerState.textVisible = true; 
-        window.layerState.textValue = "SNAPI";
+        // Настройки по умолчанию для БП
+        window.layerState.textValue = "SNAPI"; 
         window.layerState.textFont = 'Font16103';
-        window.layerState.textStyleIndex = 9; // BP стиль
-
-        window.layerState.luchVisible = true;
-        window.layerState.luchOpacity = 0.5;
-        window.layerState.starsVisible = true; // Звездная пыль БП
-        window.layerState.pointsVisible = true;
-        window.layerState.pointsOpacity = 1.0;
-        window.layerState.watermarksVisible = true;
-        window.layerState.watermarksOpacity = 0.8;
-        
+        window.layerState.textStyleIndex = 9; // Индекс стиля БП
         window.layerState.bpPriceLeft = "999";
         window.layerState.bpPriceRight = "9999";
+        
+        window.layerState.luchOpacity = 0.5;
+        window.layerState.pointsOpacity = 1.0;
+        window.layerState.watermarksOpacity = 0.8;
+        
         window.layerState.offers = [];
 
-        animText.scale = 0; animText.alpha = 0;
-        animText.targetScale = 1; animText.targetAlpha = 1;
-
         setupPersistentCanvas();
-        renderLayerPanel(true);
-        startAnimation();
+        renderLayerPanel(); // На следующем шаге мы обновим эту функцию
+        calculateLayoutTarget();
     };
     rawBgImage.src = c.toDataURL('image/png');
 }
 
 function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
-    const bpStyle = TEXT_STYLES[window.layerState.textStyleIndex];
-    const fontFam = window.layerState.textFont;
+    const bpStyle = TEXT_STYLES[9];
     const bpText = (nick || "SNAPI").substring(0, 16);
 
-    let line1 = bpText; let line2 = "";
+    let line1 = bpText;
+    let line2 = "";
     if (bpText.length > 5) {
         const spaceIndex = bpText.indexOf(' ');
-        if (spaceIndex !== -1) { line1 = bpText.substring(0, spaceIndex); line2 = bpText.substring(spaceIndex + 1); } 
-        else { const mid = Math.ceil(bpText.length / 2); line1 = bpText.substring(0, mid); line2 = bpText.substring(mid); }
+        if (spaceIndex !== -1) {
+            line1 = bpText.substring(0, spaceIndex);
+            line2 = bpText.substring(spaceIndex + 1);
+        } else {
+            const mid = Math.ceil(bpText.length / 2);
+            line1 = bpText.substring(0, mid);
+            line2 = bpText.substring(mid);
+        }
     }
     const BP_MAX_TEXT_WIDTH = line2 ? WIDTH * 0.30 : WIDTH * 0.38;
 
-    const mCtx = document.createElement('canvas').getContext('2d');
-    let bpFontSize = 30; 
+    const measureC = document.createElement('canvas');
+    const mCtx = measureC.getContext('2d');
+    let bpFontSize = 30; // начинаем с минимума и растём вверх
     const longestLine = line2.length > line1.length ? line2 : line1;
-    mCtx.font = `${bpFontSize}px '${fontFam}', sans-serif`;
+    mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
     while (mCtx.measureText(longestLine).width < BP_MAX_TEXT_WIDTH && bpFontSize < 145) {
-        bpFontSize += 2; mCtx.font = `${bpFontSize}px '${fontFam}', sans-serif`;
+        bpFontSize += 2;
+        mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
     }
-    bpFontSize -= 2; 
+    bpFontSize -= 2; // шаг назад чтобы не вылезть
 
     const bpShadowDepth = Math.floor(bpFontSize * 0.10);
     const lineGap = 0;
+
     const bpTextX = WIDTH / 2 + (bpFontSize * 0.07 * 0.5); 
 
+    // === ЖЕСТКАЯ НИЖНЯЯ ГРАНИЦА ===
+    // 0.94 = 94% от высоты картинки. Если нужно опустить текст ниже, сделай 0.95 или 0.96.
+    // Если нужно поднять выше — 0.93 или 0.92.
     const FIXED_BOTTOM_Y = HEIGHT * 0.91; 
     const BOUND_TOP = HEIGHT * 0.62;
 
-    mCtx.font = `${bpFontSize}px '${fontFam}', sans-serif`;
+    // 1. Измеряем текст при текущем размере шрифта
+    mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
     let metrics1 = mCtx.measureText(line1);
     let maxLineH = Math.max(
         metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent,
         line2 ? (() => { const m = mCtx.measureText(line2); return m.actualBoundingBoxAscent + m.actualBoundingBoxDescent; })() : 0
     );
 
+    // Где будет находиться самый верх текста (строим снизу вверх)
     let topEdge = line2 ? (FIXED_BOTTOM_Y - maxLineH * 2 - lineGap) : (FIXED_BOTTOM_Y - maxLineH);
+
+    // 2. Если верх текста налезает на персонажей, сжимаем шрифт
     if (topEdge < BOUND_TOP) {
         const availableH = FIXED_BOTTOM_Y - BOUND_TOP;
         const neededLines = line2 ? 2 : 1;
         const maxFontByHeight = Math.floor((availableH - lineGap * (neededLines - 1)) / neededLines);
+        
         if (maxFontByHeight < bpFontSize) {
             bpFontSize = maxFontByHeight;
-            mCtx.font = `${bpFontSize}px '${fontFam}', sans-serif`;
+            // Обязательно пересчитываем высоту с новым размером шрифта
+            mCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
             metrics1 = mCtx.measureText(line1);
             maxLineH = Math.max(
                 metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent,
@@ -5396,19 +5514,32 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         }
     }
 
+    // 3. Высчитываем финальные y1 и y2. 
+    // Теперь они всегда выравниваются так, чтобы низ строго касался FIXED_BOTTOM_Y
     let y1, y2;
-    if (line2) { y2 = FIXED_BOTTOM_Y - (maxLineH / 2); y1 = y2 - maxLineH - lineGap; } 
-    else { y1 = FIXED_BOTTOM_Y - (maxLineH / 2); }
+    if (line2) {
+        y2 = FIXED_BOTTOM_Y - (maxLineH / 2); // Низ второй строки упирается в границу
+        y1 = y2 - maxLineH - lineGap;         // Первая строка строится строго над второй
+    } else {
+        y1 = FIXED_BOTTOM_Y - (maxLineH / 2); // Низ единственной строки упирается в границу
+    }
 
     const lines = line2 ? [{ text: line1, y: y1 }, { text: line2, y: y2 }] : [{ text: line1, y: y1 }];
 
-    const strokeC = document.createElement('canvas'); strokeC.width = WIDTH; strokeC.height = HEIGHT;
+    const strokeC = document.createElement('canvas');
+    strokeC.width = WIDTH; strokeC.height = HEIGHT;
     const sCtx = strokeC.getContext('2d');
-    sCtx.textAlign = "center"; sCtx.textBaseline = "middle"; sCtx.lineJoin = "round"; sCtx.lineCap = "round";
-    sCtx.font = `${bpFontSize}px '${fontFam}', sans-serif`;
+    sCtx.textAlign = "center";
+    sCtx.textBaseline = "middle";
+    sCtx.lineJoin = "round";
+    sCtx.lineCap = "round";
+    sCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
 
     lines.forEach(({ text, y }) => {
-        sCtx.save(); sCtx.translate(bpTextX, y); sCtx.transform(1, 0, -0.07, 1, 0, 0); sCtx.rotate(-0.02);
+        sCtx.save();
+        sCtx.translate(bpTextX, y);
+        sCtx.transform(1, 0, -0.07, 1, 0, 0);
+        sCtx.rotate(-0.02);
         sCtx.lineWidth = bpFontSize * 0.24; sCtx.strokeStyle = bpStyle.outer2;
         for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
         sCtx.lineWidth = bpFontSize * 0.16; sCtx.strokeStyle = bpStyle.outer;
@@ -5418,24 +5549,38 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         sCtx.restore();
     });
 
-    const fillC = document.createElement('canvas'); fillC.width = WIDTH; fillC.height = HEIGHT;
+    const fillC = document.createElement('canvas');
+    fillC.width = WIDTH; fillC.height = HEIGHT;
     const fCtx = fillC.getContext('2d');
-    fCtx.textAlign = "center"; fCtx.textBaseline = "middle"; fCtx.lineJoin = "round"; fCtx.lineCap = "round";
-    fCtx.font = `${bpFontSize}px '${fontFam}', sans-serif`;
+    fCtx.textAlign = "center";
+    fCtx.textBaseline = "middle";
+    fCtx.lineJoin = "round";
+    fCtx.lineCap = "round";
+    fCtx.font = `${bpFontSize}px 'Font16103', sans-serif`;
 
     lines.forEach(({ text, y }) => {
-        fCtx.save(); fCtx.translate(bpTextX, y); fCtx.transform(1, 0, -0.07, 1, 0, 0); fCtx.rotate(-0.02);
+        fCtx.save();
+        fCtx.translate(bpTextX, y);
+        fCtx.transform(1, 0, -0.07, 1, 0, 0);
+        fCtx.rotate(-0.02);
         let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
-        bpGrad.addColorStop(0, bpStyle.grad[0]); bpGrad.addColorStop(0.52, bpStyle.grad[1]); bpGrad.addColorStop(1, bpStyle.grad[2]);
-        fCtx.fillStyle = bpGrad; fCtx.fillText(text, 0, 0);
-        fCtx.globalCompositeOperation = "source-atop"; fCtx.lineWidth = bpFontSize * 0.06;
-        fCtx.strokeStyle = bpStyle.inner; fCtx.strokeText(text, 0, 0);
+        bpGrad.addColorStop(0, bpStyle.grad[0]);
+        bpGrad.addColorStop(0.52, bpStyle.grad[1]);
+        bpGrad.addColorStop(1, bpStyle.grad[2]);
+        fCtx.fillStyle = bpGrad;
+        fCtx.fillText(text, 0, 0);
+        fCtx.globalCompositeOperation = "source-atop";
+        fCtx.lineWidth = bpFontSize * 0.06;
+        fCtx.strokeStyle = bpStyle.inner;
+        fCtx.strokeText(text, 0, 0);
         fCtx.restore();
     });
 
     ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.35)"; ctx.shadowBlur = Math.round(21 * (HEIGHT / 1080));
-    ctx.shadowOffsetX = 0; ctx.shadowOffsetY = Math.round(16 * (HEIGHT / 1080));
+    ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+    ctx.shadowBlur = Math.round(21 * (HEIGHT / 1080));
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = Math.round(16 * (HEIGHT / 1080));
     ctx.drawImage(strokeC, 0, 0);
     ctx.restore();
     ctx.drawImage(fillC, 0, 0);
