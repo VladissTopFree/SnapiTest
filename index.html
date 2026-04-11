@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.6(5)";
+  const APP_VERSION = "v2.4.6(6)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3116,6 +3116,9 @@ function renderLayerPanel(isInitialLoad = false) {
 
     html += `<div class="ios-section-title ${animCls}">СЛОИ ДЛЯ РЕДАКТИРОВАНИЯ</div>`;
 
+    // ==========================================
+    //          РЕЖИМ BRAWL PASS
+    // ==========================================
     if (window.layerState.isBrawlPassMode) {
         let textEyeClass = window.layerState.textVisible ? '' : 'hidden';
         
@@ -3147,8 +3150,7 @@ function renderLayerPanel(isInitialLoad = false) {
             let previewDataUrl = createStylePreviewURL(st, window.layerState.textFont);
             html += `<div class="ios-style-item main-style-item ${activeCls}" data-style="${sIdx}" style="background-image: url(${previewDataUrl});" onclick="setStyle(${sIdx})"></div>`;
         });
-        html += `</div>`;
-        html += `</div>`;
+        html += `</div></div>`;
 
         // Группа 2: Цены
         html += `<div class="ios-layer-group ${animCls}">`;
@@ -3165,8 +3167,7 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div class="ios-layer-action-text">значение</div>
                 <input type="text" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this.value, this)">
             </div>
-        `;
-        html += `</div>`;
+        </div>`;
 
         // Группа 3: Косметика (Лучи, Точки, Водяные знаки)
         let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
@@ -3191,7 +3192,7 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div class="ios-layer-action-text">прозрачность</div>
                 <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.pointsOpacity}" oninput="changeOpacity('points', this.value)">
             </div>
-            <div class="ios-layer-row" style="border-bottom:none;">
+            <div class="ios-layer-row">
                 <div class="ios-icon-btn ios-eye-icon ${wmEyeClass}" onclick="toggleCosmeticLayer('watermarks')">
                      ${getEyeSVG(window.layerState.watermarksVisible)}
                 </div>
@@ -3210,11 +3211,12 @@ function renderLayerPanel(isInitialLoad = false) {
 
         layerPanel.innerHTML = html;
         layerPanel.style.display = 'flex';
-        return; // Завершаем функцию
+        return; // Если это БП — прерываем функцию здесь!
     }
 
-    // --- СТАНДАРТНАЯ ОТРИСОВКА ПАНЕЛИ (для акций) ---
-    // Ниже идет твой старый код (if (!window.layerState.isReadyBg) { ... })
+    // ==========================================
+    //          СТАНДАРТНЫЕ АКЦИИ (Оригинал)
+    // ==========================================
     if (!window.layerState.isReadyBg) {
         let isTop = window.layerState.textPosition !== 'bottom';
         let textEyeClass = window.layerState.textVisible ? '' : 'hidden';
@@ -3225,7 +3227,7 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div class="ios-icon-btn ios-eye-icon ${textEyeClass}" onclick="toggleTextLayer()">
                     ${getEyeSVG(window.layerState.textVisible)}
                 </div>
-                <div class="ios-layer-name" style="max-width: 120px;">${window.layerState.textValue.substring(0, 10)}${window.layerState.textValue.length > 10 ? '...' : ''}</div>
+                <div class="ios-layer-name" style="max-width: 120px;">${(window.layerState.textValue || 'SNAPI').substring(0, 10)}${(window.layerState.textValue || '').length > 10 ? '...' : ''}</div>
                 <div class="ios-layer-action-text">расположение</div>
                 <button class="ios-pill-btn" onclick="toggleTextPosition()">
                     ${isTop ? 'ВВЕРХ' : 'ВНИЗ'}
@@ -3255,11 +3257,11 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `</div>`;
     }
 
-    if (window.layerState.offers.length > 0) {
+    if (window.layerState.offers && window.layerState.offers.length > 0) {
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
             <div class="ios-layer-row">
-                <div style="width: 24px; flex-shrink: 0;"></div> <!-- Заглушка для глазика -->
+                <div style="width: 24px; flex-shrink: 0;"></div>
                 <div class="ios-layer-name">Обводка у акций</div>
                 <div class="ios-layer-action-text">размер</div>
                 <div class="ios-stroke-control">
@@ -3267,7 +3269,7 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div class="ios-stroke-val" id="global-stroke-val">${window.layerState.globalStrokeWidth}</div>
                     <button class="ios-stroke-btn" onclick="changeGlobalStroke(1)">+</button>
                 </div>
-                <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div> <!-- Заглушка для кнопки скачивания -->
+                <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
             </div>
         `;
 
@@ -4428,7 +4430,7 @@ function drawScene() {
         
         if (globalAssets.bpPriceR) {
             // Вычисляем сдвиг в 16px пропорционально огромному HD-холсту
-            let shiftLeft = 26 * (w / 1200); 
+            let shiftLeft = 21 * (w / 1200); 
             let rightX = w - marginX - priceW - shiftLeft;
             
             drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
@@ -4965,6 +4967,7 @@ function drawBeautifulNick(ctx, text, w, h) {
 
   wizardNextBtn3.onclick = async () => {
     window.triggerHaptic();
+    window.layerState.isBrawlPassMode = false;
     let nick = wizardNickInput.value.trim().substring(0, 16) || "Snapi";
     window.layerState.textValue = nick;
     window.layerState.bgColorType = selectedColor; 
