@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(11)";
+  const APP_VERSION = "v2.4.7(12)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2206,7 +2206,7 @@ async function hashTelegramId(id) {
       Время ответа составляет не более 72 часов.    
     </div>
 
-    <div id="transactions-container" style="display: none; width: 100%; box-sizing: border-box; margin-top: 56px;"></div>
+    <div id="transactions-container" style="display: none; width: 100%; box-sizing: border-box; margin-top: 36px;"></div>
 
     <div style="margin-top: auto; display: flex; align-items: center; justify-content: flex-start; padding: 20px 20px 40px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; width: 100%; box-sizing: border-box;">
         <span id="app-version-display" style="font-size: 18px; font-weight: 600; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-right: 6px;"></span>
@@ -3046,6 +3046,8 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
     const limit = await checkUsageLimit();
     if (!limit.allowed) return; 
 
+    if (window.resetWizardState) window.resetWizardState();
+
     isCurrentProjectSaved = false; 
     document.getElementById('ios-dashboard').style.display = 'none';
 
@@ -3092,7 +3094,10 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         document.getElementById('prog-line1').className = 'line';
         document.getElementById('prog-step2').className = 'step small';
         document.getElementById('prog-line2').className = 'line';
-        document.getElementById('prog-step3').className = 'step small';
+
+        document.getElementById('prog-step3').className = 'step small'; 
+        document.getElementById('prog-line3').className = 'line';       
+        document.getElementById('prog-step4').className = 'step small'; 
 
         stagedFiles = [];
         updateDropzoneUI();
@@ -3141,6 +3146,9 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('prog-step2').className = 'step small';
     document.getElementById('prog-line2').className = 'line';
     document.getElementById('prog-step3').className = 'step small';
+
+    document.getElementById('prog-line3').className = 'line';       // ДОБАВИТЬ ЭТО
+    document.getElementById('prog-step4').className = 'step small'; // ДОБАВИТЬ ЭТО
 
     document.getElementById('wizard-overlay').style.display = 'flex';
     window.scrollTo(0,0);
@@ -5217,6 +5225,46 @@ function drawBeautifulNick(ctx, text, w, h) {
       wizardInsertText.innerText = savedNick;
       wizardInsertBtn.style.display = 'flex';
   }
+
+  window.resetWizardState = () => {
+      // Сброс фона
+      uploadMode = null;
+      selectedColor = null;
+      uploadedBaseImg.removeAttribute('src');
+      uploadedReadyBaseImg.removeAttribute('src');
+      wizardColorWraps.forEach(w => w.classList.remove('selected'));
+      document.getElementById('wizard-upload-text').innerText = "Фон с Fankit";
+      document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
+      wizardNextBtn1.classList.remove('show');
+      
+      // Сброс ника
+      wizardNickInput.value = '';
+      wizardNextBtn2.classList.remove('show');
+      document.getElementById('wizard-caps-btn').classList.remove('visible');
+      
+      // Сброс загруженных скриншотов
+      stagedFiles = [];
+      updateDropzoneUI();
+      
+      // Сброс цен Brawl Pass
+      let bpPrice = document.getElementById('wizard-bp-price');
+      let bpPlusPrice = document.getElementById('wizard-bpplus-price');
+      if(bpPrice) bpPrice.value = '';
+      if(bpPlusPrice) bpPlusPrice.value = '';
+      let bpNextBtn3 = document.getElementById('wizard-next-btn3-bp');
+      if(bpNextBtn3) bpNextBtn3.classList.remove('show');
+      
+      // Сброс выбора сезона
+      if (typeof selectedBPSeason !== 'undefined') {
+          selectedBPSeason = 50;
+          [50, 49, 48].forEach(s => {
+              let radio = document.getElementById(`season-radio-${s}`);
+              if (radio) radio.classList.remove('checked');
+          });
+          let defaultRadio = document.getElementById('season-radio-50');
+          if (defaultRadio) defaultRadio.classList.add('checked');
+      }
+  };
 
   function checkStep1Ready() {
     if (selectedColor || uploadedBaseImg.src || uploadedReadyBaseImg.src) {
