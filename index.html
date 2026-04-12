@@ -1324,7 +1324,9 @@ async function hashTelegramId(id) {
   .ios-btn-next:active,
   #dl-btn-actual-download:active,
   #dl-btn-save-project:active,
-  #ios-btn-download-all:active {
+  #ios-btn-download-all:active,
+  #cat-btn-next:active,
+  #bp-style-btn-next:active {
     scale: 0.95 !important;
     opacity: 0.8 !important;
     color: rgba(255, 255, 255, 0.8) !important;
@@ -1948,7 +1950,7 @@ async function hashTelegramId(id) {
   </div>
 
   <div id="wizard-step1" class="wizard-step active">
-    <div class="ios-wizard-title">Создание акции</div>
+    <div class="ios-wizard-title" id="wizard-title-step1">Создание акции</div>
     <div class="ios-wizard-subtitle">Фон. Выберите один из готовых цветов<br>или загрузите свой готовый фон.</div>
     
     <div class="ios-color-presets" id="wizard-color-presets">
@@ -1979,7 +1981,7 @@ async function hashTelegramId(id) {
   </div>
   
   <div id="wizard-step2" class="wizard-step">
-    <div class="ios-wizard-title">Создание акции</div>
+    <div class="ios-wizard-title" id="wizard-title-step2">Создание акции</div>
     <div class="ios-wizard-subtitle">Ник. Напишите свой ник, который<br>будет располагаться на Вашей работе.</div>
     
     <div class="wizard-input-wrapper">
@@ -3053,6 +3055,8 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
     
     if (selectedCategory === 'action') {
         wizardMode = 'action';
+        document.getElementById('wizard-title-step1').innerText = 'Создание акции';
+        document.getElementById('wizard-title-step2').innerText = 'Создание акции';
         document.getElementById('category-overlay').style.display = 'none';
         
         // Скрываем 4 шаг для обычных акций
@@ -3099,6 +3103,9 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
 
     document.getElementById('bp-style-overlay').style.display = 'none';
     window.layerState.bpStyleIndex = selectedBPStyle;
+
+    document.getElementById('wizard-title-step1').innerText = 'Создание Brawl Pass';
+    document.getElementById('wizard-title-step2').innerText = 'Создание Brawl Pass';
 
     document.getElementById('result-box').style.display = 'none';
     let btnWrap = document.getElementById('download-btn-wrap');
@@ -4697,7 +4704,7 @@ function setupPersistentCanvas() {
         addScreensLink.className = 'ios-add-screens-link';
         
         if (window.layerState.isBrawlPassMode) {
-            addScreensLink.innerHTML = `Фон с Fankit <svg viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" fill="none" stroke="var(--tg-theme-accent-text-color)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+            addScreensLink.innerHTML = `Изменить фон с Fankit <svg viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" fill="none" stroke="var(--tg-theme-accent-text-color)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
             addScreensLink.onclick = () => {
                 window.fankitContext = 'editor';
                 window.openFankitGlobal();
