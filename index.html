@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.6(6)";
+  const APP_VERSION = "v2.4.6(7)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4430,7 +4430,7 @@ function drawScene() {
         
         if (globalAssets.bpPriceR) {
             // Вычисляем сдвиг в 16px пропорционально огромному HD-холсту
-            let shiftLeft = 36 * (w / 1200); 
+            let shiftLeft = 46 * (w / 1200); 
             let rightX = w - marginX - priceW - shiftLeft;
             
             drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
@@ -5592,51 +5592,48 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     const lines = line2 ? [{ text: line1, y: y1 }, { text: line2, y: y2 }] : [{ text: line1, y: y1 }];
 
-    // --- ОТРИСОВКА ОБВОДОК И ТЕНЕЙ (КАК В АКЦИЯХ) ---
+    // --- ОТРИСОВКА ОБВОДОК И ТЕНЕЙ (СЛОЯМИ) ---
     const strokeC = document.createElement('canvas');
     strokeC.width = WIDTH; strokeC.height = HEIGHT;
     const sCtx = strokeC.getContext('2d');
     sCtx.textAlign = "center"; sCtx.textBaseline = "middle"; sCtx.lineJoin = "round"; sCtx.lineCap = "round";
     sCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
 
-    lines.forEach(({ text, y }) => {
-        sCtx.save();
-        sCtx.translate(bpTextX, y);
-        sCtx.transform(1, 0, -0.07, 1, 0, 0);
-        sCtx.rotate(-0.02);
-        
-        if (bpStyle.isClassic) {
-            sCtx.lineWidth = bpFontSize * 0.18; sCtx.strokeStyle = "#ffffff"; 
-            for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-            sCtx.lineWidth = bpFontSize * 0.12; sCtx.strokeStyle = "#42003d"; 
-            for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-            sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = "#61005a"; 
-            for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-        } else {
-            if (bpStyle.outer2) {
-                sCtx.lineWidth = bpFontSize * 0.18; sCtx.strokeStyle = bpStyle.outer2; 
-                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-                
-                sCtx.lineWidth = bpFontSize * 0.12; sCtx.strokeStyle = bpStyle.outer; 
-                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-                
-                sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow; 
-                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-            } else if (bpStyle.outer) {
-                sCtx.lineWidth = bpFontSize * 0.12; sCtx.strokeStyle = bpStyle.outer; 
-                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-                
-                sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow; 
-                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-            } else {
-                sCtx.lineWidth = bpFontSize * 0.0154; sCtx.strokeStyle = bpStyle.shadow; 
-                for (let i = bpShadowDepth; i >= 0; i--) sCtx.strokeText(text, 0, i);
-            }
+    // Новая логика: отрисовываем слой определенной толщины сразу для ВСЕХ строк!
+    const drawStrokeLayer = (width, color) => {
+        sCtx.lineWidth = width;
+        sCtx.strokeStyle = color;
+        for (let i = bpShadowDepth; i >= 0; i--) {
+            lines.forEach(({ text, y }) => {
+                sCtx.save();
+                sCtx.translate(bpTextX, y);
+                sCtx.transform(1, 0, -0.07, 1, 0, 0);
+                sCtx.rotate(-0.02);
+                sCtx.strokeText(text, 0, i);
+                sCtx.restore();
+            });
         }
-        sCtx.restore();
-    });
+    };
 
-    // --- ОТРИСОВКА ЗАЛИВКИ И ВНУТРЕННЕГО КОНТУРА (КАК В АКЦИЯХ) ---
+    // Сначала рисуем самые толстые (задние) обводки, затем тонкие поверх
+    if (bpStyle.isClassic) {
+        drawStrokeLayer(bpFontSize * 0.18, "#ffffff");
+        drawStrokeLayer(bpFontSize * 0.12, "#42003d");
+        drawStrokeLayer(bpFontSize * 0.0154, "#61005a");
+    } else {
+        if (bpStyle.outer2) {
+            drawStrokeLayer(bpFontSize * 0.18, bpStyle.outer2); // Белая обводка (или другая толстая)
+            drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);  // Средняя обводка
+            drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow); // Внутренняя тень
+        } else if (bpStyle.outer) {
+            drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);
+            drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow);
+        } else {
+            drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow);
+        }
+    }
+
+    // --- ОТРИСОВКА ЗАЛИВКИ И ВНУТРЕННЕГО КОНТУРА ---
     const fillC = document.createElement('canvas');
     fillC.width = WIDTH; fillC.height = HEIGHT;
     const fCtx = fillC.getContext('2d');
@@ -5651,14 +5648,14 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         
         let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
         bpGrad.addColorStop(0, bpStyle.grad[0]);
-        bpGrad.addColorStop(bpStyle.isClassic ? 0.48 : 0.52, bpStyle.grad[1]);
-        bpGrad.addColorStop(1, bpStyle.grad[2]);
+        bpGrad.addColorStop(bpStyle.isClassic ? 0.48 : 0.52, bpStyle.grad[1] || bpStyle.grad[0]);
+        bpGrad.addColorStop(1, bpStyle.grad[2] || bpStyle.grad[0]);
         fCtx.fillStyle = bpGrad;
         fCtx.fillText(text, 0, 0);
         
         fCtx.globalCompositeOperation = "source-atop";
         fCtx.lineWidth = bpFontSize * 0.06;
-        fCtx.strokeStyle = bpStyle.isClassic ? "#fcff00" : bpStyle.inner;
+        fCtx.strokeStyle = bpStyle.isClassic ? "#fcff00" : (bpStyle.inner || '#ffffff');
         fCtx.strokeText(text, 0, 0);
         fCtx.restore();
     });
@@ -5672,6 +5669,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     ctx.restore();
     ctx.drawImage(fillC, 0, 0);
 }
+
 </script>
 </body>
 </html>
