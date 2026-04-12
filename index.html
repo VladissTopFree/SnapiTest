@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(2)";
+  const APP_VERSION = "v2.4.7(3)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2007,6 +2007,24 @@ async function hashTelegramId(id) {
     <input type="file" id="file-add-screens" accept="image/*" multiple style="display:none;">
     <button id="wizard-next-btn3" class="ios-action-btn ios-btn-next">Далее</button>
   </div>
+
+  <div id="wizard-step3-bp" class="wizard-step">
+      <div class="ios-wizard-title">Создание Brawl Pass</div>
+      <div class="ios-wizard-subtitle">Цены. Напишите в поля для ввода<br>цены для Brawl Pass и Brawl Pass Plus.</div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 30px; width: 100%; max-width: 280px; align-items: center;">
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <span style="font-size: 22px; font-weight: 600; color: var(--tg-theme-text-color, #000); letter-spacing: 0.5px;">BP</span>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" id="wizard-bp-price" placeholder="Введите цену..." style="background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 14px; padding: 14px 16px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; width: 160px; text-align: left;" maxlength="5">
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <span style="font-size: 22px; font-weight: 600; color: var(--tg-theme-text-color, #000); letter-spacing: 0.5px;">BP PLUS</span>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" id="wizard-bpplus-price" placeholder="Введите цену..." style="background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 14px; padding: 14px 16px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; width: 160px; text-align: left;" maxlength="5">
+        </div>
+      </div>
+
+      <button id="wizard-next-btn3-bp" class="ios-action-btn ios-btn-next">Далее</button>
+  </div>
 </div>
 
 <div id="result-box">
@@ -2899,6 +2917,7 @@ window.loadProject = async (id) => {
 // --- ЛОГИКА ЭКРАНА ВЫБОРА РАЗДЕЛА И СТИЛЕЙ ---
 let selectedCategory = null; 
 let selectedBPStyle = null;
+let wizardMode = 'action'; // Флаг текущего режима (action или bp)
 
 // Выбор раздела (Акции или БП)
 window.selectCategory = function(cat) {
@@ -2927,14 +2946,10 @@ window.selectBPStyle = function(styleId) {
     selectedBPStyle = styleId;
     window.triggerHaptic();
 
-    // Сбрасываем все галочки
     for (let i = 1; i <= 3; i++) {
         document.getElementById(`bp-radio-${i}`).classList.remove('checked');
     }
-    // Анимированно включаем нужную
     document.getElementById(`bp-radio-${styleId}`).classList.add('checked');
-
-    // Плавно показываем кнопку Далее
     document.getElementById('bp-style-btn-next').classList.add('show');
 };
 
@@ -2946,6 +2961,10 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
 
     isCurrentProjectSaved = false; 
     document.getElementById('ios-dashboard').style.display = 'none';
+
+    document.getElementById('result-box').style.display = 'none';
+    let btnWrap = document.getElementById('download-btn-wrap');
+    if (btnWrap) btnWrap.style.display = 'none';
 
     selectedCategory = null; 
     document.getElementById('cat-badge-wrap-action').classList.remove('show');
@@ -2964,9 +2983,13 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         alert("Пожалуйста, выберите раздел.");
         return;
     }
+
+    document.getElementById('result-box').style.display = 'none';
+    let btnWrap = document.getElementById('download-btn-wrap');
+    if (btnWrap) btnWrap.style.display = 'none';
     
     if (selectedCategory === 'action') {
-        // --- СТАРЫЙ СКРИПТ СОЗДАНИЯ АКЦИИ ---
+        wizardMode = 'action';
         document.getElementById('category-overlay').style.display = 'none';
         
         document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
@@ -2984,10 +3007,9 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         document.getElementById('wizard-overlay').style.display = 'flex';
         window.scrollTo(0,0);
     } else if (selectedCategory === 'bp') {
-        // --- ПЕРЕХОД НА ЭКРАН СТИЛЕЙ БП ---
+        wizardMode = 'bp';
         document.getElementById('category-overlay').style.display = 'none';
         
-        // Сбрасываем выбор стиля при каждом открытии
         selectedBPStyle = null;
         for (let i = 1; i <= 3; i++) {
             document.getElementById(`bp-radio-${i}`).classList.remove('checked');
@@ -3004,12 +3026,24 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     window.triggerHaptic();
     if (!selectedBPStyle) return;
 
-    // Скрываем экран выбора стилей
     document.getElementById('bp-style-overlay').style.display = 'none';
-
-    // Запускаем скрипт генерации Brawl Pass (ты можешь сохранить selectedBPStyle куда нужно)
     window.layerState.bpStyleIndex = selectedBPStyle;
-    generateBrawlPassTest(); 
+
+    document.getElementById('result-box').style.display = 'none';
+    let btnWrap = document.getElementById('download-btn-wrap');
+    if (btnWrap) btnWrap.style.display = 'none';
+
+    document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
+    document.getElementById('wizard-step1').classList.add('active');
+
+    document.getElementById('prog-step1').className = 'step active';
+    document.getElementById('prog-line1').className = 'line';
+    document.getElementById('prog-step2').className = 'step small';
+    document.getElementById('prog-line2').className = 'line';
+    document.getElementById('prog-step3').className = 'step small';
+
+    document.getElementById('wizard-overlay').style.display = 'flex';
+    window.scrollTo(0,0);
 });
 
 function createGradientBg(colorType) {
@@ -5090,7 +5124,7 @@ function drawBeautifulNick(ctx, text, w, h) {
          uploadMode = 'color';
          uploadedBaseImg.removeAttribute('src');
          uploadedReadyBaseImg.removeAttribute('src');
-         document.getElementById('wizard-upload-text').innerText = "Загрузить фон";
+         document.getElementById('wizard-upload-text').innerText = "Фон с Fankit";
          document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
          checkStep1Ready();
      };
@@ -5223,7 +5257,7 @@ function drawBeautifulNick(ctx, text, w, h) {
       selectedColor = null;
       uploadMode = 'ready_bg';
       wizardColorWraps.forEach(w => w.classList.remove('selected'));
-      document.getElementById('wizard-upload-text').innerText = "Загрузить фон";
+      document.getElementById('wizard-upload-text').innerText = "Фон с Fankit";
       uploadedBaseImg.removeAttribute('src');
 
       uploadedReadyBaseImg.onload = () => {
@@ -5234,7 +5268,7 @@ function drawBeautifulNick(ctx, text, w, h) {
     }
   };
 
-  function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) {
+function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) {
     currentStep.classList.add('fade-out');
     setTimeout(() => {
         currentStep.classList.remove('active', 'fade-out');
@@ -5255,7 +5289,9 @@ function drawBeautifulNick(ctx, text, w, h) {
         step1.classList.add('fade-out');
         setTimeout(() => {
             step1.classList.remove('active', 'fade-out');
-            step3.classList.add('active');
+            
+            let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : step3;
+            targetStep3.classList.add('active');
 
             document.getElementById('prog-step1').classList.remove('active');
             document.getElementById('prog-step1').classList.add('small');
@@ -5341,7 +5377,9 @@ function drawBeautifulNick(ctx, text, w, h) {
         wizardInsertBtn.style.display = 'flex';
     }
     wizardNickInput.blur(); 
-    transitionStep(step2, step3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
+    
+    let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : step3;
+    transitionStep(step2, targetStep3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
   };
 
   wizardUploadScreensBtn.onclick = () => fileInput.click();
@@ -5386,6 +5424,75 @@ function drawBeautifulNick(ctx, text, w, h) {
     }
 
     processImages(stagedFiles);
+  };
+
+  // --- ЛОГИКА ПРОВЕРКИ ЦЕН BRAWL PASS ---
+  const bpPriceInput = document.getElementById('wizard-bp-price');
+  const bpPlusPriceInput = document.getElementById('wizard-bpplus-price');
+  const bpNextBtn3 = document.getElementById('wizard-next-btn3-bp');
+
+  function checkStep3BPReady() {
+    // Принудительно удаляем всё, кроме цифр, если пользователь вставил текст
+    bpPriceInput.value = bpPriceInput.value.replace(/[^0-9]/g, '');
+    bpPlusPriceInput.value = bpPlusPriceInput.value.replace(/[^0-9]/g, '');
+
+    // Показываем кнопку, только если оба поля не пустые
+    if (bpPriceInput.value.trim().length > 0 && bpPlusPriceInput.value.trim().length > 0) {
+        bpNextBtn3.classList.add('show');
+    } else {
+        bpNextBtn3.classList.remove('show');
+    }
+  }
+
+  // Слушаем каждое изменение в полях
+  bpPriceInput.addEventListener('input', checkStep3BPReady);
+  bpPlusPriceInput.addEventListener('input', checkStep3BPReady);
+  // ---------------------------------------
+
+  document.getElementById('wizard-next-btn3-bp').onclick = async () => {
+    window.triggerHaptic();
+    window.layerState.isBrawlPassMode = true;
+    
+    let nick = wizardNickInput.value.trim().substring(0, 16) || "Snapi";
+    window.layerState.textValue = nick;
+    window.layerState.bgColorType = selectedColor; 
+    
+    let bpPrice = document.getElementById('wizard-bp-price').value.trim() || "999";
+    let bpPlusPrice = document.getElementById('wizard-bpplus-price').value.trim() || "9999";
+    window.layerState.bpPriceLeft = bpPrice;
+    window.layerState.bpPriceRight = bpPlusPrice;
+    
+    if (uploadMode === 'ready_bg') {
+        window.layerState.isReadyBg = true;
+        window.layerState.isGeneratedBg = false;
+        rawBgImage = uploadedReadyBaseImg;
+        window.layerState.textVisible = false;
+        window.layerState.luchVisible = false;
+        window.layerState.starsVisible = false;
+        window.layerState.pointsVisible = false;
+        window.layerState.watermarksVisible = false;
+    } else if (selectedColor) {
+        window.layerState.isReadyBg = false;
+        window.layerState.isGeneratedBg = true;
+        rawBgImage = await createGradientBg(selectedColor);
+        window.layerState.textVisible = true;
+        window.layerState.luchVisible = true;
+        window.layerState.starsVisible = true;
+        window.layerState.pointsVisible = true;
+        window.layerState.watermarksVisible = true;
+    } else {
+        window.layerState.isReadyBg = false;
+        window.layerState.isGeneratedBg = false;
+        rawBgImage = uploadedBaseImg;
+        window.layerState.textVisible = true;
+        window.layerState.luchVisible = true;
+        window.layerState.starsVisible = true;
+        window.layerState.pointsVisible = true;
+        window.layerState.watermarksVisible = true;
+    }
+
+    document.getElementById('wizard-overlay').style.display = 'none';
+    generateBrawlPassTest();
   };
 
 document.getElementById('dl-btn-save-project').onclick = (e) => {
@@ -5850,11 +5957,11 @@ async function generateBrawlPassTest() {
         window.layerState.isGeneratedBg = false;
         
         // Настройки по умолчанию для БП
-        window.layerState.textValue = "SNAPI"; 
+        window.layerState.textValue = window.layerState.textValue || "SNAPI"; 
         window.layerState.textFont = 'Font16103';
-        window.layerState.textStyleIndex = 9; // Индекс стиля БП
-        window.layerState.bpPriceLeft = "999";
-        window.layerState.bpPriceRight = "9999";
+        window.layerState.textStyleIndex = 9; 
+        window.layerState.bpPriceLeft = window.layerState.bpPriceLeft || "999";
+        window.layerState.bpPriceRight = window.layerState.bpPriceRight || "9999";
         
         window.layerState.luchOpacity = 0.5;
         window.layerState.pointsOpacity = 1.0;
