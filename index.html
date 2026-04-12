@@ -20,7 +20,7 @@
   }
 
 
-  const MANUAL_FALLBACK_DATE = "12 Apr 2026";
+  const MANUAL_FALLBACK_DATE = "13 Apr 2026";
 
 
 
@@ -90,9 +90,8 @@
       html += '<div class="ios-layer-group" style="padding: 0 20px; margin-bottom: 8px;">'; 
       
       userTrans.forEach((t, index) => {
-          let borderBottom = index === userTrans.length - 1 ? 'border-bottom: none;' : '';
           html += `
-          <div class="ios-layer-row" style="${borderBottom} padding: 16px 0; min-height: auto; cursor: default;">
+          <div class="ios-layer-row" style="padding: 16px 0; min-height: auto; cursor: default;">
               <div class="ios-layer-name" style="font-size: 17px; font-weight: 400; white-space: normal; color: var(--tg-theme-text-color, #000000);">
                   с ${t.period1} по ${t.period2}
               </div>
@@ -128,22 +127,21 @@ async function hashTelegramId(id) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// КОНФИГУРАЦИЯ СЕЗОНОВ BRAWL PASS
   const BP_SEASON_CONFIG = {
       50: {
-          lineColor: '#f09e41', // Цвет линии
-          gradientLeft: ['#ff4e00', '#ff8a00'], // Левый градиент (оранжевый)
-          gradientRight: ['#6420c2', '#390d8a'] // Правый градиент (фиолетовый)
+          lineColor: '#f09e41', 
+          gradientLeft: ['#ff4e00', '#ff8a00'], 
+          gradientRight: ['#6420c2', '#390d8a'] 
       },
       49: {
-          lineColor: '#5ce1e6', // Пример: бирюзовая линия
-          gradientLeft: ['#008b8b', '#00ffcc'], // Пример: зеленый -> салатовый
-          gradientRight: ['#00008b', '#0066ff'] // Пример: темно-синий -> голубой
+          lineColor: '#5ce1e6', 
+          gradientLeft: ['#008b8b', '#00ffcc'], 
+          gradientRight: ['#00008b', '#0066ff'] 
       },
       48: {
-          lineColor: '#ff3366', // Пример: розовая линия
-          gradientLeft: ['#8b0000', '#ff0044'], // Пример: бордовый -> красный
-          gradientRight: ['#4a0000', '#cc0000'] // Пример: темно-красный -> красный
+          lineColor: '#ff3366', 
+          gradientLeft: ['#8b0000', '#ff0044'], 
+          gradientRight: ['#4a0000', '#cc0000'] 
       }
   };
 
@@ -721,7 +719,7 @@ async function hashTelegramId(id) {
   .ios-menu-text { font-size: 17px; font-weight: 400; flex-grow: 1; color: var(--tg-theme-text-color, #000000); }
   .ios-menu-value { color: var(--tg-theme-subtitle-text-color, #8E8E93); font-size: 17px; margin-right: 12px; }
   .ios-chevron { display: flex; align-items: center; opacity: 0.5; }
-  .ios-divider { height: 0.5px; background: var(--tg-theme-section-separator-color, #E5E5EA); margin-left: 48px; margin-right: -20px; opacity: 0.5; }
+  .ios-divider { height: 0.5px; background: var(--tg-theme-section-separator-color, #E5E5EA); margin-left: 48px; margin-right: 0; opacity: 0.5; }
 
   .ios-section-title {
     color: var(--tg-theme-section-header-text-color, #8E8E93);
@@ -986,7 +984,7 @@ async function hashTelegramId(id) {
     position: absolute;
     bottom: 0;
     left: 114px; 
-    right: 0;
+    right: 20px;
     height: 0.5px;
     background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
     transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1560,7 +1558,6 @@ async function hashTelegramId(id) {
     border-color: var(--tg-theme-accent-text-color);
   }
 
-  /* ===== СТИЛИ BRAWL PASS ===== */
         .shop-container {
             position: relative;
             width: 1200px;
@@ -1570,7 +1567,7 @@ async function hashTelegramId(id) {
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             transform-origin: center;
-            transform: scale(0.3); /* Масштаб для мобилок, чтобы влезло в экран */
+            transform: scale(0.3); 
         }
         @media (min-width: 768px) { .shop-container { transform: scale(0.6); } }
 
@@ -1606,7 +1603,6 @@ async function hashTelegramId(id) {
 
 
 
-/* === СТИЛИ ВЫБОРА РАЗДЕЛА === */
   #category-overlay {
     width: 100%;
     height: var(--tg-viewport-stable-height, 100vh);
@@ -1619,7 +1615,7 @@ async function hashTelegramId(id) {
   }
 
   #cat-btn-next {
-    display: none; /* Кнопка скрыта изначально */
+    display: none; 
     margin: 0 auto;
   }
 
@@ -1633,7 +1629,7 @@ async function hashTelegramId(id) {
     font-weight: 700;
     color: var(--tg-theme-text-color, #000);
     margin-bottom: 20px;
-    padding: 0; /* Убрали отступы, чтобы заголовок встал вровень с карточками */
+    padding: 0; 
     text-align: left;
     width: 100%;
   }
@@ -1641,10 +1637,10 @@ async function hashTelegramId(id) {
   .cat-card {
     display: flex;
     align-items: flex-start;
-    padding: 14px 0; /* Уменьшили отступ, чтобы линия была ближе */
+    padding: 14px 0; 
     border-bottom: 0.5px solid color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
     cursor: pointer;
-    width: 100%; /* Гарантируем полную ширину */
+    width: 100%; 
     transition: background-color 0.2s;
     -webkit-tap-highlight-color: transparent;
   }
@@ -1664,7 +1660,7 @@ async function hashTelegramId(id) {
     flex-shrink: 0;
     background: linear-gradient(110deg, var(--tg-theme-section-separator-color, #E5E5EA) 30%, var(--tg-theme-secondary-bg-color, #F2F2F7) 50%, var(--tg-theme-section-separator-color, #E5E5EA) 70%);
     background-size: 400% 100%;
-    animation: skeleton-shimmer 1.5s ease-in-out infinite; /* Переливание */
+    animation: skeleton-shimmer 1.5s ease-in-out infinite; 
     overflow: hidden;
   }
 
@@ -1675,12 +1671,12 @@ async function hashTelegramId(id) {
     position: absolute;
     top: 0;
     left: 0;
-    opacity: 0; /* Скрыта до полной загрузки */
-    transition: opacity 0.3s ease; /* Плавное появление */
+    opacity: 0; 
+    transition: opacity 0.3s ease; 
   }
 
   .cat-img.loaded {
-    opacity: 1; /* Картинка загрузилась - показываем */
+    opacity: 1;
   }
 
   .cat-info {
@@ -1688,8 +1684,8 @@ async function hashTelegramId(id) {
     flex-direction: column;
     justify-content: flex-start;
     flex-grow: 1;
-    width: 100%; /* Заставляем блок растянуться */
-    max-width: calc(100% - 156px); /* 140px картинка + 16px отступ, чтобы текст не вылез за экран */
+    width: 100%;
+    max-width: calc(100% - 156px); 
   }
 
   .cat-name {
@@ -1705,7 +1701,6 @@ async function hashTelegramId(id) {
     line-height: 1.3;
   }
 
-  /* Умная обертка для плавного раздвигания карточки */
   .cat-badge-wrap {
     display: grid;
     grid-template-rows: 0fr;
@@ -1714,7 +1709,7 @@ async function hashTelegramId(id) {
   }
   .cat-badge-wrap.show {
     grid-template-rows: 1fr;
-    margin-top: 10px; /* Отступ появляется только когда плашка видима */
+    margin-top: 10px; 
   }
   .cat-badge-inner {
     overflow: hidden;
@@ -1739,7 +1734,6 @@ async function hashTelegramId(id) {
     transform: scale(1);
   }
 
-/* Кружок выбора для стилей */
   .cat-radio {
     width: 24px;
     height: 24px;
@@ -1749,7 +1743,7 @@ async function hashTelegramId(id) {
     align-items: center;
     justify-content: center;
     margin-right: 16px;
-    margin-top: 27px; /* Центрируем относительно картинки (78px / 2 - 12) */
+    margin-top: 27px; 
     transition: all 0.3s ease;
     flex-shrink: 0;
   }
@@ -1767,14 +1761,13 @@ async function hashTelegramId(id) {
     stroke-linejoin: round;
     opacity: 0;
     transform: scale(0.3);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Плавный отскок галочки */
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
   }
   .cat-radio.checked svg {
     opacity: 1;
     transform: scale(1);
   }
 
-  /* Кнопка "Далее" для экрана стилей */
   #bp-style-btn-next {
     display: none; 
     margin: 0 auto;
@@ -1783,6 +1776,28 @@ async function hashTelegramId(id) {
     display: flex;
     animation: slideUpFade 0.3s ease-out forwards;
   }
+
+  #transactions-container .ios-layer-row {
+    position: relative;
+    border-bottom: none !important; 
+  }
+
+  #transactions-container .ios-layer-row::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 20px;  
+    right: 0; 
+    height: 0.5px;
+    background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
+  }
+
+  #transactions-container .ios-layer-row:last-child::after {
+    display: none;
+  }
+
+  body.os-non-apple .ios-divider { margin-right: -20px !important; }
+  body.os-non-apple .sp-row::after { right: 0 !important; }
 
 </style>
 </head>
@@ -2491,10 +2506,10 @@ let globalAssets = {
     luchImg: null, 
     starImg: null, 
     pointsImg: null,
-    bpPointsImg: null, // Для точек из БП
-    starsEff: null,    // Для эффекта звезд из БП
-    bpPriceL: null,    // Левая подложка цены
-    bpPriceR: null     // Правая подложка цены
+    bpPointsImg: null, 
+    starsEff: null,    
+    bpPriceL: null,    
+    bpPriceR: null     
 };
 let isCurrentProjectSaved = false; 
 
@@ -2540,14 +2555,12 @@ document.addEventListener('pointerdown', (e) => {
     const bpPrice = document.getElementById('wizard-bp-price');
     const bpPlusPrice = document.getElementById('wizard-bpplus-price');
     
-    // Скрытие для поля ника
     if (document.activeElement === wizardNickInput && 
         e.target !== wizardNickInput && 
         !e.target.closest('.wizard-caps-btn')) {
       wizardNickInput.blur();
     }
 
-    // Скрытие для полей цены Brawl Pass (Шаг 3)
     if (document.activeElement === bpPrice && e.target !== bpPrice) {
         bpPrice.blur();
     }
@@ -2555,7 +2568,6 @@ document.addEventListener('pointerdown', (e) => {
         bpPlusPrice.blur();
     }
 
-    // Скрытие для полей цен в слоях редактирования
     if (document.activeElement && document.activeElement.classList.contains('ios-price-input')) {
         if (!e.target.classList.contains('ios-price-input')) {
             document.activeElement.blur();
@@ -2688,7 +2700,7 @@ window.openBPOverlay = () => {
     function drawBrawlText(ctx, text, x, y, fontSize, styleIndex) {
         const style = TEXT_STYLES[styleIndex];
         ctx.save();
-        ctx.font = `${fontSize}px 'Font16103', 'Arial Black', sans-serif`; // Используем твой загруженный шрифт
+        ctx.font = `${fontSize}px 'Font16103', 'Arial Black', sans-serif`; 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.lineJoin = "round";
@@ -3001,12 +3013,10 @@ window.loadProject = async (id) => {
     calculateLayoutTarget();
 };
 
-// --- ЛОГИКА ЭКРАНА ВЫБОРА РАЗДЕЛА И СТИЛЕЙ ---
 let selectedCategory = null; 
 let selectedBPStyle = null;
-let wizardMode = 'action'; // Флаг текущего режима (action или bp)
+let wizardMode = 'action'; 
 
-// Выбор раздела (Акции или БП)
 window.selectCategory = function(cat) {
     if (selectedCategory === cat) return;
     selectedCategory = cat;
@@ -3027,7 +3037,6 @@ window.selectCategory = function(cat) {
     }
 };
 
-// Выбор стиля БП (1, 2 или 3)
 window.selectBPStyle = function(styleId) {
     if (selectedBPStyle === styleId) return;
     selectedBPStyle = styleId;
@@ -3040,7 +3049,6 @@ window.selectBPStyle = function(styleId) {
     document.getElementById('bp-style-btn-next').classList.add('show');
 };
 
-// 1. Клик по кнопке "Создать" на главной странице
 document.getElementById('ios-btn-create').addEventListener('click', async function() {
     window.triggerHaptic();
     const limit = await checkUsageLimit();
@@ -3065,7 +3073,6 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
     if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
 });
 
-// 2. Клик по кнопке "Далее" в ВЫБОРЕ РАЗДЕЛА
 document.getElementById('cat-btn-next').addEventListener('click', function() {
     window.triggerHaptic();
     if (!selectedCategory) {
@@ -3083,7 +3090,6 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         document.getElementById('wizard-title-step2').innerText = 'Создание акции';
         document.getElementById('category-overlay').style.display = 'none';
         
-        // Скрываем 4 шаг для обычных акций
         document.getElementById('prog-line3').style.display = 'none';
         document.getElementById('prog-step4').style.display = 'none';
         
@@ -3108,7 +3114,6 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         wizardMode = 'bp';
         document.getElementById('category-overlay').style.display = 'none';
         
-        // Показываем 4 шаг для БП
         document.getElementById('prog-line3').style.display = 'block';
         document.getElementById('prog-step4').style.display = 'flex';
         
@@ -3123,7 +3128,6 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
     }
 });
 
-// 3. Клик по кнопке "Далее" в ВЫБОРЕ СТИЛЯ БП
 document.getElementById('bp-style-btn-next').addEventListener('click', function() {
     window.triggerHaptic();
     if (!selectedBPStyle) return;
@@ -3147,8 +3151,8 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('prog-line2').className = 'line';
     document.getElementById('prog-step3').className = 'step small';
 
-    document.getElementById('prog-line3').className = 'line';       // ДОБАВИТЬ ЭТО
-    document.getElementById('prog-step4').className = 'step small'; // ДОБАВИТЬ ЭТО
+    document.getElementById('prog-line3').className = 'line';       
+    document.getElementById('prog-step4').className = 'step small'; 
 
     document.getElementById('wizard-overlay').style.display = 'flex';
     window.scrollTo(0,0);
@@ -3197,10 +3201,10 @@ function getHDScale() {
 }
 
 window.layerState = {
-    isBrawlPassMode: false, // Флаг режима Brawl Pass
-    bpPriceLeft: "999",     // Левая цена
-    bpPriceRight: "9999",   // Правая цена
-    pointsOpacity: 1.0,     // Прозрачность точек
+    isBrawlPassMode: false, 
+    bpPriceLeft: "999",     
+    bpPriceRight: "9999",   
+    pointsOpacity: 1.0,     
     textVisible: true,
     textValue: "SNAPI",
     textPosition: "top", 
@@ -3509,7 +3513,6 @@ window.setWmFont = async (fontFamily) => {
     startAnimation();
 };
 
-// Функция отрисовки цены для БП
 function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     if(!img) return;
     let h = img.height * (targetW / img.width); 
@@ -3535,10 +3538,8 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round'; 
     
-    // Вычисляем множитель масштаба высоты (базовая высота была 675)
     let scaleMult = canvasH / 675;
     
-    // Выравниваем по центру и поднимаем ВВЕРХ на 4 пикселя (умноженные на масштаб)
     let textY = y + (h / 2) - (8 * scaleMult); 
 
     let strokeWidth = Math.max(3, canvasW * 0.005);
@@ -3554,18 +3555,15 @@ function drawBPPrice(ctx, img, numText, x, y, targetW, canvasW, canvasH) {
         if (isFill)   ctx.fillText(symText, symStartX + offsetX, textY + offsetY);
     };
 
-    // 1. СЛОЙ ТЕНИ
     ctx.fillStyle = '#000000';
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = strokeWidth;
     drawTextLayer(0, shadowOffsetY, true, true);
 
-    // 2. СЛОЙ ОБВОДКИ
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = strokeWidth;
     drawTextLayer(0, 0, true, false);
 
-    // 3. СЛОЙ ЗАЛИВКИ
     ctx.fillStyle = '#ffffff';
     drawTextLayer(0, 0, false, true);
     
@@ -3580,7 +3578,6 @@ function drawBPWatermarks(ctx, text, w, h, opacity) {
     ctx.textBaseline = "top";
     
     let scaleMult = h / 675;
-    // Используем выбранный пользователем шрифт для водяных знаков
     let fontName = window.layerState.watermarksFont || 'Font16103';
 
     const marks = [
@@ -3595,7 +3592,6 @@ function drawBPWatermarks(ctx, text, w, h, opacity) {
         ctx.translate(w * mark.left, h * mark.top); 
         ctx.transform(1, 0, -0.2, 1, 0, 0);
         let currentSize = Math.max(8, mark.size * scaleMult);
-        // Применяем шрифт
         ctx.font = `${currentSize}px '${fontName}', 'Arial Black', sans-serif`; 
         ctx.fillText(text, 0, 0); 
         ctx.restore();
@@ -3603,7 +3599,6 @@ function drawBPWatermarks(ctx, text, w, h, opacity) {
     ctx.restore();
 }
 
-// Обновление цены из панели
 window.updateBPPrice = (side, val, inputEl) => {
     if (/^\d+$/.test(val) && parseInt(val) > 99999) {
         val = "99999";
@@ -3614,7 +3609,6 @@ window.updateBPPrice = (side, val, inputEl) => {
     startAnimation();
 };
 
-// Обновление главного текста (SNAPI) из панели
 window.updateBPText = (val) => {
     window.layerState.textValue = val;
     window.updateCachedTextCanvas();
@@ -3628,13 +3622,9 @@ function renderLayerPanel(isInitialLoad = false) {
 
     html += `<div class="ios-section-title ${animCls}">СЛОИ ДЛЯ РЕДАКТИРОВАНИЯ</div>`;
 
-    // ==========================================
-    //          РЕЖИМ BRAWL PASS
-    // ==========================================
     if (window.layerState.isBrawlPassMode) {
         let textEyeClass = window.layerState.textVisible ? '' : 'hidden';
         
-        // Группа 1: Текст SNAPI
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
             <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
@@ -3664,7 +3654,6 @@ function renderLayerPanel(isInitialLoad = false) {
         });
         html += `</div></div>`;
 
-        // Группа 2: Цены
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
             <div class="ios-layer-row">
@@ -3681,7 +3670,6 @@ function renderLayerPanel(isInitialLoad = false) {
             </div>
         </div>`;
 
-        // Группа 3: Косметика (Лучи, Точки, Звезды, Водяные знаки)
         let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
         let starsEyeClass = window.layerState.starsVisible ? '' : 'hidden';
         let pointsEyeClass = window.layerState.pointsVisible ? '' : 'hidden';
@@ -3734,12 +3722,9 @@ function renderLayerPanel(isInitialLoad = false) {
 
         layerPanel.innerHTML = html;
         layerPanel.style.display = 'flex';
-        return; // Прерываем выполнение для Brawl Pass
+        return; 
     }
 
-    // ==========================================
-    //          СТАНДАРТНЫЕ АКЦИИ (Оригинал)
-    // ==========================================
     if (!window.layerState.isReadyBg) {
         let isTop = window.layerState.textPosition !== 'bottom';
         let textEyeClass = window.layerState.textVisible ? '' : 'hidden';
@@ -4716,7 +4701,7 @@ function setupPersistentCanvas() {
     }
 
     let container = document.createElement('div');
-    container.className = 'card-wrapper'; // Убрал анимацию fade-in-anim по твоей прошлой просьбе
+    container.className = 'card-wrapper'; 
     
     let canvasWrapper = document.createElement('div');
     canvasWrapper.className = 'canvas-display-wrapper';
@@ -4725,13 +4710,11 @@ function setupPersistentCanvas() {
     container.appendChild(canvasWrapper);
     cardsContainer.appendChild(container);
 
-    // ФИКС ЗДЕСЬ: Сначала ищем и удаляем старую панель, если она осталась от прошлой генерации
     let oldBtnWrap = document.getElementById('download-btn-wrap');
     if (oldBtnWrap) {
         oldBtnWrap.remove();
     }
 
-    // Теперь всегда собираем панель заново с актуальным текстом и действиями
     let hdBtnWrap = document.createElement('div');
     hdBtnWrap.id = 'download-btn-wrap';
     hdBtnWrap.className = 'bottom-fade-container'; 
@@ -4918,7 +4901,6 @@ function drawScene() {
     }
 
     if (window.layerState.isBrawlPassMode) {
-        // 1. Лучи
         if (window.layerState.luchVisible && globalAssets.luchImg) {
             persistentCtx.save();
             persistentCtx.globalCompositeOperation = "overlay"; 
@@ -4927,7 +4909,6 @@ function drawScene() {
             persistentCtx.restore();
         }
 
-        // 2. Звезды
         if (window.layerState.starsVisible && globalAssets.starsEff) {
             persistentCtx.save();
             persistentCtx.globalCompositeOperation = "overlay";
@@ -4936,7 +4917,6 @@ function drawScene() {
             persistentCtx.restore();
         }
         
-        // 3. Точки
         if (window.layerState.pointsVisible && globalAssets.bpPointsImg) {
             persistentCtx.save();
             persistentCtx.globalAlpha = window.layerState.pointsOpacity;
@@ -4948,7 +4928,6 @@ function drawScene() {
             persistentCtx.drawImage(window.bpForegroundImage, 0, 0, w, h);
         }
 
-        // 4. Цены
         let priceW = w * 0.24;
         let marginX = w * 0.02;
         let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : h * 0.15;
@@ -4959,20 +4938,17 @@ function drawScene() {
         }
         
         if (globalAssets.bpPriceR) {
-            // Вычисляем сдвиг в 16px пропорционально огромному HD-холсту
             let shiftLeft = 46 * (w / 1200); 
             let rightX = w - marginX - priceW - shiftLeft;
             
             drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
         }
 
-        // 5. Маленькие ники (Текст min)
         if (window.layerState.watermarksVisible) {
             let wmText = window.layerState.textValue || "SNAPI";
             drawBPWatermarks(persistentCtx, wmText, w, h, window.layerState.watermarksOpacity);
         }
 
-        // 6. Главный текст (SNAPI)
         if (cachedTextCanvas && animText.alpha > 0.01) {
             persistentCtx.save();
             persistentCtx.globalAlpha = animText.alpha;
@@ -5215,9 +5191,9 @@ function drawBeautifulNick(ctx, text, w, h) {
 
   let uploadMode = null; 
   let uploadedBaseImg = new Image();
-  uploadedBaseImg.crossOrigin = "anonymous"; // Разрешаем экспорт из Canvas
+  uploadedBaseImg.crossOrigin = "anonymous"; 
   let uploadedReadyBaseImg = new Image();
-  uploadedReadyBaseImg.crossOrigin = "anonymous"; // Разрешаем экспорт из Canvas
+  uploadedReadyBaseImg.crossOrigin = "anonymous"; 
   let selectedColor = null;
   let savedNick = localStorage.getItem('Snapi_last_nick');
 
@@ -5227,7 +5203,6 @@ function drawBeautifulNick(ctx, text, w, h) {
   }
 
   window.resetWizardState = () => {
-      // Сброс фона
       uploadMode = null;
       selectedColor = null;
       uploadedBaseImg.removeAttribute('src');
@@ -5237,16 +5212,13 @@ function drawBeautifulNick(ctx, text, w, h) {
       document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
       wizardNextBtn1.classList.remove('show');
       
-      // Сброс ника
       wizardNickInput.value = '';
       wizardNextBtn2.classList.remove('show');
       document.getElementById('wizard-caps-btn').classList.remove('visible');
       
-      // Сброс загруженных скриншотов
       stagedFiles = [];
       updateDropzoneUI();
       
-      // Сброс цен Brawl Pass
       let bpPrice = document.getElementById('wizard-bp-price');
       let bpPlusPrice = document.getElementById('wizard-bpplus-price');
       if(bpPrice) bpPrice.value = '';
@@ -5254,7 +5226,6 @@ function drawBeautifulNick(ctx, text, w, h) {
       let bpNextBtn3 = document.getElementById('wizard-next-btn3-bp');
       if(bpNextBtn3) bpNextBtn3.classList.remove('show');
       
-      // Сброс выбора сезона
       if (typeof selectedBPSeason !== 'undefined') {
           selectedBPSeason = 50;
           [50, 49, 48].forEach(s => {
@@ -5299,7 +5270,7 @@ function drawBeautifulNick(ctx, text, w, h) {
           fankitGrid.appendChild(item); 
 
           let img = new Image();
-          img.crossOrigin = "anonymous"; // Добавляем сюда
+          img.crossOrigin = "anonymous"; 
           img.onload = () => {
               item.classList.remove('loading');
               item.style.backgroundImage = `url('${img.src}')`;
@@ -5313,18 +5284,14 @@ function drawBeautifulNick(ctx, text, w, h) {
               document.querySelectorAll('.fankit-item').forEach(el => el.classList.remove('selected'));
               item.classList.add('selected');
 
-              // Внутри item.onclick для контекста 'editor'
               if (window.fankitContext === 'editor') {
                   let img = new Image();
                   img.crossOrigin = "anonymous";
                   img.onload = () => {
-                      // Важно: Сохраняем выбранную картинку как основу
                       rawBgImage = img; 
                       window.layerState.isGeneratedBg = false;
                       window.layerState.bgColorType = null;
                       
-                      // ВМЕСТО простого setupPersistentCanvas вызываем полную генерацию,
-                      // чтобы линия и градиенты наложились поверх нового фона
                       generateBrawlPassTest(); 
                       
                       window.closeFankitGlobal();
@@ -5333,7 +5300,6 @@ function drawBeautifulNick(ctx, text, w, h) {
                   return;
               }
 
-              // --- Старая логика для визарда (Шаг 1) ---
               selectedColor = null;
               uploadMode = 'normal_bg';
               wizardColorWraps.forEach(w => w.classList.remove('selected'));
@@ -5358,7 +5324,7 @@ function drawBeautifulNick(ctx, text, w, h) {
       }
   }
 
-  window.fankitContext = 'wizard'; // переменная, чтобы знать, откуда открыли
+  window.fankitContext = 'wizard'; 
   
   window.openFankitGlobal = function() {
       window.triggerHaptic();
@@ -5614,17 +5580,14 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
     processImages(stagedFiles);
   };
 
-  // --- ЛОГИКА ПРОВЕРКИ ЦЕН BRAWL PASS ---
   const bpPriceInput = document.getElementById('wizard-bp-price');
   const bpPlusPriceInput = document.getElementById('wizard-bpplus-price');
   const bpNextBtn3 = document.getElementById('wizard-next-btn3-bp');
 
   function checkStep3BPReady() {
-    // Принудительно удаляем всё, кроме цифр, если пользователь вставил текст
     bpPriceInput.value = bpPriceInput.value.replace(/[^0-9]/g, '');
     bpPlusPriceInput.value = bpPlusPriceInput.value.replace(/[^0-9]/g, '');
 
-    // Показываем кнопку, только если оба поля не пустые
     if (bpPriceInput.value.trim().length > 0 && bpPlusPriceInput.value.trim().length > 0) {
         bpNextBtn3.classList.add('show');
     } else {
@@ -5632,10 +5595,8 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
     }
   }
 
-  // Слушаем каждое изменение в полях
   bpPriceInput.addEventListener('input', checkStep3BPReady);
   bpPlusPriceInput.addEventListener('input', checkStep3BPReady);
-  // ---------------------------------------
 
   document.getElementById('wizard-next-btn3-bp').onclick = async () => {
     window.triggerHaptic();
@@ -5683,8 +5644,7 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
     transitionStep(document.getElementById('wizard-step3-bp'), targetStep4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
   };
 
-// Логика выбора сезона
-let selectedBPSeason = 50; // По умолчанию 50 сезон
+let selectedBPSeason = 50; 
 
 window.selectBPSeason = function(season) {
     selectedBPSeason = season;
@@ -5696,7 +5656,6 @@ window.selectBPSeason = function(season) {
     document.getElementById(`season-radio-${season}`).classList.add('checked');
 };
 
-// Финальная кнопка "Далее" (Шаг 4 -> Генерация)
 document.getElementById('wizard-next-btn4-bp').onclick = () => {
     window.triggerHaptic();
     window.layerState.bpSeason = selectedBPSeason;
@@ -6019,13 +5978,11 @@ function androidFallback2(blob) {
   window.updateSavedCount();
 })();
 
-// ====== ИНТЕГРАЦИЯ BRAWL PASS В СТАНДАРТНЫЙ ДВИЖОК ======
 
 
 async function generateBrawlPassTest() {
     if (window.triggerHaptic) window.triggerHaptic();
     
-    // Переключаем интерфейс на экран результата
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
@@ -6051,11 +6008,11 @@ async function generateBrawlPassTest() {
         img.src = src; 
     });
 
-    let season = window.layerState.bpSeason || 50; // Получаем выбранный сезон
+    let season = window.layerState.bpSeason || 50; 
     
     const [luch, starsEff, pointEff, star, brawler1, brawler2, panelL, priceL, panelR, priceR] = await Promise.all([
         loadImg('BP/Luch.png'), loadImg('BP/bp_starsEff.png'), loadImg('BP/bp_pointEff.png'), loadImg('BP/bp_star.png'),
-        loadImg(`BP/brawler_s${season}_2.png`), loadImg(`BP/brawler_s${season}_1.png`), // Подставляем номер
+        loadImg(`BP/brawler_s${season}_2.png`), loadImg(`BP/brawler_s${season}_1.png`), 
         loadImg('BP/bp_panel_left.png'), loadImg('BP/bp_price_bg_left.png'),
         loadImg('BP/bp_panel_right.png'), loadImg('BP/bp_price_bg_right.png')
     ]);
@@ -6066,7 +6023,6 @@ async function generateBrawlPassTest() {
     globalAssets.bpPriceL = priceL;
     globalAssets.bpPriceR = priceR;
 
-    // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ОПРЕДЕЛЯЕМ РАНЬШЕ) ---
     const drawLargeGlow = (x, y, radius) => {
         ctx.save(); 
         ctx.globalCompositeOperation = 'screen';
@@ -6099,21 +6055,15 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
-// Вычисляем координаты за пределами холста (y = -20 и y = HEIGHT + 20)
-    // Чтобы линия и сектора не обрезались криво на границах холста
     let startX = WIDTH * 0.39 + ((WIDTH * 0.34 - WIDTH * 0.39) / (HEIGHT * 0.50)) * (-20);
     let endX = WIDTH * 0.316 + ((WIDTH * 0.316 - WIDTH * 0.37) / (HEIGHT - HEIGHT * 0.46)) * 20;
 
-    // --- 1. ФОН ---
     if (window.layerState.isGeneratedBg && rawBgImage) {
-        // Если фон сгенерирован (из кружков цвета) — просто рисуем его
         ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
     } else {
-        // ИНАЧЕ (свой фон или из Fankit) берем настройки для выбранного сезона
         let season = window.layerState.bpSeason || 50;
         let config = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
 
-        // Левый сектор (ранее оранжевый)
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(0, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(0, HEIGHT + 20); ctx.closePath();
@@ -6125,7 +6075,6 @@ async function generateBrawlPassTest() {
         if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
         ctx.restore();
 
-        // Правый сектор (ранее фиолетовый)
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
@@ -6138,16 +6087,13 @@ async function generateBrawlPassTest() {
         ctx.restore();
     }
 
-    // --- 2. ЛИНИЯ РАЗДЕЛЕНИЯ ---
     ctx.save();
     let currentLineColor = '#f09e41'; 
     
     if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
-        // Если пользователь выбрал цветной кружок, линия красится под него
         const lineColors = { 'green': '#5ee568', 'blue': '#46b3ff', 'orange': '#ffcc00', 'purple': '#c861ff', 'black': '#666' };
         currentLineColor = lineColors[window.layerState.bgColorType] || '#f09e41';
     } else {
-        // ИНАЧЕ берем цвет линии из настроек сезона
         let season = window.layerState.bpSeason || 50;
         let config = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
         currentLineColor = config.lineColor;
@@ -6161,17 +6107,13 @@ async function generateBrawlPassTest() {
     ctx.stroke();
     ctx.restore();
 
-    // СОХРАНЯЕМ ФОН (без звезды и персонажей)
     rawBgImage = new Image();
     rawBgImage.src = c.toDataURL('image/png');
-    // ОЧИЩАЕМ ХОЛСТ ДЛЯ ПЕРЕДНЕГО ПЛАНА
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-    // --- 3. ЦЕНТРАЛЬНАЯ ЗВЕЗДА ---
     let starH = HEIGHT * 0.70; 
     let starY = HEIGHT - (HEIGHT * 0.16 + 56);
 
-    // Добавляем белый круг, если фон НЕ круговой (т.е. Fankit или свой)
     if (!window.layerState.isGeneratedBg) {
         drawLargeGlow(WIDTH / 2, starY - (starH / 2), 320); 
     }
@@ -6181,25 +6123,20 @@ async function generateBrawlPassTest() {
         ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
-    // --- 4. ПАНЕЛИ ---
     if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
     if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
 
-    // --- 5. ПЕРСОНАЖИ ---
     let cxL = (WIDTH * 0.39) - 16; 
     let cxR = (WIDTH * 0.589) - 16; 
 
-    // Правый персонаж
     drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
     drawShadow(cxR, starY - 10 + 12.5);
     drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48, starY);
 
-    // Левый персонаж
     drawLargeGlow(cxL + 20, starY - HEIGHT * 0.2, 180); 
     drawShadow(cxL, starY - 10 + 12.5);
     drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55, starY); 
 
-    // СОХРАНЕНИЕ ПЕРЕДНЕГО ПЛАНА
     window.bpForegroundImage = new Image();
     window.bpForegroundImage.onload = () => {
         window.layerState.isBrawlPassMode = true;
@@ -6292,14 +6229,12 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     const lines = line2 ? [{ text: line1, y: y1 }, { text: line2, y: y2 }] : [{ text: line1, y: y1 }];
 
-    // --- ОТРИСОВКА ОБВОДОК И ТЕНЕЙ (СЛОЯМИ) ---
     const strokeC = document.createElement('canvas');
     strokeC.width = WIDTH; strokeC.height = HEIGHT;
     const sCtx = strokeC.getContext('2d');
     sCtx.textAlign = "center"; sCtx.textBaseline = "middle"; sCtx.lineJoin = "round"; sCtx.lineCap = "round";
     sCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
 
-    // Новая логика: отрисовываем слой определенной толщины сразу для ВСЕХ строк!
     const drawStrokeLayer = (width, color) => {
         sCtx.lineWidth = width;
         sCtx.strokeStyle = color;
@@ -6315,16 +6250,15 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         }
     };
 
-    // Сначала рисуем самые толстые (задние) обводки, затем тонкие поверх
     if (bpStyle.isClassic) {
         drawStrokeLayer(bpFontSize * 0.18, "#ffffff");
         drawStrokeLayer(bpFontSize * 0.12, "#42003d");
         drawStrokeLayer(bpFontSize * 0.0154, "#61005a");
     } else {
         if (bpStyle.outer2) {
-            drawStrokeLayer(bpFontSize * 0.18, bpStyle.outer2); // Белая обводка (или другая толстая)
-            drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);  // Средняя обводка
-            drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow); // Внутренняя тень
+            drawStrokeLayer(bpFontSize * 0.18, bpStyle.outer2); 
+            drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);  
+            drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow); 
         } else if (bpStyle.outer) {
             drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);
             drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow);
@@ -6333,7 +6267,6 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         }
     }
 
-    // --- ОТРИСОВКА ЗАЛИВКИ И ВНУТРЕННЕГО КОНТУРА ---
     const fillC = document.createElement('canvas');
     fillC.width = WIDTH; fillC.height = HEIGHT;
     const fCtx = fillC.getContext('2d');
