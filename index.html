@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(10)";
+  const APP_VERSION = "v2.4.7(11)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1349,13 +1349,15 @@ async function hashTelegramId(id) {
   }
 
   body.os-non-apple .ios-menu-item,
-  body.os-non-apple .sp-row {
+  body.os-non-apple .sp-row,
+  body.os-non-apple .cat-card {
     position: relative !important;
     overflow: hidden !important;
   }
 
   body.os-non-apple .ios-menu-item:active,
-  body.os-non-apple .sp-row:active {
+  body.os-non-apple .sp-row:active,
+  body.os-non-apple .cat-card:active {
     background-color: transparent !important;
   }
 
@@ -1623,14 +1625,14 @@ async function hashTelegramId(id) {
     border-bottom: 0.5px solid color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
     cursor: pointer;
     width: 100%; /* Гарантируем полную ширину */
-    transition: opacity 0.2s;
+    transition: background-color 0.2s;
     -webkit-tap-highlight-color: transparent;
   }
   .cat-card:last-child {
     border-bottom: none;
   }
   .cat-card:active {
-    opacity: 0.6;
+    background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);  
   }
 
   .cat-img-wrapper {
@@ -2184,7 +2186,7 @@ async function hashTelegramId(id) {
       Время ответа составляет не более 72 часов.    
     </div>
 
-    <div id="transactions-container" style="display: none; width: 100%; box-sizing: border-box; margin-top: 16px;"></div>
+    <div id="transactions-container" style="display: none; width: 100%; box-sizing: border-box; margin-top: 76px;"></div>
 
     <div style="margin-top: auto; display: flex; align-items: center; justify-content: flex-start; padding: 20px 20px 40px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; width: 100%; box-sizing: border-box;">
         <span id="app-version-display" style="font-size: 18px; font-weight: 600; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-right: 6px;"></span>
@@ -2358,7 +2360,7 @@ if (window.Telegram && window.Telegram.WebApp) {
         });
         
         document.body.addEventListener('pointerdown', function(e) {
-            let target = e.target.closest('.ios-menu-item, .sp-row');
+            let target = e.target.closest('.ios-menu-item, .sp-row, .cat-card');
             if (!target) return;
             
             let rect = target.getBoundingClientRect();
@@ -4855,35 +4857,21 @@ function startAnimation() {
 }
 
 function renderLoop() {
-   let needsMore = false;
-   
-   const isNonApple = document.body.classList.contains('os-non-apple');
-   const lerp = isNonApple ? 1 : 0.12;
-   const MathAbs = Math.abs;
-   
-   let dxTextScale = animText.targetScale - animText.scale;
-   if (MathAbs(dxTextScale) > 0.005) { animText.scale += dxTextScale * lerp; needsMore = true; } else { animText.scale = animText.targetScale; }
-   animText.alpha += (animText.targetAlpha - animText.alpha) * lerp;
+   animText.scale = animText.targetScale;
+   animText.alpha = animText.targetAlpha;
    
    window.layerState.offers.forEach(o => {
-       let a = o.anim; let t = o.target;
-       let dx = t.x - a.x; if (MathAbs(dx) > 0.5) { a.x += dx * lerp; needsMore = true; } else { a.x = t.x; }
-       let dy = t.y - a.y; if (MathAbs(dy) > 0.5) { a.y += dy * lerp; needsMore = true; } else { a.y = t.y; }
-       let dw = t.w - a.w; if (MathAbs(dw) > 0.5) { a.w += dw * lerp; needsMore = true; } else { a.w = t.w; }
-       let dh = t.h - a.h; if (MathAbs(dh) > 0.5) { a.h += dh * lerp; needsMore = true; } else { a.h = t.h; }
-       let ds = t.scale - a.scale; if (MathAbs(ds) > 0.005) { a.scale += ds * lerp; needsMore = true; } else { a.scale = t.scale; }
-       a.alpha += (t.alpha - a.alpha) * lerp;
+       o.anim.x = o.target.x;
+       o.anim.y = o.target.y;
+       o.anim.w = o.target.w;
+       o.anim.h = o.target.h;
+       o.anim.scale = o.target.scale;
+       o.anim.alpha = o.target.alpha;
    });
    
    drawScene();
    
-   if (isNonApple) needsMore = false;
-
-   if (needsMore) {
-       animReq = requestAnimationFrame(renderLoop);
-   } else {
-       animReq = null;
-   }
+   animReq = null;
 }
 
 function drawScene() {
