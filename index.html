@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.6(7)";
+  const APP_VERSION = "v2.4.6(8)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4385,13 +4385,24 @@ function drawScene() {
     let w = persistentCanvas.width; let h = persistentCanvas.height;
     persistentCtx.clearRect(0, 0, w, h);
     
-    // ВАЖНО: Рисуем базовый фон (rawBgImage содержит градиенты, панели, персов!)
+    persistentCtx.imageSmoothingEnabled = true;
+    persistentCtx.imageSmoothingQuality = 'high';
+
     if (rawBgImage) {
         persistentCtx.drawImage(rawBgImage, 0, 0, w, h);
     }
 
-    // --- РЕЖИМ BRAWL PASS ---
     if (window.layerState.isBrawlPassMode) {
+        const drawFixedPanel = (img, x, y, targetW) => {
+            if (!img) return;
+            let aspect = img.height / img.width;
+            let targetH = targetW * aspect;
+            persistentCtx.drawImage(img, Math.round(x), Math.round(y), Math.round(targetW), Math.round(targetH));
+        };
+
+        if (globalAssets.panelL) drawFixedPanel(globalAssets.panelL, 14, 50, w * 0.28);
+        if (globalAssets.panelR) drawFixedPanel(globalAssets.panelR, w - 14 - w * 0.32, 50, w * 0.32);
+
         // 1. Лучи
         if (window.layerState.luchVisible && globalAssets.luchImg) {
             persistentCtx.save();
