@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(9)";
+  const APP_VERSION = "v2.4.7(10)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1943,6 +1943,8 @@ async function hashTelegramId(id) {
     <div class="step small" id="prog-step2">2</div>
     <div class="line" id="prog-line2"></div>
     <div class="step small" id="prog-step3">3</div>
+    <div class="line" id="prog-line3" style="display: none;"></div>
+    <div class="step small" id="prog-step4" style="display: none;">4</div>
   </div>
 
   <div id="wizard-step1" class="wizard-step active">
@@ -2024,6 +2026,55 @@ async function hashTelegramId(id) {
       </div>
 
       <button id="wizard-next-btn3-bp" class="ios-action-btn ios-btn-next">Далее</button>
+  </div>
+  <div id="wizard-step4-bp" class="wizard-step">
+      <div class="ios-wizard-title">Создание Brawl Pass</div>
+      <div class="ios-wizard-subtitle">Сезон. Выберите, для какого сезона<br>Brawl Pass делается картинка.</div>
+
+      <div style="width: 100%; max-width: 400px; margin-top: 10px; display: flex; flex-direction: column; flex-grow: 1; overflow-y: auto; padding-bottom: 20px;">
+         
+         <div class="cat-card" onclick="selectBPSeason(50)" style="padding: 16px 0;">
+            <div class="cat-radio checked" id="season-radio-50" style="margin-top: 13px;">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
+                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+            </div>
+            <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
+                <div class="cat-name" style="width: 100%;">50 сезон</div>
+                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 19 апреля.</div>
+            </div>
+         </div>
+         
+         <div class="cat-card" onclick="selectBPSeason(49)" style="padding: 16px 0;">
+            <div class="cat-radio" id="season-radio-49" style="margin-top: 13px;">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
+                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+            </div>
+            <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
+                <div class="cat-name" style="width: 100%;">49 сезон</div>
+                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 5 марта.</div>
+            </div>
+         </div>
+
+         <div class="cat-card" onclick="selectBPSeason(48)" style="padding: 16px 0; border-bottom: none;">
+            <div class="cat-radio" id="season-radio-48" style="margin-top: 13px;">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
+                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+            </div>
+            <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
+                <div class="cat-name" style="width: 100%;">48 сезон</div>
+                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 6 февраля.</div>
+            </div>
+         </div>
+
+      </div>
+
+      <button id="wizard-next-btn4-bp" class="ios-action-btn ios-btn-next show">Далее</button>
   </div>
 </div>
 
@@ -3004,6 +3055,10 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         wizardMode = 'action';
         document.getElementById('category-overlay').style.display = 'none';
         
+        // Скрываем 4 шаг для обычных акций
+        document.getElementById('prog-line3').style.display = 'none';
+        document.getElementById('prog-step4').style.display = 'none';
+        
         document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
         document.getElementById('wizard-step1').classList.add('active');
 
@@ -3021,6 +3076,10 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
     } else if (selectedCategory === 'bp') {
         wizardMode = 'bp';
         document.getElementById('category-overlay').style.display = 'none';
+        
+        // Показываем 4 шаг для БП
+        document.getElementById('prog-line3').style.display = 'block';
+        document.getElementById('prog-step4').style.display = 'flex';
         
         selectedBPStyle = null;
         for (let i = 1; i <= 3; i++) {
@@ -5258,6 +5317,10 @@ function drawBeautifulNick(ctx, text, w, h) {
       window.openFankitGlobal();
   };
 
+  wizardUploadReadyBtn.onclick = () => {
+      wizardReadyBgInput.click();
+  };
+
   let startY = 0;
   let currentTranslateY = 0;
   let isDragging = false;
@@ -5550,9 +5613,31 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
         window.layerState.watermarksVisible = true;
     }
 
+    let targetStep4 = document.getElementById('wizard-step4-bp');
+    transitionStep(document.getElementById('wizard-step3-bp'), targetStep4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
+  };
+
+// Логика выбора сезона
+let selectedBPSeason = 50; // По умолчанию 50 сезон
+
+window.selectBPSeason = function(season) {
+    selectedBPSeason = season;
+    window.triggerHaptic();
+    
+    [50, 49, 48].forEach(s => {
+        document.getElementById(`season-radio-${s}`).classList.remove('checked');
+    });
+    document.getElementById(`season-radio-${season}`).classList.add('checked');
+};
+
+// Финальная кнопка "Далее" (Шаг 4 -> Генерация)
+document.getElementById('wizard-next-btn4-bp').onclick = () => {
+    window.triggerHaptic();
+    window.layerState.bpSeason = selectedBPSeason;
+    
     document.getElementById('wizard-overlay').style.display = 'none';
     generateBrawlPassTest();
-  };
+};
 
 document.getElementById('dl-btn-save-project').onclick = (e) => {
     e.preventDefault();
@@ -5900,13 +5985,15 @@ async function generateBrawlPassTest() {
         img.src = src; 
     });
 
+    let season = window.layerState.bpSeason || 50; // Получаем выбранный сезон
+    
     const [luch, starsEff, pointEff, star, brawler1, brawler2, panelL, priceL, panelR, priceR] = await Promise.all([
         loadImg('BP/Luch.png'), loadImg('BP/bp_starsEff.png'), loadImg('BP/bp_pointEff.png'), loadImg('BP/bp_star.png'),
-        loadImg('BP/brawler_s50_2.png'), loadImg('BP/brawler_s50_1.png'),
+        loadImg(`BP/brawler_s${season}_2.png`), loadImg(`BP/brawler_s${season}_1.png`), // Подставляем номер
         loadImg('BP/bp_panel_left.png'), loadImg('BP/bp_price_bg_left.png'),
         loadImg('BP/bp_panel_right.png'), loadImg('BP/bp_price_bg_right.png')
     ]);
-
+    
     globalAssets.luchImg = luch;
     globalAssets.starsEff = starsEff;
     globalAssets.bpPointsImg = pointEff;
