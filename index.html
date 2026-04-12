@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(3)";
+  const APP_VERSION = "v2.4.7(4)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3581,35 +3581,20 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
             <div class="ios-layer-row">
-                <div class="ios-icon-btn ios-eye-icon ${luchEyeClass}" onclick="toggleCosmeticLayer('luch')">
-                     ${getEyeSVG(window.layerState.luchVisible)}
-                </div>
-                <div class="ios-layer-name">Лучи</div>
-                <div class="ios-layer-action-text">прозрачность</div>
-                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.luchOpacity}" oninput="changeOpacity('luch', this.value)">
-            </div>
-            <div class="ios-layer-row">
-                <div class="ios-icon-btn ios-eye-icon ${pointsEyeClass}" onclick="toggleCosmeticLayer('points')">
-                     ${getEyeSVG(window.layerState.pointsVisible)}
-                </div>
-                <div class="ios-layer-name">Точки</div>
-                <div class="ios-layer-action-text">прозрачность</div>
-                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.pointsOpacity}" oninput="changeOpacity('points', this.value)">
-            </div>
-            <div class="ios-layer-row">
                 <div class="ios-icon-btn ios-eye-icon ${wmEyeClass}" onclick="toggleCosmeticLayer('watermarks')">
                      ${getEyeSVG(window.layerState.watermarksVisible)}
                 </div>
-                <div class="ios-layer-name">ARTZA DONATE</div>
+                <div class="ios-layer-name">Текст min</div>
                 <div class="ios-layer-action-text">прозрачность</div>
                 <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.watermarksOpacity}" oninput="changeOpacity('watermarks', this.value)">
             </div>
-            <div class="ios-font-label">Шрифт ARTZA DONATE</div>
+            <div class="ios-font-label">Шрифт Текст min</div>
             <div class="ios-font-grid" style="border-bottom:none; padding-bottom:10px;">
         `;
         FONT_OPTIONS.forEach((f) => {
             let activeCls = window.layerState.watermarksFont === f.family ? 'active' : '';
-            html += `<div class="ios-font-item wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setWmFont('${f.family}')">ARTZA</div>`;
+            let previewText = (window.layerState.textValue || 'TEXT').substring(0, 6);
+            html += `<div class="ios-font-item wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setWmFont('${f.family}')">${previewText}</div>`;
         });
         html += `</div></div>`;
 
@@ -3896,7 +3881,11 @@ window.downloadCosmeticLayer = (layerName) => {
             drawFallbackRays(ctx, w, h, window.layerState.luchOpacity);
         }
     } else if (layerName === 'watermarks' && window.layerState.textValue) {
-        drawWatermarks(ctx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity, true);
+        if (window.layerState.isBrawlPassMode) {
+            drawBPWatermarks(ctx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
+        } else {
+            drawWatermarks(ctx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity, true);
+        }
     } else if (layerName === 'stars' && globalAssets.starImg) {
         drawStars(ctx, globalAssets.starImg, w, h, window.layerState.starsOpacity, true);
     }
@@ -4851,9 +4840,10 @@ function drawScene() {
             drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
         }
 
-        // 5. ARTZA DONATE
+        // 5. Маленькие ники (Текст min)
         if (window.layerState.watermarksVisible) {
-            drawBPWatermarks(persistentCtx, "ARTZA DONATE", w, h, window.layerState.watermarksOpacity);
+            let wmText = window.layerState.textValue || "SNAPI";
+            drawBPWatermarks(persistentCtx, wmText, w, h, window.layerState.watermarksOpacity);
         }
 
         // 6. Главный текст (SNAPI)
@@ -5099,7 +5089,9 @@ function drawBeautifulNick(ctx, text, w, h) {
 
   let uploadMode = null; 
   let uploadedBaseImg = new Image();
+  uploadedBaseImg.crossOrigin = "anonymous"; // Разрешаем экспорт из Canvas
   let uploadedReadyBaseImg = new Image();
+  uploadedReadyBaseImg.crossOrigin = "anonymous"; // Разрешаем экспорт из Canvas
   let selectedColor = null;
   let savedNick = localStorage.getItem('Snapi_last_nick');
 
@@ -5141,6 +5133,7 @@ function drawBeautifulNick(ctx, text, w, h) {
           fankitGrid.appendChild(item); 
 
           let img = new Image();
+          img.crossOrigin = "anonymous"; // Добавляем сюда
           img.onload = () => {
               item.classList.remove('loading');
               item.style.backgroundImage = `url('${img.src}')`;
@@ -5841,22 +5834,28 @@ async function generateBrawlPassTest() {
         img.src = src; 
     });
 
-    const [bg3, luch, starsEff, pointEff, star, brawler1, brawler2, panelL, priceL, panelR, priceR] = await Promise.all([
-        loadImg('bg/bg3.png'), loadImg('BP/Luch.png'), loadImg('BP/bp_starsEff.png'), loadImg('BP/bp_pointEff.png'), loadImg('BP/bp_star.png'),
+    const [luch, starsEff, pointEff, star, brawler1, brawler2, panelL, priceL, panelR, priceR] = await Promise.all([
+        loadImg('BP/Luch.png'), loadImg('BP/bp_starsEff.png'), loadImg('BP/bp_pointEff.png'), loadImg('BP/bp_star.png'),
         loadImg('BP/brawler_s50_2.png'), loadImg('BP/brawler_s50_1.png'),
         loadImg('BP/bp_panel_left.png'), loadImg('BP/bp_price_bg_left.png'),
         loadImg('BP/bp_panel_right.png'), loadImg('BP/bp_price_bg_right.png')
     ]);
 
-    // ... внутри generateBrawlPassTest, после загрузки всех картинок (loadImg) ...
+    globalAssets.luchImg = luch;
+    globalAssets.starsEff = starsEff;
+    globalAssets.bpPointsImg = pointEff;
+    globalAssets.bpPriceL = priceL;
+    globalAssets.bpPriceR = priceR;
 
-        globalAssets.luchImg = luch;
-        globalAssets.starsEff = starsEff;
-        globalAssets.bpPointsImg = pointEff;
-        globalAssets.bpPriceL = priceL;
-        globalAssets.bpPriceR = priceR;
-        // panelL и panelR сохранять в globalAssets больше не нужно, мы их запечем!
-
+    // --- НОВАЯ ЛОГИКА ОТРИСОВКИ ФОНА ---
+    if (window.layerState.isGeneratedBg) {
+        // Если выбран "круговой цвет", отрисовываем его на весь фон
+        // Оранжево-фиолетовый градиент при этом НЕ отрисовывается
+        if (rawBgImage) {
+            ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
+        }
+    } else {
+        // Если Fankit или свой фон, оставляем градиенты и накладываем фон сверху (overlay), как это было с bg3
         // 1. Оранжевый фон (Левый)
         ctx.save();
         ctx.beginPath();
@@ -5865,7 +5864,7 @@ async function generateBrawlPassTest() {
         let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
         grad1.addColorStop(0, '#ff4e00'); grad1.addColorStop(1, '#ff8a00');
         ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        if (bg3) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(bg3, 0, 0, WIDTH, HEIGHT); }
+        if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
         ctx.restore();
 
         // 2. Фиолетовый фон (Правый)
@@ -5876,87 +5875,105 @@ async function generateBrawlPassTest() {
         let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
         grad2.addColorStop(0, '#6420c2'); grad2.addColorStop(1, '#390d8a');
         ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        if (bg3) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(bg3, 0, 0, WIDTH, HEIGHT); }
+        if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
         ctx.restore();
+    }
 
-        // 3. Линия разделения
+    // 3. Линия разделения
+    ctx.save();
+    
+    // Определяем цвет линии
+    let currentLineColor = '#f09e41'; 
+    if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+        const lineColors = {
+            'green': '#5ee568',
+            'blue': '#46b3ff',
+            'orange': '#ffcc00',
+            'purple': '#c861ff',
+            'black': '#666'
+        };
+        currentLineColor = lineColors[window.layerState.bgColorType] || '#f09e41';
+    }
+
+    ctx.strokeStyle = currentLineColor;
+    ctx.lineWidth = 9;
+    ctx.lineJoin = 'miter';
+    
+    // Строку ctx.shadowBlur = 10; мы удалили, теперь свечения не будет
+
+    ctx.beginPath();
+    ctx.moveTo(WIDTH * 0.39, 0); 
+    ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); 
+    ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); 
+    ctx.lineTo(WIDTH * 0.316, HEIGHT);
+    ctx.stroke();
+    ctx.restore();
+
+    // 4. Центральная звезда
+    let starH = HEIGHT * 0.70; let starY = HEIGHT - (HEIGHT * 0.16 + 56);
+    if (star) {
+        let sw = starH * (star.width / star.height);
+        ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
+    }
+
+    // 5. ПАНЕЛИ
+    if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
+    if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
+
+    // 6. ПЕРСОНАЖИ И ЭФФЕКТЫ
+    let cxL = (WIDTH * 0.39) - 16; 
+    let cxR = (WIDTH * 0.589) - 16; 
+
+    const drawLargeGlow = (x, y, radius) => {
+        ctx.save(); 
+        ctx.globalCompositeOperation = 'screen';
+        let rg = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        rg.addColorStop(0, 'rgba(255,255,255,1)');
+        rg.addColorStop(0.3, 'rgba(255,255,255,0.8)');
+        rg.addColorStop(0.7, 'rgba(255,255,255,0.2)');
+        rg.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rg; 
+        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2); 
+        ctx.restore();
+    };
+
+    const drawShadow = (x, y) => {
+        ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    };
+
+    const drawBrawler = (img, x, targetH) => {
+        if (!img) return;
+        let bh = targetH;
+        let bw = bh * (img.width / img.height);
         ctx.save();
-        ctx.strokeStyle = '#f09e41'; ctx.lineWidth = 9; ctx.lineJoin = 'miter';
-        ctx.beginPath();
-        ctx.moveTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT);
-        ctx.stroke();
-        ctx.restore();
-
-        // 4. Центральная звезда
-        let starH = HEIGHT * 0.70; let starY = HEIGHT - (HEIGHT * 0.16 + 56);
-        if (star) {
-            let sw = starH * (star.width / star.height);
-            ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
-        }
-
-        // 5. ПАНЕЛИ (Возвращаем оригинальные координаты и растяжение!)
-        if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
-        if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
-
-        // 6. ПЕРСОНАЖИ И ЭФФЕКТЫ
-        let cxL = (WIDTH * 0.39) - 16; 
-        let cxR = (WIDTH * 0.589) - 16; 
-
-        const drawLargeGlow = (x, y, radius) => {
-            ctx.save(); 
-            ctx.globalCompositeOperation = 'screen';
-            let rg = ctx.createRadialGradient(x, y, 0, x, y, radius);
-            rg.addColorStop(0, 'rgba(255,255,255,1)');
-            rg.addColorStop(0.3, 'rgba(255,255,255,0.8)');
-            rg.addColorStop(0.7, 'rgba(255,255,255,0.2)');
-            rg.addColorStop(1, 'rgba(255,255,255,0)');
-            ctx.fillStyle = rg; 
-            ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2); 
-            ctx.restore();
-        };
-
-        const drawShadow = (x, y) => {
-            ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-        };
-
-        const drawBrawler = (img, x, targetH) => {
-            if (!img) return;
-            let bh = targetH;
-            let bw = bh * (img.width / img.height);
-            ctx.save();
-            ctx.shadowColor = '#000'; ctx.shadowBlur = 0;
-            const offsets = [[3,0], [-3,0], [0,3], [0,-3], [2,2], [-2,-2], [2,-2], [-2,2]];
-            offsets.forEach(([dx, dy]) => {
-                ctx.shadowOffsetX = dx; ctx.shadowOffsetY = dy; 
-                ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
-            });
-            ctx.shadowColor = 'transparent'; 
+        ctx.shadowColor = '#000'; ctx.shadowBlur = 0;
+        const offsets = [[3,0], [-3,0], [0,3], [0,-3], [2,2], [-2,-2], [2,-2], [-2,2]];
+        offsets.forEach(([dx, dy]) => {
+            ctx.shadowOffsetX = dx; ctx.shadowOffsetY = dy; 
             ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
-            ctx.restore();
-        };
+        });
+        ctx.shadowColor = 'transparent'; 
+        ctx.drawImage(img, x - bw/2, starY - bh, bw, bh);
+        ctx.restore();
+    };
 
-        // --- ПРАВЫЙ ПЕРСОНАЖ (Рисуем ПЕРВЫМ, чтобы он был на заднем плане) ---
-        // Мы сохраняем его свечение как было: cxR - 40, radius 280
-        drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
-        drawShadow(cxR, starY - 10 + 12.5);
-        drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48);
+    // Правый персонаж (задний план)
+    drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
+    drawShadow(cxR, starY - 10 + 12.5);
+    drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48);
 
-        // --- ЛЕВЫЙ ПЕРСОНАЖ (Рисуем ВТОРЫМ, чтобы он перекрыл правого) ---
-        // !!! ОБНОВЛЕННЫЙ КОД ДЛЯ СВЕЧЕНИЯ brawler1 !!!
-        // Изменено: смещение x стало +20 вместо +40, радиус стал 180 вместо 280.
-        // Это делает свет значительно уже и компактнее.
-        drawLargeGlow(cxL + 20, starY - HEIGHT * 0.2, 180); 
-        drawShadow(cxL, starY - 10 + 12.5);
-        drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
+    // Левый персонаж (перекрывает правого)
+    drawLargeGlow(cxL + 20, starY - HEIGHT * 0.2, 180); 
+    drawShadow(cxL, starY - 10 + 12.5);
+    drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
 
-        // СОХРАНЯЕМ ВЕСЬ ЭТОТ ФОН
-        rawBgImage = new Image();
-        rawBgImage.onload = () => {
-        window.layerState.isBrawlPassMode = true; // Включаем режим БП
+    // СОХРАНЯЕМ ВЕСЬ ЭТОТ ФОН
+    rawBgImage = new Image();
+    rawBgImage.onload = () => {
+        window.layerState.isBrawlPassMode = true;
         window.layerState.isReadyBg = false;
-        window.layerState.isGeneratedBg = false;
+        window.layerState.isGeneratedBg = false; 
         
-        // Настройки по умолчанию для БП
         window.layerState.textValue = window.layerState.textValue || "SNAPI"; 
         window.layerState.textFont = 'Font16103';
         window.layerState.textStyleIndex = 9; 
@@ -5970,7 +5987,7 @@ async function generateBrawlPassTest() {
         window.layerState.offers = [];
 
         setupPersistentCanvas();
-        renderLayerPanel(); // На следующем шаге мы обновим эту функцию
+        renderLayerPanel();
         calculateLayoutTarget();
     };
     rawBgImage.src = c.toDataURL('image/png');
