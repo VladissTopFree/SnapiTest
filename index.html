@@ -5946,17 +5946,19 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
+// Вычисляем координаты за пределами холста (y = -20 и y = HEIGHT + 20)
+    // Чтобы линия и сектора не обрезались криво на границах холста
+    let startX = WIDTH * 0.39 + ((WIDTH * 0.34 - WIDTH * 0.39) / (HEIGHT * 0.50)) * (-20);
+    let endX = WIDTH * 0.316 + ((WIDTH * 0.316 - WIDTH * 0.37) / (HEIGHT - HEIGHT * 0.46)) * 20;
+
     // --- 1. ФОН ---
     if (window.layerState.isGeneratedBg && rawBgImage) {
-        // Если фон сгенерирован (из кружков цвета) — просто рисуем его на весь экран (разделительная линия нарисуется ниже)
         ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
     } else {
-        // ИНАЧЕ (свой фон или из Fankit) рисуем стандартный фон Brawl Pass (оранжево-фиолетовый градиент + режим наложения overlay)
-        
         // Оранжевый сектор
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(0, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(0, HEIGHT); ctx.closePath();
+        ctx.moveTo(0, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(0, HEIGHT + 20); ctx.closePath();
         ctx.clip();
         let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
         grad1.addColorStop(0, '#ff4e00'); grad1.addColorStop(1, '#ff8a00');
@@ -5967,7 +5969,7 @@ async function generateBrawlPassTest() {
         // Фиолетовый сектор
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(WIDTH, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(WIDTH, HEIGHT); ctx.closePath();
+        ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
         ctx.clip();
         let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
         grad2.addColorStop(0, '#6420c2'); grad2.addColorStop(1, '#390d8a');
@@ -5977,7 +5979,6 @@ async function generateBrawlPassTest() {
     }
 
     // --- 2. ЛИНИЯ РАЗДЕЛЕНИЯ ---
-    // (Дальше код остается без изменений)
     ctx.save();
     let currentLineColor = '#f09e41'; 
     if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
@@ -5988,7 +5989,7 @@ async function generateBrawlPassTest() {
     ctx.lineWidth = 9;
     ctx.lineJoin = 'miter';
     ctx.beginPath();
-    ctx.moveTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT);
+    ctx.moveTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20);
     ctx.stroke();
     ctx.restore();
 
