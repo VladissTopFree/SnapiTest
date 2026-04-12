@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(8)";
+  const APP_VERSION = "v2.4.7(9)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5947,11 +5947,11 @@ async function generateBrawlPassTest() {
     };
 
     // --- 1. ФОН ---
-    if (!window.layerState.isGeneratedBg && rawBgImage) {
-        // Если это загруженный фон или фон из Fankit — просто рисуем его на весь экран
+    if (window.layerState.isGeneratedBg && rawBgImage) {
+        // Если фон сгенерирован (из кружков цвета) — просто рисуем его на весь экран (разделительная линия нарисуется ниже)
         ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
     } else {
-        // ИНАЧЕ рисуем стандартный фон Brawl Pass (оранжево-фиолетовый с наложением)
+        // ИНАЧЕ (свой фон или из Fankit) рисуем стандартный фон Brawl Pass (оранжево-фиолетовый градиент + режим наложения overlay)
         
         // Оранжевый сектор
         ctx.save();
