@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(4)";
+  const APP_VERSION = "v2.4.7(5)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5459,11 +5459,11 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
         window.layerState.isReadyBg = true;
         window.layerState.isGeneratedBg = false;
         rawBgImage = uploadedReadyBaseImg;
-        window.layerState.textVisible = false;
-        window.layerState.luchVisible = false;
-        window.layerState.starsVisible = false;
-        window.layerState.pointsVisible = false;
-        window.layerState.watermarksVisible = false;
+        window.layerState.textVisible = true;
+        window.layerState.luchVisible = true;
+        window.layerState.starsVisible = true;
+        window.layerState.pointsVisible = true;
+        window.layerState.watermarksVisible = true;
     } else if (selectedColor) {
         window.layerState.isReadyBg = false;
         window.layerState.isGeneratedBg = true;
@@ -5847,90 +5847,13 @@ async function generateBrawlPassTest() {
     globalAssets.bpPriceL = priceL;
     globalAssets.bpPriceR = priceR;
 
-    // --- НОВАЯ ЛОГИКА ОТРИСОВКИ ФОНА ---
-    if (window.layerState.isGeneratedBg) {
-        // Если выбран "круговой цвет", отрисовываем его на весь фон
-        // Оранжево-фиолетовый градиент при этом НЕ отрисовывается
-        if (rawBgImage) {
-            ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
-        }
-    } else {
-        // Если Fankit или свой фон, оставляем градиенты и накладываем фон сверху (overlay), как это было с bg3
-        // 1. Оранжевый фон (Левый)
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(0, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(0, HEIGHT); ctx.closePath();
-        ctx.clip();
-        let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
-        grad1.addColorStop(0, '#ff4e00'); grad1.addColorStop(1, '#ff8a00');
-        ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
-        ctx.restore();
-
-        // 2. Фиолетовый фон (Правый)
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(WIDTH, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(WIDTH, HEIGHT); ctx.closePath();
-        ctx.clip();
-        let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
-        grad2.addColorStop(0, '#6420c2'); grad2.addColorStop(1, '#390d8a');
-        ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
-        ctx.restore();
-    }
-
-    // 3. Линия разделения
-    ctx.save();
-    
-    // Определяем цвет линии
-    let currentLineColor = '#f09e41'; 
-    if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
-        const lineColors = {
-            'green': '#5ee568',
-            'blue': '#46b3ff',
-            'orange': '#ffcc00',
-            'purple': '#c861ff',
-            'black': '#666'
-        };
-        currentLineColor = lineColors[window.layerState.bgColorType] || '#f09e41';
-    }
-
-    ctx.strokeStyle = currentLineColor;
-    ctx.lineWidth = 9;
-    ctx.lineJoin = 'miter';
-    
-    // Строку ctx.shadowBlur = 10; мы удалили, теперь свечения не будет
-
-    ctx.beginPath();
-    ctx.moveTo(WIDTH * 0.39, 0); 
-    ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); 
-    ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); 
-    ctx.lineTo(WIDTH * 0.316, HEIGHT);
-    ctx.stroke();
-    ctx.restore();
-
-    // 4. Центральная звезда
-    let starH = HEIGHT * 0.70; let starY = HEIGHT - (HEIGHT * 0.16 + 56);
-    if (star) {
-        let sw = starH * (star.width / star.height);
-        ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
-    }
-
-    // 5. ПАНЕЛИ
-    if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
-    if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
-
-    // 6. ПЕРСОНАЖИ И ЭФФЕКТЫ
-    let cxL = (WIDTH * 0.39) - 16; 
-    let cxR = (WIDTH * 0.589) - 16; 
-
+    // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ОПРЕДЕЛЯЕМ РАНЬШЕ) ---
     const drawLargeGlow = (x, y, radius) => {
         ctx.save(); 
         ctx.globalCompositeOperation = 'screen';
         let rg = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        rg.addColorStop(0, 'rgba(255,255,255,1)');
-        rg.addColorStop(0.3, 'rgba(255,255,255,0.8)');
-        rg.addColorStop(0.7, 'rgba(255,255,255,0.2)');
+        rg.addColorStop(0, 'rgba(255,255,255,0.8)');
+        rg.addColorStop(0.4, 'rgba(255,255,255,0.2)');
         rg.addColorStop(1, 'rgba(255,255,255,0)');
         ctx.fillStyle = rg; 
         ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2); 
@@ -5941,7 +5864,7 @@ async function generateBrawlPassTest() {
         ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
     };
 
-    const drawBrawler = (img, x, targetH) => {
+    const drawBrawler = (img, x, targetH, starY) => {
         if (!img) return;
         let bh = targetH;
         let bw = bh * (img.width / img.height);
@@ -5957,35 +5880,86 @@ async function generateBrawlPassTest() {
         ctx.restore();
     };
 
-    // Правый персонаж (задний план)
+    // --- 1. ФОН ---
+    if (window.layerState.isGeneratedBg) {
+        if (rawBgImage) {
+            ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
+        }
+    } else {
+        // Оранжевый сектор
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(0, HEIGHT); ctx.closePath();
+        ctx.clip();
+        let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+        grad1.addColorStop(0, '#ff4e00'); grad1.addColorStop(1, '#ff8a00');
+        ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+        ctx.restore();
+
+        // Фиолетовый сектор
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(WIDTH, 0); ctx.lineTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT); ctx.lineTo(WIDTH, HEIGHT); ctx.closePath();
+        ctx.clip();
+        let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+        grad2.addColorStop(0, '#6420c2'); grad2.addColorStop(1, '#390d8a');
+        ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+        ctx.restore();
+    }
+
+    // --- 2. ЛИНИЯ РАЗДЕЛЕНИЯ ---
+    ctx.save();
+    let currentLineColor = '#f09e41'; 
+    if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+        const lineColors = { 'green': '#5ee568', 'blue': '#46b3ff', 'orange': '#ffcc00', 'purple': '#c861ff', 'black': '#666' };
+        currentLineColor = lineColors[window.layerState.bgColorType] || '#f09e41';
+    }
+    ctx.strokeStyle = currentLineColor;
+    ctx.lineWidth = 9;
+    ctx.lineJoin = 'miter';
+    ctx.beginPath();
+    ctx.moveTo(WIDTH * 0.39, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(WIDTH * 0.316, HEIGHT);
+    ctx.stroke();
+    ctx.restore();
+
+    // --- 3. ЦЕНТРАЛЬНАЯ ЗВЕЗДА ---
+    let starH = HEIGHT * 0.70; 
+    let starY = HEIGHT - (HEIGHT * 0.16 + 56);
+
+    // Добавляем белый круг, если фон НЕ круговой (т.е. Fankit или свой)
+    if (!window.layerState.isGeneratedBg) {
+        drawLargeGlow(WIDTH / 2, starY - (starH / 2), 320); 
+    }
+
+    if (star) {
+        let sw = starH * (star.width / star.height);
+        ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
+    }
+
+    // --- 4. ПАНЕЛИ ---
+    if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
+    if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
+
+    // --- 5. ПЕРСОНАЖИ ---
+    let cxL = (WIDTH * 0.39) - 16; 
+    let cxR = (WIDTH * 0.589) - 16; 
+
+    // Правый персонаж
     drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
     drawShadow(cxR, starY - 10 + 12.5);
-    drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48);
+    drawBrawler(brawler2, (WIDTH * 0.58) - 30, HEIGHT * 0.48, starY);
 
-    // Левый персонаж (перекрывает правого)
+    // Левый персонаж
     drawLargeGlow(cxL + 20, starY - HEIGHT * 0.2, 180); 
     drawShadow(cxL, starY - 10 + 12.5);
-    drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55); 
+    drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55, starY); 
 
-    // СОХРАНЯЕМ ВЕСЬ ЭТОТ ФОН
+    // СОХРАНЕНИЕ
     rawBgImage = new Image();
     rawBgImage.onload = () => {
         window.layerState.isBrawlPassMode = true;
-        window.layerState.isReadyBg = false;
-        window.layerState.isGeneratedBg = false; 
-        
-        window.layerState.textValue = window.layerState.textValue || "SNAPI"; 
-        window.layerState.textFont = 'Font16103';
-        window.layerState.textStyleIndex = 9; 
-        window.layerState.bpPriceLeft = window.layerState.bpPriceLeft || "999";
-        window.layerState.bpPriceRight = window.layerState.bpPriceRight || "9999";
-        
-        window.layerState.luchOpacity = 0.5;
-        window.layerState.pointsOpacity = 1.0;
-        window.layerState.watermarksOpacity = 0.8;
-        
-        window.layerState.offers = [];
-
         setupPersistentCanvas();
         renderLayerPanel();
         calculateLayoutTarget();
