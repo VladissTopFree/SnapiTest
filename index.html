@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(5)";
+  const APP_VERSION = "v2.4.7(6)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3573,13 +3573,39 @@ function renderLayerPanel(isInitialLoad = false) {
             </div>
         </div>`;
 
-        // Группа 3: Косметика (Лучи, Точки, Водяные знаки)
+        // Группа 3: Косметика (Лучи, Точки, Звезды, Водяные знаки)
         let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
+        let starsEyeClass = window.layerState.starsVisible ? '' : 'hidden';
         let pointsEyeClass = window.layerState.pointsVisible ? '' : 'hidden';
         let wmEyeClass = window.layerState.watermarksVisible ? '' : 'hidden';
 
         html += `<div class="ios-layer-group ${animCls}">`;
+        
         html += `
+            <div class="ios-layer-row">
+                <div class="ios-icon-btn ios-eye-icon ${luchEyeClass}" onclick="toggleCosmeticLayer('luch')">
+                     ${getEyeSVG(window.layerState.luchVisible)}
+                </div>
+                <div class="ios-layer-name">Лучи</div>
+                <div class="ios-layer-action-text">прозрачность</div>
+                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.luchOpacity}" oninput="changeOpacity('luch', this.value)">
+            </div>
+            <div class="ios-layer-row">
+                <div class="ios-icon-btn ios-eye-icon ${starsEyeClass}" onclick="toggleCosmeticLayer('stars')">
+                     ${getEyeSVG(window.layerState.starsVisible)}
+                </div>
+                <div class="ios-layer-name">Звёзды</div>
+                <div class="ios-layer-action-text">прозрачность</div>
+                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.starsOpacity}" oninput="changeOpacity('stars', this.value)">
+            </div>
+            <div class="ios-layer-row">
+                <div class="ios-icon-btn ios-eye-icon ${pointsEyeClass}" onclick="toggleCosmeticLayer('points')">
+                     ${getEyeSVG(window.layerState.pointsVisible)}
+                </div>
+                <div class="ios-layer-name">Точки</div>
+                <div class="ios-layer-action-text">прозрачность</div>
+                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.pointsOpacity}" oninput="changeOpacity('points', this.value)">
+            </div>
             <div class="ios-layer-row">
                 <div class="ios-icon-btn ios-eye-icon ${wmEyeClass}" onclick="toggleCosmeticLayer('watermarks')">
                      ${getEyeSVG(window.layerState.watermarksVisible)}
@@ -3600,7 +3626,7 @@ function renderLayerPanel(isInitialLoad = false) {
 
         layerPanel.innerHTML = html;
         layerPanel.style.display = 'flex';
-        return; // Если это БП — прерываем функцию здесь!
+        return; // Прерываем выполнение для Brawl Pass
     }
 
     // ==========================================
@@ -4786,16 +4812,6 @@ function drawScene() {
     }
 
     if (window.layerState.isBrawlPassMode) {
-        const drawFixedPanel = (img, x, y, targetW) => {
-            if (!img) return;
-            let aspect = img.height / img.width;
-            let targetH = targetW * aspect;
-            persistentCtx.drawImage(img, Math.round(x), Math.round(y), Math.round(targetW), Math.round(targetH));
-        };
-
-        if (globalAssets.panelL) drawFixedPanel(globalAssets.panelL, 14, 50, w * 0.28);
-        if (globalAssets.panelR) drawFixedPanel(globalAssets.panelR, w - 14 - w * 0.32, 50, w * 0.32);
-
         // 1. Лучи
         if (window.layerState.luchVisible && globalAssets.luchImg) {
             persistentCtx.save();
@@ -4820,6 +4836,10 @@ function drawScene() {
             persistentCtx.globalAlpha = window.layerState.pointsOpacity;
             persistentCtx.drawImage(globalAssets.bpPointsImg, 0, 0, w, h);
             persistentCtx.restore();
+        }
+
+        if (window.bpForegroundImage) {
+            persistentCtx.drawImage(window.bpForegroundImage, 0, 0, w, h);
         }
 
         // 4. Цены
@@ -5924,6 +5944,12 @@ async function generateBrawlPassTest() {
     ctx.stroke();
     ctx.restore();
 
+    // СОХРАНЯЕМ ФОН (без звезды и персонажей)
+    rawBgImage = new Image();
+    rawBgImage.src = c.toDataURL('image/png');
+    // ОЧИЩАЕМ ХОЛСТ ДЛЯ ПЕРЕДНЕГО ПЛАНА
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
     // --- 3. ЦЕНТРАЛЬНАЯ ЗВЕЗДА ---
     let starH = HEIGHT * 0.70; 
     let starY = HEIGHT - (HEIGHT * 0.16 + 56);
@@ -5956,15 +5982,15 @@ async function generateBrawlPassTest() {
     drawShadow(cxL, starY - 10 + 12.5);
     drawBrawler(brawler1, (WIDTH * 0.42) - 30, HEIGHT * 0.55, starY); 
 
-    // СОХРАНЕНИЕ
-    rawBgImage = new Image();
-    rawBgImage.onload = () => {
+    // СОХРАНЕНИЕ ПЕРЕДНЕГО ПЛАНА
+    window.bpForegroundImage = new Image();
+    window.bpForegroundImage.onload = () => {
         window.layerState.isBrawlPassMode = true;
         setupPersistentCanvas();
         renderLayerPanel();
         calculateLayoutTarget();
     };
-    rawBgImage.src = c.toDataURL('image/png');
+    window.bpForegroundImage.src = c.toDataURL('image/png');
 }
 
 function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
