@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(6)";
+  const APP_VERSION = "v2.4.7(7)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2462,13 +2462,25 @@ if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButt
 
 document.addEventListener('pointerdown', (e) => {
     const wizardNickInput = document.getElementById('wizard-nick-input');
+    const bpPrice = document.getElementById('wizard-bp-price');
+    const bpPlusPrice = document.getElementById('wizard-bpplus-price');
     
+    // Скрытие для поля ника
     if (document.activeElement === wizardNickInput && 
         e.target !== wizardNickInput && 
         !e.target.closest('.wizard-caps-btn')) {
       wizardNickInput.blur();
     }
 
+    // Скрытие для полей цены Brawl Pass (Шаг 3)
+    if (document.activeElement === bpPrice && e.target !== bpPrice) {
+        bpPrice.blur();
+    }
+    if (document.activeElement === bpPlusPrice && e.target !== bpPlusPrice) {
+        bpPlusPrice.blur();
+    }
+
+    // Скрытие для полей цен в слоях редактирования
     if (document.activeElement && document.activeElement.classList.contains('ios-price-input')) {
         if (!e.target.classList.contains('ios-price-input')) {
             document.activeElement.blur();
@@ -3563,13 +3575,13 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div style="width: 24px; flex-shrink: 0;"></div>
                 <div class="ios-layer-name">Левая цена</div>
                 <div class="ios-layer-action-text">значение</div>
-                <input type="text" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this.value, this)">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this.value, this)">
             </div>
             <div class="ios-layer-row" style="border-bottom:none;">
                 <div style="width: 24px; flex-shrink: 0;"></div>
                 <div class="ios-layer-name">Правая цена</div>
                 <div class="ios-layer-action-text">значение</div>
-                <input type="text" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this.value, this)">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this.value, this)">
             </div>
         </div>`;
 
@@ -3693,14 +3705,14 @@ function renderLayerPanel(isInitialLoad = false) {
             let priceBg = isFree ? '#34C759' : '#99D5F9';
             let offerEyeClass = offer.visible ? '' : 'hidden';
 
-            html += `
+              html += `
                 <div class="ios-layer-row">
                     <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" onclick="toggleOffer(${idx})">
                         ${getEyeSVG(offer.visible)}
                     </div>
                     <div class="ios-layer-name">Акция ${idx + 1}</div>
                     <div class="ios-layer-action-text">цена</div>
-                    <input type="text" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5"
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5"
                            style="background: ${priceBg};" oninput="updateOfferPriceFromLayer(${idx}, this.value)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
                         ${downloadIconSVG}
