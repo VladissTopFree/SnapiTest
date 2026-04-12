@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(1)";
+  const APP_VERSION = "v2.4.7(2)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1714,6 +1714,52 @@ async function hashTelegramId(id) {
     filter: blur(0px);
     transform: scale(1);
   }
+
+/* Кружок выбора для стилей */
+  .cat-radio {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--tg-theme-section-separator-color, #E5E5EA);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    margin-top: 27px; /* Центрируем относительно картинки (78px / 2 - 12) */
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+  .cat-radio.checked {
+    background-color: var(--tg-theme-button-color);
+    border-color: var(--tg-theme-button-color);
+  }
+  .cat-radio svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: white;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    transform: scale(0.3);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Плавный отскок галочки */
+  }
+  .cat-radio.checked svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Кнопка "Далее" для экрана стилей */
+  #bp-style-btn-next {
+    display: none; 
+    margin: 0 auto;
+  }
+  #bp-style-btn-next.show {
+    display: flex;
+    animation: slideUpFade 0.3s ease-out forwards;
+  }
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1832,6 +1878,59 @@ async function hashTelegramId(id) {
 
     <div class="bottom-fade-container">
         <button id="cat-btn-next" class="ios-action-btn">Далее</button>
+    </div>
+  </div>
+</div>
+
+<div id="bp-style-overlay" style="display: none; width: 100%; height: var(--tg-viewport-stable-height, 100vh); overflow: hidden; background: var(--tg-theme-secondary-bg-color, #F2F2F7); flex-direction: column; box-sizing: border-box; position: relative;">
+  <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); position: relative; height: 100%; display: flex; flex-direction: column;">
+    <div class="cat-title-main">Выберите стиль Brawl Pass</div>
+    
+    <div style="padding: 0; flex-grow: 1; overflow-y: auto;">
+        
+        <div class="cat-card" onclick="selectBPStyle(1)">
+            <div class="cat-radio" id="bp-radio-1">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper">
+                <img src="miniprewiev.png" class="cat-img" onload="this.classList.add('loaded')" onerror="this.style.opacity='0'; this.parentElement.style.animation='none'; this.parentElement.style.background='#ddd';">
+            </div>
+            <div class="cat-info" style="justify-content: center; height: 78px;">
+                <div class="cat-name">Стиль #1</div>
+                <div class="cat-desc">Более детализированная работа.</div>
+            </div>
+        </div>
+        
+        <div class="cat-card" onclick="selectBPStyle(2)">
+            <div class="cat-radio" id="bp-radio-2">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper">
+                <img src="miniprewiev.png" class="cat-img" onload="this.classList.add('loaded')" onerror="this.style.opacity='0'; this.parentElement.style.animation='none'; this.parentElement.style.background='#ddd';">
+            </div>
+            <div class="cat-info" style="justify-content: center; height: 78px;">
+                <div class="cat-name">Стиль #2</div>
+                <div class="cat-desc">Более детализированная работа.</div>
+            </div>
+        </div>
+
+        <div class="cat-card" onclick="selectBPStyle(3)">
+            <div class="cat-radio" id="bp-radio-3">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper">
+                <img src="miniprewiev.png" class="cat-img" onload="this.classList.add('loaded')" onerror="this.style.opacity='0'; this.parentElement.style.animation='none'; this.parentElement.style.background='#ddd';">
+            </div>
+            <div class="cat-info" style="justify-content: center; height: 78px;">
+                <div class="cat-name">Стиль #3</div>
+                <div class="cat-desc">Более детализированная работа.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-fade-container">
+        <button id="bp-style-btn-next" class="ios-action-btn">Далее</button>
     </div>
   </div>
 </div>
@@ -2328,6 +2427,7 @@ if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButt
         document.getElementById('subscription-overlay').style.display = 'none';
         document.getElementById('bp-overlay').style.display = 'none';
         document.getElementById('category-overlay').style.display = 'none';
+        document.getElementById('bp-style-overlay').style.display = 'none';
         
         let btnWrap = document.getElementById('download-btn-wrap');
         if (btnWrap) btnWrap.style.display = 'none';
@@ -2796,9 +2896,11 @@ window.loadProject = async (id) => {
     calculateLayoutTarget();
 };
 
-// --- ЛОГИКА ЭКРАНА ВЫБОРА РАЗДЕЛА ---
-let selectedCategory = null; // По умолчанию ничего не выбрано!
+// --- ЛОГИКА ЭКРАНА ВЫБОРА РАЗДЕЛА И СТИЛЕЙ ---
+let selectedCategory = null; 
+let selectedBPStyle = null;
 
+// Выбор раздела (Акции или БП)
 window.selectCategory = function(cat) {
     if (selectedCategory === cat) return;
     selectedCategory = cat;
@@ -2806,10 +2908,9 @@ window.selectCategory = function(cat) {
     
     const wrapAction = document.getElementById('cat-badge-wrap-action');
     const wrapBP = document.getElementById('cat-badge-wrap-bp');
-    const nextBtn = document.getElementById('cat-btn-next'); // Находим кнопку
+    const nextBtn = document.getElementById('cat-btn-next'); 
     
-    // Показываем кнопку "Далее", так как выбор сделан
-    nextBtn.classList.add('show');
+    nextBtn.classList.add('show'); 
 
     if (cat === 'action') {
         wrapAction.classList.add('show');
@@ -2820,6 +2921,24 @@ window.selectCategory = function(cat) {
     }
 };
 
+// Выбор стиля БП (1, 2 или 3)
+window.selectBPStyle = function(styleId) {
+    if (selectedBPStyle === styleId) return;
+    selectedBPStyle = styleId;
+    window.triggerHaptic();
+
+    // Сбрасываем все галочки
+    for (let i = 1; i <= 3; i++) {
+        document.getElementById(`bp-radio-${i}`).classList.remove('checked');
+    }
+    // Анимированно включаем нужную
+    document.getElementById(`bp-radio-${styleId}`).classList.add('checked');
+
+    // Плавно показываем кнопку Далее
+    document.getElementById('bp-style-btn-next').classList.add('show');
+};
+
+// 1. Клик по кнопке "Создать" на главной странице
 document.getElementById('ios-btn-create').addEventListener('click', async function() {
     window.triggerHaptic();
     const limit = await checkUsageLimit();
@@ -2829,34 +2948,27 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
     document.getElementById('ios-dashboard').style.display = 'none';
 
     selectedCategory = null; 
-    
-    // Скрываем плашки выбора
     document.getElementById('cat-badge-wrap-action').classList.remove('show');
     document.getElementById('cat-badge-wrap-bp').classList.remove('show');
-
-    // СКРЫВАЕМ кнопку "Далее" при открытии меню
     document.getElementById('cat-btn-next').classList.remove('show');
-    
+
     document.getElementById('category-overlay').style.display = 'flex';
     window.scrollTo(0,0);
     if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
 });
 
-// 2. Клик по кнопке "Далее" внутри экрана выбора раздела
+// 2. Клик по кнопке "Далее" в ВЫБОРЕ РАЗДЕЛА
 document.getElementById('cat-btn-next').addEventListener('click', function() {
     window.triggerHaptic();
-    
-    // Проверка: если ничего не выбрали, не пускаем дальше
     if (!selectedCategory) {
         alert("Пожалуйста, выберите раздел.");
         return;
     }
     
     if (selectedCategory === 'action') {
-        // Закрываем меню выбора
+        // --- СТАРЫЙ СКРИПТ СОЗДАНИЯ АКЦИИ ---
         document.getElementById('category-overlay').style.display = 'none';
         
-        // Запускаем старый скрипт "Создания акции"
         document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
         document.getElementById('wizard-step1').classList.add('active');
 
@@ -2871,10 +2983,33 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
 
         document.getElementById('wizard-overlay').style.display = 'flex';
         window.scrollTo(0,0);
-    } else {
-        // Заглушка для Brawl Pass
-        alert("Создание Brawl Pass пока в разработке! Выберите другой раздел.");
+    } else if (selectedCategory === 'bp') {
+        // --- ПЕРЕХОД НА ЭКРАН СТИЛЕЙ БП ---
+        document.getElementById('category-overlay').style.display = 'none';
+        
+        // Сбрасываем выбор стиля при каждом открытии
+        selectedBPStyle = null;
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById(`bp-radio-${i}`).classList.remove('checked');
+        }
+        document.getElementById('bp-style-btn-next').classList.remove('show');
+        
+        document.getElementById('bp-style-overlay').style.display = 'flex';
+        window.scrollTo(0,0);
     }
+});
+
+// 3. Клик по кнопке "Далее" в ВЫБОРЕ СТИЛЯ БП
+document.getElementById('bp-style-btn-next').addEventListener('click', function() {
+    window.triggerHaptic();
+    if (!selectedBPStyle) return;
+
+    // Скрываем экран выбора стилей
+    document.getElementById('bp-style-overlay').style.display = 'none';
+
+    // Запускаем скрипт генерации Brawl Pass (ты можешь сохранить selectedBPStyle куда нужно)
+    window.layerState.bpStyleIndex = selectedBPStyle;
+    generateBrawlPassTest(); 
 });
 
 function createGradientBg(colorType) {
