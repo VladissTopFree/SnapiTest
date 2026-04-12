@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(7)";
+  const APP_VERSION = "v2.4.7(8)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1419,7 +1419,7 @@ async function hashTelegramId(id) {
     width: 100%;
     height: var(--tg-viewport-stable-height, 100vh);
     background: rgba(0, 0, 0, 0.4);
-    z-index: 300;
+    z-index: 2000;
     display: none;
     flex-direction: column;
     justify-content: flex-end;
@@ -5188,17 +5188,21 @@ function drawBeautifulNick(ctx, text, w, h) {
               document.querySelectorAll('.fankit-item').forEach(el => el.classList.remove('selected'));
               item.classList.add('selected');
 
-              // Если открыли из редактора Brawl Pass
+              // Внутри item.onclick для контекста 'editor'
               if (window.fankitContext === 'editor') {
                   let img = new Image();
                   img.crossOrigin = "anonymous";
                   img.onload = () => {
-                      rawBgImage = img; // Меняем фон
+                      // Важно: Сохраняем выбранную картинку как основу
+                      rawBgImage = img; 
                       window.layerState.isGeneratedBg = false;
                       window.layerState.bgColorType = null;
-                      setupPersistentCanvas(); // Обновляем холст
-                      calculateLayoutTarget(); // Перерисовываем элементы
-                      window.closeFankitGlobal(); // Закрываем Fankit
+                      
+                      // ВМЕСТО простого setupPersistentCanvas вызываем полную генерацию,
+                      // чтобы линия и градиенты наложились поверх нового фона
+                      generateBrawlPassTest(); 
+                      
+                      window.closeFankitGlobal();
                   };
                   img.src = `bg/bg${i}.png`;
                   return;
@@ -5943,11 +5947,12 @@ async function generateBrawlPassTest() {
     };
 
     // --- 1. ФОН ---
-    if (window.layerState.isGeneratedBg) {
-        if (rawBgImage) {
-            ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
-        }
+    if (!window.layerState.isGeneratedBg && rawBgImage) {
+        // Если это загруженный фон или фон из Fankit — просто рисуем его на весь экран
+        ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
     } else {
+        // ИНАЧЕ рисуем стандартный фон Brawl Pass (оранжево-фиолетовый с наложением)
+        
         // Оранжевый сектор
         ctx.save();
         ctx.beginPath();
@@ -5972,6 +5977,7 @@ async function generateBrawlPassTest() {
     }
 
     // --- 2. ЛИНИЯ РАЗДЕЛЕНИЯ ---
+    // (Дальше код остается без изменений)
     ctx.save();
     let currentLineColor = '#f09e41'; 
     if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
