@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.6(8)";
+  const APP_VERSION = "v2.4.7";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1580,6 +1580,117 @@ async function hashTelegramId(id) {
         #wm-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9; pointer-events: none; mix-blend-mode: overlay; opacity: 0.8; }
         #main-text-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
 
+
+
+/* === СТИЛИ ВЫБОРА РАЗДЕЛА === */
+  #category-overlay {
+    width: 100%;
+    height: var(--tg-viewport-stable-height, 100vh);
+    overflow: hidden;
+    background: var(--tg-theme-secondary-bg-color, #F2F2F7);
+    display: none; 
+    flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  #cat-btn-next {
+    display: none; /* Кнопка скрыта изначально */
+    margin: 0 auto;
+  }
+
+  #cat-btn-next.show {
+    display: flex;
+    animation: slideUpFade 0.3s ease-out forwards;
+  }
+
+  .cat-title-main {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--tg-theme-text-color, #000);
+    margin-bottom: 20px;
+    padding: 0 20px;
+  }
+
+  .cat-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 0; /* Уменьшили отступ, чтобы линия была ближе */
+    border-bottom: 0.5px solid color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
+    cursor: pointer;
+    transition: opacity 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cat-card:last-child {
+    border-bottom: none;
+  }
+  .cat-card:active {
+    opacity: 0.6;
+  }
+
+  .cat-img {
+    width: 140px;
+    height: 78px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .cat-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-grow: 1;
+  }
+
+  .cat-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--tg-theme-text-color, #000);
+    margin-bottom: 4px;
+  }
+
+  .cat-desc {
+    font-size: 13px;
+    color: var(--tg-theme-subtitle-text-color, #8E8E93);
+    line-height: 1.3;
+  }
+
+  /* Умная обертка для плавного раздвигания карточки */
+  .cat-badge-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.35s ease;
+    margin-top: 0;
+  }
+  .cat-badge-wrap.show {
+    grid-template-rows: 1fr;
+    margin-top: 10px; /* Отступ появляется только когда плашка видима */
+  }
+  .cat-badge-inner {
+    overflow: hidden;
+  }
+
+  .cat-badge {
+    background: #00A0FF; 
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 14px;
+    border-radius: 14px;
+    display: inline-block;
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(0.92);
+    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+  }
+  .cat-badge-wrap.show .cat-badge {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1656,6 +1767,44 @@ async function hashTelegramId(id) {
     <span style="font-family: 'BebasNeue'">preload</span>
     <span style="font-family: 'AmericanCaptain'">preload</span>
     <span style="font-family: 'ArialRoundedOld'">preload</span>
+</div>
+
+<div id="category-overlay">
+  <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); position: relative; height: 100%; display: flex; flex-direction: column;">
+    <div class="cat-title-main">Выбери раздел</div>
+    
+    <div style="padding: 0 20px; flex-grow: 1; overflow-y: auto;">
+        <div class="cat-card" onclick="selectCategory('action')">
+            <img src="miniprewiev.png" class="cat-img" onerror="this.style.backgroundColor='#ddd';">
+            <div class="cat-info">
+                <div class="cat-name">Создание акции</div>
+                <div class="cat-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
+                <div id="cat-badge-wrap-action" class="cat-badge-wrap">
+                    <div class="cat-badge-inner">
+                        <div class="cat-badge">выбрано</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cat-card" onclick="selectCategory('bp')">
+            <img src="miniprewiev.png" class="cat-img" onerror="this.style.backgroundColor='#ddd';">
+            <div class="cat-info">
+                <div class="cat-name">Создание Brawl Pass</div>
+                <div class="cat-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
+                <div id="cat-badge-wrap-bp" class="cat-badge-wrap">
+                    <div class="cat-badge-inner">
+                        <div class="cat-badge">выбрано</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-fade-container">
+        <button id="cat-btn-next" class="ios-action-btn">Далее</button>
+    </div>
+  </div>
 </div>
 
 <div id="wizard-overlay">
@@ -2149,6 +2298,7 @@ if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButt
         document.getElementById('settings-overlay').style.display = 'none';
         document.getElementById('subscription-overlay').style.display = 'none';
         document.getElementById('bp-overlay').style.display = 'none';
+        document.getElementById('category-overlay').style.display = 'none';
         
         let btnWrap = document.getElementById('download-btn-wrap');
         if (btnWrap) btnWrap.style.display = 'none';
@@ -2617,6 +2767,30 @@ window.loadProject = async (id) => {
     calculateLayoutTarget();
 };
 
+// --- ЛОГИКА ЭКРАНА ВЫБОРА РАЗДЕЛА ---
+let selectedCategory = null; // По умолчанию ничего не выбрано!
+
+window.selectCategory = function(cat) {
+    if (selectedCategory === cat) return;
+    selectedCategory = cat;
+    window.triggerHaptic();
+    
+    const wrapAction = document.getElementById('cat-badge-wrap-action');
+    const wrapBP = document.getElementById('cat-badge-wrap-bp');
+    const nextBtn = document.getElementById('cat-btn-next'); // Находим кнопку
+    
+    // Показываем кнопку "Далее", так как выбор сделан
+    nextBtn.classList.add('show');
+
+    if (cat === 'action') {
+        wrapAction.classList.add('show');
+        wrapBP.classList.remove('show');
+    } else {
+        wrapBP.classList.add('show');
+        wrapAction.classList.remove('show');
+    }
+};
+
 document.getElementById('ios-btn-create').addEventListener('click', async function() {
     window.triggerHaptic();
     const limit = await checkUsageLimit();
@@ -2625,21 +2799,53 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
     isCurrentProjectSaved = false; 
     document.getElementById('ios-dashboard').style.display = 'none';
 
-  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
-  document.getElementById('wizard-step1').classList.add('active');
+    selectedCategory = null; 
+    
+    // Скрываем плашки выбора
+    document.getElementById('cat-badge-wrap-action').classList.remove('show');
+    document.getElementById('cat-badge-wrap-bp').classList.remove('show');
 
-  document.getElementById('prog-step1').className = 'step active';
-  document.getElementById('prog-line1').className = 'line';
-  document.getElementById('prog-step2').className = 'step small';
-  document.getElementById('prog-line2').className = 'line';
-  document.getElementById('prog-step3').className = 'step small';
+    // СКРЫВАЕМ кнопку "Далее" при открытии меню
+    document.getElementById('cat-btn-next').classList.remove('show');
+    
+    document.getElementById('category-overlay').style.display = 'flex';
+    window.scrollTo(0,0);
+    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+});
 
-  stagedFiles = [];
-  updateDropzoneUI();
+// 2. Клик по кнопке "Далее" внутри экрана выбора раздела
+document.getElementById('cat-btn-next').addEventListener('click', function() {
+    window.triggerHaptic();
+    
+    // Проверка: если ничего не выбрали, не пускаем дальше
+    if (!selectedCategory) {
+        alert("Пожалуйста, выберите раздел.");
+        return;
+    }
+    
+    if (selectedCategory === 'action') {
+        // Закрываем меню выбора
+        document.getElementById('category-overlay').style.display = 'none';
+        
+        // Запускаем старый скрипт "Создания акции"
+        document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
+        document.getElementById('wizard-step1').classList.add('active');
 
-  document.getElementById('wizard-overlay').style.display = 'flex';
-  window.scrollTo(0,0);
-  if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+        document.getElementById('prog-step1').className = 'step active';
+        document.getElementById('prog-line1').className = 'line';
+        document.getElementById('prog-step2').className = 'step small';
+        document.getElementById('prog-line2').className = 'line';
+        document.getElementById('prog-step3').className = 'step small';
+
+        stagedFiles = [];
+        updateDropzoneUI();
+
+        document.getElementById('wizard-overlay').style.display = 'flex';
+        window.scrollTo(0,0);
+    } else {
+        // Заглушка для Brawl Pass
+        alert("Создание Brawl Pass пока в разработке! Выберите другой раздел.");
+    }
 });
 
 function createGradientBg(colorType) {
@@ -3074,7 +3280,7 @@ function drawBPWatermarks(ctx, text, w, h, opacity) {
     const marks = [
         { top: 0.069, left: 0.029, size: 13 }, { top: 0.000, left: 0.156, size: 17 }, { top: 0.018, left: 0.535, size: 20 }, { top: 0.046, left: 0.804, size: 15 },
         { top: 0.013, left: 0.404, size: 9 },  { top: 0.123, left: 0.522, size: 9 }, { top: 0.102, left: 0.292, size: 9 },  { top: 0.776, left: 0.243, size: 10 },
-        { top: 0.351, left: 0.970, size: 9 },  { top: 0.630, left: 0.080, size: 13 }, { top: 0.599, left: 0.970, size: 9 },  { top: 0.770, left: 0.013, size: 15 },
+        { top: 0.351, left: 0.970, size: 9 },  { top: 0.599, left: 0.970, size: 9 },  { top: 0.770, left: 0.013, size: 15 },
         { top: 0.950, left: 0.237, size: 9 },  { top: 0.769, left: 0.928, size: 15 }, { top: 0.950, left: 0.521, size: 22 }, { top: 0.950, left: 0.930, size: 9 }
     ];
     
@@ -5334,28 +5540,6 @@ function androidFallback2(blob) {
 
 // ====== ИНТЕГРАЦИЯ BRAWL PASS В СТАНДАРТНЫЙ ДВИЖОК ======
 
-// 1. Добавляем красивую кнопку "Создать БП" в главное меню
-window.addEventListener('DOMContentLoaded', () => {
-    const dashboard = document.querySelector('.ios-container');
-    const createBtn = document.getElementById('ios-btn-create');
-    // Проверка, чтобы кнопка не дублировалась при перезагрузках
-    if (dashboard && createBtn && !document.getElementById('ios-btn-create-bp')) {
-        const bpBtn = document.createElement('div');
-        bpBtn.id = 'ios-btn-create-bp';
-        bpBtn.className = 'ios-card ios-menu-item';
-        bpBtn.style.borderRadius = '100px';
-        bpBtn.style.marginBottom = '24px';
-        bpBtn.onclick = generateBrawlPassTest;
-        bpBtn.innerHTML = `
-            <div class="ios-icon-box" style="background: linear-gradient(180deg, #ff8a00 0%, #ff4e00 100%);">
-                <span style="color:white; font-family:'ArialRoundedOld', sans-serif; font-weight:bold; font-size: 13px;">BP</span>
-            </div>
-            <div class="ios-menu-text">Создать БП (Тест)</div>
-            <div class="ios-chevron"><svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        `;
-        dashboard.insertBefore(bpBtn, createBtn);
-    }
-});
 
 async function generateBrawlPassTest() {
     if (window.triggerHaptic) window.triggerHaptic();
