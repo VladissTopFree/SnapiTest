@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.8";
+  const APP_VERSION = "v2.4.8(1)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -21,21 +21,6 @@
 
 
   const MANUAL_FALLBACK_DATE = "13 Apr 2026";
-
-
-
-  const SUBSCRIPTIONS = [
-    { hash: "b649217db02e99c3c766b454c09787b95870daa99703e67aff87b6c4e6b92f23", period: "21 May 2026" },
-    { hash: "1d0245588da0bb70a11ca21c770f7114ee33579430b3ed86295af981face92ea", period: "21 May 2026" }
-  ];
-
-  const TRANSACTIONS = [
-    { hash: "b649217db02e99c3c766b454c09787b95870daa99703e67aff87b6c4e6b92f23", period1: "6 апреля 2026", period2: "21 мая 2026" },
-    { hash: "b649217db02e99c3c766b454c09787b95870daa99703e67aff87b6c4e6b92f23", period1: "19 июня 2026", period2: "16 мая 2027" },
-    { hash: "1d0245588da0bb70a11ca21c770f7114ee33579430b3ed86295af981face92ea", period1: "6 апреля 2026", period2: "21 мая 2026" },
-    { hash: "4ea45595e36d2385b8462b2566379b97276e29afa4c1ee1b64dc02758407e24c", period1: "6 апреля 2026", period2: "21 мая 2026" }
-
-  ];
 
   window.hasActiveSubscription = true;
 
@@ -54,60 +39,6 @@
       const subProfile = document.getElementById('sub-profile-status');
       if (subProfile) subProfile.innerText = 'Бесплатный доступ';
   }
-
-  async function checkAndDisplayTransactions(userId) {
-      const userHash = await hashTelegramId(userId);
-      const userTrans = TRANSACTIONS.filter(t => t.hash === userHash);
-      const container = document.getElementById('transactions-container');
-      
-      if (!container) return;
-
-      if (userTrans.length === 0) {
-          container.style.display = 'none';
-          return;
-      }
-
-      container.style.display = 'block';
-      let html = '<div class="ios-section-title" style="margin-top: 0; margin-left: 14px; margin-bottom: 12px;">МОИ ТРАНЗАКЦИИ</div>';
-      html += '<div class="ios-layer-group" style="padding: 0 20px; margin-bottom: 8px;">'; 
-      
-      userTrans.forEach((t, index) => {
-          html += `
-          <div class="ios-layer-row" style="padding: 16px 0; min-height: auto; cursor: default;">
-              <div class="ios-layer-name" style="font-size: 17px; font-weight: 400; white-space: normal; color: var(--tg-theme-text-color, #000000);">
-                  с ${t.period1} по ${t.period2}
-              </div>
-          </div>`;
-      });
-      
-      html += '</div>';
-      html += '<div class="sp-info-text" style="padding: 0 14px; font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-top: 0px; margin-bottom: 24px;">Это Ваши транзакции за оплату подписки.</div>';
-      
-      container.innerHTML = html;
-  }
-
-  async function checkUsageLimit() {
-    if (window.hasActiveSubscription) return { allowed: true };
-
-    const usedThisMonth = await localDB.getDownloadsThisMonth();
-    if (usedThisMonth >= 3) {
-        const now = new Date();
-        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        const options = { day: 'numeric', month: 'long' };
-        const dateStr = nextMonth.toLocaleDateString('ru-RU', options);
-        
-        alert(`В этом месяце Вы достигли лимита загрузки работ, приходите ${dateStr}.`);
-        return { allowed: false };
-    }
-    return { allowed: true };
-}
-
-async function hashTelegramId(id) {
-    const msgBuffer = new TextEncoder().encode(id.toString());
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
   const BP_SEASON_CONFIG = {
       50: {
@@ -2369,10 +2300,7 @@ if (window.Telegram && window.Telegram.WebApp) {
         } else if (userIdElement) {
             userIdElement.innerText = 'ID: скрыт';
         }
-        
-        checkAndApplySubscription(tgUser.id);
-        checkAndDisplayTransactions(tgUser.id); 
-        
+              
         if (userAvatarElement) {
             if (tgUser.photo_url) {
                 let img = new Image();
@@ -2430,9 +2358,9 @@ let globalAssets = {
 };
 let isCurrentProjectSaved = false; 
 
-if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
-    window.Telegram.WebApp.BackButton.onClick(() => {
-        
+// 1. Создаем строгую именованную функцию для кнопки "Назад"
+function handleBackButtonClick() {
+    try {
         let fankitOverlay = document.getElementById('fankit-overlay');
         if (fankitOverlay && fankitOverlay.classList.contains('show')) {
             fankitOverlay.classList.remove('show');
@@ -2441,30 +2369,45 @@ if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButt
             setTimeout(() => {
                 fankitOverlay.style.display = 'none';
             }, 300);
-            
             return; 
         }
-        document.getElementById('wizard-overlay').style.display = 'none';
-        document.getElementById('result-box').style.display = 'none';
-        document.getElementById('download-overlay').style.display = 'none';
-        document.getElementById('saved-projects-overlay').style.display = 'none';
-        document.getElementById('settings-overlay').style.display = 'none';
-        document.getElementById('subscription-overlay').style.display = 'none';
-        document.getElementById('bp-overlay').style.display = 'none';
-        document.getElementById('category-overlay').style.display = 'none';
-        document.getElementById('bp-style-overlay').style.display = 'none';
+
+        // Массив всех возможных экранов для безопасного скрытия
+        const overlays = [
+            'wizard-overlay', 'result-box', 'download-overlay', 
+            'saved-projects-overlay', 'settings-overlay', 
+            'subscription-overlay', 'bp-overlay', 
+            'category-overlay', 'bp-style-overlay'
+        ];
+        
+        overlays.forEach(id => {
+            let el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
         
         let btnWrap = document.getElementById('download-btn-wrap');
         if (btnWrap) btnWrap.style.display = 'none';
         
+        // Возвращаем главный дашборд и сбрасываем стили
         document.getElementById('ios-dashboard').style.display = 'flex';
         document.body.style.background = "var(--tg-theme-secondary-bg-color, #F2F2F7)";
         document.body.style.color = "var(--tg-theme-text-color, #000000)";
         document.body.style.overflow = ''; 
         window.scrollTo(0,0);
         
-        window.Telegram.WebApp.BackButton.hide();
-    });
+        // Скрываем саму кнопку Назад
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+            window.Telegram.WebApp.BackButton.hide();
+        }
+    } catch (e) {
+        console.error("Ошибка при обработке кнопки Назад:", e);
+    }
+}
+
+// 2. Безопасная регистрация клика с очисткой старых слушателей
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+    window.Telegram.WebApp.BackButton.offClick(handleBackButtonClick);
+    window.Telegram.WebApp.BackButton.onClick(handleBackButtonClick);
 }
 
 document.addEventListener('pointerdown', (e) => {
