@@ -1722,6 +1722,7 @@
       <div class="ios-avatar loading" id="user-tg-avatar"></div>
       <div class="ios-profile-info">
         <div class="ios-id" id="user-tg-id">ID: загрузка...</div>
+        <div class="ios-sub" id="sub-profile-status">Добро пожаловать в Snapi</div>
       </div>
     </div>
 
@@ -2896,8 +2897,6 @@ window.selectBPStyle = function(styleId) {
 
 document.getElementById('ios-btn-create').addEventListener('click', async function() {
     window.triggerHaptic();
-    const limit = await checkUsageLimit();
-    if (!limit.allowed) return; 
 
     if (window.resetWizardState) window.resetWizardState();
 
@@ -5626,9 +5625,6 @@ document.getElementById('dl-btn-actual-download').onclick = (e) => {
     if (btn.classList.contains('is-loading')) return;
 
     setTimeout(async () => {
-        const limit = await checkUsageLimit();
-        if (!limit.allowed) return;
-
         btn.classList.add('is-loading');
         btn.style.pointerEvents = 'none';
 
