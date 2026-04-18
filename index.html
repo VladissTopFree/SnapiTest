@@ -3,10 +3,13 @@
 <head> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <title>Snapi_TEST</title>
 
+
 <script>
-  const APP_VERSION = "v2.4.8(1)";
+  const APP_VERSION = "v2.4.9";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -19,20 +22,7 @@
       console.log('Not a new user');
   }
 
-
-  const MANUAL_FALLBACK_DATE = "13 Apr 2026";
-
   window.hasActiveSubscription = true;
-
-  async function getRealTime() {
-      try {
-          const res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC');
-          const data = await res.json();
-          return new Date(data.datetime);
-      } catch (e) {
-          return new Date(MANUAL_FALLBACK_DATE);
-      }
-  }
 
   async function checkAndApplySubscription(userId) {
       window.hasActiveSubscription = true;
@@ -1712,6 +1702,61 @@
   body.os-non-apple .ios-divider { margin-right: -20px !important; }
   body.os-non-apple .sp-row::after { right: 0 !important; }
 
+  /* Добавь это внутрь твоего существующего тега <style> */
+.brawl-font {
+    font-family: 'LilitaOneRus', 'Lilita One', sans-serif !important;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+.text-outline, .text-outline-thick, .text-outline-heavy {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+    filter: drop-shadow(0px 2px 0px #000000); 
+}
+.text-outline::before, .text-outline-thick::before, .text-outline-heavy::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    color: #000000;
+    -webkit-text-stroke: 4px #000000; 
+    pointer-events: none;
+    white-space: nowrap;
+}
+.mask-right-side {
+    clip-path: polygon(calc(60.3% + 37px) 0, 100% 0, 100% 100%, calc(55.7% + 37px) 100%);
+}
+.white-separator-v-spacer { width: 16px; position: relative; left: 6px; opacity: 0; pointer-events: none; }
+.white-separator-h-spacer { height: 16px; width: 100%; opacity: 0; pointer-events: none; }
+.brawler-shadow { filter: drop-shadow(3px -6px 0px white); transform: translateZ(0); }
+.item-shadow { filter: drop-shadow(0px 15px 15px rgba(0, 0, 0, 0.7)); transform: translateZ(0); }
+.line-shadow { box-shadow: 0px 0px 35px 5px rgba(0, 0, 0, 0.459) !important; }
+.gems-shadow { filter: drop-shadow(0px 10px 6px rgba(0, 0, 0, 0.482)); transform: translateZ(0); }
+.watermark-text {
+    font-family: 'Font16103', sans-serif !important;
+    color: #ffffff;
+    font-size: 56px;
+    letter-spacing: 2px;
+}
+.text-outline-mega { position: relative; display: inline-block; z-index: 1; }
+.text-outline-mega::before {
+    content: attr(data-text); position: absolute; left: 0; top: 0; z-index: -1;
+    color: #000000; -webkit-text-stroke: 6px #000000; pointer-events: none; white-space: nowrap;
+}
+
+/* Скрытый контейнер, чтобы HTML код картинки не мешал на экране */
+#bp2-hidden-render-container {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    width: 1280px;
+    height: 720px;
+    z-index: -1000;
+    pointer-events: none;
+}
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1762,6 +1807,9 @@
     </div>
 
     <button id="ios-btn-create" class="ios-action-btn">Создать</button>
+    <button id="ios-btn-bp2-test" class="ios-action-btn" style="margin-top: 14px; background: linear-gradient(110deg, #ff3b30 38%, #ff6b64 50%, #ff3b30 62%); background-size: 300% 100%; animation: shimmerBg 4s infinite linear;" onclick="generateBPStyle2Test()">
+    Новый бп стиль - ТЕСТ
+</button>
   </div>
 </div>
 
@@ -2177,6 +2225,133 @@
         <canvas id="main-text-canvas"></canvas>
     </div>
 </div>
+<div id="bp2-hidden-render-container">
+    <div id="brawl-shop" class="relative w-[1280px] h-[720px] shrink-0 overflow-hidden flex shadow-2xl brawl-font" style="transform-origin: center; background-color: #2b2b2b;">
+        <div class="absolute inset-0 z-0" style="transform: translate(-226px, 0px) scale(1) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
+            <img src="bg/bg3.png" class="w-full h-full object-cover" alt="Main BG" onerror="this.style.display='none'">
+        </div>
+        <div class="absolute inset-0 pointer-events-none mask-right-side" style="z-index: 25;">
+            <div class="absolute pointer-events-none w-[400px] h-[250px]" style="transform: translate(957px, 448px) scale(1.74) scaleX(1.14) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
+                <img src="bg/bg3.png" class="w-full h-full object-cover" alt="Extra BG 1" onerror="this.style.display='none'">
+            </div>
+            <div class="absolute pointer-events-none w-[400px] h-[250px]" style="transform: translate(988px, 23px) scale(1.74) scaleX(1.14) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
+                <img src="bg/bg3.png" class="w-full h-full object-cover" alt="Extra BG 2" onerror="this.style.display='none'">
+            </div>
+        </div>
+        <div class="absolute inset-0 pointer-events-none mix-blend-overlay" style="z-index: 26;">
+            <img src="BP/bp_style2_points.png" class="w-full h-full object-cover" alt="Points Overlay" onerror="this.style.display='none'">
+        </div>
+        <div class="absolute inset-0 pointer-events-none mix-blend-overlay" style="z-index: 27;">
+            <img src="BP/bp_stars_style2.png" class="w-full h-full object-cover" alt="Stars Overlay" onerror="this.style.display='none'">
+        </div>
+        <div id="glow-container" class="absolute inset-0 pointer-events-none z-[28]">
+            <div class="absolute bg-white rounded-full pointer-events-none" style="left: 28.8%; top: 45.9%; width: 550px; height: 550px; filter: blur(45px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute bg-white rounded-full pointer-events-none" style="left: 90.6%; top: 29.2%; width: 220px; height: 220px; filter: blur(36px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute bg-white rounded-full pointer-events-none" style="left: 90.0%; top: 75.6%; width: 260px; height: 260px; filter: blur(26px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute bg-white rounded-full pointer-events-none" style="left: 72.7%; top: 13.9%; width: 230px; height: 230px; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute bg-white rounded-full pointer-events-none" style="left: 70.8%; top: 65.5%; width: 200px; height: 200px; filter: blur(26px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+        </div>
+        <div class="absolute inset-0 z-[80] pointer-events-none mix-blend-overlay opacity-30">
+            <div class="absolute watermark-text whitespace-nowrap" style="top: -5.6%; left: 27.3%; transform: scale(0.7) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 0.8%; left: -11.7%; transform: scale(0.24) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 29.2%; left: -15.6%; transform: scale(0.1) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 35.8%; left: 40.1%; transform: scale(0.1) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 83.3%; left: 32.6%; transform: scale(0.2) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 94.0%; left: 25.7%; transform: scale(0.53) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 84.2%; left: -9.9%; transform: scale(0.29) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 93.9%; left: -14.3%; transform: scale(0.69) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 8.3%; left: 37.8%; transform: scale(0.19) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 23.8%; left: 51.8%; transform: scale(0.3) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: -1.1%; left: 66.9%; transform: scale(0.12) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: -3.7%; left: 53.3%; transform: scale(0.1) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 74.0%; left: 48.5%; transform: scale(0.22) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 48.5%; left: 48.7%; transform: scale(0.1) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute watermark-text whitespace-nowrap" style="top: 48.0%; left: 75.0%; transform: scale(0.19) skewX(-12deg);">ARTZA DONATE</div>
+        </div>
+        <div class="absolute pointer-events-none line-shadow" style="width: 16px; height: 150%; top: -25%; left: calc(58% + 6px); background: transparent; z-index: 31; transform-origin: center; transform: translate(27px, 2px) scale(1) scaleX(1) scaleY(1.5) skew(0deg, 0deg) rotate(7deg);"></div>
+        <div class="absolute pointer-events-none line-shadow" style="height: 16px; left: calc(58% + 40px); right: 0; top: calc(50% - 8px); background-color: white; z-index: 48; transform-origin: center; transform: translate(0px, 0px) scale(1) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"></div>
+        <div class="absolute pointer-events-none" style="width: 16px; height: 150%; top: -25%; left: calc(58% + 6px); background-color: white; z-index: 50; transform-origin: center; transform: translate(27px, 2px) scale(1) scaleX(1) scaleY(1.5) skew(0deg, 0deg) rotate(7deg);"></div>
+        <div class="w-[58%] h-full flex flex-col p-6 pt-8 relative z-30 pointer-events-none">
+            <div class="h-[20%] w-full flex items-center justify-center"></div>
+            <div class="h-[65%] w-full px-2 flex justify-center items-center relative">
+                <div class="w-full h-full absolute inset-0 flex justify-center items-center z-0" style="transform: translate(23px, -16px) scale(1.16) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
+                    <img src="BP/bp_gems.png" class="w-full h-full object-contain gems-shadow" alt="Gems Grid" onerror="this.style.display='none'">
+                </div>
+                <div class="absolute inset-0 px-2 py-1 grid grid-cols-3 grid-rows-2 gap-3 pointer-events-none z-10">
+                    <div class="w-full h-full relative"><div class="absolute bottom-[1%] left-0 w-full h-[18%] flex justify-center items-center pointer-events-auto"><div style="transform: translate(30px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="219 ₽">219 ₽</span></div></div></div>
+                    <div class="w-full h-full relative"><div class="absolute bottom-[1%] left-0 w-full h-[18%] flex justify-center items-center pointer-events-auto"><div style="transform: translate(29px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="499 ₽">499 ₽</span></div></div></div>
+                    <div class="w-full h-full relative"><div class="absolute bottom-[1%] left-0 w-full h-[18%] flex justify-center items-center pointer-events-auto"><div style="transform: translate(26px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="949 ₽">949 ₽</span></div></div></div>
+                    <div class="w-full h-full relative"><div class="absolute bottom-[1%] left-0 w-full h-[18%] flex justify-center items-center pointer-events-auto"><div style="transform: translate(10px, 7px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="1799 ₽">1799 ₽</span></div></div></div>
+                    <div class="w-full h-full relative"><div class="absolute bottom-[1%] left-0 w-full h-[18%] flex justify-center items-center pointer-events-auto"><div style="transform: translate(5px, 6px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="4199 ₽">4199 ₽</span></div></div></div>
+                    <div class="w-full h-full relative"><div class="absolute bottom-[1%] left-0 w-full h-[18%] flex justify-center items-center pointer-events-auto"><div style="transform: translate(5px, 7px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="8499 ₽">8499 ₽</span></div></div></div>
+                </div>
+            </div>
+            <div class="h-[15%] w-full flex justify-center items-center gap-4 mt-2 relative z-10 pointer-events-auto">
+                <div class="flex items-center justify-center h-full" style="transform: translate(12px, 12px) scale(0.74) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(18deg);"><img src="BP/bp_icon_pro_pass_icon.png" class="h-[120%] object-contain -rotate-12 item-shadow" alt="Pro Pass" onerror="this.style.display='none'"></div>
+                <div class="flex items-center justify-center pointer-events-auto"><div style="transform: translate(2px, 13px) scale(1.12) scaleX(1) scaleY(1) skew(-10deg, 0deg) rotate(0deg);"><div class="text-6xl text-outline-mega whitespace-nowrap" style="filter: drop-shadow(0px 6px 0px #000000);" data-text="- 2199 ₽">- 2199 ₽</div></div></div>
+            </div>
+        </div>
+        <div class="white-separator-v-spacer h-full pointer-events-none"></div>
+        <div class="w-[42%] h-full flex flex-col relative z-40 pointer-events-none">
+            <div class="h-[50%] w-full relative overflow-hidden">
+                <div class="absolute top-6 left-4 z-20 pointer-events-auto"><div class="inline-block" style="transform: translate(78px, 7px) scale(1.18) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(5deg);"><img src="BP/bp_icon_brawl_pass_plus.png" class="w-[200px] -rotate-6 item-shadow" alt="Brawl Pass Plus" onerror="this.style.display='none'"></div></div>
+                <div class="absolute top-32 left-10 z-30 pointer-events-auto"><div style="transform: translate(93px, -2px) scale(1.2) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(-6deg);"><div class="text-5xl text-outline-heavy" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="1249 ₽">1249 ₽</div></div></div>
+                <div class="absolute -top-10 -right-8 h-[130%] z-10 pointer-events-auto"><div class="h-full flex items-center justify-center" style="transform: translate(60px, 10px) scale(0.82) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><img src="BP/brawler_s50_2.png" class="h-full object-contain brawler-shadow" alt="Brawler Top" onerror="this.style.display='none'"></div></div>
+                <div class="absolute bottom-4 left-6 z-40 flex flex-col items-center pointer-events-auto"><div class="relative flex justify-center items-center"><div class="inline-block" style="transform: translate(57px, -10px) scale(1.08) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><img src="BP/bp_price_bg_right.png" class="w-[220px] item-shadow" alt="Blue Plate" onerror="this.style.display='none'"></div><div class="absolute -mt-2"><div style="transform: translate(61px, -8px) scale(1) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><div class="text-5xl text-outline-thick" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="499 ₽">499 ₽</div></div></div></div></div>
+            </div>
+            <div class="white-separator-h-spacer"></div>
+            <div class="h-[50%] w-full relative overflow-hidden">
+                <div class="absolute top-6 left-4 z-20 pointer-events-auto"><div class="inline-block" style="transform: translate(54px, 10px) scale(1.18) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><img src="BP/bp_icon_brawl_pass.png" class="w-[200px] -rotate-3 item-shadow" alt="Brawl Pass" onerror="this.style.display='none'"></div></div>
+                <div class="absolute top-28 left-12 z-30 pointer-events-auto"><div style="transform: translate(77px, 16px) scale(1.32) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(-10deg);"><div class="text-5xl text-outline-heavy" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="899 ₽">899 ₽</div></div></div>
+                <div class="absolute -top-6 -right-12 h-[120%] z-10 pointer-events-auto"><div class="h-full flex items-center justify-center" style="transform: translate(78px, -14px) scale(0.86) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><img src="BP/brawler_s50_1.png" class="h-full object-contain brawler-shadow" alt="Brawler Bottom" onerror="this.style.display='none'"></div></div>
+                <div class="absolute bottom-6 left-6 z-40 flex flex-col items-center pointer-events-auto"><div class="relative flex justify-center items-center mb-3"><div class="inline-block" style="transform: translate(49px, 2px) scale(1.34) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><img src="BP/bp_price_brawl_pass.png" class="w-[200px] item-shadow" alt="Yellow Plate" onerror="this.style.display='none'"></div><div class="absolute"><div style="transform: translate(56px, -12px) scale(0.86) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><div class="text-5xl text-outline-thick" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="349 ₽">349 ₽</div></div></div></div></div>
+            </div>
+        </div>
+        <div class="absolute z-[60] pointer-events-none" style="top: 50%; left: 50%; transform: translate(calc(-50% + 300px), calc(-50% + -34px)) scale(0.29) rotate(0deg);">
+            <img src="BP/bp_text_style2.png" class="object-contain" alt="BP Text" onerror="this.style.display='none'">
+        </div>
+        <div id="top-glow-container" class="absolute inset-0 pointer-events-none z-[100]">
+            <div class="absolute rounded-full pointer-events-none" style="left: 13.9%; top: 30.7%; width: 110px; height: 110px; background-color: #aef700; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 31.5%; top: 30.4%; width: 80px; height: 80px; background-color: #aff70b; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 49.0%; top: 29.7%; width: 70px; height: 70px; background-color: #adf700; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 12.5%; top: 66.0%; width: 90px; height: 90px; background-color: #aef700; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 30.0%; top: 65.0%; width: 90px; height: 90px; background-color: #b1f716; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 48.2%; top: 63.6%; width: 80px; height: 80px; background-color: #aef600; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 20.4%; top: 91.6%; width: 70px; height: 70px; background-color: #acf503; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 71.4%; top: 11.6%; width: 130px; height: 130px; background-color: #bafdff; filter: blur(16px); opacity: 0.2; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 68.8%; top: 62.5%; width: 110px; height: 110px; background-color: #fff30d; filter: blur(16px); opacity: 0.25; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 66.9%; top: 36.5%; width: 50px; height: 50px; background-color: #08feff; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 80.5%; top: 36.6%; width: 50px; height: 50px; background-color: #08feff; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 73.1%; top: 37.1%; width: 50px; height: 50px; background-color: #08feff; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 66.3%; top: 85.2%; width: 50px; height: 50px; background-color: #ebfa01; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 79.0%; top: 85.5%; width: 50px; height: 50px; background-color: #ebfa01; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 72.0%; top: 85.3%; width: 50px; height: 50px; background-color: #ebfa01; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 12.8%; top: 43.9%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 30.2%; top: 44.4%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 47.6%; top: 44.4%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 10.8%; top: 79.4%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 28.3%; top: 79.3%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 46.3%; top: 79.5%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 27.1%; top: 91.6%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 34.5%; top: 90.5%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 39.4%; top: 93.0%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 69.9%; top: 20.9%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 74.6%; top: 22.4%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 78.8%; top: 19.9%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 73.4%; top: 39.8%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 69.1%; top: 45.3%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 75.7%; top: 44.6%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 78.9%; top: 45.0%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 69.2%; top: 73.0%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 73.4%; top: 73.0%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 76.5%; top: 72.8%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 72.3%; top: 88.4%; width: 50px; height: 50px; background-color: #ffffff; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 67.1%; top: 94.8%; width: 50px; height: 50px; background-color: #ffff82; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 73.0%; top: 95.3%; width: 50px; height: 50px; background-color: #ffff80; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+            <div class="absolute rounded-full pointer-events-none" style="left: 78.4%; top: 95.0%; width: 50px; height: 50px; background-color: #ffff82; filter: blur(16px); opacity: 0.15; transform: translate(-50%, -50%);"></div>
+        </div>
+    </div>
+</div>
 <script>
 window.triggerHaptic = function() {
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
@@ -2299,7 +2474,7 @@ if (window.Telegram && window.Telegram.WebApp) {
         if (userIdElement && tgUser.id) {
             userIdElement.innerText = 'ID: ' + tgUser.id;
         } else if (userIdElement) {
-            userIdElement.innerText = 'ID: скрыт';
+            userIdElement.innerText = 'ID: не в Telegram';
         }
               
         if (userAvatarElement) {
@@ -2318,7 +2493,7 @@ if (window.Telegram && window.Telegram.WebApp) {
             }
         }
     } else {
-        if (userIdElement) userIdElement.innerText = 'ID: скрыт';
+        if (userIdElement) userIdElement.innerText = 'ID: не в Telegram';
         if (userAvatarElement) {
             userAvatarElement.classList.remove('loading');
             userAvatarElement.style.background = '#4A90E2';
@@ -6143,6 +6318,72 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     ctx.restore();
     ctx.drawImage(fillC, 0, 0);
 }
+
+window.generateBPStyle2Test = async function() {
+    if (window.triggerHaptic) window.triggerHaptic();
+
+    // 1. Показываем стандартный интерфейс просмотра результатов
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    window.scrollTo(0,0);
+    
+    if (window.Telegram && window.Telegram.WebApp.BackButton) {
+        window.Telegram.WebApp.BackButton.show();
+    }
+
+    // 2. Включаем скелетон (загрузку) и ПОЛНОСТЬЮ убираем панель слоев
+    const cardsContainer = document.getElementById('cards-container');
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    
+    const layerPanel = document.getElementById('layer-panel');
+    layerPanel.innerHTML = '';
+    layerPanel.style.display = 'none'; 
+
+    // 3. Берем твой готовый HTML-код
+    const targetDiv = document.getElementById('brawl-shop');
+
+    try {
+        // Конвертируем HTML в картинку
+        const canvas = await html2canvas(targetDiv, {
+            scale: 2, // Высокое качество
+            useCORS: true,
+            backgroundColor: '#2b2b2b'
+        });
+
+        // 4. Подменяем стандартный холст
+        if (!window.persistentCanvas) {
+            window.persistentCanvas = document.createElement('canvas');
+            window.persistentCtx = window.persistentCanvas.getContext('2d');
+        }
+
+        window.persistentCanvas.width = canvas.width;
+        window.persistentCanvas.height = canvas.height;
+        window.persistentCtx.drawImage(canvas, 0, 0);
+
+        // Имитируем фон для правильной работы расчетов масштабирования (твой calculateLayoutTarget)
+        rawBgImage = new Image();
+        rawBgImage.src = canvas.toDataURL('image/jpeg');
+
+        window.layerState.isBrawlPassMode = true; 
+        window.layerState.offers = []; // Акций тут нет
+
+        // 5. Вызываем встроенные функции для вывода, кнопок "скачать" и масштаба
+        setupPersistentCanvas();
+        
+        // Принудительно скрываем слои, если setupPersistentCanvas их случайно вернул
+        document.getElementById('layer-panel').style.display = 'none';
+
+        // Отключаем лишние анимации текста от старых функций
+        animText.targetScale = 0;
+        animText.targetAlpha = 0;
+        startAnimation(); 
+
+    } catch (err) {
+        console.error(err);
+        alert("Ошибка генерации. Убедитесь, что все картинки загрузились.");
+        cardsContainer.innerHTML = '';
+    }
+};
 
 </script>
 </body>
