@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.7(12)";
+  const APP_VERSION = "v2.4.8";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -37,7 +37,7 @@
 
   ];
 
-  window.hasActiveSubscription = false;
+  window.hasActiveSubscription = true;
 
   async function getRealTime() {
       try {
@@ -50,27 +50,9 @@
   }
 
   async function checkAndApplySubscription(userId) {
-      const userHash = await hashTelegramId(userId);
-
-      const userSub = SUBSCRIPTIONS.find(s => s.hash === userHash);
-      if (!userSub) return;
-
-      const currentTime = await getRealTime();
-      const expireTime = new Date(userSub.period);
-
-      if (currentTime <= expireTime) {
-          window.hasActiveSubscription = true;
-
-          const subProfile = document.getElementById('sub-profile-status');
-          const subMenu = document.getElementById('sub-menu-status');
-          const subOverlay = document.getElementById('sub-overlay-status');
-          const subBtn = document.querySelector('.ios-sub-btn');
-
-          if (subProfile) subProfile.innerText = 'Подписка активна до ' + userSub.period;
-          if (subMenu) subMenu.innerText = 'активна';
-          if (subOverlay) subOverlay.innerText = 'активирована до ' + userSub.period;
-          if (subBtn) subBtn.innerText = 'Продлить подписку';
-      }
+      window.hasActiveSubscription = true;
+      const subProfile = document.getElementById('sub-profile-status');
+      if (subProfile) subProfile.innerText = 'Бесплатный доступ';
   }
 
   async function checkAndDisplayTransactions(userId) {
@@ -1809,7 +1791,6 @@ async function hashTelegramId(id) {
       <div class="ios-avatar loading" id="user-tg-avatar"></div>
       <div class="ios-profile-info">
         <div class="ios-id" id="user-tg-id">ID: загрузка...</div>
-        <div class="ios-sub" id="sub-profile-status">Нет активной подписки</div>
       </div>
     </div>
 
@@ -1842,21 +1823,6 @@ async function hashTelegramId(id) {
            </svg>
         </div>
         <div class="ios-menu-text">Настройки</div>
-        <div class="ios-chevron">
-          <svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-      </div>
-      
-      <div class="ios-divider"></div>
-      
-      <div class="ios-menu-item" onclick="openSubscription()">
-        <div class="ios-icon-box" style="background: linear-gradient(180deg, #97e385 0%, #79c665 100%);">
-          <svg width="24" height="24" viewBox="-4.5 -0.5 19 19" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" style="margin-top: -2px;">
-            <path d="M8.699 11.907a3.005 3.005 0 0 1-1.503 2.578 4.903 4.903 0 0 1-1.651.663V16.3a1.03 1.03 0 1 1-2.059 0v-1.141l-.063-.011a5.199 5.199 0 0 1-1.064-.325 3.414 3.414 0 0 1-1.311-.962 1.029 1.029 0 1 1 1.556-1.347 1.39 1.39 0 0 0 .52.397l.002.001a3.367 3.367 0 0 0 .648.208h.002a4.964 4.964 0 0 0 .695.084 3.132 3.132 0 0 0 1.605-.445c.5-.325.564-.625.564-.851a1.005 1.005 0 0 0-.245-.65 2.06 2.06 0 0 0-.55-.44 2.705 2.705 0 0 0-.664-.24 3.107 3.107 0 0 0-.65-.066 6.046 6.046 0 0 1-1.008-.08 4.578 4.578 0 0 1-1.287-.415A3.708 3.708 0 0 1 1.02 9.04a3.115 3.115 0 0 1-.718-1.954 2.965 2.965 0 0 1 .321-1.333 3.407 3.407 0 0 1 1.253-1.335 4.872 4.872 0 0 1 1.611-.631V2.674a1.03 1.03 0 1 1 2.059 0v1.144l.063.014h.002a5.464 5.464 0 0 1 1.075.368 3.963 3.963 0 0 1 1.157.795A1.03 1.03 0 0 1 6.39 6.453a1.901 1.901 0 0 0-.549-.376 3.516 3.516 0 0 0-.669-.234l-.066-.014a3.183 3.183 0 0 0-.558-.093 3.062 3.062 0 0 0-1.572.422 1.102 1.102 0 0 0-.615.928 1.086 1.086 0 0 0 .256.654l.002.003a1.679 1.679 0 0 0 .537.43l.002.002a2.57 2.57 0 0 0 .703.225h.002a4.012 4.012 0 0 0 .668.053 5.165 5.165 0 0 1 1.087.112l.003.001a4.804 4.804 0 0 1 1.182.428l.004.002a4.115 4.115 0 0 1 1.138.906l.002.002a3.05 3.05 0 0 1 .753 2.003z"/>
-          </svg>
-        </div>
-        <div class="ios-menu-text">Подписка</div>
-        <div class="ios-menu-value" id="sub-menu-status">неактивна</div>
         <div class="ios-chevron">
           <svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
@@ -2226,55 +2192,6 @@ async function hashTelegramId(id) {
     <div style="margin-top: auto; display: flex; align-items: center; justify-content: flex-start; padding: 20px 20px 40px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; width: 100%; box-sizing: border-box;">
         <span id="app-version-display" style="font-size: 18px; font-weight: 600; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-right: 6px;"></span>
         <span id="app-build-display" style="font-family: 'ArialRoundedOld', Arial, sans-serif; background: var(--tg-theme-section-separator-color, #E5E5EA); color: var(--tg-theme-text-color, #000); font-size: 14px; font-weight: normal; padding: 2px 6px; border-radius: 6px; letter-spacing: 0.5px; display: none;"></span>
-    </div>
-  </div>
-</div>
-
-<div id="subscription-overlay" style="display: none; width: 100%; height: 100dvh; background: var(--tg-theme-secondary-bg-color, #F2F2F7); flex-direction: column; box-sizing: border-box; position: fixed; top: 0; left: 0; z-index: 200; overflow: hidden;">
-  <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); padding-bottom: 30px; height: 100%; min-height: auto; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
-    
-    <div class="sub-art-container">
-      <div class="dollar-small" style="top: 30%; left: 15%; font-size: 26px; --dx: -20px; --dy: -40px; animation: fly 3.5s infinite ease-in-out 0s;">$</div>
-      <div class="dollar-small" style="top: 50%; left: 22%; font-size: 14px; --dx: -15px; --dy: -50px; animation: fly 2.8s infinite ease-in-out 1.2s;">$</div>
-      <div class="dollar-small" style="top: 25%; left: 28%; font-size: 20px; --dx: -10px; --dy: -30px; animation: fly 4s infinite ease-in-out 0.5s;">$</div>
-      <div class="dollar-small" style="top: 55%; left: 35%; font-size: 24px; --dx: 5px; --dy: -60px; animation: fly 3.2s infinite ease-in-out 2s;">$</div>
-      
-      <div class="dollar-main">$</div>
-      
-      <div class="dollar-small" style="top: 25%; right: 35%; font-size: 22px; --dx: 15px; --dy: -45px; animation: fly 3.8s infinite ease-in-out 0.8s;">$</div>
-      <div class="dollar-small" style="top: 50%; right: 26%; font-size: 14px; --dx: 20px; --dy: -35px; animation: fly 2.5s infinite ease-in-out 1.5s;">$</div>
-      <div class="dollar-small" style="top: 30%; right: 18%; font-size: 20px; --dx: 30px; --dy: -50px; animation: fly 4.2s infinite ease-in-out 0.2s;">$</div>
-      <div class="dollar-small" style="top: 60%; right: 22%; font-size: 18px; --dx: 10px; --dy: -55px; animation: fly 3.1s infinite ease-in-out 2.5s;">$</div>
-    </div>
-
-    <div style="position: relative; z-index: 2; width: 100%; display: flex; flex-direction: column; margin-top: 30px;">
-      <div class="ios-section-title" style="margin-top: 0; width: 100%; text-align: left; margin-left: 14px; margin-bottom: 8px;">ПРЕИМУЩЕСТВА ПОДПИСКИ</div>
-
-      <div class="ios-card-group" style="margin-bottom: 16px;">
-        <div class="ios-menu-item" style="cursor: default; min-height: 54px;">
-            <div class="ios-icon-box" style="background: linear-gradient(180deg, #97e385 0%, #79c665 100%); color: white; font-family: 'ArialRoundedOld', Arial, sans-serif; font-weight: normal; font-size: 16px;">1</div>
-            <div class="ios-menu-text" style="font-size: 16px; line-height: 1.2;">Неограниченное создание работ</div>
-        </div>
-        <div class="ios-divider"></div>
-        <div class="ios-menu-item" style="cursor: default; min-height: 54px;">
-            <div class="ios-icon-box" style="background: linear-gradient(180deg, #97e385 0%, #79c665 100%); color: white; font-family: 'ArialRoundedOld', Arial, sans-serif; font-weight: normal; font-size: 16px;">2</div>
-            <div class="ios-menu-text" style="font-size: 16px; line-height: 1.2;">Сохранение проектов 3 → 12</div>
-        </div>
-        <div class="ios-divider"></div>
-        <div class="ios-menu-item" style="cursor: default; min-height: 54px;">
-            <div class="ios-icon-box" style="background: linear-gradient(180deg, #97e385 0%, #79c665 100%); color: white; font-family: 'ArialRoundedOld', Arial, sans-serif; font-weight: normal; font-size: 16px;">3</div>
-            <div class="ios-menu-text" style="font-size: 16px; line-height: 1.2;">Загрузка скриншотов 3 → 6</div>
-        </div>
-      </div>
-
-      <div class="sp-info-text" style="width: 100%; padding: 0 14px; font-size: 12px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-top: 0px; line-height: 1.2;">
-          Подписка улучшает работу с сервисом. Без неё доступно не более 3 работ в месяц. Список преимуществ расширяется, актуальность сохраняется.
-      </div>
-    </div>
-
-    <div style="margin-top: auto; display: flex; flex-direction: column; align-items: center; width: 100%; flex-shrink: 0; position: relative; z-index: 2;">
-    <div style="color: var(--tg-theme-subtitle-text-color, #8E8E93); font-size: 13px; margin-bottom: 10px;" id="sub-overlay-status">не активировано</div>      
-      <button class="ios-action-btn ios-sub-btn" onclick="window.Telegram?.WebApp?.openLink ? window.Telegram.WebApp.openTelegramLink('https://t.me/SnapiSubscription_bot') : window.open('https://t.me/SnapiSubscription_bot', '_blank')">99 ₽ в месяц</button>
     </div>
   </div>
 </div>
@@ -2660,21 +2577,6 @@ window.openSettings = () => {
 window.closeSettings = () => {
     document.getElementById('settings-overlay').style.display = 'none';
     document.getElementById('ios-dashboard').style.display = 'flex';
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.hide();
-};
-
-window.openSubscription = () => {
-    document.getElementById('ios-dashboard').style.display = 'none';
-    document.getElementById('subscription-overlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden'; 
-    window.scrollTo(0,0);
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
-};
-
-window.closeSubscription = () => {
-    document.getElementById('subscription-overlay').style.display = 'none';
-    document.getElementById('ios-dashboard').style.display = 'flex';
-    document.body.style.overflow = ''; 
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.hide();
 };
 
