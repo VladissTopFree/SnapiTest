@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(2)";
+  const APP_VERSION = "v2.4.9(3)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1703,7 +1703,7 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-    /* Стили для тестового БП (Твои исходные) */
+    /* Стили для Стиля #2 */
     .brawl-font {
         font-family: 'LilitaOneRus', 'Lilita One', sans-serif !important;
         color: #ffffff;
@@ -1779,8 +1779,8 @@
         pointer-events: none;
         white-space: nowrap;
     }
-</style>
 
+</style>
 </head>
 <body oncontextmenu="return false;">
 
@@ -1872,21 +1872,6 @@
                 <div class="cat-name">Создание Brawl Pass</div>
                 <div class="cat-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
                 <div id="cat-badge-wrap-bp" class="cat-badge-wrap">
-                    <div class="cat-badge-inner">
-                        <div class="cat-badge">выбрано</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-<div class="cat-card" onclick="selectCategory('bp_test')">
-            <div class="cat-img-wrapper">
-                <img src="miniprewiev.png" class="cat-img" onload="this.classList.add('loaded')" onerror="this.style.opacity='0'; this.parentElement.style.animation='none'; this.parentElement.style.background='#ddd';">
-            </div>
-            <div class="cat-info">
-                <div class="cat-name">Новый бп стиль - ТЕСТ</div>
-                <div class="cat-desc">Тестовый HTML-шаблон Brawl Pass. Адаптивный размер.</div>
-                <div id="cat-badge-wrap-bp-test" class="cat-badge-wrap">
                     <div class="cat-badge-inner">
                         <div class="cat-badge">выбрано</div>
                     </div>
@@ -2953,23 +2938,16 @@ window.selectCategory = function(cat) {
     
     const wrapAction = document.getElementById('cat-badge-wrap-action');
     const wrapBP = document.getElementById('cat-badge-wrap-bp');
-    const wrapBPTest = document.getElementById('cat-badge-wrap-bp-test'); // Новая плашка
     const nextBtn = document.getElementById('cat-btn-next'); 
     
     nextBtn.classList.add('show'); 
 
-    // Скрываем все
-    if (wrapAction) wrapAction.classList.remove('show');
-    if (wrapBP) wrapBP.classList.remove('show');
-    if (wrapBPTest) wrapBPTest.classList.remove('show');
-
-    // Показываем нужную
-    if (cat === 'action' && wrapAction) {
+    if (cat === 'action') {
         wrapAction.classList.add('show');
-    } else if (cat === 'bp' && wrapBP) {
+        wrapBP.classList.remove('show');
+    } else {
         wrapBP.classList.add('show');
-    } else if (cat === 'bp_test' && wrapBPTest) {
-        wrapBPTest.classList.add('show');
+        wrapAction.classList.remove('show');
     }
 };
 
@@ -3044,14 +3022,6 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
 
         document.getElementById('wizard-overlay').style.display = 'flex';
         window.scrollTo(0,0);
-
-    } else if (selectedCategory === 'bp_test') {
-        wizardMode = 'bp_test';
-        document.getElementById('category-overlay').style.display = 'none';
-        
-        // Запускаем напрямую редактор без визарда
-        openBPTestEditor();
-
     } else if (selectedCategory === 'bp') {
         wizardMode = 'bp';
         document.getElementById('category-overlay').style.display = 'none';
@@ -3077,6 +3047,17 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('bp-style-overlay').style.display = 'none';
     window.layerState.bpStyleIndex = selectedBPStyle;
 
+    // ЕСЛИ ВЫБРАН СТИЛЬ #2 — ЗАПУСКАЕМ НОВЫЙ РЕДАКТОР
+    if (selectedBPStyle === 2) {
+        if (typeof window.openBPTestEditor === 'function') {
+            window.openBPTestEditor();
+        } else {
+            console.error("Функция openBPTestEditor не найдена!");
+        }
+        return; // Останавливаем выполнение, чтобы не открывался визард
+    }
+
+    // Стандартная логика для Стиля #1 и #3
     document.getElementById('wizard-title-step1').innerText = 'Создание Brawl Pass';
     document.getElementById('wizard-title-step2').innerText = 'Создание Brawl Pass';
 
@@ -6252,7 +6233,7 @@ window.openBPTestEditor = function() {
     const cardsContainer = document.getElementById('cards-container');
     const layerPanel = document.getElementById('layer-panel');
     
-    // ТВОЙ ИСХОДНЫЙ КОД КАРТИНКИ (ВЕРСТКА БЕЗ ИЗМЕНЕНИЙ)
+  // ТВОЙ ИСХОДНЫЙ КОД КАРТИНКИ (Убраны overflow-hidden у блоков с персонажами и onerror)
     const rawTemplateHTML = `
         <div id="brawl-shop" oncontextmenu="return false;" ondragstart="return false;" class="relative w-[1280px] h-[720px] shrink-0 overflow-hidden flex shadow-2xl brawl-font" style="transform-origin: center;">
             <div class="absolute inset-0 z-0" style="transform: translate(-226px, 0px) scale(1) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
@@ -6351,7 +6332,7 @@ window.openBPTestEditor = function() {
             </div>
             <div class="white-separator-v-spacer h-full pointer-events-none"></div>
             <div class="w-[42%] h-full flex flex-col relative z-40 pointer-events-none">
-                <div class="h-[50%] w-full relative overflow-hidden">
+                <div class="h-[50%] w-full relative">
                     <div class="absolute top-6 left-4 z-20 pointer-events-auto">
                         <div class="inline-block" style="transform: translate(78px, 7px) scale(1.18) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(5deg);">
                             <img src="BP/bp_icon_brawl_pass_plus.png" class="w-[200px] -rotate-6 item-shadow" alt="Brawl Pass Plus" onerror="this.style.display='none'">
@@ -6364,8 +6345,7 @@ window.openBPTestEditor = function() {
                     </div>
                     <div class="absolute -top-10 -right-8 h-[130%] z-10 pointer-events-auto">
                         <div class="h-full flex items-center justify-center" style="transform: translate(60px, 10px) scale(0.82) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                            <img src="BP/brawler_s50_2.png" class="h-full object-contain brawler-shadow" alt="Brawler Top" onerror="this.style.display='none'">
-                        </div>
+                            <img src="BP/brawler_s50_2.png" class="h-full object-contain brawler-shadow" alt="Brawler Top"> </div>
                     </div>
                     <div class="absolute bottom-4 left-6 z-40 flex flex-col items-center pointer-events-auto">
                         <div class="relative flex justify-center items-center">
@@ -6381,7 +6361,7 @@ window.openBPTestEditor = function() {
                     </div>
                 </div>
                 <div class="white-separator-h-spacer"></div>
-                <div class="h-[50%] w-full relative overflow-hidden">
+                <div class="h-[50%] w-full relative">
                     <div class="absolute top-6 left-4 z-20 pointer-events-auto">
                         <div class="inline-block" style="transform: translate(54px, 10px) scale(1.18) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
                             <img src="BP/bp_icon_brawl_pass.png" class="w-[200px] -rotate-3 item-shadow" alt="Brawl Pass" onerror="this.style.display='none'">
@@ -6394,8 +6374,7 @@ window.openBPTestEditor = function() {
                     </div>
                     <div class="absolute -top-6 -right-12 h-[120%] z-10 pointer-events-auto">
                         <div class="h-full flex items-center justify-center" style="transform: translate(78px, -14px) scale(0.86) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                            <img src="BP/brawler_s50_1.png" class="h-full object-contain brawler-shadow" alt="Brawler Bottom" onerror="this.style.display='none'">
-                        </div>
+                            <img src="BP/brawler_s50_1.png" class="h-full object-contain brawler-shadow" alt="Brawler Bottom"> </div>
                     </div>
                     <div class="absolute bottom-6 left-6 z-40 flex flex-col items-center pointer-events-auto">
                         <div class="relative flex justify-center items-center mb-3">
@@ -6426,35 +6405,34 @@ window.openBPTestEditor = function() {
         </div>
     `;
 
-    // Хитрый фикс твоего скейлинга, чтобы он работал внутри контейнера, а не всего окна
+    // Адаптация под размер экрана
     const container = document.getElementById('bp-test-container');
     const scaleWrapper = document.getElementById('bp-test-scale-wrapper');
     const shopDiv = document.getElementById('brawl-shop');
     
-    // Принудительно меняем точку трансформации, чтобы скейл от левого края не ломал центровку
     if (shopDiv) shopDiv.style.transformOrigin = 'top left';
 
     function resizeBPTest() {
         if (!container || !scaleWrapper) return;
-        const targetWidth = cardsContainer.clientWidth - 40; // ширина с отступами
+        const targetWidth = cardsContainer.clientWidth - 40; 
         const scale = targetWidth / 1280;
         scaleWrapper.style.transform = `scale(${scale})`;
-        container.style.height = `${720 * scale}px`; // Контейнер тоже сжимается пропорционально
+        container.style.height = `${720 * scale}px`; 
     }
     window.addEventListener('resize', resizeBPTest);
     resizeBPTest();
 
-    // Генерация панели слоев (находим все изменяемые span'ы)
+    // Генерация панели слоев
     const editableElements = container.querySelectorAll('[data-text]');
     
     let layerHtml = `
-        <div class="ios-section-title fade-in-anim">РЕДАКТИРОВАНИЕ (БЕЗ СЛОЁВ)</div>
+        <div class="ios-section-title fade-in-anim">РЕДАКТИРОВАНИЕ ТЕКСТА</div>
         <div class="ios-layer-group fade-in-anim">
     `;
 
     editableElements.forEach((el, index) => {
         let currentVal = el.getAttribute('data-text');
-        el.id = 'editable-text-' + index; // Даем динамический ID, чтобы скрипт мог его менять, не ломая HTML
+        el.id = 'editable-text-' + index; 
         
         let inputBg = currentVal.includes('-') ? '#ff4d4d' : '#99D5F9';
         
@@ -6475,7 +6453,6 @@ window.openBPTestEditor = function() {
     layerPanel.innerHTML = layerHtml;
     layerPanel.style.display = 'flex';
 
-    // Функция обновления (меняем и текст, и атрибут для обводки CSS)
     window.updateBPTestText = function(idx, val) {
         let el = document.getElementById('editable-text-' + idx);
         if (el) {
@@ -6484,7 +6461,7 @@ window.openBPTestEditor = function() {
         }
     };
 
-    // Удаляем старую кнопку скачивания, если есть, и добавляем плейсхолдер 
+    // Заглушка для кнопки "Скачать"
     let oldBtnWrap = document.getElementById('download-btn-wrap');
     if (oldBtnWrap) oldBtnWrap.remove();
 
@@ -6495,11 +6472,11 @@ window.openBPTestEditor = function() {
     hdBtn.id = 'ios-btn-download-all';
     hdBtn.className = 'ios-action-btn'; 
     hdBtn.style.margin = '0 auto';
-    hdBtn.innerHTML = `Скачать (Тест) <svg style="margin-left:8px; width:20px; height:20px" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`;
+    hdBtn.innerHTML = `Скачать <svg style="margin-left:8px; width:20px; height:20px" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`;
     
     hdBtn.onclick = () => {
         window.triggerHaptic();
-        alert("В тестовом HTML-режиме функция рендера картинки пока отключена. Пожалуйста, сделайте скриншот экрана!");
+        alert("В HTML-режиме функция рендера картинки пока отключена. Пожалуйста, сделайте скриншот экрана!");
     };
     
     hdBtnWrap.appendChild(hdBtn);
