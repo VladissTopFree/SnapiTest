@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(7)";
+  const APP_VERSION = "v2.4.9(8)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6282,6 +6282,19 @@ window.openBPTestEditor = function() {
         bgUrl = rawBgImage.src;
     }
 
+    // Определяем цвет свечения (по умолчанию белый)
+    let glowColor = '#ffffff';
+    if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+        const glowColors = {
+            'green': '#5ee568',
+            'blue': '#46b3ff',
+            'orange': '#ffcc00', // Желтый в визарде записан под ключом orange
+            'purple': '#c861ff',
+            'black': '#666666'
+        };
+        glowColor = glowColors[window.layerState.bgColorType] || '#ffffff';
+    }
+
     const rawTemplateHTML = `
         <div id="brawl-shop" oncontextmenu="return false;" ondragstart="return false;" class="relative shrink-0 overflow-hidden flex shadow-2xl brawl-font" style="width: 1280px; height: 720px; transform-origin: center;">
             <div class="absolute inset-0 z-0" style="transform: translate(-226px, 0px) scale(1) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
@@ -6302,11 +6315,11 @@ window.openBPTestEditor = function() {
                 <img src="BP/bp_stars_style2.png" class="w-full h-full object-cover" alt="Stars Overlay">
             </div>
             <div id="glow-container" class="absolute inset-0 pointer-events-none z-[28]">
-                <div class="absolute bg-white rounded-full pointer-events-none" style="left: 28.8%; top: 45.9%; width: 550px; height: 550px; filter: blur(45px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
-                <div class="absolute bg-white rounded-full pointer-events-none" style="left: 90.6%; top: 29.2%; width: 220px; height: 220px; filter: blur(36px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
-                <div class="absolute bg-white rounded-full pointer-events-none" style="left: 90.0%; top: 75.6%; width: 260px; height: 260px; filter: blur(26px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
-                <div class="absolute bg-white rounded-full pointer-events-none" style="left: 72.7%; top: 13.9%; width: 230px; height: 230px; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
-                <div class="absolute bg-white rounded-full pointer-events-none" style="left: 70.8%; top: 65.5%; width: 200px; height: 200px; filter: blur(26px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+                <div class="absolute rounded-full pointer-events-none" style="background-color: ${glowColor}; left: 28.8%; top: 45.9%; width: 550px; height: 550px; filter: blur(45px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+                <div class="absolute rounded-full pointer-events-none" style="background-color: ${glowColor}; left: 90.6%; top: 29.2%; width: 220px; height: 220px; filter: blur(36px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+                <div class="absolute rounded-full pointer-events-none" style="background-color: ${glowColor}; left: 90.0%; top: 75.6%; width: 260px; height: 260px; filter: blur(26px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+                <div class="absolute rounded-full pointer-events-none" style="background-color: ${glowColor}; left: 72.7%; top: 13.9%; width: 230px; height: 230px; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
+                <div class="absolute rounded-full pointer-events-none" style="background-color: ${glowColor}; left: 70.8%; top: 65.5%; width: 200px; height: 200px; filter: blur(26px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
             </div>
             <div class="absolute inset-0 z-[80] pointer-events-none mix-blend-overlay opacity-30">
                 <div class="absolute watermark-text whitespace-nowrap" style="top: -5.6%; left: 27.3%; transform: scale(0.7) skewX(-12deg);">ARTZA DONATE</div>
