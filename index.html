@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(5)";
+  const APP_VERSION = "v2.4.9(6)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2997,13 +2997,6 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
     if (btnWrap) btnWrap.style.display = 'none';
     
     if (selectedCategory === 'action') {
-        wizardMode = 'action';
-        document.getElementById('wizard-title-step1').innerText = 'Создание акции';
-        document.getElementById('wizard-title-step2').innerText = 'Создание акции';
-        document.getElementById('category-overlay').style.display = 'none';
-        
-        document.getElementById('prog-line3').style.display = 'none';
-        document.getElementById('prog-step4').style.display = 'none';
         
         document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
         document.getElementById('wizard-step1').classList.add('active');
@@ -3047,17 +3040,6 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('bp-style-overlay').style.display = 'none';
     window.layerState.bpStyleIndex = selectedBPStyle;
 
-    // ЕСЛИ ВЫБРАН СТИЛЬ #2 — ЗАПУСКАЕМ НОВЫЙ РЕДАКТОР
-    if (selectedBPStyle === 2) {
-        if (typeof window.openBPTestEditor === 'function') {
-            window.openBPTestEditor();
-        } else {
-            console.error("Функция openBPTestEditor не найдена!");
-        }
-        return; // Останавливаем выполнение, чтобы не открывался визард
-    }
-
-    // Стандартная логика для Стиля #1 и #3
     document.getElementById('wizard-title-step1').innerText = 'Создание Brawl Pass';
     document.getElementById('wizard-title-step2').innerText = 'Создание Brawl Pass';
 
@@ -3076,6 +3058,23 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
 
     document.getElementById('prog-line3').className = 'line';       
     document.getElementById('prog-step4').className = 'step small'; 
+
+    // Если стиль 2, скрываем лишние шаги прогресс-бара
+    if (selectedBPStyle === 2) {
+        document.getElementById('prog-line1').style.display = 'none';
+        document.getElementById('prog-step2').style.display = 'none';
+        document.getElementById('prog-line2').style.display = 'none';
+        document.getElementById('prog-step3').style.display = 'none';
+        document.getElementById('prog-line3').style.display = 'none';
+        document.getElementById('prog-step4').style.display = 'none';
+    } else {
+        document.getElementById('prog-line1').style.display = 'block';
+        document.getElementById('prog-step2').style.display = 'flex';
+        document.getElementById('prog-line2').style.display = 'block';
+        document.getElementById('prog-step3').style.display = 'flex';
+        document.getElementById('prog-line3').style.display = 'block';
+        document.getElementById('prog-step4').style.display = 'flex';
+    }
 
     document.getElementById('wizard-overlay').style.display = 'flex';
     window.scrollTo(0,0);
@@ -5360,8 +5359,33 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
     }, 300);
   }
 
-  wizardNextBtn1.onclick = () => {
+wizardNextBtn1.onclick = async () => {
     window.triggerHaptic();
+
+    // Если выбран 2 стиль Brawl Pass, сразу применяем фон и открываем редактор
+    if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2) {
+        document.getElementById('wizard-overlay').style.display = 'none';
+        
+        if (uploadMode === 'ready_bg') {
+            window.layerState.isReadyBg = true;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = uploadedReadyBaseImg;
+        } else if (selectedColor) {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = true;
+            rawBgImage = await createGradientBg(selectedColor);
+        } else {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = uploadedBaseImg;
+        }
+
+        if (typeof window.openBPTestEditor === 'function') {
+            window.openBPTestEditor();
+        }
+        return;
+    }
+
     if (uploadMode === 'ready_bg') {
         step1.classList.add('fade-out');
         setTimeout(() => {
@@ -6236,18 +6260,23 @@ window.openBPTestEditor = function() {
     // Получаем сезон (по умолчанию 50, если ничего не выбрано)
     let season = (window.layerState && window.layerState.bpSeason) ? window.layerState.bpSeason : 50;
 
-    // ИСХОДНЫЙ КОД (проблемные Tailwind-классы у персонажей переведены в надежный style="")
+    // Получаем URL выбранного в визарде фона
+    let bgUrl = 'bg/bg3.png';
+    if (rawBgImage && rawBgImage.src) {
+        bgUrl = rawBgImage.src;
+    }
+
     const rawTemplateHTML = `
         <div id="brawl-shop" oncontextmenu="return false;" ondragstart="return false;" class="relative shrink-0 overflow-hidden flex shadow-2xl brawl-font" style="width: 1280px; height: 720px; transform-origin: center;">
             <div class="absolute inset-0 z-0" style="transform: translate(-226px, 0px) scale(1) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                <img src="bg/bg3.png" class="w-full h-full object-cover" alt="Main BG">
+                <img src="${bgUrl}" class="w-full h-full object-cover" alt="Main BG">
             </div>
             <div class="absolute inset-0 pointer-events-none mask-right-side" style="z-index: 25;">
                 <div class="absolute pointer-events-none" style="width: 400px; height: 250px; transform: translate(957px, 448px) scale(1.74) scaleX(1.14) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                    <img src="bg/bg3.png" class="w-full h-full object-cover" alt="Extra BG 1">
+                    <img src="${bgUrl}" class="w-full h-full object-cover" alt="Extra BG 1">
                 </div>
                 <div class="absolute pointer-events-none" style="width: 400px; height: 250px; transform: translate(988px, 23px) scale(1.74) scaleX(1.14) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                    <img src="bg/bg3.png" class="w-full h-full object-cover" alt="Extra BG 2">
+                    <img src="${bgUrl}" class="w-full h-full object-cover" alt="Extra BG 2">
                 </div>
             </div>
             <div class="absolute inset-0 pointer-events-none mix-blend-overlay" style="z-index: 26;">
