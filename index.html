@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(4)";
+  const APP_VERSION = "v2.4.9(5)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1742,7 +1742,7 @@
         opacity: 0;
         pointer-events: none;
     }
-    .brawler-shadow {
+    .brawler-drop-shadow {
         filter: drop-shadow(3px -6px 0px white);
         transform: translateZ(0); 
     }
@@ -1889,7 +1889,7 @@
 
 <div id="bp-style-overlay" style="display: none; width: 100%; height: var(--tg-viewport-stable-height, 100vh); overflow: hidden; background: var(--tg-theme-secondary-bg-color, #F2F2F7); flex-direction: column; box-sizing: border-box; position: relative;">
   <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); position: relative; height: 100%; display: flex; flex-direction: column;">
-    <div class="cat-title-main">Выберите стиль Brawl Pass</div>
+    <div class="cat-title-main">Выберите стиль BP</div>
     
     <div style="padding: 0; flex-grow: 1; overflow-y: auto;">
         
@@ -6337,8 +6337,8 @@ window.openBPTestEditor = function() {
             
             <div class="white-separator-v-spacer h-full pointer-events-none"></div>
             
-            <div class="h-full flex flex-col relative z-40 pointer-events-none" style="width: 42%;">
-                <div class="w-full relative" style="height: 50%;">
+            <div class="h-full flex flex-col relative z-40 pointer-events-none" style="width: 42%; clip-path: polygon(12.36% 0, 100% 0, 100% 100%, 1.41% 100%);">                
+                <div class="w-full relative overflow-hidden" style="height: 50%;">
                     <div class="absolute top-6 left-4 z-20 pointer-events-auto">
                         <div class="inline-block" style="transform: translate(78px, 7px) scale(1.18) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(5deg);">
                             <img src="BP/bp_icon_brawl_pass_plus.png" class="-rotate-6 item-shadow" style="width: 200px;" alt="Brawl Pass Plus">
@@ -6352,8 +6352,7 @@ window.openBPTestEditor = function() {
 
                     <div style="position: absolute; top: -2.5rem; right: -2rem; height: 130%; z-index: 10; pointer-events: auto;">
                         <div style="height: 100%; display: flex; align-items: center; justify-content: center; transform: translate(60px, 10px) scale(0.82);">
-                            <img src="BP/brawler_s${season}_2.png" class="brawler-shadow" style="height: 100%; object-fit: contain;" alt="Brawler Top">
-                        </div>
+                          <img src="BP/brawler_s${season}_2.png" class="brawler-drop-shadow" style="height: 100%; object-fit: contain;" alt="Brawler Top">                        </div>
                     </div>
 
                     <div class="absolute bottom-4 left-6 z-40 flex flex-col items-center pointer-events-auto">
@@ -6370,9 +6369,9 @@ window.openBPTestEditor = function() {
                     </div>
                 </div>
                 
-                <div class="white-separator-h-spacer"></div>
-                
-                <div class="w-full relative" style="height: 50%;">
+                    <div class="white-separator-h-spacer"></div>
+                                    
+                    <div class="w-full relative overflow-hidden" style="height: 50%;">
                     <div class="absolute top-6 left-4 z-20 pointer-events-auto">
                         <div class="inline-block" style="transform: translate(54px, 10px) scale(1.18) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
                             <img src="BP/bp_icon_brawl_pass.png" class="-rotate-3 item-shadow" style="width: 200px;" alt="Brawl Pass">
@@ -6386,8 +6385,7 @@ window.openBPTestEditor = function() {
 
                     <div style="position: absolute; top: -1.5rem; right: -3rem; height: 120%; z-index: 10; pointer-events: auto;">
                         <div style="height: 100%; display: flex; align-items: center; justify-content: center; transform: translate(78px, -14px) scale(0.86);">
-                            <img src="BP/brawler_s${season}_1.png" class="brawler-shadow" style="height: 100%; object-fit: contain;" alt="Brawler Bottom">
-                        </div>
+                          <img src="BP/brawler_s${season}_1.png" class="brawler-drop-shadow" style="height: 100%; object-fit: contain;" alt="Brawler Bottom">                        </div>
                     </div>
 
                     <div class="absolute bottom-6 left-6 z-40 flex flex-col items-center pointer-events-auto">
