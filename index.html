@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(11)";
+  const APP_VERSION = "v2.4.9(12)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4933,289 +4933,275 @@ function renderLoop() {
 
 function drawScene() {
     if (!persistentCtx) return;
-    let w = persistentCanvas.width; let h = persistentCanvas.height;
-    persistentCtx.clearRect(0, 0, w, h);
+    let W = persistentCanvas.width; let H = persistentCanvas.height;
+    let ctx = persistentCtx;
+    ctx.clearRect(0, 0, W, H);
     
-    persistentCtx.imageSmoothingEnabled = true;
-    persistentCtx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
-    // Отрисовка фона
     if (rawBgImage) {
-        persistentCtx.drawImage(rawBgImage, 0, 0, w, h);
+        ctx.drawImage(rawBgImage, 0, 0, W, H);
     }
 
-    // ==========================================
-    // ЛОГИКА ДЛЯ BRAWL PASS (Стиль 1 и Стиль 2)
-    // ==========================================
     if (window.layerState.isBrawlPassMode) {
-        
-        // --- СТИЛЬ 2 ---
+        // ==========================================
+        // ЛОГИКА ДЛЯ СТИЛЯ 2 (Детальная отрисовка)
+        // ==========================================
         if (window.layerState.bpStyleIndex === 2) {
-            const ctx = persistentCtx;
-            const W = persistentCanvas.width;
-            const H = persistentCanvas.height;
-            const s = W / 1280; // Коэффициент масштабирования под размер холста
+            const s = W / 1280; // масштаб для адаптивности (базовый размер 1280x720)
 
-            // 1. Правая часть (Маскированный фон)
+            // 1. Правая часть фона (эффект разреза)
             ctx.save();
             ctx.beginPath();
-            ctx.moveTo(W * 0.60, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(W * 0.55, H);
+            ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
             ctx.closePath();
             ctx.clip();
-            if (rawBgImage) ctx.drawImage(rawBgImage, 0, 0, W, H);
+            if (rawBgImage) {
+                ctx.translate(150*s, 80*s); // Смещаем правую часть фона
+                ctx.scale(1.1, 1.1);
+                ctx.drawImage(rawBgImage, 0, 0, W, H);
+            }
             ctx.restore();
 
-            // 2. Оверлеи (Точки и Звезды)
+            // 2. Звезды и Точки
             if (window.layerState.pointsVisible !== false && globalAssets.style2Points) {
-                ctx.save();
-                ctx.globalCompositeOperation = "overlay";
+                ctx.save(); ctx.globalCompositeOperation = "overlay";
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
-                ctx.drawImage(globalAssets.style2Points, 0, 0, W, H);
-                ctx.restore();
+                ctx.drawImage(globalAssets.style2Points, 0, 0, W, H); ctx.restore();
             }
             if (window.layerState.starsVisible !== false && globalAssets.style2Stars) {
-                ctx.save();
-                ctx.globalCompositeOperation = "overlay";
+                ctx.save(); ctx.globalCompositeOperation = "overlay";
                 ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
-                ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H);
-                ctx.restore();
+                ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
             }
 
-            // 3. Белые разделительные линии (с тенями)
-            ctx.save();
-            ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.5)";
-            ctx.fillStyle = "white";
-            // Вертикальная наклонная
-            ctx.translate(W * 0.58 + 33*s, H/2);
-            ctx.rotate(7 * Math.PI / 180);
-            ctx.fillRect(-8*s, -H, 16*s, H*2);
-            ctx.restore();
-            
-            ctx.save();
-            ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.5)";
-            ctx.fillStyle = "white";
-            // Горизонтальная правая
-            ctx.fillRect(W * 0.58 + 40*s, H/2 - 8*s, W, 16*s);
-            ctx.restore();
-
-            // 4. Сетка гемов (Gems)
-            if (globalAssets.style2Gems) {
-                ctx.drawImage(globalAssets.style2Gems, 23*s, -16*s, W * 0.58 * 1.16, H * 0.65 * 1.16);
-            }
-
-            // Функция для отрисовки текста в стиле 2
-            const drawStyle2Text = (txt, x, y, size, color = "#ffffff") => {
-                ctx.save();
-                ctx.font = `${size}px 'LilitaOneRus', 'Arial Black', sans-serif`;
-                ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
-                ctx.lineWidth = size * 0.15; ctx.strokeStyle = "#000000";
-                
-                ctx.strokeText(txt, x, y + size * 0.1); // Тень
-                ctx.strokeText(txt, x, y);              // Обводка
-                ctx.fillStyle = color;
-                ctx.fillText(txt, x, y);                // Заливка
-                ctx.restore();
-            };
-
-            // 5. Отрисовка цен (Gems 0-5)
-            const p = window.layerState.style2Prices || [];
-            const gemCoords = [
-                {x: 185*s, y: 320*s}, {x: 405*s, y: 320*s}, {x: 620*s, y: 320*s},
-                {x: 185*s, y: 550*s}, {x: 405*s, y: 550*s}, {x: 620*s, y: 550*s}
-            ];
-            gemCoords.forEach((coord, i) => {
-                drawStyle2Text((p[i] || "0") + " ₽", coord.x, coord.y, 36*s);
-            });
-
-            // 6. Pro Pass Icon + Price (6)
-            if (globalAssets.style2ProIcon) {
-                ctx.save();
-                ctx.translate(180*s, 640*s); ctx.rotate(18 * Math.PI / 180);
-                ctx.drawImage(globalAssets.style2ProIcon, -60*s, -60*s, 120*s, 120*s);
-                ctx.restore();
-                drawStyle2Text("- " + (p[6] || "0") + " ₽", 440*s, 660*s, 70*s, "#ff4d4d"); // Красный цвет
-            }
-
-            // 7. Правые блоки (BP и BP+)
-            // Brawler 2 (Top)
-            if (window.bpBrawlerTop) {
-                ctx.drawImage(window.bpBrawlerTop, W * 0.75, H * 0.05, W * 0.25, H * 0.45);
-            }
-            if (globalAssets.style2BPP) ctx.drawImage(globalAssets.style2BPP, W * 0.65, H * 0.1, 180*s, 90*s);
-            drawStyle2Text((p[7] || "0") + " ₽", W * 0.72, H * 0.28, 45*s);
-            
-            if (globalAssets.bpPriceR) ctx.drawImage(globalAssets.bpPriceR, W * 0.65, H * 0.35, 180*s, 60*s);
-            drawStyle2Text((p[8] || "0") + " ₽", W * 0.72, H * 0.40, 40*s);
-
-            // 8. BP Bottom
-            if (globalAssets.style2BP) ctx.drawImage(globalAssets.style2BP, W * 0.65, H * 0.6, 180*s, 90*s);
-            drawStyle2Text((p[9] || "0") + " ₽", W * 0.72, H * 0.78, 45*s);
-            
-            if (globalAssets.style2YellowPlate) ctx.drawImage(globalAssets.style2YellowPlate, W * 0.65, H * 0.85, 180*s, 60*s);
-            drawStyle2Text((p[10] || "0") + " ₽", W * 0.72, H * 0.90, 40*s);
-
-            // 9. Логотип Brawl Pass по центру
-            if (globalAssets.style2Text) {
-                ctx.drawImage(globalAssets.style2Text, W * 0.75, H * 0.45, 200*s, 100*s);
-            }
-
-            // 10. Водяные знаки
-            if (window.layerState.watermarksVisible !== false) {
-                drawBPWatermarks(ctx, window.layerState.textValue || "SNAPI", W, H, window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3);
-            }
-            
-            // 11. Никнейм
+            // 3. Главный никнейм (Большой текст позади всего)
             if (cachedTextCanvas && animText.alpha > 0.01) {
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
-                ctx.translate(W * 0.3, H * 0.1);
+                ctx.translate(-225*s, -115*s);
                 ctx.scale(0.7 * animText.scale, 0.7 * animText.scale);
-                ctx.drawImage(cachedTextCanvas, -W/2, -H/2);
+                ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
             }
+
+            // 4. Белые разделительные линии (с тенями)
+            ctx.save();
+            ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.fillStyle = "white";
+            // Вертикальная
+            ctx.save();
+            ctx.translate((748 + 27)*s, 2*s); ctx.rotate(7 * Math.PI / 180);
+            ctx.fillRect(0, -H*0.5, 16*s, H*2);
+            ctx.restore();
+            // Горизонтальная
+            ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
+            ctx.restore();
+
+            // Вспомогательные функции для отрисовки элементов
+            const drawItem = (img, x, y, w, h, rot, shadowY) => {
+                if (!img) return;
+                ctx.save();
+                ctx.translate(x, y); ctx.rotate(rot * Math.PI / 180);
+                ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 15*s; ctx.shadowOffsetY = shadowY*s;
+                ctx.drawImage(img, 0, 0, w, h);
+                ctx.restore();
+            };
+
+            const drawBrawler = (img, x, y, scale) => {
+                if (!img) return;
+                ctx.save();
+                ctx.translate(x, y); ctx.scale(scale, scale);
+                // Рисуем белую тень-обводку
+                ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
+                ctx.drawImage(img, 0, 0);
+                ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; ctx.drawImage(img, 0, 0);
+                ctx.restore();
+            };
+
+            const drawS2Text = (txt, x, y, size, strokeW, isRed) => {
+                ctx.save();
+                ctx.font = `${size}px 'LilitaOneRus', 'Arial Black', sans-serif`;
+                ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+                ctx.lineWidth = strokeW; ctx.strokeStyle = "#000000";
+                ctx.strokeText(txt, x, y + size*0.1); // Тень
+                ctx.strokeText(txt, x, y); // Обводка
+                ctx.fillStyle = isRed ? "#ff3b30" : "#ffffff";
+                ctx.fillText(txt, x, y); // Заливка
+                ctx.restore();
+            };
+
+            // 5. Сетка гемов
+            if (globalAssets.style2Gems) {
+                ctx.save();
+                ctx.translate(23*s, -16*s); ctx.scale(1.16, 1.16);
+                ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 10*s; ctx.shadowOffsetY = 10*s;
+                ctx.drawImage(globalAssets.style2Gems, 0, 0, 742*s, 468*s);
+                ctx.restore();
+            }
+
+            // 6. Цены для гемов (0-5)
+            const p = window.layerState.style2Prices || [];
+            const fmt = (i) => p[i] === "" ? "0 ₽" : p[i] + " ₽";
+            
+            const gX = [165*s, 385*s, 600*s];
+            const gY = [285*s, 505*s];
+            drawS2Text(fmt(0), gX[0], gY[0], 28*s, 5*s);
+            drawS2Text(fmt(1), gX[1], gY[0]-4*s, 28*s, 5*s);
+            drawS2Text(fmt(2), gX[2], gY[0]-5*s, 28*s, 5*s);
+            drawS2Text(fmt(3), gX[0], gY[1], 28*s, 5*s);
+            drawS2Text(fmt(4), gX[1], gY[1]-2*s, 28*s, 5*s);
+            drawS2Text(fmt(5), gX[2], gY[1]-2*s, 28*s, 5*s);
+
+            // 7. Pro Pass слева внизу (6)
+            drawItem(globalAssets.style2ProIcon, 30*s, 560*s, 160*s, 160*s, -12, 15);
+            drawS2Text("- " + fmt(6), 330*s, 630*s, 72*s, 10*s, true); // Большая красная цена
+
+            // 8. Блок BP+ (Справа сверху)
+            let season = window.layerState.bpSeason || 50;
+            drawBrawler(globalAssets[`brawler_${season}_2`], 910*s, 10*s, 0.7*s); 
+            drawItem(globalAssets.style2BPP, 780*s, 30*s, 220*s, 100*s, -6, 15);
+            drawS2Text(fmt(7), 930*s, 180*s, 56*s, 8*s);
+            drawItem(globalAssets.style2BluePlate, 800*s, 260*s, 220*s, 60*s, 0, 15);
+            drawS2Text(fmt(8), 920*s, 285*s, 56*s, 8*s);
+
+            // 9. Блок BP (Справа снизу)
+            drawBrawler(globalAssets[`brawler_${season}_1`], 930*s, 340*s, 0.75*s);
+            drawItem(globalAssets.style2BP, 780*s, 400*s, 220*s, 100*s, -3, 15);
+            drawS2Text(fmt(9), 940*s, 550*s, 56*s, 8*s);
+            drawItem(globalAssets.style2YellowPlate, 800*s, 620*s, 220*s, 60*s, 0, 15);
+            drawS2Text(fmt(10), 920*s, 645*s, 56*s, 8*s);
+
+            // 10. Логотип Brawl Pass по центру
+            if (globalAssets.style2Text) {
+                ctx.save();
+                ctx.translate(W*0.62, H*0.42); ctx.scale(0.35*s, 0.35*s);
+                ctx.drawImage(globalAssets.style2Text, 0, 0);
+                ctx.restore();
+            }
+
+            // 11. Маленькие фоновые водяные знаки (Текст min)
+            if (window.layerState.watermarksVisible !== false) {
+                let wmText = window.layerState.textValue || "SNAPI";
+                let wmFont = window.layerState.watermarksFont || 'Font16103';
+                ctx.save();
+                ctx.globalCompositeOperation = "overlay";
+                ctx.globalAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3;
+                ctx.fillStyle = "white"; ctx.textAlign = "left"; ctx.textBaseline = "top";
+                
+                // Координаты для текста
+                const wms = [
+                    {x: 350, y: -40, sz: 50}, {x: -150, y: 5, sz: 17}, {x: -200, y: 210, sz: 7},
+                    {x: 510, y: 250, sz: 7}, {x: 410, y: 600, sz: 14}, {x: 320, y: 670, sz: 38},
+                    {x: -120, y: 600, sz: 20}, {x: -180, y: 670, sz: 49}, {x: 480, y: 60, sz: 13},
+                    {x: 660, y: 170, sz: 21}, {x: 850, y: -8, sz: 8}, {x: 680, y: -26, sz: 7},
+                    {x: 620, y: 530, sz: 15}, {x: 620, y: 350, sz: 7}, {x: 960, y: 340, sz: 13}
+                ];
+                
+                wms.forEach(wm => {
+                    ctx.save();
+                    ctx.translate(wm.x*s, wm.y*s); ctx.transform(1, 0, -0.2, 1, 0, 0); // Наклон
+                    ctx.font = `${wm.sz*s}px '${wmFont}', sans-serif`;
+                    ctx.fillText(wmText, 0, 0);
+                    ctx.restore();
+                });
+                ctx.restore();
+            }
+            return;
         } 
         
-        // --- СТИЛЬ 1 (КЛАССИЧЕСКИЙ BP) ---
+        // ==========================================
+        // ЛОГИКА ДЛЯ СТИЛЯ 1 (Старый стиль BP)
+        // ==========================================
         else {
             if (window.layerState.luchVisible && globalAssets.luchImg) {
-                persistentCtx.save();
-                persistentCtx.globalCompositeOperation = "overlay"; 
-                persistentCtx.globalAlpha = window.layerState.luchOpacity;
-                persistentCtx.drawImage(globalAssets.luchImg, 0, 0, w, h);
-                persistentCtx.restore();
+                ctx.save(); ctx.globalCompositeOperation = "overlay"; 
+                ctx.globalAlpha = window.layerState.luchOpacity;
+                ctx.drawImage(globalAssets.luchImg, 0, 0, W, H); ctx.restore();
             }
-
             if (window.layerState.starsVisible && globalAssets.starsEff) {
-                persistentCtx.save();
-                persistentCtx.globalCompositeOperation = "overlay";
-                persistentCtx.globalAlpha = window.layerState.starsOpacity;
-                persistentCtx.drawImage(globalAssets.starsEff, 0, 0, w, h);
-                persistentCtx.restore();
+                ctx.save(); ctx.globalCompositeOperation = "overlay";
+                ctx.globalAlpha = window.layerState.starsOpacity;
+                ctx.drawImage(globalAssets.starsEff, 0, 0, W, H); ctx.restore();
             }
-            
             if (window.layerState.pointsVisible && globalAssets.bpPointsImg) {
-                persistentCtx.save();
-                persistentCtx.globalAlpha = window.layerState.pointsOpacity;
-                persistentCtx.drawImage(globalAssets.bpPointsImg, 0, 0, w, h);
-                persistentCtx.restore();
+                ctx.save(); ctx.globalAlpha = window.layerState.pointsOpacity;
+                ctx.drawImage(globalAssets.bpPointsImg, 0, 0, W, H); ctx.restore();
             }
-
             if (window.bpForegroundImage) {
-                persistentCtx.drawImage(window.bpForegroundImage, 0, 0, w, h);
+                ctx.drawImage(window.bpForegroundImage, 0, 0, W, H);
             }
 
-            let priceW = w * 0.24;
-            let marginX = w * 0.02;
-            let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : h * 0.15;
-            let priceY = h - tempH - (h * 0.04);
+            let priceW = W * 0.24; let marginX = W * 0.02;
+            let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : H * 0.15;
+            let priceY = H - tempH - (H * 0.04);
 
-            if (globalAssets.bpPriceL) {
-                drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, w, h);
-            }
-            
+            if (globalAssets.bpPriceL) drawBPPrice(ctx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, W, H);
             if (globalAssets.bpPriceR) {
-                let shiftLeft = 46 * (w / 1200); 
-                let rightX = w - marginX - priceW - shiftLeft;
-                drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
+                let shiftLeft = 46 * (W / 1200); 
+                let rightX = W - marginX - priceW - shiftLeft;
+                drawBPPrice(ctx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, W, H);
             }
 
             if (window.layerState.watermarksVisible) {
-                let wmText = window.layerState.textValue || "SNAPI";
-                drawBPWatermarks(persistentCtx, wmText, w, h, window.layerState.watermarksOpacity);
+                drawBPWatermarks(ctx, window.layerState.textValue || "SNAPI", W, H, window.layerState.watermarksOpacity);
             }
 
             if (cachedTextCanvas && animText.alpha > 0.01) {
-                persistentCtx.save();
-                persistentCtx.globalAlpha = animText.alpha;
-                let tw2 = Math.round(w/2); let th2 = Math.round(h/2);
-                persistentCtx.translate(tw2, th2);
-                persistentCtx.scale(animText.scale, animText.scale);
-                persistentCtx.translate(-tw2, -th2);
-                persistentCtx.drawImage(cachedTextCanvas, 0, 0);
-                persistentCtx.restore();
+                ctx.save(); ctx.globalAlpha = animText.alpha;
+                let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
+                ctx.translate(tw2, th2); ctx.scale(animText.scale, animText.scale);
+                ctx.translate(-tw2, -th2); ctx.drawImage(cachedTextCanvas, 0, 0);
+                ctx.restore();
             }
+            return;
         }
-        
-        return; // Завершаем выполнение функции, чтобы код обычных акций не сработал поверх
     }
 
     // ==========================================
-    // ЛОГИКА ДЛЯ ОБЫЧНЫХ АКЦИЙ (Action)
+    // ЛОГИКА ДЛЯ ОБЫЧНЫХ АКЦИЙ
     // ==========================================
     if (window.layerState.isGeneratedBg && window.layerState.pointsVisible && globalAssets.pointsImg) {
-        persistentCtx.save();
-        persistentCtx.globalCompositeOperation = "source-over";
-        persistentCtx.drawImage(globalAssets.pointsImg, 0, 0, w, h);
-        persistentCtx.restore();
+        ctx.save(); ctx.globalCompositeOperation = "source-over";
+        ctx.drawImage(globalAssets.pointsImg, 0, 0, W, H); ctx.restore();
     }
     
     if (window.layerState.luchVisible) {
-        persistentCtx.save();
-        persistentCtx.globalCompositeOperation = "overlay"; 
-        
+        ctx.save(); ctx.globalCompositeOperation = "overlay"; 
         if (globalAssets.luchImg) {
-            persistentCtx.globalAlpha = window.layerState.luchOpacity;
-            let luchW = w * 2; let luchH = h * 2;
-            persistentCtx.drawImage(globalAssets.luchImg, -(luchW-w)/2, -(luchH-h)/2, luchW, luchH);
+            ctx.globalAlpha = window.layerState.luchOpacity;
+            let luchW = W * 2; let luchH = H * 2;
+            ctx.drawImage(globalAssets.luchImg, -(luchW-W)/2, -(luchH-H)/2, luchW, luchH);
         } else {
-            drawFallbackRays(persistentCtx, w, h, window.layerState.luchOpacity);
+            drawFallbackRays(ctx, W, H, window.layerState.luchOpacity);
         }
-        persistentCtx.restore();
+        ctx.restore();
     }
     
-    if (window.layerState.starsVisible && globalAssets.starImg) {
-        drawStars(persistentCtx, globalAssets.starImg, w, h, window.layerState.starsOpacity);
-    }
-    
-    if (window.layerState.watermarksVisible && window.layerState.textValue) {
-        drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
-    }
+    if (window.layerState.starsVisible && globalAssets.starImg) drawStars(ctx, globalAssets.starImg, W, H, window.layerState.starsOpacity);
+    if (window.layerState.watermarksVisible && window.layerState.textValue) drawWatermarks(ctx, window.layerState.textValue, W, H, window.layerState.watermarksOpacity);
     
     if (cachedTextCanvas && animText.alpha > 0.01) {
-        persistentCtx.save();
-        persistentCtx.globalAlpha = animText.alpha;
-        let tw2 = Math.round(w/2);
-        let th2 = Math.round(h/2);
-        persistentCtx.translate(tw2, th2);
-        persistentCtx.scale(animText.scale, animText.scale);
-        persistentCtx.translate(-tw2, -th2);
-        persistentCtx.imageSmoothingEnabled = true;
-        persistentCtx.imageSmoothingQuality = 'high';
-        persistentCtx.drawImage(cachedTextCanvas, 0, 0);
-        persistentCtx.restore();
+        ctx.save(); ctx.globalAlpha = animText.alpha;
+        let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
+        ctx.translate(tw2, th2); ctx.scale(animText.scale, animText.scale);
+        ctx.translate(-tw2, -th2); ctx.drawImage(cachedTextCanvas, 0, 0); ctx.restore();
     }
     
     let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
-    
     window.layerState.offers.forEach(o => {
         if (o.anim.alpha < 0.01 || o.anim.scale < 0.01) return;
-        let c = o.cache;
-        if (!c) return;
-        
-        persistentCtx.save();
-        persistentCtx.globalAlpha = o.anim.alpha;
-        
-        persistentCtx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
+        let c = o.cache; if (!c) return;
+        ctx.save(); ctx.globalAlpha = o.anim.alpha;
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
         let isAndroid = document.body.classList.contains('os-android');
-        persistentCtx.shadowBlur = isAndroid ? Math.round(8 * hdScale) : Math.round(21 * hdScale);                    
-        persistentCtx.shadowOffsetX = 0;                  
-        persistentCtx.shadowOffsetY = Math.round(16 * hdScale);  
-        
-        let cx = Math.round(o.anim.x + o.anim.w/2);
-        let cy = Math.round(o.anim.y + o.anim.h/2);
-        
-        persistentCtx.translate(cx, cy);
-        persistentCtx.scale(o.anim.scale, o.anim.scale);
-
-        persistentCtx.imageSmoothingEnabled = true;
-        persistentCtx.imageSmoothingQuality = 'high';
-
-        let drawOffsetX = Math.round(-(c.tW / 2) - c.pad);
-        let drawOffsetY = Math.round(-(c.tH / 2) - c.pad);
-
-        persistentCtx.drawImage(c.canvas, drawOffsetX, drawOffsetY);
-        
-        persistentCtx.restore();
+        ctx.shadowBlur = isAndroid ? Math.round(8 * hdScale) : Math.round(21 * hdScale);                    
+        ctx.shadowOffsetX = 0; ctx.shadowOffsetY = Math.round(16 * hdScale);  
+        let cx = Math.round(o.anim.x + o.anim.w/2); let cy = Math.round(o.anim.y + o.anim.h/2);
+        ctx.translate(cx, cy); ctx.scale(o.anim.scale, o.anim.scale);
+        let drawOffsetX = Math.round(-(c.tW / 2) - c.pad); let drawOffsetY = Math.round(-(c.tH / 2) - c.pad);
+        ctx.drawImage(c.canvas, drawOffsetX, drawOffsetY);
+        ctx.restore();
     });
 }
 
@@ -6546,8 +6532,6 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
 window.openBPTestEditor = function() {
     window.triggerHaptic();
-    
-    // Скрываем лишнее, показываем результат
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
@@ -6556,28 +6540,18 @@ window.openBPTestEditor = function() {
     const cardsContainer = document.getElementById('cards-container');
     const layerPanel = document.getElementById('layer-panel');
     
-    // Скелетон на время подготовки
     cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
-    
-    // Устанавливаем режим стиля 2
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
+
     window.layerState.isBrawlPassMode = true;
     window.layerState.bpStyleIndex = 2;
 
-    // Подготовка холста
-    if (!window.persistentCanvas) {
-        window.persistentCanvas = document.createElement('canvas');
-        window.persistentCtx = window.persistentCanvas.getContext('2d');
-    }
-    
-    let scale = typeof getHDScale === 'function' ? getHDScale() : 1;
-    window.persistentCanvas.width = 1280 * scale;
-    window.persistentCanvas.height = 720 * scale;
-
-    // Загружаем ассеты и рендерим панель (через небольшую паузу для плавности)
     setTimeout(async () => {
-        // Предзагрузка специфичных ассетов для стиля 2
+        let season = window.layerState.bpSeason || 50;
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
         
+        // Загружаем все элементы именно для второго стиля
         if (!globalAssets.style2Gems) globalAssets.style2Gems = await load('BP/bp_gems.png');
         if (!globalAssets.style2Points) globalAssets.style2Points = await load('BP/bp_style2_points.png');
         if (!globalAssets.style2Stars) globalAssets.style2Stars = await load('BP/bp_stars_style2.png');
@@ -6586,12 +6560,15 @@ window.openBPTestEditor = function() {
         if (!globalAssets.style2BPP) globalAssets.style2BPP = await load('BP/bp_icon_brawl_pass_plus.png');
         if (!globalAssets.style2BP) globalAssets.style2BP = await load('BP/bp_icon_brawl_pass.png');
         if (!globalAssets.style2YellowPlate) globalAssets.style2YellowPlate = await load('BP/bp_price_brawl_pass.png');
+        if (!globalAssets.style2BluePlate) globalAssets.style2BluePlate = await load('BP/bp_price_bg_right.png');
+        if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
+        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
 
-        setupPersistentCanvas(); // Очищает контейнер и вставляет холст
-        renderLayerPanel();      // Рисует панель управления слоями
+        setupPersistentCanvas();
+        renderLayerPanel(true);
         window.updateCachedTextCanvas();
-        startAnimation();        // Запускает цикл отрисовки drawScene
-    }, 300);
+        startAnimation();
+    }, 100);
 };
 
 </script>
