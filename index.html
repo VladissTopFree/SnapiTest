@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(9)";
+  const APP_VERSION = "v2.4.9(10)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2081,11 +2081,120 @@
 
       </div>
 
-      <button id="wizard-next-btn4-bp" class="ios-action-btn ios-btn-next show">Далее</button>
+<button id="wizard-next-btn4-bp" class="ios-action-btn ios-btn-next show">Далее</button>
   </div>
+
+<div id="wizard-step3-bp-style2" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
+    <div class="ios-wizard-title">Создание Brawl Pass</div>
+    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цены. Укажите нужные значения.</div>
+
+    <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto; padding-bottom: 40px; -webkit-overflow-scrolling: touch;">
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 12px; padding: 0 20px;">
+            
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">30 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p0" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">80 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p1" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">170 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p2" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">360 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p3" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">950 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p4" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">2000 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p5" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">Pro pass</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p6" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">BP +</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p7" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">Улучшение</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p8" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: -16px;">BP</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p9" placeholder="Введите цену..." 
+                       style="width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center; grid-column: span 2;">
+                <div style="font-size: 16px; color: var(--tg-theme-text-color, #000); margin-bottom: 2px;">Особая скидка</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws2-p10" placeholder="Введите цену..." 
+                       style="width: calc(50% - 6px); background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 12px; padding: 14px 10px; font-size: 16px; text-align: center; color: var(--tg-theme-text-color, #000); outline: none;" 
+                       oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
+            </div>
+
+        </div>
+    </div>
+    
+    <button id="wizard-next-btn3-bp-style2" class="ios-action-btn ios-btn-next">Создать работу</button>
 </div>
 
-<div id="result-box">
+<script>
+    window.checkBPStyle2Ready = function() {
+        let allFilled = true;
+        for (let i = 0; i <= 10; i++) {
+            let el = document.getElementById('ws2-p' + i);
+            if (!el || el.value.trim() === '') {
+                allFilled = false;
+                break;
+            }
+        }
+        let btn = document.getElementById('wizard-next-btn3-bp-style2');
+        if (btn) {
+            if (allFilled) btn.classList.add('show');
+            else btn.classList.remove('show');
+        }
+    };
+    setTimeout(window.checkBPStyle2Ready, 50);
+</script>
+  
+  </div> <div id="result-box">
   <div id="result-layout">
     <div id="cards-container"></div>
     <div id="layer-panel"></div>
@@ -3076,12 +3185,12 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('prog-line3').className = 'line';       
     document.getElementById('prog-step4').className = 'step small'; 
 
-    // Скрываем лишние шаги прогресс-бара, если выбран 2 стиль
+    // Если выбран 2 стиль, оставляем шаги 1, 2 и 3, а остальные скрываем
     if (selectedBPStyle === 2) {
         document.getElementById('prog-line1').style.display = 'block';
         document.getElementById('prog-step2').style.display = 'flex';
-        document.getElementById('prog-line2').style.display = 'none';
-        document.getElementById('prog-step3').style.display = 'none';
+        document.getElementById('prog-line2').style.display = 'block';
+        document.getElementById('prog-step3').style.display = 'flex';
         document.getElementById('prog-line3').style.display = 'none';
         document.getElementById('prog-step4').style.display = 'none';
     } else {
@@ -5379,38 +5488,49 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
 wizardNextBtn1.onclick = async () => {
     window.triggerHaptic();
 
-    // Если это 2 стиль BP И загружен готовый фон (который должен пропускать шаг с ником)
-    if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2 && uploadMode === 'ready_bg') {
-        document.getElementById('wizard-overlay').style.display = 'none';
-        window.layerState.isReadyBg = true;
-        window.layerState.isGeneratedBg = false;
-        rawBgImage = uploadedReadyBaseImg;
-        window.layerState.textValue = ""; // Без ника
-        if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
-        return;
-    }
-
     if (uploadMode === 'ready_bg') {
+        // Если готовый фон и 2 стиль, пропускаем ник, идем на шаг ЦЕН (Шаг 3)
+        if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2) {
+            window.layerState.isReadyBg = true;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = uploadedReadyBaseImg;
+            window.layerState.textValue = ""; 
+            
+            step1.classList.add('fade-out');
+            setTimeout(() => {
+                step1.classList.remove('active', 'fade-out');
+                document.getElementById('wizard-step3-bp-style2').classList.add('active');
+
+                document.getElementById('prog-step1').classList.remove('active');
+                document.getElementById('prog-step1').classList.add('small');
+                document.getElementById('prog-line1').classList.add('active');
+                
+                document.getElementById('prog-step2').classList.remove('active');
+                document.getElementById('prog-step2').classList.add('small');
+                document.getElementById('prog-line2').classList.add('active');
+
+                document.getElementById('prog-step3').classList.remove('small');
+                document.getElementById('prog-step3').classList.add('active');
+            }, 300);
+            return;
+        }
+
         step1.classList.add('fade-out');
         setTimeout(() => {
             step1.classList.remove('active', 'fade-out');
-            
             let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : document.getElementById('wizard-step3');
             targetStep3.classList.add('active');
 
             document.getElementById('prog-step1').classList.remove('active');
             document.getElementById('prog-step1').classList.add('small');
             document.getElementById('prog-line1').classList.add('active');
-
             document.getElementById('prog-step2').classList.remove('active');
             document.getElementById('prog-step2').classList.add('small');
             document.getElementById('prog-line2').classList.add('active');
-
             document.getElementById('prog-step3').classList.remove('small');
             document.getElementById('prog-step3').classList.add('active');
         }, 300);
     } else {
-        // Стандартный переход на 2 шаг (Ввод ника)
         transitionStep(step1, step2, document.getElementById('prog-step1'), document.getElementById('prog-step2'), document.getElementById('prog-line1'));
     }
   };
@@ -5473,7 +5593,8 @@ wizardNextBtn1.onclick = async () => {
     updateCapsBtnState();
   };
 
-  wizardNextBtn2.onclick = async () => {
+
+wizardNextBtn2.onclick = async () => {
     window.triggerHaptic();
     let currentNick = wizardNickInput.value.trim();
     if (currentNick) {
@@ -5484,23 +5605,11 @@ wizardNextBtn1.onclick = async () => {
     }
     wizardNickInput.blur(); 
 
-    // ЕСЛИ ЭТО BP СТИЛЬ 2 — ОТКРЫВАЕМ РЕДАКТОР СРАЗУ ПОСЛЕ ВВОДА НИКА!
+    // ЕСЛИ ЭТО 2 СТИЛЬ BP — ИДЕМ НА 3 ШАГ (ЦЕНЫ)
     if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2) {
-        document.getElementById('wizard-overlay').style.display = 'none';
-        
         window.layerState.textValue = currentNick || "SNAPI";
-        
-        if (selectedColor) {
-            window.layerState.isReadyBg = false;
-            window.layerState.isGeneratedBg = true;
-            rawBgImage = await createGradientBg(selectedColor);
-        } else {
-            window.layerState.isReadyBg = false;
-            window.layerState.isGeneratedBg = false;
-            rawBgImage = uploadedBaseImg;
-        }
-
-        if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
+        let targetStep3Style2 = document.getElementById('wizard-step3-bp-style2');
+        transitionStep(step2, targetStep3Style2, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
         return;
     }
 
@@ -5550,6 +5659,31 @@ wizardNextBtn1.onclick = async () => {
     }
 
     processImages(stagedFiles);
+  };
+
+  document.getElementById('wizard-next-btn3-bp-style2').onclick = async () => {
+      window.triggerHaptic();
+      
+      // Считываем все 11 значений из инпутов
+      window.layerState.style2Prices = [];
+      for (let i = 0; i <= 10; i++) {
+          let input = document.getElementById('ws2-p' + i);
+          window.layerState.style2Prices[i] = input ? (input.value || "0") : "0";
+      }
+
+      document.getElementById('wizard-overlay').style.display = 'none';
+      
+      if (selectedColor) {
+          window.layerState.isReadyBg = false;
+          window.layerState.isGeneratedBg = true;
+          rawBgImage = await createGradientBg(selectedColor);
+      } else if (uploadMode !== 'ready_bg') {
+          window.layerState.isReadyBg = false;
+          window.layerState.isGeneratedBg = false;
+          rawBgImage = uploadedBaseImg;
+      }
+
+      if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
   };
 
   const bpPriceInput = document.getElementById('wizard-bp-price');
@@ -6282,12 +6416,10 @@ window.openBPTestEditor = function() {
     const cardsContainer = document.getElementById('cards-container');
     const layerPanel = document.getElementById('layer-panel');
     
-    // === ПОКАЗЫВАЕМ ЗАГРУЗКУ (СКЕЛЕТОН) ===
     cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
     layerPanel.style.display = 'flex';
     layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
 
-    // Даем небольшую задержку для эффекта загрузки
     setTimeout(() => {
         
         let season = (window.layerState && window.layerState.bpSeason) ? window.layerState.bpSeason : 50;
@@ -6306,9 +6438,14 @@ window.openBPTestEditor = function() {
             glowColor = glowColors[window.layerState.bgColorType] || '#ffffff';
         }
 
-        // Вытягиваем текст и шрифт для фоновых водяных знаков
         let wmText = window.layerState.textValue || 'SNAPI';
         let wmFont = window.layerState.watermarksFont || 'Font16103';
+
+        let p = window.layerState.style2Prices || ["219", "499", "949", "1799", "4199", "8499", "2199", "1249", "499", "899", "349"];
+        let fmt = (idx) => {
+            let val = p[idx] === "" ? "0" : p[idx];
+            return (idx === 6 ? "- " : "") + val + " ₽";
+        };
 
     const rawTemplateHTML = `
         <div id="brawl-shop" oncontextmenu="return false;" ondragstart="return false;" class="relative shrink-0 overflow-hidden flex shadow-2xl brawl-font" style="width: 1280px; height: 720px; transform-origin: center;">
@@ -6324,10 +6461,10 @@ window.openBPTestEditor = function() {
                 </div>
             </div>
             <div class="absolute inset-0 pointer-events-none mix-blend-overlay" style="z-index: 26;">
-                <img src="BP/bp_style2_points.png" class="w-full h-full object-cover" alt="Points Overlay">
+                <img id="bp-test-points" src="BP/bp_style2_points.png" class="w-full h-full object-cover" style="opacity: ${window.layerState.pointsVisible !== false ? (window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1) : 0}; transition: opacity 0.2s;" alt="Points Overlay">
             </div>
             <div class="absolute inset-0 pointer-events-none mix-blend-overlay" style="z-index: 27;">
-                <img src="BP/bp_stars_style2.png" class="w-full h-full object-cover" alt="Stars Overlay">
+                <img id="bp-test-stars" src="BP/bp_stars_style2.png" class="w-full h-full object-cover" style="opacity: ${window.layerState.starsVisible !== false ? (window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1) : 0}; transition: opacity 0.2s;" alt="Stars Overlay">
             </div>
             <div id="glow-container" class="absolute inset-0 pointer-events-none z-[28]">
                 <div class="absolute rounded-full pointer-events-none" style="background-color: ${glowColor}; left: 28.8%; top: 45.9%; width: 550px; height: 550px; filter: blur(45px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
@@ -6339,7 +6476,7 @@ window.openBPTestEditor = function() {
             <div class="absolute inset-0 z-[90] pointer-events-none">
                 <img id="bp-main-nickname-img" src="" class="w-full h-full object-cover" alt="Main Nickname" style="transform: translate(-225px, -115px) scale(0.7);">
             </div>
-            <div id="bp-test-watermarks" class="absolute inset-0 z-[80] pointer-events-none mix-blend-overlay opacity-30" style="font-family: '${wmFont}', sans-serif;">
+            <div id="bp-test-watermarks" class="absolute inset-0 z-[80] pointer-events-none mix-blend-overlay" style="font-family: '${wmFont}', sans-serif; opacity: ${window.layerState.watermarksVisible !== false ? (window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3) : 0}; transition: opacity 0.2s;">
                 <div class="absolute watermark-text whitespace-nowrap" style="top: -5.6%; left: 27.3%; transform: scale(0.7) skewX(-12deg);" data-wm>${wmText}</div>
                 <div class="absolute watermark-text whitespace-nowrap" style="top: 0.8%; left: -11.7%; transform: scale(0.24) skewX(-12deg);" data-wm>${wmText}</div>
                 <div class="absolute watermark-text whitespace-nowrap" style="top: 29.2%; left: -15.6%; transform: scale(0.1) skewX(-12deg);" data-wm>${wmText}</div>
@@ -6369,32 +6506,32 @@ window.openBPTestEditor = function() {
                     <div class="absolute inset-0 px-2 py-1 grid grid-cols-3 grid-rows-2 gap-3 pointer-events-none z-10">
                         <div class="w-full h-full relative">
                             <div class="absolute left-0 w-full flex justify-center items-center pointer-events-auto" style="bottom: 1%; height: 18%;">
-                                <div style="transform: translate(30px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="219 ₽">219 ₽</span></div>
+                                <div style="transform: translate(30px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="${fmt(0)}">${fmt(0)}</span></div>
                             </div>
                         </div>
                         <div class="w-full h-full relative">
                             <div class="absolute left-0 w-full flex justify-center items-center pointer-events-auto" style="bottom: 1%; height: 18%;">
-                                <div style="transform: translate(29px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="499 ₽">499 ₽</span></div>
+                                <div style="transform: translate(29px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="${fmt(1)}">${fmt(1)}</span></div>
                             </div>
                         </div>
                         <div class="w-full h-full relative">
                             <div class="absolute left-0 w-full flex justify-center items-center pointer-events-auto" style="bottom: 1%; height: 18%;">
-                                <div style="transform: translate(26px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="949 ₽">949 ₽</span></div>
+                                <div style="transform: translate(26px, -32px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="${fmt(2)}">${fmt(2)}</span></div>
                             </div>
                         </div>
                         <div class="w-full h-full relative">
                             <div class="absolute left-0 w-full flex justify-center items-center pointer-events-auto" style="bottom: 1%; height: 18%;">
-                                <div style="transform: translate(10px, 7px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="1799 ₽">1799 ₽</span></div>
+                                <div style="transform: translate(10px, 7px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="${fmt(3)}">${fmt(3)}</span></div>
                             </div>
                         </div>
                         <div class="w-full h-full relative">
                             <div class="absolute left-0 w-full flex justify-center items-center pointer-events-auto" style="bottom: 1%; height: 18%;">
-                                <div style="transform: translate(5px, 6px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="4199 ₽">4199 ₽</span></div>
+                                <div style="transform: translate(5px, 6px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="${fmt(4)}">${fmt(4)}</span></div>
                             </div>
                         </div>
                         <div class="w-full h-full relative">
                             <div class="absolute left-0 w-full flex justify-center items-center pointer-events-auto" style="bottom: 1%; height: 18%;">
-                                <div style="transform: translate(5px, 7px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="8499 ₽">8499 ₽</span></div>
+                                <div style="transform: translate(5px, 7px) scale(1.5) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"><span class="text-2xl text-outline-thick z-20" data-text="${fmt(5)}">${fmt(5)}</span></div>
                             </div>
                         </div>
                     </div>
@@ -6405,7 +6542,7 @@ window.openBPTestEditor = function() {
                     </div>
                     <div class="flex items-center justify-center pointer-events-auto">
                         <div style="transform: translate(2px, 13px) scale(1.12) scaleX(1) scaleY(1) skew(-10deg, 0deg) rotate(0deg);">
-                            <div class="text-6xl text-outline-mega whitespace-nowrap" style="filter: drop-shadow(0px 6px 0px #000000);" data-text="- 2199 ₽">- 2199 ₽</div>
+                            <div class="text-6xl text-outline-mega whitespace-nowrap" style="filter: drop-shadow(0px 6px 0px #000000);" data-text="${fmt(6)}">${fmt(6)}</div>
                         </div>
                     </div>
                 </div>
@@ -6422,7 +6559,7 @@ window.openBPTestEditor = function() {
                     </div>
                     <div class="absolute top-32 left-10 z-30 pointer-events-auto">
                         <div style="transform: translate(93px, -2px) scale(1.2) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(-6deg);">
-                            <div class="text-5xl text-outline-heavy" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="1249 ₽">1249 ₽</div>
+                            <div class="text-5xl text-outline-heavy" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="${fmt(7)}">${fmt(7)}</div>
                         </div>
                     </div>
 
@@ -6438,7 +6575,7 @@ window.openBPTestEditor = function() {
                             </div>
                             <div class="absolute -mt-2">
                                 <div style="transform: translate(61px, -8px) scale(1) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                                    <div class="text-5xl text-outline-thick" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="499 ₽">499 ₽</div>
+                                    <div class="text-5xl text-outline-thick" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="${fmt(8)}">${fmt(8)}</div>
                                 </div>
                             </div>
                         </div>
@@ -6447,45 +6584,44 @@ window.openBPTestEditor = function() {
                 
                     <div class="white-separator-h-spacer"></div>
                                     
-                    <div class="w-full relative overflow-hidden" style="height: 50%;">
-                    <div class="absolute top-6 left-4 z-20 pointer-events-auto">
-                        <div class="inline-block" style="transform: translate(54px, 10px) scale(1.18) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                            <img src="BP/bp_icon_brawl_pass.png" class="-rotate-3 item-shadow" style="width: 200px;" alt="Brawl Pass">
-                        </div>
+                <div class="w-full relative overflow-hidden" style="height: 50%;">
+                <div class="absolute top-6 left-4 z-20 pointer-events-auto">
+                    <div class="inline-block" style="transform: translate(54px, 10px) scale(1.18) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
+                        <img src="BP/bp_icon_brawl_pass.png" class="-rotate-3 item-shadow" style="width: 200px;" alt="Brawl Pass">
                     </div>
-                    <div class="absolute top-28 left-12 z-30 pointer-events-auto">
-                        <div style="transform: translate(77px, 16px) scale(1.32) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(-10deg);">
-                            <div class="text-5xl text-outline-heavy" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="899 ₽">899 ₽</div>
-                        </div>
+                </div>
+                <div class="absolute top-28 left-12 z-30 pointer-events-auto">
+                    <div style="transform: translate(77px, 16px) scale(1.32) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(-10deg);">
+                        <div class="text-5xl text-outline-heavy" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="${fmt(9)}">${fmt(9)}</div>
                     </div>
+                </div>
 
-                    <div style="position: absolute; top: -1.5rem; right: -3rem; height: 120%; z-index: 10; pointer-events: auto;">
-                        <div style="height: 100%; display: flex; align-items: center; justify-content: center; transform: translate(78px, -14px) scale(0.86);">
-                          <img src="BP/brawler_s${season}_1.png" class="brawler-drop-shadow" style="height: 100%; object-fit: contain;" alt="Brawler Bottom">                        </div>
-                    </div>
+                <div style="position: absolute; top: -1.5rem; right: -3rem; height: 120%; z-index: 10; pointer-events: auto;">
+                    <div style="height: 100%; display: flex; align-items: center; justify-content: center; transform: translate(78px, -14px) scale(0.86);">
+                      <img src="BP/brawler_s${season}_1.png" class="brawler-drop-shadow" style="height: 100%; object-fit: contain;" alt="Brawler Bottom">                        </div>
+                </div>
 
-                    <div class="absolute bottom-6 left-6 z-40 flex flex-col items-center pointer-events-auto">
-                        <div class="relative flex justify-center items-center mb-3">
-                            <div class="inline-block" style="transform: translate(49px, 2px) scale(1.34) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                                <img src="BP/bp_price_brawl_pass.png" class="item-shadow" style="width: 200px;" alt="Yellow Plate">
-                            </div>
-                            <div class="absolute">
-                                <div style="transform: translate(56px, -12px) scale(0.86) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
-                                    <div class="text-5xl text-outline-thick" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="349 ₽">349 ₽</div>
-                                </div>
+                <div class="absolute bottom-6 left-6 z-40 flex flex-col items-center pointer-events-auto">
+                    <div class="relative flex justify-center items-center mb-3">
+                        <div class="inline-block" style="transform: translate(49px, 2px) scale(1.34) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
+                            <img src="BP/bp_price_brawl_pass.png" class="item-shadow" style="width: 200px;" alt="Yellow Plate">
+                        </div>
+                        <div class="absolute">
+                            <div style="transform: translate(56px, -12px) scale(0.86) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);">
+                                <div class="text-5xl text-outline-thick" style="filter: drop-shadow(0px 3px 0px #000000);" data-text="${fmt(10)}">${fmt(10)}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="absolute z-[60] pointer-events-none" style="top: 50%; left: 50%; transform: translate(calc(-50% + 300px), calc(-50% + -34px)) scale(0.29) rotate(0deg);">
-                <img src="BP/bp_text_style2.png" class="object-contain" alt="BP Text">
-            </div>
         </div>
+        
+        <div class="absolute z-[60] pointer-events-none" style="top: 50%; left: 50%; transform: translate(calc(-50% + 300px), calc(-50% + -34px)) scale(0.29) rotate(0deg);">
+            <img src="BP/bp_text_style2.png" class="object-contain" alt="BP Text">
+        </div>
+    </div>
     `;
 
-    // Упаковываем в адаптивный враппер
     cardsContainer.innerHTML = `
         <div id="bp-test-container" class="canvas-display-wrapper" style="position: relative; width: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 24px; background-color: #2b2b2b;">
             <div id="bp-test-scale-wrapper" style="width: 1280px; height: 720px; transform-origin: top left; position: absolute; left: 0; top: 0;">
@@ -6494,11 +6630,9 @@ window.openBPTestEditor = function() {
         </div>
     `;
 
-    // Адаптация под размер экрана
     const container = document.getElementById('bp-test-container');
     const scaleWrapper = document.getElementById('bp-test-scale-wrapper');
     const shopDiv = document.getElementById('brawl-shop');
-    
     if (shopDiv) shopDiv.style.transformOrigin = 'top left';
 
     function resizeBPTest() {
@@ -6511,10 +6645,7 @@ window.openBPTestEditor = function() {
     window.addEventListener('resize', resizeBPTest);
     resizeBPTest();
 
-// Генерация панели слоев
     const editableElements = container.querySelectorAll('[data-text]');
-    
-    // Названия для наших слоёв
     const labels = [
         "30 gems", "80 gems", "170 gems", "360 gems", "950 gems", "2000 gems",
         "Pro pass", "BP +", "Улучшение", "BP", "Особая скидка"
@@ -6547,31 +6678,18 @@ window.openBPTestEditor = function() {
         layerHtml += `<div class="ios-style-item bp-test-style-item ${activeCls}" data-style="${sIdx}" style="background-image: url(${previewDataUrl});" onclick="setBPTestStyle(${sIdx})"></div>`;
     });
 
-    // Блок выбора шрифта для фонового текста
-    layerHtml += `</div></div>
-    <div class="ios-layer-group fade-in-anim">
-        <div class="ios-font-label">Шрифт фонового текста</div>
-        <div class="ios-font-grid" style="border-bottom:none; padding-bottom:10px;">`;
-        
-    FONT_OPTIONS.forEach((f) => {
-        let activeCls = (window.layerState.watermarksFont || 'Font16103') === f.family ? 'active' : '';
-        let previewText = (window.layerState.textValue || 'TEXT').substring(0, 6);
-        layerHtml += `<div class="ios-font-item bp-test-wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setBPTestWmFont('${f.family}')">${previewText}</div>`;
-    });
-    
-    layerHtml += `</div></div><div class="ios-section-title fade-in-anim">ЗНАЧЕНИЯ И ЦЕНЫ</div><div class="ios-layer-group fade-in-anim">`;
+    layerHtml += `</div></div><div class="ios-layer-group fade-in-anim" style="margin-top: 24px;">`;
 
     editableElements.forEach((el, index) => {
         let currentVal = el.getAttribute('data-text');
         el.id = 'editable-text-' + index; 
         
         let labelName = labels[index] || `Значение ${index + 1}`;
-        let inputBg = currentVal.includes('-') ? '#ff4d4d' : '#99D5F9';
         
-        // Запоминаем, был ли минус, чтобы скрипт знал, куда его потом подставить на картинке
+        // Убираем красную заливку, теперь все поля стандартного синего цвета
+        let inputBg = '#99D5F9'; 
+        
         let hasMinus = currentVal.includes('-');
-        
-        // Вытаскиваем только цифры для отображения в поле
         let numVal = currentVal.replace(/[^0-9]/g, '');
         
         layerHtml += `
@@ -6583,17 +6701,64 @@ window.openBPTestEditor = function() {
                 <input type="text" class="ios-price-input" inputmode="numeric" pattern="[0-9]*" maxlength="5"
                        style="width: 65px; background: ${inputBg}; color: #fff; font-size: 14px; font-weight: bold; text-align: center; border: none; border-radius: 12px; height: 28px; padding: 0 10px; outline: none; flex-shrink: 0;" 
                        value="${numVal}" 
-                       oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(parseInt(this.value) > 99999) this.value = '99999'; updateBPTestText(${index}, this.value, ${hasMinus})">
+                       oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(parseInt(this.value) > 99999) this.value = '99999'; window.updateBPTestText(${index}, this.value, ${hasMinus})">
                        
                 <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
             </div>
         `;
     });
 
-    layerHtml += `</div>`;
+    layerHtml += `</div>`; // Закрываем группу цен
+
+    // Добавляем косметику и шрифт для водяных знаков (как на скриншоте)
+    let starsEyeClass = window.layerState.starsVisible !== false ? '' : 'hidden';
+    let pointsEyeClass = window.layerState.pointsVisible !== false ? '' : 'hidden';
+    let wmEyeClass = window.layerState.watermarksVisible !== false ? '' : 'hidden';
+
+    layerHtml += `
+    <div class="ios-layer-group fade-in-anim" style="margin-top: 24px;">
+        <div class="ios-layer-row">
+            <div class="ios-icon-btn ios-eye-icon ${starsEyeClass}" id="eye-btn-stars" onclick="window.toggleBPTestCosmetic('stars')">
+                ${getEyeSVG(window.layerState.starsVisible !== false)}
+            </div>
+            <div class="ios-layer-name">Звёзды</div>
+            <div class="ios-layer-action-text">прозрачность</div>
+            <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1}" oninput="window.changeBPTestOpacity('stars', this.value)">
+        </div>
+
+        <div class="ios-layer-row">
+            <div class="ios-icon-btn ios-eye-icon ${pointsEyeClass}" id="eye-btn-points" onclick="window.toggleBPTestCosmetic('points')">
+                ${getEyeSVG(window.layerState.pointsVisible !== false)}
+            </div>
+            <div class="ios-layer-name">Точки</div>
+            <div class="ios-layer-action-text">прозрачность</div>
+            <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1}" oninput="window.changeBPTestOpacity('points', this.value)">
+        </div>
+
+        <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+            <div class="ios-icon-btn ios-eye-icon ${wmEyeClass}" id="eye-btn-watermarks" onclick="window.toggleBPTestCosmetic('watermarks')">
+                ${getEyeSVG(window.layerState.watermarksVisible !== false)}
+            </div>
+            <div class="ios-layer-name">Текст min</div>
+            <div class="ios-layer-action-text">прозрачность</div>
+            <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3}" oninput="window.changeBPTestOpacity('watermarks', this.value)">
+        </div>
+
+        <div class="ios-font-label" style="margin-top: 14px;">Шрифт Текст min</div>
+        <div class="ios-font-grid" style="border-bottom:none; padding-bottom:14px;">`;
+        
+    FONT_OPTIONS.forEach((f) => {
+        let activeCls = (window.layerState.watermarksFont || 'Font16103') === f.family ? 'active' : '';
+        let previewText = (window.layerState.textValue || 'TEXT').substring(0, 6);
+        layerHtml += `<div class="ios-font-item bp-test-wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="window.setBPTestWmFont('${f.family}')">${previewText}</div>`;
+    });
+    
+    layerHtml += `</div></div>`;
+
     layerPanel.innerHTML = layerHtml;
     layerPanel.style.display = 'flex';
 
+    // --- Функции обновления и управления ---
     window.updateBPTestText = function(idx, val, hasMinus) {
         if (val === '') val = '0';
         let formattedVal = val + " ₽";
@@ -6611,7 +6776,6 @@ window.openBPTestEditor = function() {
         window.layerState.textValue = val;
         document.querySelectorAll('.bp-test-font-item').forEach(el => el.innerText = val || 'TEXT');
         
-        // Автоматически обновляем фоновые водяные знаки, если поменялся основной текст
         document.querySelectorAll('[data-wm]').forEach(el => el.innerText = val || 'SNAPI');
         let shortVal = (val || 'TEXT').substring(0, 6);
         document.querySelectorAll('.bp-test-wm-font-item').forEach(el => el.innerText = shortVal);
@@ -6647,13 +6811,11 @@ window.openBPTestEditor = function() {
     window.setBPTestWmFont = async function(fontFamily) {
         window.layerState.watermarksFont = fontFamily;
         
-        // Меняем выделение кнопки
         document.querySelectorAll('.bp-test-wm-font-item').forEach(el => {
             if (el.getAttribute('data-font') === fontFamily) el.classList.add('active');
             else el.classList.remove('active');
         });
         
-        // Загружаем шрифт
         await document.fonts.load(`16px '${fontFamily}'`);
         
         let wmContainer = document.getElementById('bp-test-watermarks');
@@ -6661,7 +6823,6 @@ window.openBPTestEditor = function() {
             wmContainer.style.fontFamily = `'${fontFamily}', sans-serif`;
         }
 
-        // ПРОБИВАЕМ CSS !important: жестко применяем шрифт к каждой надписи
         document.querySelectorAll('.watermark-text').forEach(el => {
             el.style.setProperty('font-family', `'${fontFamily}', sans-serif`, 'important');
         });
@@ -6689,6 +6850,35 @@ window.openBPTestEditor = function() {
         imgEl.src = c.toDataURL('image/png');
     };
 
+    window.toggleBPTestCosmetic = function(layerName) {
+        if (window.layerState[layerName + 'Visible'] === undefined) {
+            window.layerState[layerName + 'Visible'] = true;
+        }
+        window.layerState[layerName + 'Visible'] = !window.layerState[layerName + 'Visible'];
+        
+        let isVisible = window.layerState[layerName + 'Visible'];
+        let defOpacity = layerName === 'watermarks' ? 0.3 : 1;
+        let opacity = isVisible ? (window.layerState[layerName + 'Opacity'] !== undefined ? window.layerState[layerName + 'Opacity'] : defOpacity) : 0;
+        
+        let targetEl = document.getElementById('bp-test-' + layerName);
+        if (targetEl) targetEl.style.opacity = opacity;
+
+        let eyeBtn = document.getElementById('eye-btn-' + layerName);
+        if (eyeBtn) {
+            eyeBtn.innerHTML = getEyeSVG(isVisible);
+            if (isVisible) eyeBtn.classList.remove('hidden');
+            else eyeBtn.classList.add('hidden');
+        }
+    };
+
+    window.changeBPTestOpacity = function(layerName, val) {
+        window.layerState[layerName + 'Opacity'] = parseFloat(val);
+        if (window.layerState[layerName + 'Visible'] !== false) {
+            let targetEl = document.getElementById('bp-test-' + layerName);
+            if (targetEl) targetEl.style.opacity = val;
+        }
+    };
+
     window.updateBPNicknameImg();
 
     let oldBtnWrap = document.getElementById('download-btn-wrap');
@@ -6711,8 +6901,9 @@ window.openBPTestEditor = function() {
     hdBtnWrap.appendChild(hdBtn);
     document.body.appendChild(hdBtnWrap);
 
-    }, 600); // <-- ЗАКРЫВАЕМ СКОБКУ SETTIMEOUT
+    }, 600);
 };
+
 </script>
 </body>
 </html>
