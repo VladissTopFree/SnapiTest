@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(6)";
+  const APP_VERSION = "v2.4.9(7)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2997,6 +2997,21 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
     if (btnWrap) btnWrap.style.display = 'none';
     
     if (selectedCategory === 'action') {
+        wizardMode = 'action';
+        document.getElementById('wizard-title-step1').innerText = 'Создание акции';
+        document.getElementById('wizard-title-step2').innerText = 'Создание акции';
+        
+        // ВАЖНО: Скрываем окно выбора категории
+        document.getElementById('category-overlay').style.display = 'none';
+        
+        document.getElementById('prog-line3').style.display = 'none';
+        document.getElementById('prog-step4').style.display = 'none';
+
+        // Восстанавливаем видимость основных шагов (для акций)
+        document.getElementById('prog-line1').style.display = 'block';
+        document.getElementById('prog-step2').style.display = 'flex';
+        document.getElementById('prog-line2').style.display = 'block';
+        document.getElementById('prog-step3').style.display = 'flex';
         
         document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
         document.getElementById('wizard-step1').classList.add('active');
@@ -3059,7 +3074,7 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('prog-line3').className = 'line';       
     document.getElementById('prog-step4').className = 'step small'; 
 
-    // Если стиль 2, скрываем лишние шаги прогресс-бара
+    // Скрываем лишние шаги прогресс-бара, если выбран 2 стиль
     if (selectedBPStyle === 2) {
         document.getElementById('prog-line1').style.display = 'none';
         document.getElementById('prog-step2').style.display = 'none';
@@ -5359,7 +5374,7 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
     }, 300);
   }
 
-wizardNextBtn1.onclick = async () => {
+  wizardNextBtn1.onclick = async () => {
     window.triggerHaptic();
 
     // Если выбран 2 стиль Brawl Pass, сразу применяем фон и открываем редактор
@@ -5386,6 +5401,7 @@ wizardNextBtn1.onclick = async () => {
         return;
     }
 
+    // Обычная логика для всех остальных стилей
     if (uploadMode === 'ready_bg') {
         step1.classList.add('fade-out');
         setTimeout(() => {
