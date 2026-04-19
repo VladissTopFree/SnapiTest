@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(8)";
+  const APP_VERSION = "v2.4.9(9)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -432,6 +432,8 @@
   .ios-icon-btn:active { opacity: 0.4; }
 
   .ios-icon-btn svg { width: 22px; height: 22px; transition: fill 0.2s; }
+  
+  .ios-eye-icon.hidden { display: flex !important; }
   .ios-eye-icon.hidden svg { fill: var(--tg-theme-section-separator-color, #E5E5EA) !important; }
 
   .ios-stroke-control {
@@ -3076,8 +3078,8 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
 
     // Скрываем лишние шаги прогресс-бара, если выбран 2 стиль
     if (selectedBPStyle === 2) {
-        document.getElementById('prog-line1').style.display = 'none';
-        document.getElementById('prog-step2').style.display = 'none';
+        document.getElementById('prog-line1').style.display = 'block';
+        document.getElementById('prog-step2').style.display = 'flex';
         document.getElementById('prog-line2').style.display = 'none';
         document.getElementById('prog-step3').style.display = 'none';
         document.getElementById('prog-line3').style.display = 'none';
@@ -5374,40 +5376,26 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
     }, 300);
   }
 
-  wizardNextBtn1.onclick = async () => {
+wizardNextBtn1.onclick = async () => {
     window.triggerHaptic();
 
-    // Если выбран 2 стиль Brawl Pass, сразу применяем фон и открываем редактор
-    if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2) {
+    // Если это 2 стиль BP И загружен готовый фон (который должен пропускать шаг с ником)
+    if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2 && uploadMode === 'ready_bg') {
         document.getElementById('wizard-overlay').style.display = 'none';
-        
-        if (uploadMode === 'ready_bg') {
-            window.layerState.isReadyBg = true;
-            window.layerState.isGeneratedBg = false;
-            rawBgImage = uploadedReadyBaseImg;
-        } else if (selectedColor) {
-            window.layerState.isReadyBg = false;
-            window.layerState.isGeneratedBg = true;
-            rawBgImage = await createGradientBg(selectedColor);
-        } else {
-            window.layerState.isReadyBg = false;
-            window.layerState.isGeneratedBg = false;
-            rawBgImage = uploadedBaseImg;
-        }
-
-        if (typeof window.openBPTestEditor === 'function') {
-            window.openBPTestEditor();
-        }
+        window.layerState.isReadyBg = true;
+        window.layerState.isGeneratedBg = false;
+        rawBgImage = uploadedReadyBaseImg;
+        window.layerState.textValue = ""; // Без ника
+        if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
         return;
     }
 
-    // Обычная логика для всех остальных стилей
     if (uploadMode === 'ready_bg') {
         step1.classList.add('fade-out');
         setTimeout(() => {
             step1.classList.remove('active', 'fade-out');
             
-            let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : step3;
+            let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : document.getElementById('wizard-step3');
             targetStep3.classList.add('active');
 
             document.getElementById('prog-step1').classList.remove('active');
@@ -5422,6 +5410,7 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
             document.getElementById('prog-step3').classList.add('active');
         }, 300);
     } else {
+        // Стандартный переход на 2 шаг (Ввод ника)
         transitionStep(step1, step2, document.getElementById('prog-step1'), document.getElementById('prog-step2'), document.getElementById('prog-line1'));
     }
   };
@@ -5484,7 +5473,7 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
     updateCapsBtnState();
   };
 
-  wizardNextBtn2.onclick = () => {
+  wizardNextBtn2.onclick = async () => {
     window.triggerHaptic();
     let currentNick = wizardNickInput.value.trim();
     if (currentNick) {
@@ -5494,8 +5483,28 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
         wizardInsertBtn.style.display = 'flex';
     }
     wizardNickInput.blur(); 
-    
-    let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : step3;
+
+    // ЕСЛИ ЭТО BP СТИЛЬ 2 — ОТКРЫВАЕМ РЕДАКТОР СРАЗУ ПОСЛЕ ВВОДА НИКА!
+    if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2) {
+        document.getElementById('wizard-overlay').style.display = 'none';
+        
+        window.layerState.textValue = currentNick || "SNAPI";
+        
+        if (selectedColor) {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = true;
+            rawBgImage = await createGradientBg(selectedColor);
+        } else {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = uploadedBaseImg;
+        }
+
+        if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
+        return;
+    }
+
+    let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : document.getElementById('wizard-step3');
     transitionStep(step2, targetStep3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
   };
 
@@ -6273,27 +6282,33 @@ window.openBPTestEditor = function() {
     const cardsContainer = document.getElementById('cards-container');
     const layerPanel = document.getElementById('layer-panel');
     
-    // Получаем сезон (по умолчанию 50, если ничего не выбрано)
-    let season = (window.layerState && window.layerState.bpSeason) ? window.layerState.bpSeason : 50;
+    // === ПОКАЗЫВАЕМ ЗАГРУЗКУ (СКЕЛЕТОН) ===
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
 
-    // Получаем URL выбранного в визарде фона
-    let bgUrl = 'bg/bg3.png';
-    if (rawBgImage && rawBgImage.src) {
-        bgUrl = rawBgImage.src;
-    }
+    // Даем небольшую задержку для эффекта загрузки
+    setTimeout(() => {
+        
+        let season = (window.layerState && window.layerState.bpSeason) ? window.layerState.bpSeason : 50;
 
-    // Определяем цвет свечения (по умолчанию белый)
-    let glowColor = '#ffffff';
-    if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
-        const glowColors = {
-            'green': '#5ee568',
-            'blue': '#46b3ff',
-            'orange': '#ffcc00', // Желтый в визарде записан под ключом orange
-            'purple': '#c861ff',
-            'black': '#666666'
-        };
-        glowColor = glowColors[window.layerState.bgColorType] || '#ffffff';
-    }
+        let bgUrl = 'bg/bg3.png';
+        if (rawBgImage && rawBgImage.src) {
+            bgUrl = rawBgImage.src;
+        }
+
+        let glowColor = '#ffffff';
+        if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+            const glowColors = {
+                'green': '#5ee568', 'blue': '#46b3ff', 'orange': '#ffcc00', 
+                'purple': '#c861ff', 'black': '#666666'
+            };
+            glowColor = glowColors[window.layerState.bgColorType] || '#ffffff';
+        }
+
+        // Вытягиваем текст и шрифт для фоновых водяных знаков
+        let wmText = window.layerState.textValue || 'SNAPI';
+        let wmFont = window.layerState.watermarksFont || 'Font16103';
 
     const rawTemplateHTML = `
         <div id="brawl-shop" oncontextmenu="return false;" ondragstart="return false;" class="relative shrink-0 overflow-hidden flex shadow-2xl brawl-font" style="width: 1280px; height: 720px; transform-origin: center;">
@@ -6321,22 +6336,25 @@ window.openBPTestEditor = function() {
                 <div class="absolute rounded-full pointer-events-none" style="background-color: ${glowColor}; left: 72.7%; top: 13.9%; width: 230px; height: 230px; filter: blur(16px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
                 <div class="absolute rounded-full pointer-events-none" style="background-color: ${glowColor}; left: 70.8%; top: 65.5%; width: 200px; height: 200px; filter: blur(26px); opacity: 0.35; transform: translate(-50%, -50%);"></div>
             </div>
-            <div class="absolute inset-0 z-[80] pointer-events-none mix-blend-overlay opacity-30">
-                <div class="absolute watermark-text whitespace-nowrap" style="top: -5.6%; left: 27.3%; transform: scale(0.7) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 0.8%; left: -11.7%; transform: scale(0.24) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 29.2%; left: -15.6%; transform: scale(0.1) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 35.8%; left: 40.1%; transform: scale(0.1) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 83.3%; left: 32.6%; transform: scale(0.2) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 94.0%; left: 25.7%; transform: scale(0.53) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 84.2%; left: -9.9%; transform: scale(0.29) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 93.9%; left: -14.3%; transform: scale(0.69) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 8.3%; left: 37.8%; transform: scale(0.19) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 23.8%; left: 51.8%; transform: scale(0.3) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: -1.1%; left: 66.9%; transform: scale(0.12) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: -3.7%; left: 53.3%; transform: scale(0.1) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 74.0%; left: 48.5%; transform: scale(0.22) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 48.5%; left: 48.7%; transform: scale(0.1) skewX(-12deg);">ARTZA DONATE</div>
-                <div class="absolute watermark-text whitespace-nowrap" style="top: 48.0%; left: 75.0%; transform: scale(0.19) skewX(-12deg);">ARTZA DONATE</div>
+            <div class="absolute inset-0 z-[90] pointer-events-none">
+                <img id="bp-main-nickname-img" src="" class="w-full h-full object-cover" alt="Main Nickname" style="transform: translate(-225px, -115px) scale(0.7);">
+            </div>
+            <div id="bp-test-watermarks" class="absolute inset-0 z-[80] pointer-events-none mix-blend-overlay opacity-30" style="font-family: '${wmFont}', sans-serif;">
+                <div class="absolute watermark-text whitespace-nowrap" style="top: -5.6%; left: 27.3%; transform: scale(0.7) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 0.8%; left: -11.7%; transform: scale(0.24) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 29.2%; left: -15.6%; transform: scale(0.1) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 35.8%; left: 40.1%; transform: scale(0.1) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 83.3%; left: 32.6%; transform: scale(0.2) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 94.0%; left: 25.7%; transform: scale(0.53) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 84.2%; left: -9.9%; transform: scale(0.29) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 93.9%; left: -14.3%; transform: scale(0.69) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 8.3%; left: 37.8%; transform: scale(0.19) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 23.8%; left: 51.8%; transform: scale(0.3) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: -1.1%; left: 66.9%; transform: scale(0.12) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: -3.7%; left: 53.3%; transform: scale(0.1) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 74.0%; left: 48.5%; transform: scale(0.22) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 48.5%; left: 48.7%; transform: scale(0.1) skewX(-12deg);" data-wm>${wmText}</div>
+                <div class="absolute watermark-text whitespace-nowrap" style="top: 48.0%; left: 75.0%; transform: scale(0.19) skewX(-12deg);" data-wm>${wmText}</div>
             </div>
             <div class="absolute pointer-events-none line-shadow" style="width: 16px; top: -25%; left: calc(58% + 6px); background: transparent; z-index: 31; transform-origin: center; transform: translate(27px, 2px) scale(1) scaleX(1) scaleY(1.5) skew(0deg, 0deg) rotate(7deg); height: 150%;"></div>
             <div class="absolute pointer-events-none line-shadow" style="height: 16px; left: calc(58% + 40px); right: 0; top: calc(50% - 8px); background-color: white; z-index: 48; transform-origin: center; transform: translate(0px, 0px) scale(1) scaleX(1) scaleY(1) skew(0deg, 0deg) rotate(0deg);"></div>
@@ -6493,28 +6511,80 @@ window.openBPTestEditor = function() {
     window.addEventListener('resize', resizeBPTest);
     resizeBPTest();
 
-    // Генерация панели слоев
+// Генерация панели слоев
     const editableElements = container.querySelectorAll('[data-text]');
     
+    // Названия для наших слоёв
+    const labels = [
+        "30 gems", "80 gems", "170 gems", "360 gems", "950 gems", "2000 gems",
+        "Pro pass", "BP +", "Улучшение", "BP", "Особая скидка"
+    ];
+
     let layerHtml = `
-        <div class="ios-section-title fade-in-anim">РЕДАКТИРОВАНИЕ ТЕКСТА</div>
+        <div class="ios-section-title fade-in-anim">СЛОИ ДЛЯ РЕДАКТИРОВАНИЯ</div>
         <div class="ios-layer-group fade-in-anim">
+            <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+                <div class="ios-layer-name" style="font-size: 15px;">Текст</div>
+                <input type="text" id="bp-test-main-nick"
+                       style="flex-grow:1; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none;"
+                       maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" oninput="updateBPTestMainNick(this.value)">
+            </div>
+            <div class="ios-font-label">Изменить шрифт</div>
+            <div class="ios-font-grid">
     `;
+    
+    FONT_OPTIONS.forEach((f, idx) => {
+        let activeCls = window.layerState.textFont === f.family ? 'active' : '';
+        let textVal = window.layerState.textValue || 'TEXT';
+        layerHtml += `<div class="ios-font-item bp-test-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setBPTestFont('${f.family}')">${textVal}</div>`;
+    });
+    
+    layerHtml += `</div><div class="ios-font-label">Изменить стиль</div><div class="ios-style-grid">`;
+    
+    TEXT_STYLES.forEach((st, sIdx) => {
+        let activeCls = window.layerState.textStyleIndex === sIdx ? 'active' : '';
+        let previewDataUrl = createStylePreviewURL(st, window.layerState.textFont || 'Font16103');
+        layerHtml += `<div class="ios-style-item bp-test-style-item ${activeCls}" data-style="${sIdx}" style="background-image: url(${previewDataUrl});" onclick="setBPTestStyle(${sIdx})"></div>`;
+    });
+
+    // Блок выбора шрифта для фонового текста
+    layerHtml += `</div></div>
+    <div class="ios-layer-group fade-in-anim">
+        <div class="ios-font-label">Шрифт фонового текста</div>
+        <div class="ios-font-grid" style="border-bottom:none; padding-bottom:10px;">`;
+        
+    FONT_OPTIONS.forEach((f) => {
+        let activeCls = (window.layerState.watermarksFont || 'Font16103') === f.family ? 'active' : '';
+        let previewText = (window.layerState.textValue || 'TEXT').substring(0, 6);
+        layerHtml += `<div class="ios-font-item bp-test-wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setBPTestWmFont('${f.family}')">${previewText}</div>`;
+    });
+    
+    layerHtml += `</div></div><div class="ios-section-title fade-in-anim">ЗНАЧЕНИЯ И ЦЕНЫ</div><div class="ios-layer-group fade-in-anim">`;
 
     editableElements.forEach((el, index) => {
         let currentVal = el.getAttribute('data-text');
         el.id = 'editable-text-' + index; 
         
+        let labelName = labels[index] || `Значение ${index + 1}`;
         let inputBg = currentVal.includes('-') ? '#ff4d4d' : '#99D5F9';
+        
+        // Запоминаем, был ли минус, чтобы скрипт знал, куда его потом подставить на картинке
+        let hasMinus = currentVal.includes('-');
+        
+        // Вытаскиваем только цифры для отображения в поле
+        let numVal = currentVal.replace(/[^0-9]/g, '');
         
         layerHtml += `
             <div class="ios-layer-row" ${index === editableElements.length - 1 ? 'style="border-bottom:none;"' : ''}>
                 <div style="width: 24px; flex-shrink: 0;"></div>
-                <div class="ios-layer-name">Значение ${index + 1}</div>
-                <div class="ios-layer-action-text">текст</div>
-                <input type="text" class="ios-price-input" style="width: 90px; background: ${inputBg};" 
-                       value="${currentVal}" 
-                       oninput="updateBPTestText(${index}, this.value)">
+                <div class="ios-layer-name">${labelName}</div>
+                <div class="ios-layer-action-text">цена</div>
+                
+                <input type="text" class="ios-price-input" inputmode="numeric" pattern="[0-9]*" maxlength="5"
+                       style="width: 65px; background: ${inputBg}; color: #fff; font-size: 14px; font-weight: bold; text-align: center; border: none; border-radius: 12px; height: 28px; padding: 0 10px; outline: none; flex-shrink: 0;" 
+                       value="${numVal}" 
+                       oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(parseInt(this.value) > 99999) this.value = '99999'; updateBPTestText(${index}, this.value, ${hasMinus})">
+                       
                 <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
             </div>
         `;
@@ -6524,15 +6594,103 @@ window.openBPTestEditor = function() {
     layerPanel.innerHTML = layerHtml;
     layerPanel.style.display = 'flex';
 
-    window.updateBPTestText = function(idx, val) {
+    window.updateBPTestText = function(idx, val, hasMinus) {
+        if (val === '') val = '0';
+        let formattedVal = val + " ₽";
+        if (hasMinus) {
+            formattedVal = "- " + val + " ₽";
+        }
         let el = document.getElementById('editable-text-' + idx);
         if (el) {
-            el.setAttribute('data-text', val);
-            el.innerText = val;
+            el.setAttribute('data-text', formattedVal);
+            el.innerText = formattedVal;
         }
     };
 
-    // Заглушка для кнопки "Скачать"
+    window.updateBPTestMainNick = function(val) {
+        window.layerState.textValue = val;
+        document.querySelectorAll('.bp-test-font-item').forEach(el => el.innerText = val || 'TEXT');
+        
+        // Автоматически обновляем фоновые водяные знаки, если поменялся основной текст
+        document.querySelectorAll('[data-wm]').forEach(el => el.innerText = val || 'SNAPI');
+        let shortVal = (val || 'TEXT').substring(0, 6);
+        document.querySelectorAll('.bp-test-wm-font-item').forEach(el => el.innerText = shortVal);
+
+        window.updateBPNicknameImg();
+    };
+    
+    window.setBPTestFont = async function(fontFamily) {
+        window.layerState.textFont = fontFamily;
+        document.querySelectorAll('.bp-test-font-item').forEach(el => {
+            if (el.getAttribute('data-font') === fontFamily) el.classList.add('active');
+            else el.classList.remove('active');
+        });
+        await document.fonts.load(`16px '${fontFamily}'`);
+        
+        document.querySelectorAll('.bp-test-style-item').forEach((el) => {
+            let sIdx = parseInt(el.getAttribute('data-style'));
+            let previewDataUrl = createStylePreviewURL(TEXT_STYLES[sIdx], fontFamily);
+            el.style.backgroundImage = `url(${previewDataUrl})`;
+        });
+        window.updateBPNicknameImg();
+    };
+
+    window.setBPTestStyle = function(index) {
+        window.layerState.textStyleIndex = index;
+        document.querySelectorAll('.bp-test-style-item').forEach(el => {
+            if (parseInt(el.getAttribute('data-style')) === index) el.classList.add('active');
+            else el.classList.remove('active');
+        });
+        window.updateBPNicknameImg();
+    };
+
+    window.setBPTestWmFont = async function(fontFamily) {
+        window.layerState.watermarksFont = fontFamily;
+        
+        // Меняем выделение кнопки
+        document.querySelectorAll('.bp-test-wm-font-item').forEach(el => {
+            if (el.getAttribute('data-font') === fontFamily) el.classList.add('active');
+            else el.classList.remove('active');
+        });
+        
+        // Загружаем шрифт
+        await document.fonts.load(`16px '${fontFamily}'`);
+        
+        let wmContainer = document.getElementById('bp-test-watermarks');
+        if (wmContainer) {
+            wmContainer.style.fontFamily = `'${fontFamily}', sans-serif`;
+        }
+
+        // ПРОБИВАЕМ CSS !important: жестко применяем шрифт к каждой надписи
+        document.querySelectorAll('.watermark-text').forEach(el => {
+            el.style.setProperty('font-family', `'${fontFamily}', sans-serif`, 'important');
+        });
+    };
+
+    window.updateBPNicknameImg = function() {
+        let imgEl = document.getElementById('bp-main-nickname-img');
+        if (!imgEl) return;
+        
+        let text = window.layerState.textValue || '';
+        if (!text) {
+            imgEl.src = '';
+            return;
+        }
+        let c = document.createElement('canvas');
+        c.width = 1280; c.height = 720;
+        let ctx = c.getContext('2d');
+        
+        let oldPos = window.layerState.textPosition;
+        window.layerState.textPosition = 'top'; 
+        
+        drawBeautifulNick(ctx, text, 1280, 720);
+        
+        window.layerState.textPosition = oldPos;
+        imgEl.src = c.toDataURL('image/png');
+    };
+
+    window.updateBPNicknameImg();
+
     let oldBtnWrap = document.getElementById('download-btn-wrap');
     if (oldBtnWrap) oldBtnWrap.remove();
 
@@ -6552,8 +6710,9 @@ window.openBPTestEditor = function() {
     
     hdBtnWrap.appendChild(hdBtn);
     document.body.appendChild(hdBtnWrap);
-};
 
+    }, 600); // <-- ЗАКРЫВАЕМ СКОБКУ SETTIMEOUT
+};
 </script>
 </body>
 </html>
