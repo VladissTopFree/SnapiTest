@@ -4806,7 +4806,7 @@ window.updateCachedTextCanvas = () => {
     cachedTextCanvas.height = persistentCanvas.height;
     let ctx = cachedTextCanvas.getContext('2d');
     
-    if (window.layerState.isBrawlPassMode) {
+    if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex !== 2) {
         drawBPNickText(ctx, window.layerState.textValue || "SNAPI", persistentCanvas.width, persistentCanvas.height);
     } else {
         drawBeautifulNick(ctx, window.layerState.textValue, persistentCanvas.width, persistentCanvas.height);
@@ -4933,38 +4933,40 @@ function renderLoop() {
 
 function drawScene() {
     if (!persistentCtx) return;
-    let W = persistentCanvas.width; let H = persistentCanvas.height;
-    let ctx = persistentCtx;
-    ctx.clearRect(0, 0, W, H);
+    let w = persistentCanvas.width; let h = persistentCanvas.height;
+    persistentCtx.clearRect(0, 0, w, h);
     
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
+    persistentCtx.imageSmoothingEnabled = true;
+    persistentCtx.imageSmoothingQuality = 'high';
 
+    // Отрисовка фона
     if (rawBgImage) {
-        ctx.drawImage(rawBgImage, 0, 0, W, H);
+        persistentCtx.drawImage(rawBgImage, 0, 0, w, h);
     }
 
     if (window.layerState.isBrawlPassMode) {
-        // ==========================================
-        // ЛОГИКА ДЛЯ СТИЛЯ 2 (Детальная отрисовка)
-        // ==========================================
+        
+        // --- СТИЛЬ 2 ---
         if (window.layerState.bpStyleIndex === 2) {
-            const s = W / 1280; // масштаб для адаптивности (базовый размер 1280x720)
+            const ctx = persistentCtx;
+            const W = persistentCanvas.width;
+            const H = persistentCanvas.height;
+            const s = W / 1280; 
 
-            // 1. Правая часть фона (эффект разреза)
+            // 1. Правая часть (Маскированный фон)
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
             ctx.closePath();
             ctx.clip();
             if (rawBgImage) {
-                ctx.translate(150*s, 80*s); // Смещаем правую часть фона
+                ctx.translate(150*s, 80*s); 
                 ctx.scale(1.1, 1.1);
                 ctx.drawImage(rawBgImage, 0, 0, W, H);
             }
             ctx.restore();
 
-            // 2. Звезды и Точки
+            // 2. Оверлеи (Точки и Звезды)
             if (window.layerState.pointsVisible !== false && globalAssets.style2Points) {
                 ctx.save(); ctx.globalCompositeOperation = "overlay";
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
@@ -4980,8 +4982,10 @@ function drawScene() {
             if (cachedTextCanvas && animText.alpha > 0.01) {
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
-                ctx.translate(-225*s, -115*s);
-                ctx.scale(0.7 * animText.scale, 0.7 * animText.scale);
+                ctx.translate(W/2, H/2); // Смещаемся в центр холста
+                ctx.translate(-225*s, -115*s); // Настройки из скриншота пользователя
+                ctx.scale(0.7 * animText.scale, 0.7 * animText.scale); // Настройки из скриншота
+                ctx.translate(-W/2, -H/2);
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
             }
@@ -4989,22 +4993,25 @@ function drawScene() {
             // 4. Белые разделительные линии (с тенями)
             ctx.save();
             ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.fillStyle = "white";
-            // Вертикальная
+            // Вертикальная наклонная линия (точно по CSS)
+            let lineW = 16*s; let lineH = H * 1.5;
+            let lineX = W * 0.58 + 6*s; let lineY = -H * 0.25;
+            let cx = lineX + lineW/2; let cy = lineY + lineH/2;
             ctx.save();
-            ctx.translate((748 + 27)*s, 2*s); ctx.rotate(7 * Math.PI / 180);
-            ctx.fillRect(0, -H*0.5, 16*s, H*2);
+            ctx.translate(cx, cy); ctx.translate(27*s, 2*s); ctx.rotate(7 * Math.PI / 180);
+            ctx.fillRect(-lineW/2, -lineH/2, lineW, lineH);
             ctx.restore();
-            // Горизонтальная
+            
+            // Горизонтальная правая
             ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
             ctx.restore();
 
-            // Вспомогательные функции для отрисовки элементов
-            const drawItem = (img, x, y, w, h, rot, shadowY) => {
+            const drawItem = (img, x, y, iw, ih, rot, shadowY) => {
                 if (!img) return;
                 ctx.save();
                 ctx.translate(x, y); ctx.rotate(rot * Math.PI / 180);
                 ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 15*s; ctx.shadowOffsetY = shadowY*s;
-                ctx.drawImage(img, 0, 0, w, h);
+                ctx.drawImage(img, 0, 0, iw, ih);
                 ctx.restore();
             };
 
@@ -5012,21 +5019,20 @@ function drawScene() {
                 if (!img) return;
                 ctx.save();
                 ctx.translate(x, y); ctx.scale(scale, scale);
-                // Рисуем белую тень-обводку
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
                 ctx.drawImage(img, 0, 0);
                 ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; ctx.drawImage(img, 0, 0);
                 ctx.restore();
             };
 
-            const drawS2Text = (txt, x, y, size, strokeW, isRed) => {
+            const drawS2Text = (txt, x, y, size, strokeW, color = "#ffffff") => {
                 ctx.save();
                 ctx.font = `${size}px 'LilitaOneRus', 'Arial Black', sans-serif`;
                 ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
                 ctx.lineWidth = strokeW; ctx.strokeStyle = "#000000";
                 ctx.strokeText(txt, x, y + size*0.1); // Тень
                 ctx.strokeText(txt, x, y); // Обводка
-                ctx.fillStyle = isRed ? "#ff3b30" : "#ffffff";
+                ctx.fillStyle = color;
                 ctx.fillText(txt, x, y); // Заливка
                 ctx.restore();
             };
@@ -5054,8 +5060,15 @@ function drawScene() {
             drawS2Text(fmt(5), gX[2], gY[1]-2*s, 28*s, 5*s);
 
             // 7. Pro Pass слева внизу (6)
-            drawItem(globalAssets.style2ProIcon, 30*s, 560*s, 160*s, 160*s, -12, 15);
-            drawS2Text("- " + fmt(6), 330*s, 630*s, 72*s, 10*s, true); // Большая красная цена
+            if (globalAssets.style2ProIcon) {
+                drawItem(globalAssets.style2ProIcon, 30*s, 560*s, 160*s, 160*s, -12, 15);
+                ctx.save();
+                ctx.translate(390*s, 650*s); 
+                ctx.transform(1, 0, Math.tan(-10 * Math.PI / 180), 1, 0, 0); // Имитация CSS наклона skew(-10deg)
+                ctx.scale(1.12, 1.12);
+                drawS2Text("- " + fmt(6), 0, 0, 58*s, 8*s, "#ffffff"); // Белый цвет текста
+                ctx.restore();
+            }
 
             // 8. Блок BP+ (Справа сверху)
             let season = window.layerState.bpSeason || 50;
@@ -5089,19 +5102,23 @@ function drawScene() {
                 ctx.globalAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3;
                 ctx.fillStyle = "white"; ctx.textAlign = "left"; ctx.textBaseline = "top";
                 
-                // Координаты для текста
+                // Все 15 штук с точными позициями, скейлом и наклоном skew(-12deg)
                 const wms = [
-                    {x: 350, y: -40, sz: 50}, {x: -150, y: 5, sz: 17}, {x: -200, y: 210, sz: 7},
-                    {x: 510, y: 250, sz: 7}, {x: 410, y: 600, sz: 14}, {x: 320, y: 670, sz: 38},
-                    {x: -120, y: 600, sz: 20}, {x: -180, y: 670, sz: 49}, {x: 480, y: 60, sz: 13},
-                    {x: 660, y: 170, sz: 21}, {x: 850, y: -8, sz: 8}, {x: 680, y: -26, sz: 7},
-                    {x: 620, y: 530, sz: 15}, {x: 620, y: 350, sz: 7}, {x: 960, y: 340, sz: 13}
+                    {l: 0.273, t: -0.056, sc: 0.70}, {l: -0.117, t: 0.008, sc: 0.24},
+                    {l: -0.156, t: 0.292, sc: 0.10}, {l: 0.401, t: 0.358, sc: 0.10},
+                    {l: 0.326, t: 0.833, sc: 0.20}, {l: 0.257, t: 0.940, sc: 0.53},
+                    {l: -0.099, t: 0.842, sc: 0.29}, {l: -0.143, t: 0.939, sc: 0.69},
+                    {l: 0.378, t: 0.083, sc: 0.19}, {l: 0.518, t: 0.238, sc: 0.30},
+                    {l: 0.669, t: -0.011, sc: 0.12}, {l: 0.533, t: -0.037, sc: 0.10},
+                    {l: 0.485, t: 0.740, sc: 0.22}, {l: 0.487, t: 0.485, sc: 0.10},
+                    {l: 0.750, t: 0.480, sc: 0.19}
                 ];
                 
                 wms.forEach(wm => {
                     ctx.save();
-                    ctx.translate(wm.x*s, wm.y*s); ctx.transform(1, 0, -0.2, 1, 0, 0); // Наклон
-                    ctx.font = `${wm.sz*s}px '${wmFont}', sans-serif`;
+                    ctx.translate(W * wm.l, H * wm.t); 
+                    ctx.transform(1, 0, Math.tan(-12 * Math.PI / 180), 1, 0, 0); 
+                    ctx.font = `${56 * wm.sc * s}px '${wmFont}', sans-serif`;
                     ctx.fillText(wmText, 0, 0);
                     ctx.restore();
                 });
@@ -5110,98 +5127,147 @@ function drawScene() {
             return;
         } 
         
-        // ==========================================
-        // ЛОГИКА ДЛЯ СТИЛЯ 1 (Старый стиль BP)
-        // ==========================================
+        // --- СТИЛЬ 1 ---
         else {
             if (window.layerState.luchVisible && globalAssets.luchImg) {
-                ctx.save(); ctx.globalCompositeOperation = "overlay"; 
-                ctx.globalAlpha = window.layerState.luchOpacity;
-                ctx.drawImage(globalAssets.luchImg, 0, 0, W, H); ctx.restore();
+                persistentCtx.save();
+                persistentCtx.globalCompositeOperation = "overlay"; 
+                persistentCtx.globalAlpha = window.layerState.luchOpacity;
+                persistentCtx.drawImage(globalAssets.luchImg, 0, 0, w, h);
+                persistentCtx.restore();
             }
+
             if (window.layerState.starsVisible && globalAssets.starsEff) {
-                ctx.save(); ctx.globalCompositeOperation = "overlay";
-                ctx.globalAlpha = window.layerState.starsOpacity;
-                ctx.drawImage(globalAssets.starsEff, 0, 0, W, H); ctx.restore();
+                persistentCtx.save();
+                persistentCtx.globalCompositeOperation = "overlay";
+                persistentCtx.globalAlpha = window.layerState.starsOpacity;
+                persistentCtx.drawImage(globalAssets.starsEff, 0, 0, w, h);
+                persistentCtx.restore();
             }
+            
             if (window.layerState.pointsVisible && globalAssets.bpPointsImg) {
-                ctx.save(); ctx.globalAlpha = window.layerState.pointsOpacity;
-                ctx.drawImage(globalAssets.bpPointsImg, 0, 0, W, H); ctx.restore();
+                persistentCtx.save();
+                persistentCtx.globalAlpha = window.layerState.pointsOpacity;
+                persistentCtx.drawImage(globalAssets.bpPointsImg, 0, 0, w, h);
+                persistentCtx.restore();
             }
+
             if (window.bpForegroundImage) {
-                ctx.drawImage(window.bpForegroundImage, 0, 0, W, H);
+                persistentCtx.drawImage(window.bpForegroundImage, 0, 0, w, h);
             }
 
-            let priceW = W * 0.24; let marginX = W * 0.02;
-            let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : H * 0.15;
-            let priceY = H - tempH - (H * 0.04);
+            let priceW = w * 0.24;
+            let marginX = w * 0.02;
+            let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : h * 0.15;
+            let priceY = h - tempH - (h * 0.04);
 
-            if (globalAssets.bpPriceL) drawBPPrice(ctx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, W, H);
+            if (globalAssets.bpPriceL) {
+                drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, w, h);
+            }
+            
             if (globalAssets.bpPriceR) {
-                let shiftLeft = 46 * (W / 1200); 
-                let rightX = W - marginX - priceW - shiftLeft;
-                drawBPPrice(ctx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, W, H);
+                let shiftLeft = 46 * (w / 1200); 
+                let rightX = w - marginX - priceW - shiftLeft;
+                drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
             }
 
             if (window.layerState.watermarksVisible) {
-                drawBPWatermarks(ctx, window.layerState.textValue || "SNAPI", W, H, window.layerState.watermarksOpacity);
+                let wmText = window.layerState.textValue || "SNAPI";
+                drawBPWatermarks(persistentCtx, wmText, w, h, window.layerState.watermarksOpacity);
             }
 
             if (cachedTextCanvas && animText.alpha > 0.01) {
-                ctx.save(); ctx.globalAlpha = animText.alpha;
-                let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
-                ctx.translate(tw2, th2); ctx.scale(animText.scale, animText.scale);
-                ctx.translate(-tw2, -th2); ctx.drawImage(cachedTextCanvas, 0, 0);
-                ctx.restore();
+                persistentCtx.save();
+                persistentCtx.globalAlpha = animText.alpha;
+                let tw2 = Math.round(w/2); let th2 = Math.round(h/2);
+                persistentCtx.translate(tw2, th2);
+                persistentCtx.scale(animText.scale, animText.scale);
+                persistentCtx.translate(-tw2, -th2);
+                persistentCtx.drawImage(cachedTextCanvas, 0, 0);
+                persistentCtx.restore();
             }
-            return;
         }
+        
+        return;
     }
 
     // ==========================================
     // ЛОГИКА ДЛЯ ОБЫЧНЫХ АКЦИЙ
     // ==========================================
     if (window.layerState.isGeneratedBg && window.layerState.pointsVisible && globalAssets.pointsImg) {
-        ctx.save(); ctx.globalCompositeOperation = "source-over";
-        ctx.drawImage(globalAssets.pointsImg, 0, 0, W, H); ctx.restore();
+        persistentCtx.save();
+        persistentCtx.globalCompositeOperation = "source-over";
+        persistentCtx.drawImage(globalAssets.pointsImg, 0, 0, w, h);
+        persistentCtx.restore();
     }
     
     if (window.layerState.luchVisible) {
-        ctx.save(); ctx.globalCompositeOperation = "overlay"; 
+        persistentCtx.save();
+        persistentCtx.globalCompositeOperation = "overlay"; 
+        
         if (globalAssets.luchImg) {
-            ctx.globalAlpha = window.layerState.luchOpacity;
-            let luchW = W * 2; let luchH = H * 2;
-            ctx.drawImage(globalAssets.luchImg, -(luchW-W)/2, -(luchH-H)/2, luchW, luchH);
+            persistentCtx.globalAlpha = window.layerState.luchOpacity;
+            let luchW = w * 2; let luchH = h * 2;
+            persistentCtx.drawImage(globalAssets.luchImg, -(luchW-w)/2, -(luchH-h)/2, luchW, luchH);
         } else {
-            drawFallbackRays(ctx, W, H, window.layerState.luchOpacity);
+            drawFallbackRays(persistentCtx, w, h, window.layerState.luchOpacity);
         }
-        ctx.restore();
+        persistentCtx.restore();
     }
     
-    if (window.layerState.starsVisible && globalAssets.starImg) drawStars(ctx, globalAssets.starImg, W, H, window.layerState.starsOpacity);
-    if (window.layerState.watermarksVisible && window.layerState.textValue) drawWatermarks(ctx, window.layerState.textValue, W, H, window.layerState.watermarksOpacity);
+    if (window.layerState.starsVisible && globalAssets.starImg) {
+        drawStars(persistentCtx, globalAssets.starImg, w, h, window.layerState.starsOpacity);
+    }
+    
+    if (window.layerState.watermarksVisible && window.layerState.textValue) {
+        drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
+    }
     
     if (cachedTextCanvas && animText.alpha > 0.01) {
-        ctx.save(); ctx.globalAlpha = animText.alpha;
-        let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
-        ctx.translate(tw2, th2); ctx.scale(animText.scale, animText.scale);
-        ctx.translate(-tw2, -th2); ctx.drawImage(cachedTextCanvas, 0, 0); ctx.restore();
+        persistentCtx.save();
+        persistentCtx.globalAlpha = animText.alpha;
+        let tw2 = Math.round(w/2);
+        let th2 = Math.round(h/2);
+        persistentCtx.translate(tw2, th2);
+        persistentCtx.scale(animText.scale, animText.scale);
+        persistentCtx.translate(-tw2, -th2);
+        persistentCtx.imageSmoothingEnabled = true;
+        persistentCtx.imageSmoothingQuality = 'high';
+        persistentCtx.drawImage(cachedTextCanvas, 0, 0);
+        persistentCtx.restore();
     }
     
     let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
+    
     window.layerState.offers.forEach(o => {
         if (o.anim.alpha < 0.01 || o.anim.scale < 0.01) return;
-        let c = o.cache; if (!c) return;
-        ctx.save(); ctx.globalAlpha = o.anim.alpha;
-        ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
+        let c = o.cache;
+        if (!c) return;
+        
+        persistentCtx.save();
+        persistentCtx.globalAlpha = o.anim.alpha;
+        
+        persistentCtx.shadowColor = "rgba(0, 0, 0, 0.3)"; 
         let isAndroid = document.body.classList.contains('os-android');
-        ctx.shadowBlur = isAndroid ? Math.round(8 * hdScale) : Math.round(21 * hdScale);                    
-        ctx.shadowOffsetX = 0; ctx.shadowOffsetY = Math.round(16 * hdScale);  
-        let cx = Math.round(o.anim.x + o.anim.w/2); let cy = Math.round(o.anim.y + o.anim.h/2);
-        ctx.translate(cx, cy); ctx.scale(o.anim.scale, o.anim.scale);
-        let drawOffsetX = Math.round(-(c.tW / 2) - c.pad); let drawOffsetY = Math.round(-(c.tH / 2) - c.pad);
-        ctx.drawImage(c.canvas, drawOffsetX, drawOffsetY);
-        ctx.restore();
+        persistentCtx.shadowBlur = isAndroid ? Math.round(8 * hdScale) : Math.round(21 * hdScale);                    
+        persistentCtx.shadowOffsetX = 0;                  
+        persistentCtx.shadowOffsetY = Math.round(16 * hdScale);  
+        
+        let cx = Math.round(o.anim.x + o.anim.w/2);
+        let cy = Math.round(o.anim.y + o.anim.h/2);
+        
+        persistentCtx.translate(cx, cy);
+        persistentCtx.scale(o.anim.scale, o.anim.scale);
+
+        persistentCtx.imageSmoothingEnabled = true;
+        persistentCtx.imageSmoothingQuality = 'high';
+
+        let drawOffsetX = Math.round(-(c.tW / 2) - c.pad);
+        let drawOffsetY = Math.round(-(c.tH / 2) - c.pad);
+
+        persistentCtx.drawImage(c.canvas, drawOffsetX, drawOffsetY);
+        
+        persistentCtx.restore();
     });
 }
 
