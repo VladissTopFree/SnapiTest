@@ -5015,10 +5015,12 @@ function drawScene() {
                 ctx.restore();
             };
 
-            const drawBrawler = (img, x, y, scale) => {
+            const drawBrawler = (img, x, y, scaleX, scaleY, rot) => {
                 if (!img) return;
                 ctx.save();
-                ctx.translate(x, y); ctx.scale(scale, scale);
+                ctx.translate(x, y); 
+                ctx.rotate((rot || 0) * Math.PI / 180);
+                ctx.scale(scaleX, scaleY);
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
                 ctx.drawImage(img, 0, 0);
                 ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; ctx.drawImage(img, 0, 0);
@@ -5037,17 +5039,21 @@ function drawScene() {
                 ctx.restore();
             };
 
-          // 5. Сетка гемов
+            // 5. Сетка гемов
             if (globalAssets.style2Gems) {
                 ctx.save();
-                ctx.translate(window.tempEditor.gems.x * s, window.tempEditor.gems.y * s); 
-                ctx.scale(window.tempEditor.gems.scale, window.tempEditor.gems.scale);
+                let gm = window.tempEditor.gems;
+                ctx.translate(gm.x*s, gm.y*s); 
+                ctx.rotate(gm.rot * Math.PI / 180);
+                ctx.scale(gm.scaleX, gm.scaleY);
                 ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 10*s; ctx.shadowOffsetY = 10*s;
                 ctx.drawImage(globalAssets.style2Gems, 0, 0, 742*s, 468*s);
                 ctx.restore();
             }
 
+
             // 6. Цены для гемов (0-5)
+            // Вспомогательная функция для цен
             const p = window.layerState.style2Prices || [];
             const fmt = (i) => p[i] === "" ? "0 ₽" : p[i] + " ₽";
             
@@ -5063,48 +5069,61 @@ function drawScene() {
             // 7. Pro Pass слева внизу (6)
             if (globalAssets.style2ProIcon) {
                 let pIcon = window.tempEditor.proIcon;
-                drawItem(globalAssets.style2ProIcon, pIcon.x*s, pIcon.y*s, 160*pIcon.scale*s, 160*pIcon.scale*s, -12, 15);
+                drawItem(globalAssets.style2ProIcon, pIcon.x*s, pIcon.y*s, 160*pIcon.scaleX*s, 160*pIcon.scaleY*s, pIcon.rot, 15);
                 
                 ctx.save();
                 let pTxt = window.tempEditor.proText;
                 ctx.translate(pTxt.x*s, pTxt.y*s); 
-                ctx.transform(1, 0, Math.tan(-10 * Math.PI / 180), 1, 0, 0); 
-                ctx.scale(pTxt.scale, pTxt.scale);
+                ctx.rotate(pTxt.rot * Math.PI / 180);
+                ctx.scale(pTxt.scaleX, pTxt.scaleY);
                 drawS2Text("- " + fmt(6), 0, 0, 58*s, 8*s, "#ffffff");
                 ctx.restore();
             }
 
             // 8. Блок BP+ (Справа сверху)
             let season = window.layerState.bpSeason || 50;
-            drawBrawler(globalAssets[`brawler_${season}_2`], window.tempEditor.brawler2.x*s, window.tempEditor.brawler2.y*s, window.tempEditor.brawler2.scale*s); 
+            let br2 = window.tempEditor.brawler2;
+            drawBrawler(globalAssets[`brawler_${season}_2`], br2.x*s, br2.y*s, br2.scaleX*s, br2.scaleY*s, br2.rot); 
             
             let bppi = window.tempEditor.bppIcon;
-            drawItem(globalAssets.style2BPP, bppi.x*s, bppi.y*s, 220*bppi.scale*s, 100*bppi.scale*s, -6, 15);
-            let bppp = window.tempEditor.bppPrice;
-            drawS2Text(fmt(7), bppp.x*s, bppp.y*s, 56*bppp.scale*s, 8*s);
+            drawItem(globalAssets.style2BPP, bppi.x*s, bppi.y*s, 220*bppi.scaleX*s, 100*bppi.scaleY*s, bppi.rot, 15);
+            
+            ctx.save(); let bppp = window.tempEditor.bppPrice;
+            ctx.translate(bppp.x*s, bppp.y*s); ctx.rotate(bppp.rot * Math.PI / 180); ctx.scale(bppp.scaleX, bppp.scaleY);
+            drawS2Text(fmt(7), 0, 0, 56*s, 8*s); ctx.restore();
+
             let bpbl = window.tempEditor.bluePlate;
-            drawItem(globalAssets.style2BluePlate, bpbl.x*s, bpbl.y*s, 220*bpbl.scale*s, 60*bpbl.scale*s, 0, 15);
-            let bpblp = window.tempEditor.bluePrice;
-            drawS2Text(fmt(8), bpblp.x*s, bpblp.y*s, 56*bpblp.scale*s, 8*s);
+            drawItem(globalAssets.style2BluePlate, bpbl.x*s, bpbl.y*s, 220*bpbl.scaleX*s, 60*bpbl.scaleY*s, bpbl.rot, 15);
+            
+            ctx.save(); let bpblp = window.tempEditor.bluePrice;
+            ctx.translate(bpblp.x*s, bpblp.y*s); ctx.rotate(bpblp.rot * Math.PI / 180); ctx.scale(bpblp.scaleX, bpblp.scaleY);
+            drawS2Text(fmt(8), 0, 0, 56*s, 8*s); ctx.restore();
 
             // 9. Блок BP (Справа снизу)
-            drawBrawler(globalAssets[`brawler_${season}_1`], window.tempEditor.brawler1.x*s, window.tempEditor.brawler1.y*s, window.tempEditor.brawler1.scale*s);
+            let br1 = window.tempEditor.brawler1;
+            drawBrawler(globalAssets[`brawler_${season}_1`], br1.x*s, br1.y*s, br1.scaleX*s, br1.scaleY*s, br1.rot);
             
             let bpi = window.tempEditor.bpIcon;
-            drawItem(globalAssets.style2BP, bpi.x*s, bpi.y*s, 220*bpi.scale*s, 100*bpi.scale*s, -3, 15);
-            let bpp = window.tempEditor.bpPrice;
-            drawS2Text(fmt(9), bpp.x*s, bpp.y*s, 56*bpp.scale*s, 8*s);
+            drawItem(globalAssets.style2BP, bpi.x*s, bpi.y*s, 220*bpi.scaleX*s, 100*bpi.scaleY*s, bpi.rot, 15);
+            
+            ctx.save(); let bpp = window.tempEditor.bpPrice;
+            ctx.translate(bpp.x*s, bpp.y*s); ctx.rotate(bpp.rot * Math.PI / 180); ctx.scale(bpp.scaleX, bpp.scaleY);
+            drawS2Text(fmt(9), 0, 0, 56*s, 8*s); ctx.restore();
+
             let yp = window.tempEditor.yellowPlate;
-            drawItem(globalAssets.style2YellowPlate, yp.x*s, yp.y*s, 220*yp.scale*s, 60*yp.scale*s, 0, 15);
-            let ypp = window.tempEditor.yellowPrice;
-            drawS2Text(fmt(10), ypp.x*s, ypp.y*s, 56*ypp.scale*s, 8*s);
+            drawItem(globalAssets.style2YellowPlate, yp.x*s, yp.y*s, 220*yp.scaleX*s, 60*yp.scaleY*s, yp.rot, 15);
+            
+            ctx.save(); let ypp = window.tempEditor.yellowPrice;
+            ctx.translate(ypp.x*s, ypp.y*s); ctx.rotate(ypp.rot * Math.PI / 180); ctx.scale(ypp.scaleX, ypp.scaleY);
+            drawS2Text(fmt(10), 0, 0, 56*s, 8*s); ctx.restore();
 
             // 10. Логотип Brawl Pass по центру
             if (globalAssets.style2Text) {
                 ctx.save();
                 let ml = window.tempEditor.mainLogo;
                 ctx.translate(ml.x*s, ml.y*s); 
-                ctx.scale(ml.scale*s, ml.scale*s);
+                ctx.rotate(ml.rot * Math.PI / 180);
+                ctx.scale(ml.scaleX*s, ml.scaleY*s);
                 ctx.drawImage(globalAssets.style2Text, 0, 0);
                 ctx.restore();
             }
@@ -6653,66 +6672,70 @@ window.openBPTestEditor = function() {
     }, 100);
 };
 
-// --- ВРЕМЕННЫЙ DEV РЕДАКТОР КООРДИНАТ ДЛЯ СТИЛЯ 2 (РАСШИРЕННЫЙ) ---
+// --- ВРЕМЕННЫЙ DEV РЕДАКТОР КООРДИНАТ ДЛЯ СТИЛЯ 2 (PRO ВЕРСИЯ) ---
 window.tempEditor = {
-    // Основные
-    gems: { x: 23, y: -16, scale: 1.16 },
-    brawler2: { x: 910, y: 10, scale: 0.70 }, // BP+
-    brawler1: { x: 930, y: 340, scale: 0.75 }, // BP
-    mainLogo: { x: 744, y: 283, scale: 0.35 }, // Логотип Brawl Pass
+    gems: { x: 23, y: -16, scaleX: 1.16, scaleY: 1.16, rot: 0 },
+    brawler2: { x: 910, y: 10, scaleX: 0.70, scaleY: 0.70, rot: 0 },
+    brawler1: { x: 930, y: 340, scaleX: 0.75, scaleY: 0.75, rot: 0 },
+    mainLogo: { x: 744, y: 283, scaleX: 0.35, scaleY: 0.35, rot: 0 },
     
-    // Блок Pro Pass (Слева внизу)
-    proIcon: { x: 30, y: 560, scale: 1 },
-    proText: { x: 390, y: 650, scale: 1.12 },
-
-    // Блок BP+ (Справа вверху)
-    bppIcon: { x: 780, y: 30, scale: 1 },
-    bppPrice: { x: 930, y: 180, scale: 1 },
-    bluePlate: { x: 800, y: 260, scale: 1 },
-    bluePrice: { x: 920, y: 285, scale: 1 },
-
-    // Блок BP (Справа внизу)
-    bpIcon: { x: 780, y: 400, scale: 1 },
-    bpPrice: { x: 940, y: 550, scale: 1 },
-    yellowPlate: { x: 800, y: 620, scale: 1 },
-    yellowPrice: { x: 920, y: 645, scale: 1 }
+    proIcon: { x: 30, y: 560, scaleX: 1, scaleY: 1, rot: -12 },
+    proText: { x: 390, y: 650, scaleX: 1.12, scaleY: 1.12, rot: -10 },
+    
+    bppIcon: { x: 780, y: 30, scaleX: 1, scaleY: 1, rot: -6 },
+    bppPrice: { x: 930, y: 180, scaleX: 1, scaleY: 1, rot: 0 },
+    bluePlate: { x: 800, y: 260, scaleX: 1, scaleY: 1, rot: 0 },
+    bluePrice: { x: 920, y: 285, scaleX: 1, scaleY: 1, rot: 0 },
+    
+    bpIcon: { x: 780, y: 400, scaleX: 1, scaleY: 1, rot: -3 },
+    bpPrice: { x: 940, y: 550, scaleX: 1, scaleY: 1, rot: 0 },
+    yellowPlate: { x: 800, y: 620, scaleX: 1, scaleY: 1, rot: 0 },
+    yellowPrice: { x: 920, y: 645, scaleX: 1, scaleY: 1, rot: 0 }
 };
 
 function initDevEditor() {
     const editor = document.createElement('div');
-    editor.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: white; padding: 15px; border-radius: 12px; z-index: 99999; font-family: -apple-system, sans-serif; font-size: 13px; max-height: 90vh; overflow-y: auto; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 280px;';
+    editor.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: white; padding: 10px; border-radius: 12px; z-index: 99999; font-family: -apple-system, sans-serif; font-size: 12px; max-height: 95vh; overflow-y: auto; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 300px;';
 
-    const createSliders = (id, label, obj, minX=-100, maxX=1200, minY=-100, maxY=1000) => {
+    const createSliders = (id, label, obj, minX=-200, maxX=1200, minY=-200, maxY=1000) => {
         return `
             <div style="margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 6px;">
                 <div style="color: #00A0FF; margin-bottom: 4px; font-weight: 600;">${label}</div>
                 <div style="display:flex; align-items:center; gap:5px;">
-                    <span style="width:10px;">X</span><input type="range" min="${minX}" max="${maxX}" value="${obj.x}" oninput="updateDev('${id}','x',this.value)" style="flex-grow:1;">
+                    <span style="width:12px;" title="Ось X">X</span><input type="range" min="${minX}" max="${maxX}" value="${obj.x}" oninput="updateDev('${id}','x',this.value)" style="flex-grow:1;">
                     <span id="val-${id}-x" style="width:30px; text-align:right; font-family: monospace;">${obj.x}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:10px;">Y</span><input type="range" min="${minY}" max="${maxY}" value="${obj.y}" oninput="updateDev('${id}','y',this.value)" style="flex-grow:1;">
+                    <span style="width:12px;" title="Ось Y">Y</span><input type="range" min="${minY}" max="${maxY}" value="${obj.y}" oninput="updateDev('${id}','y',this.value)" style="flex-grow:1;">
                     <span id="val-${id}-y" style="width:30px; text-align:right; font-family: monospace;">${obj.y}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:10px;">S</span><input type="range" min="0.1" max="2" step="0.01" value="${obj.scale}" oninput="updateDev('${id}','scale',this.value)" style="flex-grow:1;">
-                    <span id="val-${id}-scale" style="width:30px; text-align:right; font-family: monospace;">${obj.scale}</span>
+                    <span style="width:12px; color:#34C759;" title="Ширина (Scale X)">Ш</span><input type="range" min="0.1" max="3" step="0.01" value="${obj.scaleX}" oninput="updateDev('${id}','scaleX',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-scaleX" style="width:30px; text-align:right; font-family: monospace;">${obj.scaleX}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
+                    <span style="width:12px; color:#34C759;" title="Высота (Scale Y)">В</span><input type="range" min="0.1" max="3" step="0.01" value="${obj.scaleY}" oninput="updateDev('${id}','scaleY',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-scaleY" style="width:30px; text-align:right; font-family: monospace;">${obj.scaleY}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
+                    <span style="width:12px; color:#FF9500;" title="Угол поворота">У</span><input type="range" min="-180" max="180" step="1" value="${obj.rot}" oninput="updateDev('${id}','rot',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-rot" style="width:30px; text-align:right; font-family: monospace;">${obj.rot}°</span>
                 </div>
             </div>
         `;
     };
 
     const createGroup = (title, content) => `
-        <details style="margin-bottom: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 5px;">
-            <summary style="cursor: pointer; font-weight: bold; outline: none; padding: 5px;">${title}</summary>
-            <div style="padding-top: 10px;">${content}</div>
+        <details style="margin-bottom: 6px; background: rgba(255,255,255,0.08); border-radius: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; outline: none; padding: 8px;">${title}</summary>
+            <div style="padding: 0 8px 8px 8px;">${content}</div>
         </details>
     `;
 
     editor.innerHTML = `
-        <div style="font-size:15px; font-weight:bold; margin-bottom:12px; text-align:center;">Настройка Стиля #2</div>
+        <div style="font-size:14px; font-weight:bold; margin-bottom:10px; text-align:center;">Ультра-Редактор BP #2</div>
         
-        ${createGroup('Герои и База', 
+        ${createGroup('Герои, Гемы, Лого', 
             createSliders('gems', 'Сетка гемов', window.tempEditor.gems, -100, 500, -100, 500) +
             createSliders('brawler2', 'Brawler BP+ (Верх)', window.tempEditor.brawler2) +
             createSliders('brawler1', 'Brawler BP (Низ)', window.tempEditor.brawler1) +
@@ -6745,16 +6768,17 @@ function initDevEditor() {
 
 window.updateDev = (id, prop, val) => {
     window.tempEditor[id][prop] = parseFloat(val);
-    document.getElementById(`val-${id}-${prop}`).innerText = val;
+    let displayVal = prop === 'rot' ? val + '°' : val;
+    document.getElementById(`val-${id}-${prop}`).innerText = displayVal;
     if (typeof startAnimation === 'function') startAnimation();
 };
 
 window.copyDevConfig = () => {
     const res = JSON.stringify(window.tempEditor, null, 2);
     navigator.clipboard.writeText(res)
-        .then(() => alert('Координаты скопированы!'))
+        .then(() => alert('Готово! Жду координаты.'))
         .catch(() => alert('Ошибка копирования. Смотри в консоль.'));
-    console.log("Новые координаты:", res);
+    console.log(res);
 };
 
 setTimeout(initDevEditor, 1000);
