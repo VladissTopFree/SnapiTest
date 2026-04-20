@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(16)";
+  const APP_VERSION = "v2.4.9(17)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -580,7 +580,7 @@
   }
 
   .ios-card.ios-profile { padding: 16px 20px; min-height: auto; }
-  .ios-card-group { background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 24px; padding: 0 20px; display: flex; flex-direction: column; width: 100%; margin-bottom: 24px; overflow: hidden; flex-shrink: 0; }
+  .ios-card-group { background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 56px; padding: 0 20px; display: flex; flex-direction: column; width: 100%; margin-bottom: 24px; overflow: hidden; flex-shrink: 0; }
 
   .ios-avatar {
     width: 54px; height: 54px;
@@ -4962,56 +4962,33 @@ function drawScene() {
 
     if (window.layerState.isBrawlPassMode) {
         
-// --- СТИЛЬ 2 ---
+        // --- СТИЛЬ 2 ---
         if (window.layerState.bpStyleIndex === 2) {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
             const s = W / 1280; 
 
-            const C = {
-                gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
-                brawler2: { x: 986, y: 7, scale: 0.43, scaleX: 1, scaleY: 1, rot: 0 },
-                brawler1: { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 },
-                mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
-                proIcon: { x: 257, y: 581, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 0 },
-                proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, rot: -10 }, // Единственная цена с наклоном!
-                bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: 0 },
-                bppPrice: { x: 974, y: 142, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-                bluePlate: { x: 843, y: 217, scale: 1.65, scaleX: 0.66, scaleY: 1, rot: 0 },
-                bluePrice: { x: 966, y: 258, scale: 0.82, scaleX: 1, scaleY: 1, rot: 0 },
-                bpIcon: { x: 804, y: 400, scale: 1.39, scaleX: 0.78, scaleY: 1, rot: 0 },
-                bpPrice: { x: 938, y: 523, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-                yellowPlate: { x: 768, y: 591, scale: 1.81, scaleX: 0.77, scaleY: 1, rot: 0 },
-                yellowPrice: { x: 925, y: 627, scale: 0.78, scaleX: 1, scaleY: 1, rot: 0 },
-                gemPrice0: { x: 172, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
-                gemPrice1: { x: 395, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
-                gemPrice2: { x: 616, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
-                gemPrice3: { x: 157, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
-                gemPrice4: { x: 379, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
-                gemPrice5: { x: 600, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
-                watermarks: [
-                    { "x": 514, "y": -31, "scale": 0.74 }, { "x": 71, "y": 17, "scale": 0.25 },
-                    { "x": 19, "y": 146, "scale": 0.12 }, { "x": 664, "y": 82, "scale": 0.25 },
-                    { "x": 587, "y": 598, "scale": 0.33 }, { "x": 421, "y": 699, "scale": 0.72 },
-                    { "x": 734, "y": 262, "scale": 0.1 }, { "x": 76, "y": 602, "scale": 0.38 },
-                    { "x": -92, "y": 695, "scale": 0.87 }, { "x": -52, "y": 386, "scale": 0.24 },
-                    { "x": 852, "y": 189, "scale": 0.22 }, { "x": 1237, "y": 306, "scale": 0.39 },
-                    { "x": 957, "y": -21, "scale": 0.5 }, { "x": 791, "y": 558, "scale": 0.21 },
-                    { "x": 878, "y": 357, "scale": 0.36 }, { "x": 1131, "y": 391, "scale": 0.13 }
-                ]
-            };
+            const C = window.tempEditor; // Читаем всё напрямую из редактора
+            const shadowPlatesA = C.shadows.platesAlpha;
+            const shadowGemsA = C.shadows.gemsAlpha;
 
-            // 1. Правая часть (Маскированный фон)
+            // 1. Правая часть (Маскированные фоны)
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
             ctx.closePath();
             ctx.clip();
             if (rawBgImage) {
-                ctx.translate(150*s, 80*s); 
-                ctx.scale(1.1, 1.1);
-                ctx.drawImage(rawBgImage, 0, 0, W, H);
+                // Отрисовываем каждый фон из массива backgrounds
+                C.backgrounds.forEach(bg => {
+                    ctx.save();
+                    ctx.translate(bg.x * s, bg.y * s);
+                    if (bg.skewX) ctx.transform(1, 0, Math.tan(bg.skewX * Math.PI / 180), 1, 0, 0);
+                    ctx.scale(bg.scale, bg.scale);
+                    ctx.drawImage(rawBgImage, 0, 0, W, H);
+                    ctx.restore();
+                });
             }
             ctx.restore();
 
@@ -5027,7 +5004,7 @@ function drawScene() {
                 ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
             }
 
-            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ (С жестким наклоном -12)
+            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ (Используют наклон - skewX)
             if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
                 let wmFont = window.layerState.watermarksFont || 'Font16103';
@@ -5039,7 +5016,8 @@ function drawScene() {
                 C.watermarks.forEach(wm => {
                     ctx.save();
                     ctx.translate(wm.x * s, wm.y * s); 
-                    ctx.rotate(-12 * Math.PI / 180); // Жесткий наклон -12 градусов
+                    // Используем наклон (skew) вместо поворота
+                    if (wm.skewX) ctx.transform(1, 0, Math.tan(wm.skewX * Math.PI / 180), 1, 0, 0); 
                     ctx.font = `${56 * wm.scale * s}px '${wmFont}', sans-serif`;
                     ctx.fillText(wmText, 0, 0);
                     ctx.restore();
@@ -5073,14 +5051,14 @@ function drawScene() {
             ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
             ctx.restore();
 
-            let shadowPlatesA = window.tempShadows ? window.tempShadows.platesAlpha : 0.7;
-            let shadowGemsA = window.tempShadows ? window.tempShadows.gemsAlpha : 0.5;
-
             const drawItem = (img, obj, shadowY) => {
                 if (!img) return;
                 ctx.save();
-                ctx.translate(obj.x*s, obj.y*s); ctx.rotate((obj.rot || 0) * Math.PI / 180);
+                ctx.translate(obj.x*s, obj.y*s); 
+                if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180); // Поворот
+                if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0); // Наклон
                 ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
+                
                 ctx.shadowColor = `rgba(0,0,0,${shadowPlatesA})`; 
                 ctx.shadowBlur = 15*s; ctx.shadowOffsetY = shadowY*s;
                 
@@ -5097,8 +5075,10 @@ function drawScene() {
                 if (!img) return;
                 ctx.save();
                 ctx.translate(obj.x*s, obj.y*s); 
-                ctx.rotate((obj.rot || 0) * Math.PI / 180);
+                if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
+                if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
                 ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
+                
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
                 ctx.drawImage(img, 0, 0);
                 ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; ctx.drawImage(img, 0, 0);
@@ -5108,7 +5088,8 @@ function drawScene() {
             const drawS2TextObj = (txt, obj, size, strokeW, color = "#ffffff") => {
                 ctx.save();
                 ctx.translate(obj.x*s, obj.y*s); 
-                ctx.rotate((obj.rot || 0) * Math.PI / 180); 
+                if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180); 
+                if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0); 
                 ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
                 
                 ctx.font = `${size}px 'LilitaOneRus', 'Arial Black', sans-serif`;
@@ -5125,7 +5106,8 @@ function drawScene() {
             if (globalAssets.style2Gems) {
                 ctx.save();
                 ctx.translate(C.gems.x*s, C.gems.y*s); 
-                ctx.rotate(C.gems.rot * Math.PI / 180);
+                if (C.gems.rot) ctx.rotate(C.gems.rot * Math.PI / 180);
+                if (C.gems.skewX) ctx.transform(1, 0, Math.tan(C.gems.skewX * Math.PI / 180), 1, 0, 0);
                 ctx.scale(C.gems.scale * C.gems.scaleX, C.gems.scale * C.gems.scaleY);
                 ctx.shadowColor = `rgba(0,0,0,${shadowGemsA})`; 
                 ctx.shadowBlur = 10*s; ctx.shadowOffsetY = 10*s;
@@ -5182,7 +5164,8 @@ function drawScene() {
             if (globalAssets.style2Text) {
                 ctx.save();
                 ctx.translate(C.mainLogo.x*s, C.mainLogo.y*s); 
-                ctx.rotate((C.mainLogo.rot || 0) * Math.PI / 180);
+                if (C.mainLogo.rot) ctx.rotate(C.mainLogo.rot * Math.PI / 180);
+                if (C.mainLogo.skewX) ctx.transform(1, 0, Math.tan(C.mainLogo.skewX * Math.PI / 180), 1, 0, 0);
                 ctx.scale(C.mainLogo.scale * C.mainLogo.scaleX * s, C.mainLogo.scale * C.mainLogo.scaleY * s);
                 ctx.drawImage(globalAssets.style2Text, 0, 0);
                 ctx.restore();
@@ -6700,38 +6683,151 @@ window.openBPTestEditor = function() {
     }, 100);
 };
 
-// --- ВРЕМЕННЫЙ DEV РЕДАКТОР ПРОЗРАЧНОСТИ ТЕНЕЙ ---
-window.tempShadows = {
-    platesAlpha: 0.7,
-    gemsAlpha: 0.5
+// --- ВРЕМЕННЫЙ DEV РЕДАКТОР: ФОНЫ, ТЕНИ, НАКЛОНЫ И ПОВОРОТЫ ---
+window.tempEditor = {
+    shadows: { platesAlpha: 0.25, gemsAlpha: 0.35 },
+    
+    // Массив фонов (можно добавлять новые)
+    backgrounds: [
+        { x: 150, y: 80, scale: 1.1, skewX: 0 }
+    ],
+
+    gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
+    brawler2: { x: 986, y: 7, scale: 0.43, scaleX: 1, scaleY: 1, rot: 0 },
+    brawler1: { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 },
+    mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
+    
+    proIcon: { x: 257, y: 581, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 13 },
+    // Для Pro Pass используем skewX (наклон) вместо rot
+    proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
+    
+    bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: -6 },
+    bppPrice: { x: 974, y: 142, scale: 1, scaleX: 1, scaleY: 1, rot: -13 },
+    bluePlate: { x: 843, y: 217, scale: 1.65, scaleX: 0.66, scaleY: 1, rot: 0 },
+    bluePrice: { x: 966, y: 258, scale: 0.82, scaleX: 1, scaleY: 1, rot: 0 },
+    
+    bpIcon: { x: 804, y: 400, scale: 1.39, scaleX: 0.78, scaleY: 1, rot: -3 },
+    bpPrice: { x: 938, y: 523, scale: 1, scaleX: 1, scaleY: 1, rot: -8 },
+    yellowPlate: { x: 768, y: 591, scale: 1.81, scaleX: 0.77, scaleY: 1, rot: 0 },
+    yellowPrice: { x: 925, y: 627, scale: 0.78, scaleX: 1, scaleY: 1, rot: 0 },
+    
+    gemPrice0: { x: 172, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice1: { x: 395, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice2: { x: 616, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice3: { x: 157, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice4: { x: 379, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice5: { x: 600, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
+    
+    // Водяные знаки теперь тоже используют skewX (наклон)
+    watermarks: [
+        { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
+        { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
+        { x: 587, y: 598, scale: 0.33, skewX: -12 }, { x: 421, y: 699, scale: 0.72, skewX: -12 },
+        { x: 734, y: 262, scale: 0.1, skewX: -12 }, { x: 76, y: 602, scale: 0.38, skewX: -12 },
+        { x: -92, y: 695, scale: 0.87, skewX: -12 }, { x: -52, y: 386, scale: 0.24, skewX: -12 },
+        { x: 852, y: 189, scale: 0.22, skewX: -12 }, { x: 1237, y: 306, scale: 0.39, skewX: -12 },
+        { x: 957, y: -21, scale: 0.5, skewX: -12 }, { x: 791, y: 558, scale: 0.21, skewX: -12 },
+        { x: 878, y: 357, scale: 0.36, skewX: -12 }, { x: 1131, y: 391, scale: 0.13, skewX: -12 }
+    ]
 };
 
-function initShadowEditor() {
-    const existing = document.getElementById('shadow-editor-panel');
+function initDevEditor() {
+    const existing = document.getElementById('dev-editor-panel');
     if (existing) existing.remove();
 
     const editor = document.createElement('div');
-    editor.id = 'shadow-editor-panel';
-    editor.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); color: white; padding: 15px; border-radius: 12px; z-index: 99999; font-family: -apple-system, sans-serif; font-size: 13px; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 200px;';
+    editor.id = 'dev-editor-panel';
+    editor.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: white; padding: 10px; border-radius: 12px; z-index: 99999; font-family: -apple-system, sans-serif; font-size: 12px; max-height: 95vh; overflow-y: auto; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 310px;';
+
+    // Умный генератор ползунков: показывает только те свойства, которые есть в объекте
+    const createSliders = (id, label, obj, isArray=false, arrIdx=0, arrayName='') => {
+        const makeSlider = (prop, title, min, max, step, color) => {
+            if (obj[prop] === undefined) return '';
+            const onInp = isArray ? `updateDevArr('${arrayName}', ${arrIdx}, '${prop}', this.value)` : `updateDev('${id}', '${prop}', this.value)`;
+            return `
+                <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
+                    <span style="width:14px; color:${color};" title="${title}">${title[0]}</span>
+                    <input type="range" min="${min}" max="${max}" step="${step}" value="${obj[prop]}" oninput="${onInp}" style="flex-grow:1;">
+                    <span id="val-${isArray?arrayName+'-'+arrIdx:id}-${prop}" style="width:34px; text-align:right;">${obj[prop]}</span>
+                </div>`;
+        };
+
+        return `
+            <div style="margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 6px;">
+                <div style="color: #00A0FF; margin-bottom: 4px; font-weight: 600; display:flex; justify-content:space-between;">
+                    <span>${label}</span>
+                    ${isArray ? `<span style="color:#FF3B30; cursor:pointer;" onclick="deleteArrItem('${arrayName}', ${arrIdx})">Удалить</span>` : ''}
+                </div>
+                ${makeSlider('platesAlpha', 'Тень (Плажки)', 0, 1, 0.05, '#fff')}
+                ${makeSlider('gemsAlpha', 'Тень (Гемы)', 0, 1, 0.05, '#fff')}
+                ${makeSlider('x', 'X Ось', -500, 1500, 1, '#fff')}
+                ${makeSlider('y', 'Y Ось', -500, 1500, 1, '#fff')}
+                ${makeSlider('scale', 'Размер', 0.05, 3, 0.01, '#FF3B30')}
+                ${makeSlider('scaleX', 'Ширина', 0.1, 3, 0.01, '#34C759')}
+                ${makeSlider('scaleY', 'Высота', 0.1, 3, 0.01, '#34C759')}
+                ${makeSlider('rot', 'Угол', -180, 180, 1, '#FF9500')}
+                ${makeSlider('skewX', 'Наклон', -60, 60, 1, '#AF52DE')}
+            </div>`;
+    };
+
+    const createGroup = (title, content) => `
+        <details style="margin-bottom: 6px; background: rgba(255,255,255,0.08); border-radius: 8px;">
+            <summary style="cursor: pointer; font-weight: bold; outline: none; padding: 8px;">${title}</summary>
+            <div style="padding: 0 8px 8px 8px; max-height: 350px; overflow-y: auto;">${content}</div>
+        </details>`;
+
+    let bgHtml = '';
+    window.tempEditor.backgrounds.forEach((bg, idx) => bgHtml += createSliders('', `Фон #${idx+1}`, bg, true, idx, 'backgrounds'));
+    bgHtml += `<button onclick="addArrayItem('backgrounds', {x:150, y:80, scale:1.1, skewX:0})" style="width:100%; padding:8px; background:#34C759; color:white; border:none; border-radius:8px; cursor:pointer;">+ Добавить фон</button>`;
+
+    let wmHtml = '';
+    window.tempEditor.watermarks.forEach((wm, idx) => wmHtml += createSliders('', `Ник #${idx+1}`, wm, true, idx, 'watermarks'));
+    wmHtml += `<button onclick="addArrayItem('watermarks', {x:600, y:300, scale:0.5, skewX:-12})" style="width:100%; padding:8px; background:#34C759; color:white; border:none; border-radius:8px; cursor:pointer;">+ Добавить ник</button>`;
 
     editor.innerHTML = `
-        <div style="font-weight:bold; margin-bottom:10px; color:#00A0FF; text-align:center;">Тени (Стиль #2)</div>
-        <div style="margin-bottom:10px;">
-            <span>Плажки и иконки</span><br>
-            <input type="range" min="0" max="1" step="0.05" value="${window.tempShadows.platesAlpha}" oninput="window.tempShadows.platesAlpha=parseFloat(this.value); document.getElementById('val-sh-1').innerText=this.value; if(typeof startAnimation==='function') startAnimation();" style="width:100%">
-            <div style="text-align:right; font-size:11px; opacity:0.7;" id="val-sh-1">${window.tempShadows.platesAlpha}</div>
-        </div>
-        <div style="margin-bottom:10px;">
-            <span>Сетка гемов</span><br>
-            <input type="range" min="0" max="1" step="0.05" value="${window.tempShadows.gemsAlpha}" oninput="window.tempShadows.gemsAlpha=parseFloat(this.value); document.getElementById('val-sh-2').innerText=this.value; if(typeof startAnimation==='function') startAnimation();" style="width:100%">
-            <div style="text-align:right; font-size:11px; opacity:0.7;" id="val-sh-2">${window.tempShadows.gemsAlpha}</div>
-        </div>
-        <button onclick="alert('Плажки: ' + window.tempShadows.platesAlpha + '\\nГемы: ' + window.tempShadows.gemsAlpha)" style="width:100%; padding:8px; background:#34C759; color:white; border:none; border-radius:8px; cursor:pointer;">Сохранить (показать)</button>
+        <div style="font-size:14px; font-weight:bold; margin-bottom:10px; text-align:center;">Ультра-Редактор BP #2</div>
+        ${createGroup('Настройки Теней', createSliders('shadows', 'Прозрачность', window.tempEditor.shadows))}
+        ${createGroup('Управление Фонами', bgHtml)}
+        ${createGroup('Фоновые ники (Watermarks)', wmHtml)}
+        ${createGroup('Герои, Гемы, Лого', 
+            createSliders('gems', 'Сетка гемов', window.tempEditor.gems) +
+            createSliders('brawler2', 'Brawler BP+ (Верх)', window.tempEditor.brawler2) +
+            createSliders('brawler1', 'Brawler BP (Низ)', window.tempEditor.brawler1) +
+            createSliders('mainLogo', 'Логотип по центру', window.tempEditor.mainLogo)
+        )}
+        ${createGroup('Блок Pro Pass (Лев. низ)', 
+            createSliders('proIcon', 'Иконка Pro Pass', window.tempEditor.proIcon) +
+            createSliders('proText', 'Цена Pro Pass', window.tempEditor.proText)
+        )}
+        ${createGroup('Блок BP+ (Прав. верх)', 
+            createSliders('bppIcon', 'Иконка BP+', window.tempEditor.bppIcon) +
+            createSliders('bppPrice', 'Цена BP+', window.tempEditor.bppPrice) +
+            createSliders('bluePlate', 'Синяя плажка', window.tempEditor.bluePlate) +
+            createSliders('bluePrice', 'Цена на синей', window.tempEditor.bluePrice)
+        )}
+        ${createGroup('Блок BP (Прав. низ)', 
+            createSliders('bpIcon', 'Иконка BP', window.tempEditor.bpIcon) +
+            createSliders('bpPrice', 'Цена BP', window.tempEditor.bpPrice) +
+            createSliders('yellowPlate', 'Желтая плажка', window.tempEditor.yellowPlate) +
+            createSliders('yellowPrice', 'Цена на желтой', window.tempEditor.yellowPrice)
+        )}
+        ${createGroup('Цены на гемах (6 штук)', 
+            createSliders('gemPrice0', 'Цена 1', window.tempEditor.gemPrice0) + createSliders('gemPrice1', 'Цена 2', window.tempEditor.gemPrice1) +
+            createSliders('gemPrice2', 'Цена 3', window.tempEditor.gemPrice2) + createSliders('gemPrice3', 'Цена 4', window.tempEditor.gemPrice3) +
+            createSliders('gemPrice4', 'Цена 5', window.tempEditor.gemPrice4) + createSliders('gemPrice5', 'Цена 6', window.tempEditor.gemPrice5)
+        )}
+        <button onclick="copyDevConfig()" style="width:100%; padding:10px; background:#00A0FF; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:5px;">Скопировать JSON</button>
     `;
     document.body.appendChild(editor);
 }
 
-setTimeout(initShadowEditor, 1000);
+window.updateDev = (id, prop, val) => { window.tempEditor[id][prop] = parseFloat(val); document.getElementById(`val-${id}-${prop}`).innerText = val; if(typeof startAnimation==='function') startAnimation(); };
+window.updateDevArr = (arrName, idx, prop, val) => { window.tempEditor[arrName][idx][prop] = parseFloat(val); document.getElementById(`val-${arrName}-${idx}-${prop}`).innerText = val; if(typeof startAnimation==='function') startAnimation(); };
+window.addArrayItem = (arrName, template) => { window.tempEditor[arrName].push(template); initDevEditor(); if(typeof startAnimation==='function') startAnimation(); };
+window.deleteArrItem = (arrName, idx) => { window.tempEditor[arrName].splice(idx, 1); initDevEditor(); if(typeof startAnimation==='function') startAnimation(); };
+window.copyDevConfig = () => { navigator.clipboard.writeText(JSON.stringify(window.tempEditor, null, 2)).then(()=>alert('Скопировано!')).catch(()=>alert('Ошибка!')); console.log(JSON.stringify(window.tempEditor, null, 2)); };
+
+setTimeout(initDevEditor, 1000);
 
 </script>
 </body>
