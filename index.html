@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(15)";
+  const APP_VERSION = "v2.4.9(16)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2596,26 +2596,10 @@ if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButt
 }
 
 document.addEventListener('pointerdown', (e) => {
-    const wizardNickInput = document.getElementById('wizard-nick-input');
-    const bpPrice = document.getElementById('wizard-bp-price');
-    const bpPlusPrice = document.getElementById('wizard-bpplus-price');
-    
-    if (document.activeElement === wizardNickInput && 
-        e.target !== wizardNickInput && 
-        !e.target.closest('.wizard-caps-btn')) {
-      wizardNickInput.blur();
-    }
-
-    if (document.activeElement === bpPrice && e.target !== bpPrice) {
-        bpPrice.blur();
-    }
-    if (document.activeElement === bpPlusPrice && e.target !== bpPlusPrice) {
-        bpPlusPrice.blur();
-    }
-
-    if (document.activeElement && document.activeElement.classList.contains('ios-price-input')) {
-        if (!e.target.classList.contains('ios-price-input')) {
-            document.activeElement.blur();
+    // Если фокус находится на поле ввода, а клик произошел мимо него
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+        if (e.target.tagName !== 'INPUT' && !e.target.closest('.wizard-caps-btn')) {
+            document.activeElement.blur(); // Скрываем клавиатуру
         }
     }
 });
@@ -3658,6 +3642,16 @@ window.updateBPText = (val) => {
     startAnimation();
 };
 
+window.updateS2PriceLayer = (idx, val) => {
+    val = val.replace(/[^0-9]/g, '');
+    if (parseInt(val) > 99999) val = "99999";
+    if (!window.layerState.style2Prices) window.layerState.style2Prices = [];
+    window.layerState.style2Prices[idx] = val;
+    let wsInp = document.getElementById('ws2-p' + idx);
+    if (wsInp) wsInp.value = val;
+    if (typeof startAnimation === 'function') startAnimation();
+};
+
 function renderLayerPanel(isInitialLoad = false) {
     layerPanel.innerHTML = '';
     let html = '';
@@ -3697,38 +3691,60 @@ function renderLayerPanel(isInitialLoad = false) {
         });
         html += `</div></div>`;
 
+        // ПРАВИЛЬНЫЕ ЦЕНЫ (Стиль 2 vs Стиль 1)
         html += `<div class="ios-layer-group ${animCls}">`;
-        html += `
-            <div class="ios-layer-row">
-                <div style="width: 24px; flex-shrink: 0;"></div>
-                <div class="ios-layer-name">Левая цена</div>
-                <div class="ios-layer-action-text">значение</div>
-                <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this.value, this)">
-            </div>
-            <div class="ios-layer-row" style="border-bottom:none;">
-                <div style="width: 24px; flex-shrink: 0;"></div>
-                <div class="ios-layer-name">Правая цена</div>
-                <div class="ios-layer-action-text">значение</div>
-                <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this.value, this)">
-            </div>
-        </div>`;
+        if (window.layerState.bpStyleIndex === 2) {
+            const labels = ["30 gems", "80 gems", "170 gems", "360 gems", "950 gems", "2000 gems", "Pro pass", "BP +", "Улучшение", "BP", "Особая скидка"];
+            for(let i=0; i<=10; i++) {
+                let val = (window.layerState.style2Prices && window.layerState.style2Prices[i]) ? window.layerState.style2Prices[i] : "";
+                html += `
+                <div class="ios-layer-row" ${i===10 ? 'style="border-bottom:none;"' : ''}>
+                    <div style="width: 24px; flex-shrink: 0;"></div>
+                    <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
+                    <div class="ios-layer-action-text">цена</div>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS2PriceLayer(${i}, this.value)" style="width:65px;">
+                </div>`;
+            }
+        } else {
+            html += `
+                <div class="ios-layer-row">
+                    <div style="width: 24px; flex-shrink: 0;"></div>
+                    <div class="ios-layer-name">Левая цена</div>
+                    <div class="ios-layer-action-text">значение</div>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this.value, this)">
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none;">
+                    <div style="width: 24px; flex-shrink: 0;"></div>
+                    <div class="ios-layer-name">Правая цена</div>
+                    <div class="ios-layer-action-text">значение</div>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this.value, this)">
+                </div>
+            `;
+        }
+        html += `</div>`;
 
-        let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
+        // КОСМЕТИКА (Без лучей для стиля 2)
         let starsEyeClass = window.layerState.starsVisible ? '' : 'hidden';
         let pointsEyeClass = window.layerState.pointsVisible ? '' : 'hidden';
         let wmEyeClass = window.layerState.watermarksVisible ? '' : 'hidden';
 
         html += `<div class="ios-layer-group ${animCls}">`;
         
-        html += `
-            <div class="ios-layer-row">
-                <div class="ios-icon-btn ios-eye-icon ${luchEyeClass}" onclick="toggleCosmeticLayer('luch')">
-                     ${getEyeSVG(window.layerState.luchVisible)}
+        if (window.layerState.bpStyleIndex !== 2) {
+            let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
+            html += `
+                <div class="ios-layer-row">
+                    <div class="ios-icon-btn ios-eye-icon ${luchEyeClass}" onclick="toggleCosmeticLayer('luch')">
+                         ${getEyeSVG(window.layerState.luchVisible)}
+                    </div>
+                    <div class="ios-layer-name">Лучи</div>
+                    <div class="ios-layer-action-text">прозрачность</div>
+                    <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.luchOpacity}" oninput="changeOpacity('luch', this.value)">
                 </div>
-                <div class="ios-layer-name">Лучи</div>
-                <div class="ios-layer-action-text">прозрачность</div>
-                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.luchOpacity}" oninput="changeOpacity('luch', this.value)">
-            </div>
+            `;
+        }
+
+        html += `
             <div class="ios-layer-row">
                 <div class="ios-icon-btn ios-eye-icon ${starsEyeClass}" onclick="toggleCosmeticLayer('stars')">
                      ${getEyeSVG(window.layerState.starsVisible)}
@@ -3745,7 +3761,7 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div class="ios-layer-action-text">прозрачность</div>
                 <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.pointsOpacity}" oninput="changeOpacity('points', this.value)">
             </div>
-            <div class="ios-layer-row">
+            <div class="ios-layer-row" style="border-bottom:none; padding-bottom:0;">
                 <div class="ios-icon-btn ios-eye-icon ${wmEyeClass}" onclick="toggleCosmeticLayer('watermarks')">
                      ${getEyeSVG(window.layerState.watermarksVisible)}
                 </div>
@@ -4953,20 +4969,19 @@ function drawScene() {
             const H = persistentCanvas.height;
             const s = W / 1280; 
 
-            // Вшитые идеальные координаты элементов (кроме водяных знаков)
             const C = {
                 gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
                 brawler2: { x: 986, y: 7, scale: 0.43, scaleX: 1, scaleY: 1, rot: 0 },
                 brawler1: { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 },
                 mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
-                proIcon: { x: 257, y: 581, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 13 },
-                proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, rot: 0 },
-                bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: -6 },
-                bppPrice: { x: 974, y: 142, scale: 1, scaleX: 1, scaleY: 1, rot: -13 },
+                proIcon: { x: 257, y: 581, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 0 },
+                proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, rot: -10 }, // Единственная цена с наклоном!
+                bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: 0 },
+                bppPrice: { x: 974, y: 142, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
                 bluePlate: { x: 843, y: 217, scale: 1.65, scaleX: 0.66, scaleY: 1, rot: 0 },
                 bluePrice: { x: 966, y: 258, scale: 0.82, scaleX: 1, scaleY: 1, rot: 0 },
-                bpIcon: { x: 804, y: 400, scale: 1.39, scaleX: 0.78, scaleY: 1, rot: -3 },
-                bpPrice: { x: 938, y: 523, scale: 1, scaleX: 1, scaleY: 1, rot: -8 },
+                bpIcon: { x: 804, y: 400, scale: 1.39, scaleX: 0.78, scaleY: 1, rot: 0 },
+                bpPrice: { x: 938, y: 523, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
                 yellowPlate: { x: 768, y: 591, scale: 1.81, scaleX: 0.77, scaleY: 1, rot: 0 },
                 yellowPrice: { x: 925, y: 627, scale: 0.78, scaleX: 1, scaleY: 1, rot: 0 },
                 gemPrice0: { x: 172, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
@@ -4974,7 +4989,17 @@ function drawScene() {
                 gemPrice2: { x: 616, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
                 gemPrice3: { x: 157, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
                 gemPrice4: { x: 379, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
-                gemPrice5: { x: 600, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 }
+                gemPrice5: { x: 600, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
+                watermarks: [
+                    { "x": 514, "y": -31, "scale": 0.74 }, { "x": 71, "y": 17, "scale": 0.25 },
+                    { "x": 19, "y": 146, "scale": 0.12 }, { "x": 664, "y": 82, "scale": 0.25 },
+                    { "x": 587, "y": 598, "scale": 0.33 }, { "x": 421, "y": 699, "scale": 0.72 },
+                    { "x": 734, "y": 262, "scale": 0.1 }, { "x": 76, "y": 602, "scale": 0.38 },
+                    { "x": -92, "y": 695, "scale": 0.87 }, { "x": -52, "y": 386, "scale": 0.24 },
+                    { "x": 852, "y": 189, "scale": 0.22 }, { "x": 1237, "y": 306, "scale": 0.39 },
+                    { "x": 957, "y": -21, "scale": 0.5 }, { "x": 791, "y": 558, "scale": 0.21 },
+                    { "x": 878, "y": 357, "scale": 0.36 }, { "x": 1131, "y": 391, "scale": 0.13 }
+                ]
             };
 
             // 1. Правая часть (Маскированный фон)
@@ -5002,8 +5027,8 @@ function drawScene() {
                 ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
             }
 
-            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ (Читаем из tempEditor.watermarks)
-            if (window.layerState.watermarksVisible !== false && window.tempEditor && window.tempEditor.watermarks) {
+            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ (С жестким наклоном -12)
+            if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
                 let wmFont = window.layerState.watermarksFont || 'Font16103';
                 ctx.save();
@@ -5011,10 +5036,10 @@ function drawScene() {
                 ctx.globalAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3;
                 ctx.fillStyle = "white"; ctx.textAlign = "left"; ctx.textBaseline = "top";
                 
-                window.tempEditor.watermarks.forEach(wm => {
+                C.watermarks.forEach(wm => {
                     ctx.save();
                     ctx.translate(wm.x * s, wm.y * s); 
-                    ctx.rotate(wm.rot * Math.PI / 180); 
+                    ctx.rotate(-12 * Math.PI / 180); // Жесткий наклон -12 градусов
                     ctx.font = `${56 * wm.scale * s}px '${wmFont}', sans-serif`;
                     ctx.fillText(wmText, 0, 0);
                     ctx.restore();
@@ -5048,16 +5073,18 @@ function drawScene() {
             ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
             ctx.restore();
 
+            let shadowPlatesA = window.tempShadows ? window.tempShadows.platesAlpha : 0.7;
+            let shadowGemsA = window.tempShadows ? window.tempShadows.gemsAlpha : 0.5;
+
             const drawItem = (img, obj, shadowY) => {
                 if (!img) return;
                 ctx.save();
-                ctx.translate(obj.x*s, obj.y*s); ctx.rotate(obj.rot * Math.PI / 180);
-                // Для плажек и иконок
+                ctx.translate(obj.x*s, obj.y*s); ctx.rotate((obj.rot || 0) * Math.PI / 180);
                 ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
-                ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 15*s; ctx.shadowOffsetY = shadowY*s;
-                // Сбрасываем ширину и высоту на исходные (масштабируется через scale)
+                ctx.shadowColor = `rgba(0,0,0,${shadowPlatesA})`; 
+                ctx.shadowBlur = 15*s; ctx.shadowOffsetY = shadowY*s;
+                
                 let iw = img.width; let ih = img.height;
-                // Подгонка под старые параметры (220х100, 160х160 и тд)
                 if (img === globalAssets.style2BPP || img === globalAssets.style2BP) { iw = 220*s; ih = 100*s; }
                 if (img === globalAssets.style2ProIcon) { iw = 160*s; ih = 160*s; }
                 if (img === globalAssets.style2BluePlate || img === globalAssets.style2YellowPlate) { iw = 220*s; ih = 60*s; }
@@ -5070,7 +5097,7 @@ function drawScene() {
                 if (!img) return;
                 ctx.save();
                 ctx.translate(obj.x*s, obj.y*s); 
-                ctx.rotate(obj.rot * Math.PI / 180);
+                ctx.rotate((obj.rot || 0) * Math.PI / 180);
                 ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
                 ctx.drawImage(img, 0, 0);
@@ -5081,7 +5108,7 @@ function drawScene() {
             const drawS2TextObj = (txt, obj, size, strokeW, color = "#ffffff") => {
                 ctx.save();
                 ctx.translate(obj.x*s, obj.y*s); 
-                ctx.rotate(obj.rot * Math.PI / 180); 
+                ctx.rotate((obj.rot || 0) * Math.PI / 180); 
                 ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
                 
                 ctx.font = `${size}px 'LilitaOneRus', 'Arial Black', sans-serif`;
@@ -5100,7 +5127,8 @@ function drawScene() {
                 ctx.translate(C.gems.x*s, C.gems.y*s); 
                 ctx.rotate(C.gems.rot * Math.PI / 180);
                 ctx.scale(C.gems.scale * C.gems.scaleX, C.gems.scale * C.gems.scaleY);
-                ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 10*s; ctx.shadowOffsetY = 10*s;
+                ctx.shadowColor = `rgba(0,0,0,${shadowGemsA})`; 
+                ctx.shadowBlur = 10*s; ctx.shadowOffsetY = 10*s;
                 ctx.drawImage(globalAssets.style2Gems, 0, 0, 742*s, 468*s);
                 ctx.restore();
             }
@@ -5154,7 +5182,7 @@ function drawScene() {
             if (globalAssets.style2Text) {
                 ctx.save();
                 ctx.translate(C.mainLogo.x*s, C.mainLogo.y*s); 
-                ctx.rotate(C.mainLogo.rot * Math.PI / 180);
+                ctx.rotate((C.mainLogo.rot || 0) * Math.PI / 180);
                 ctx.scale(C.mainLogo.scale * C.mainLogo.scaleX * s, C.mainLogo.scale * C.mainLogo.scaleY * s);
                 ctx.drawImage(globalAssets.style2Text, 0, 0);
                 ctx.restore();
@@ -6672,89 +6700,38 @@ window.openBPTestEditor = function() {
     }, 100);
 };
 
-// --- ВРЕМЕННЫЙ DEV РЕДАКТОР ТОЛЬКО ДЛЯ ФОНОВЫХ НИКОВ ---
-window.tempEditor = {
-    watermarks: [
-        { x: 597, y: -37, scale: 0.7, rot: -12 } // Оставили только один стартовый ник
-    ]
+// --- ВРЕМЕННЫЙ DEV РЕДАКТОР ПРОЗРАЧНОСТИ ТЕНЕЙ ---
+window.tempShadows = {
+    platesAlpha: 0.7,
+    gemsAlpha: 0.5
 };
 
-function initDevEditor() {
-    const existing = document.getElementById('dev-editor-panel');
+function initShadowEditor() {
+    const existing = document.getElementById('shadow-editor-panel');
     if (existing) existing.remove();
 
     const editor = document.createElement('div');
-    editor.id = 'dev-editor-panel';
-    editor.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: white; padding: 10px; border-radius: 12px; z-index: 99999; font-family: -apple-system, sans-serif; font-size: 12px; max-height: 95vh; overflow-y: auto; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 310px;';
-
-    const createSliders = (id, label, obj, minX=-500, maxX=1500, minY=-500, maxY=1500, arrIdx=0) => {
-        return `
-            <div style="margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 6px;">
-                <div style="color: #00A0FF; margin-bottom: 4px; font-weight: 600; display:flex; justify-content:space-between;">
-                    <span>${label}</span>
-                    <span style="color:#FF3B30; cursor:pointer;" onclick="deleteWm(${arrIdx})">Удалить</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <span style="width:12px;">X</span><input type="range" min="${minX}" max="${maxX}" value="${obj.x}" oninput="updateDevWm(${arrIdx},'x',this.value)" style="flex-grow:1;">
-                    <span id="val-wm-${arrIdx}-x" style="width:30px; text-align:right;">${obj.x}</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:12px;">Y</span><input type="range" min="${minY}" max="${maxY}" value="${obj.y}" oninput="updateDevWm(${arrIdx},'y',this.value)" style="flex-grow:1;">
-                    <span id="val-wm-${arrIdx}-y" style="width:30px; text-align:right;">${obj.y}</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:12px; color:#FF3B30;">Р</span><input type="range" min="0.05" max="3" step="0.01" value="${obj.scale}" oninput="updateDevWm(${arrIdx},'scale',this.value)" style="flex-grow:1;">
-                    <span id="val-wm-${arrIdx}-scale" style="width:30px; text-align:right;">${obj.scale}</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:12px; color:#FF9500;">У</span><input type="range" min="-180" max="180" step="1" value="${obj.rot}" oninput="updateDevWm(${arrIdx},'rot',this.value)" style="flex-grow:1;">
-                    <span id="val-wm-${arrIdx}-rot" style="width:30px; text-align:right;">${obj.rot}°</span>
-                </div>
-            </div>
-        `;
-    };
-
-    let wmHtml = '';
-    window.tempEditor.watermarks.forEach((wm, idx) => {
-        wmHtml += createSliders(`wm-${idx}`, `Ник #${idx+1}`, wm, -500, 1500, -500, 1000, idx);
-    });
-    wmHtml += `<button onclick="addWatermark()" style="width:100%; padding:8px; background:#34C759; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:5px;">+ Добавить ник</button>`;
-    wmHtml += `<button onclick="copyDevConfig()" style="width:100%; padding:8px; background:#00A0FF; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:5px;">Скопировать JSON ников</button>`;
+    editor.id = 'shadow-editor-panel';
+    editor.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.85); color: white; padding: 15px; border-radius: 12px; z-index: 99999; font-family: -apple-system, sans-serif; font-size: 13px; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 200px;';
 
     editor.innerHTML = `
-        <div style="font-size:14px; font-weight:bold; margin-bottom:10px; text-align:center;">Редактор фоновых ников</div>
-        <div style="padding: 0 5px; max-height: 80vh; overflow-y: auto;">${wmHtml}</div>
+        <div style="font-weight:bold; margin-bottom:10px; color:#00A0FF; text-align:center;">Тени (Стиль #2)</div>
+        <div style="margin-bottom:10px;">
+            <span>Плажки и иконки</span><br>
+            <input type="range" min="0" max="1" step="0.05" value="${window.tempShadows.platesAlpha}" oninput="window.tempShadows.platesAlpha=parseFloat(this.value); document.getElementById('val-sh-1').innerText=this.value; if(typeof startAnimation==='function') startAnimation();" style="width:100%">
+            <div style="text-align:right; font-size:11px; opacity:0.7;" id="val-sh-1">${window.tempShadows.platesAlpha}</div>
+        </div>
+        <div style="margin-bottom:10px;">
+            <span>Сетка гемов</span><br>
+            <input type="range" min="0" max="1" step="0.05" value="${window.tempShadows.gemsAlpha}" oninput="window.tempShadows.gemsAlpha=parseFloat(this.value); document.getElementById('val-sh-2').innerText=this.value; if(typeof startAnimation==='function') startAnimation();" style="width:100%">
+            <div style="text-align:right; font-size:11px; opacity:0.7;" id="val-sh-2">${window.tempShadows.gemsAlpha}</div>
+        </div>
+        <button onclick="alert('Плажки: ' + window.tempShadows.platesAlpha + '\\nГемы: ' + window.tempShadows.gemsAlpha)" style="width:100%; padding:8px; background:#34C759; color:white; border:none; border-radius:8px; cursor:pointer;">Сохранить (показать)</button>
     `;
     document.body.appendChild(editor);
 }
 
-window.updateDevWm = (idx, prop, val) => {
-    window.tempEditor.watermarks[idx][prop] = parseFloat(val);
-    document.getElementById(`val-wm-${idx}-${prop}`).innerText = prop === 'rot' ? val + '°' : val;
-    if (typeof startAnimation === 'function') startAnimation();
-};
-
-window.addWatermark = () => {
-    window.tempEditor.watermarks.push({ x: 600, y: 300, scale: 0.5, rot: -12 });
-    initDevEditor();
-    if (typeof startAnimation === 'function') startAnimation();
-};
-
-window.deleteWm = (idx) => {
-    window.tempEditor.watermarks.splice(idx, 1);
-    initDevEditor();
-    if (typeof startAnimation === 'function') startAnimation();
-};
-
-window.copyDevConfig = () => {
-    const res = JSON.stringify(window.tempEditor.watermarks, null, 2);
-    navigator.clipboard.writeText(res)
-        .then(() => alert('Готово! Жду массив ников.'))
-        .catch(() => alert('Ошибка копирования. Смотри в консоль.'));
-    console.log(res);
-};
-
-setTimeout(initDevEditor, 1000);
+setTimeout(initShadowEditor, 1000);
 
 </script>
 </body>
