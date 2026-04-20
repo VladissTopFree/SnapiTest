@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(17)";
+  const APP_VERSION = "v2.4.9(18)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4962,25 +4962,35 @@ function drawScene() {
 
     if (window.layerState.isBrawlPassMode) {
         
-        // --- СТИЛЬ 2 ---
+// --- СТИЛЬ 2 ---
         if (window.layerState.bpStyleIndex === 2) {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
             const s = W / 1280; 
 
-            const C = window.tempEditor; // Читаем всё напрямую из редактора
+            // Читаем всё напрямую из редактора
+            const C = window.tempEditor; 
             const shadowPlatesA = C.shadows.platesAlpha;
             const shadowGemsA = C.shadows.gemsAlpha;
 
-            // 1. Правая часть (Маскированные фоны)
+            // 0. ОСНОВНОЙ ФОН (На весь экран, редактируемый)
+            if (rawBgImage) {
+                ctx.save();
+                ctx.translate(C.mainBg.x * s, C.mainBg.y * s);
+                if (C.mainBg.skewX) ctx.transform(1, 0, Math.tan(C.mainBg.skewX * Math.PI / 180), 1, 0, 0);
+                ctx.scale(C.mainBg.scale, C.mainBg.scale);
+                ctx.drawImage(rawBgImage, 0, 0, W, H);
+                ctx.restore();
+            }
+
+            // 1. Правая часть (Маскированные доп. фоны)
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
             ctx.closePath();
             ctx.clip();
-            if (rawBgImage) {
-                // Отрисовываем каждый фон из массива backgrounds
+            if (rawBgImage && C.backgrounds && C.backgrounds.length > 0) {
                 C.backgrounds.forEach(bg => {
                     ctx.save();
                     ctx.translate(bg.x * s, bg.y * s);
@@ -5004,7 +5014,7 @@ function drawScene() {
                 ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
             }
 
-            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ (Используют наклон - skewX)
+            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ (С наклоном - skewX)
             if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
                 let wmFont = window.layerState.watermarksFont || 'Font16103';
@@ -5016,7 +5026,6 @@ function drawScene() {
                 C.watermarks.forEach(wm => {
                     ctx.save();
                     ctx.translate(wm.x * s, wm.y * s); 
-                    // Используем наклон (skew) вместо поворота
                     if (wm.skewX) ctx.transform(1, 0, Math.tan(wm.skewX * Math.PI / 180), 1, 0, 0); 
                     ctx.font = `${56 * wm.scale * s}px '${wmFont}', sans-serif`;
                     ctx.fillText(wmText, 0, 0);
@@ -5055,9 +5064,9 @@ function drawScene() {
                 if (!img) return;
                 ctx.save();
                 ctx.translate(obj.x*s, obj.y*s); 
-                if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180); // Поворот
-                if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0); // Наклон
-                ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
+                if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
+                if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
+                ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
                 
                 ctx.shadowColor = `rgba(0,0,0,${shadowPlatesA})`; 
                 ctx.shadowBlur = 15*s; ctx.shadowOffsetY = shadowY*s;
@@ -5077,7 +5086,7 @@ function drawScene() {
                 ctx.translate(obj.x*s, obj.y*s); 
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
-                ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
+                ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
                 
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
                 ctx.drawImage(img, 0, 0);
@@ -5090,7 +5099,7 @@ function drawScene() {
                 ctx.translate(obj.x*s, obj.y*s); 
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180); 
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0); 
-                ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
+                ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
                 
                 ctx.font = `${size}px 'LilitaOneRus', 'Arial Black', sans-serif`;
                 ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
@@ -5108,7 +5117,7 @@ function drawScene() {
                 ctx.translate(C.gems.x*s, C.gems.y*s); 
                 if (C.gems.rot) ctx.rotate(C.gems.rot * Math.PI / 180);
                 if (C.gems.skewX) ctx.transform(1, 0, Math.tan(C.gems.skewX * Math.PI / 180), 1, 0, 0);
-                ctx.scale(C.gems.scale * C.gems.scaleX, C.gems.scale * C.gems.scaleY);
+                ctx.scale(C.gems.scale * (C.gems.scaleX||1), C.gems.scale * (C.gems.scaleY||1));
                 ctx.shadowColor = `rgba(0,0,0,${shadowGemsA})`; 
                 ctx.shadowBlur = 10*s; ctx.shadowOffsetY = 10*s;
                 ctx.drawImage(globalAssets.style2Gems, 0, 0, 742*s, 468*s);
@@ -5166,7 +5175,7 @@ function drawScene() {
                 ctx.translate(C.mainLogo.x*s, C.mainLogo.y*s); 
                 if (C.mainLogo.rot) ctx.rotate(C.mainLogo.rot * Math.PI / 180);
                 if (C.mainLogo.skewX) ctx.transform(1, 0, Math.tan(C.mainLogo.skewX * Math.PI / 180), 1, 0, 0);
-                ctx.scale(C.mainLogo.scale * C.mainLogo.scaleX * s, C.mainLogo.scale * C.mainLogo.scaleY * s);
+                ctx.scale(C.mainLogo.scale * (C.mainLogo.scaleX||1) * s, C.mainLogo.scale * (C.mainLogo.scaleY||1) * s);
                 ctx.drawImage(globalAssets.style2Text, 0, 0);
                 ctx.restore();
             }
@@ -5569,8 +5578,14 @@ function drawBeautifulNick(ctx, text, w, h) {
                       rawBgImage = img; 
                       window.layerState.isGeneratedBg = false;
                       window.layerState.bgColorType = null;
+                      window.layerState.isReadyBg = false;
                       
-                      generateBrawlPassTest(); 
+                      // ИСПРАВЛЕНИЕ: Не вызываем функцию 1-го стиля, если мы во 2-м!
+                      if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex === 2) {
+                          if (typeof startAnimation === 'function') startAnimation();
+                      } else {
+                          generateBrawlPassTest(); 
+                      }
                       
                       window.closeFankitGlobal();
                   };
@@ -6687,9 +6702,11 @@ window.openBPTestEditor = function() {
 window.tempEditor = {
     shadows: { platesAlpha: 0.25, gemsAlpha: 0.35 },
     
-    // Массив фонов (можно добавлять новые)
+    mainBg: { x: 150, y: 80, scale: 1.1, skewX: 0 }, // Основной фон
+    
     backgrounds: [
-        { x: 150, y: 80, scale: 1.1, skewX: 0 }
+        { x: 838, y: -24, scale: 0.53, skewX: -8 },
+        { x: 730, y: 360, scale: 0.53, skewX: -8 }
     ],
 
     gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
@@ -6697,8 +6714,7 @@ window.tempEditor = {
     brawler1: { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 },
     mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
     
-    proIcon: { x: 257, y: 581, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 13 },
-    // Для Pro Pass используем skewX (наклон) вместо rot
+    proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
     proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
     
     bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: -6 },
@@ -6718,7 +6734,6 @@ window.tempEditor = {
     gemPrice4: { x: 379, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
     gemPrice5: { x: 600, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
     
-    // Водяные знаки теперь тоже используют skewX (наклон)
     watermarks: [
         { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
         { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
@@ -6739,7 +6754,7 @@ function initDevEditor() {
     editor.id = 'dev-editor-panel';
     editor.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: white; padding: 10px; border-radius: 12px; z-index: 99999; font-family: -apple-system, sans-serif; font-size: 12px; max-height: 95vh; overflow-y: auto; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 310px;';
 
-    // Умный генератор ползунков: показывает только те свойства, которые есть в объекте
+    // Умный генератор ползунков
     const createSliders = (id, label, obj, isArray=false, arrIdx=0, arrayName='') => {
         const makeSlider = (prop, title, min, max, step, color) => {
             if (obj[prop] === undefined) return '';
@@ -6760,8 +6775,8 @@ function initDevEditor() {
                 </div>
                 ${makeSlider('platesAlpha', 'Тень (Плажки)', 0, 1, 0.05, '#fff')}
                 ${makeSlider('gemsAlpha', 'Тень (Гемы)', 0, 1, 0.05, '#fff')}
-                ${makeSlider('x', 'X Ось', -500, 1500, 1, '#fff')}
-                ${makeSlider('y', 'Y Ось', -500, 1500, 1, '#fff')}
+                ${makeSlider('x', 'X Ось', -1000, 2500, 1, '#fff')}
+                ${makeSlider('y', 'Y Ось', -1000, 2500, 1, '#fff')}
                 ${makeSlider('scale', 'Размер', 0.05, 3, 0.01, '#FF3B30')}
                 ${makeSlider('scaleX', 'Ширина', 0.1, 3, 0.01, '#34C759')}
                 ${makeSlider('scaleY', 'Высота', 0.1, 3, 0.01, '#34C759')}
@@ -6777,7 +6792,7 @@ function initDevEditor() {
         </details>`;
 
     let bgHtml = '';
-    window.tempEditor.backgrounds.forEach((bg, idx) => bgHtml += createSliders('', `Фон #${idx+1}`, bg, true, idx, 'backgrounds'));
+    window.tempEditor.backgrounds.forEach((bg, idx) => bgHtml += createSliders('', `Доп. фон #${idx+1}`, bg, true, idx, 'backgrounds'));
     bgHtml += `<button onclick="addArrayItem('backgrounds', {x:150, y:80, scale:1.1, skewX:0})" style="width:100%; padding:8px; background:#34C759; color:white; border:none; border-radius:8px; cursor:pointer;">+ Добавить фон</button>`;
 
     let wmHtml = '';
@@ -6787,7 +6802,10 @@ function initDevEditor() {
     editor.innerHTML = `
         <div style="font-size:14px; font-weight:bold; margin-bottom:10px; text-align:center;">Ультра-Редактор BP #2</div>
         ${createGroup('Настройки Теней', createSliders('shadows', 'Прозрачность', window.tempEditor.shadows))}
-        ${createGroup('Управление Фонами', bgHtml)}
+        ${createGroup('Управление Фонами', 
+            createSliders('mainBg', 'Основной фон', window.tempEditor.mainBg) +
+            bgHtml
+        )}
         ${createGroup('Фоновые ники (Watermarks)', wmHtml)}
         ${createGroup('Герои, Гемы, Лого', 
             createSliders('gems', 'Сетка гемов', window.tempEditor.gems) +
