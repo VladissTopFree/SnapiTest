@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(13)";
+  const APP_VERSION = "v2.4.9(14)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4946,7 +4946,7 @@ function drawScene() {
 
     if (window.layerState.isBrawlPassMode) {
         
-        // --- СТИЛЬ 2 ---
+// --- СТИЛЬ 2 ---
         if (window.layerState.bpStyleIndex === 2) {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
@@ -4978,6 +4978,26 @@ function drawScene() {
                 ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
             }
 
+            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ (ТЕПЕРЬ ПОД ГЕРОЯМИ И ЭЛЕМЕНТАМИ)
+            if (window.layerState.watermarksVisible !== false) {
+                let wmText = window.layerState.textValue || "SNAPI";
+                let wmFont = window.layerState.watermarksFont || 'Font16103';
+                ctx.save();
+                ctx.globalCompositeOperation = "overlay";
+                ctx.globalAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3;
+                ctx.fillStyle = "white"; ctx.textAlign = "left"; ctx.textBaseline = "top";
+                
+                window.tempEditor.watermarks.forEach(wm => {
+                    ctx.save();
+                    ctx.translate(wm.x * s, wm.y * s); 
+                    ctx.rotate(wm.rot * Math.PI / 180); 
+                    ctx.font = `${56 * wm.scale * s}px '${wmFont}', sans-serif`;
+                    ctx.fillText(wmText, 0, 0);
+                    ctx.restore();
+                });
+                ctx.restore();
+            }
+
             // 3. Главный никнейм (Большой текст позади всего)
             if (cachedTextCanvas && animText.alpha > 0.01) {
                 ctx.save();
@@ -5001,14 +5021,13 @@ function drawScene() {
             ctx.fillRect(-lineW/2, -lineH/2, lineW, lineH);
             ctx.restore();
             
-            // Горизонтальная правая
             ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
             ctx.restore();
 
             const drawItem = (img, x, y, iw, ih, rot, shadowY) => {
                 if (!img) return;
                 ctx.save();
-                ctx.translate(x, y); ctx.rotate(rot * Math.PI / 180);
+                ctx.translate(x, y); ctx.rotate((rot||0) * Math.PI / 180);
                 ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 15*s; ctx.shadowOffsetY = shadowY*s;
                 ctx.drawImage(img, 0, 0, iw, ih);
                 ctx.restore();
@@ -5026,24 +5045,29 @@ function drawScene() {
                 ctx.restore();
             };
 
-            const drawS2Text = (txt, x, y, size, strokeW, color = "#ffffff") => {
+            const drawS2TextObj = (txt, obj, size, strokeW, color = "#ffffff") => {
                 ctx.save();
+                ctx.translate(obj.x*s, obj.y*s); 
+                ctx.rotate(obj.rot * Math.PI / 180); 
+                ctx.scale(obj.scale * obj.scaleX, obj.scale * obj.scaleY);
+                
                 ctx.font = `${size}px 'LilitaOneRus', 'Arial Black', sans-serif`;
                 ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
                 ctx.lineWidth = strokeW; ctx.strokeStyle = "#000000";
-                ctx.strokeText(txt, x, y + size*0.1); 
-                ctx.strokeText(txt, x, y); 
+                ctx.strokeText(txt, 0, 0 + size*0.1); 
+                ctx.strokeText(txt, 0, 0); 
                 ctx.fillStyle = color;
-                ctx.fillText(txt, x, y); 
+                ctx.fillText(txt, 0, 0); 
                 ctx.restore();
             };
 
             // 5. Сетка гемов
             if (globalAssets.style2Gems) {
                 ctx.save();
-                ctx.translate(43*s, 110*s); 
-                ctx.rotate(0);
-                ctx.scale(1 * 0.94, 1 * 1.01);
+                let gm = window.tempEditor.gems;
+                ctx.translate(gm.x*s, gm.y*s); 
+                ctx.rotate(gm.rot * Math.PI / 180);
+                ctx.scale(gm.scale * gm.scaleX, gm.scale * gm.scaleY);
                 ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 10*s; ctx.shadowOffsetY = 10*s;
                 ctx.drawImage(globalAssets.style2Gems, 0, 0, 742*s, 468*s);
                 ctx.restore();
@@ -5053,114 +5077,75 @@ function drawScene() {
             const p = window.layerState.style2Prices || [];
             const fmt = (i) => p[i] === "" ? "0 ₽" : p[i] + " ₽";
             
-            const gX = [165*s, 385*s, 600*s];
-            const gY = [285*s, 505*s];
-            drawS2Text(fmt(0), gX[0], gY[0], 28*s, 5*s);
-            drawS2Text(fmt(1), gX[1], gY[0]-4*s, 28*s, 5*s);
-            drawS2Text(fmt(2), gX[2], gY[0]-5*s, 28*s, 5*s);
-            drawS2Text(fmt(3), gX[0], gY[1], 28*s, 5*s);
-            drawS2Text(fmt(4), gX[1], gY[1]-2*s, 28*s, 5*s);
-            drawS2Text(fmt(5), gX[2], gY[1]-2*s, 28*s, 5*s);
+            // 6. Управляемые Цены на гемах
+            let gp0 = window.tempEditor.gemPrice0; drawS2TextObj(fmt(0), gp0, 28*s, 5*s);
+            let gp1 = window.tempEditor.gemPrice1; drawS2TextObj(fmt(1), gp1, 28*s, 5*s);
+            let gp2 = window.tempEditor.gemPrice2; drawS2TextObj(fmt(2), gp2, 28*s, 5*s);
+            let gp3 = window.tempEditor.gemPrice3; drawS2TextObj(fmt(3), gp3, 28*s, 5*s);
+            let gp4 = window.tempEditor.gemPrice4; drawS2TextObj(fmt(4), gp4, 28*s, 5*s);
+            let gp5 = window.tempEditor.gemPrice5; drawS2TextObj(fmt(5), gp5, 28*s, 5*s);
 
             // 7. Pro Pass слева внизу (6)
             if (globalAssets.style2ProIcon) {
-                drawItem(globalAssets.style2ProIcon, 257*s, 581*s, 160 * 0.69 * 0.83 * s, 160 * 0.69 * 1 * s, 13, 15);
+                let pIcon = window.tempEditor.proIcon;
+                drawItem(globalAssets.style2ProIcon, pIcon.x*s, pIcon.y*s, 160 * pIcon.scale * pIcon.scaleX * s, 160 * pIcon.scale * pIcon.scaleY * s, pIcon.rot, 15);
                 
-                ctx.save();
-                ctx.translate(427*s, 655*s); 
-                ctx.rotate(0);
-                ctx.scale(1.12 * 1, 1.12 * 1);
-                drawS2Text("- " + fmt(6), 0, 0, 58*s, 8*s, "#ffffff");
-                ctx.restore();
+                let pTxt = window.tempEditor.proText;
+                drawS2TextObj("- " + fmt(6), pTxt, 58*s, 8*s, "#ffffff");
             }
 
             // 8. Блок BP+ (Справа сверху)
             let season = window.layerState.bpSeason || 50;
 
-            // ОБРЕЗКА ВЕРХНЕГО ПЕРСОНАЖА (не вылезет ниже белой линии)
             ctx.save();
             ctx.beginPath();
             ctx.rect(0, 0, W, H/2 - 8*s); 
             ctx.clip();
-            drawBrawler(globalAssets[`brawler_${season}_2`], 986*s, 7*s, 0.43, 1, 1, 0); 
+            let br2 = window.tempEditor.brawler2;
+            drawBrawler(globalAssets[`brawler_${season}_2`], br2.x*s, br2.y*s, br2.scale, br2.scaleX, br2.scaleY, br2.rot); 
             ctx.restore();
             
-            drawItem(globalAssets.style2BPP, 841*s, 32*s, 220 * 1.31 * 0.77 * s, 100 * 1.31 * 1 * s, -6, 15);
+            let bppi = window.tempEditor.bppIcon;
+            drawItem(globalAssets.style2BPP, bppi.x*s, bppi.y*s, 220 * bppi.scale * bppi.scaleX * s, 100 * bppi.scale * bppi.scaleY * s, bppi.rot, 15);
             
-            ctx.save(); 
-            ctx.translate(974*s, 142*s); ctx.rotate(-13 * Math.PI / 180); ctx.scale(1 * 1, 1 * 1);
-            drawS2Text(fmt(7), 0, 0, 56*s, 8*s); 
-            ctx.restore();
+            let bppp = window.tempEditor.bppPrice;
+            drawS2TextObj(fmt(7), bppp, 56*s, 8*s);
 
-            drawItem(globalAssets.style2BluePlate, 843*s, 217*s, 220 * 1.65 * 0.66 * s, 60 * 1.65 * 1 * s, 0, 15);
+            let bpbl = window.tempEditor.bluePlate;
+            drawItem(globalAssets.style2BluePlate, bpbl.x*s, bpbl.y*s, 220 * bpbl.scale * bpbl.scaleX * s, 60 * bpbl.scale * bpbl.scaleY * s, bpbl.rot, 15);
             
-            ctx.save(); 
-            ctx.translate(966*s, 258*s); ctx.rotate(0); ctx.scale(0.82 * 1, 0.82 * 1);
-            drawS2Text(fmt(8), 0, 0, 56*s, 8*s); 
-            ctx.restore();
+            let bpblp = window.tempEditor.bluePrice;
+            drawS2TextObj(fmt(8), bpblp, 56*s, 8*s);
 
             // 9. Блок BP (Справа снизу)
-
-            // ОБРЕЗКА НИЖНЕГО ПЕРСОНАЖА (не вылезет выше белой линии)
             ctx.save();
             ctx.beginPath();
             ctx.rect(0, H/2 + 8*s, W, H/2); 
             ctx.clip();
-            drawBrawler(globalAssets[`brawler_${season}_1`], 920*s, 359*s, 0.54, 1, 1, 0);
+            let br1 = window.tempEditor.brawler1;
+            drawBrawler(globalAssets[`brawler_${season}_1`], br1.x*s, br1.y*s, br1.scale, br1.scaleX, br1.scaleY, br1.rot);
             ctx.restore();
             
-            drawItem(globalAssets.style2BP, 804*s, 400*s, 220 * 1.39 * 0.78 * s, 100 * 1.39 * 1 * s, -3, 15);
+            let bpi = window.tempEditor.bpIcon;
+            drawItem(globalAssets.style2BP, bpi.x*s, bpi.y*s, 220 * bpi.scale * bpi.scaleX * s, 100 * bpi.scale * bpi.scaleY * s, bpi.rot, 15);
             
-            ctx.save(); 
-            ctx.translate(938*s, 523*s); ctx.rotate(-8 * Math.PI / 180); ctx.scale(1 * 1, 1 * 1);
-            drawS2Text(fmt(9), 0, 0, 56*s, 8*s); 
-            ctx.restore();
+            let bpp = window.tempEditor.bpPrice;
+            drawS2TextObj(fmt(9), bpp, 56*s, 8*s);
 
-            drawItem(globalAssets.style2YellowPlate, 768*s, 591*s, 220 * 1.81 * 0.77 * s, 60 * 1.81 * 1 * s, 0, 15);
+            let yp = window.tempEditor.yellowPlate;
+            drawItem(globalAssets.style2YellowPlate, yp.x*s, yp.y*s, 220 * yp.scale * yp.scaleX * s, 60 * yp.scale * yp.scaleY * s, yp.rot, 15);
             
-            ctx.save(); 
-            ctx.translate(925*s, 627*s); ctx.rotate(0); ctx.scale(0.78 * 1, 0.78 * 1);
-            drawS2Text(fmt(10), 0, 0, 56*s, 8*s); 
-            ctx.restore();
+            let ypp = window.tempEditor.yellowPrice;
+            drawS2TextObj(fmt(10), ypp, 56*s, 8*s);
 
             // 10. Логотип Brawl Pass по центру
             if (globalAssets.style2Text) {
                 ctx.save();
-                ctx.translate(871*s, 291*s); 
-                ctx.rotate(0);
-                ctx.scale(0.15 * 1 * s, 0.15 * 1 * s);
+                let ml = window.tempEditor.mainLogo;
+                ctx.translate(ml.x*s, ml.y*s); 
+                ctx.rotate(ml.rot * Math.PI / 180);
+                ctx.scale(ml.scale * ml.scaleX * s, ml.scale * ml.scaleY * s);
                 ctx.drawImage(globalAssets.style2Text, 0, 0);
-                ctx.restore();
-            }
-
-            // 11. Маленькие фоновые водяные знаки (Текст min)
-            if (window.layerState.watermarksVisible !== false) {
-                let wmText = window.layerState.textValue || "SNAPI";
-                let wmFont = window.layerState.watermarksFont || 'Font16103';
-                ctx.save();
-                ctx.globalCompositeOperation = "overlay";
-                ctx.globalAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3;
-                ctx.fillStyle = "white"; ctx.textAlign = "left"; ctx.textBaseline = "top";
-                
-                const wms = [
-                    {l: 0.273, t: -0.056, sc: 0.70}, {l: -0.117, t: 0.008, sc: 0.24},
-                    {l: -0.156, t: 0.292, sc: 0.10}, {l: 0.401, t: 0.358, sc: 0.10},
-                    {l: 0.326, t: 0.833, sc: 0.20}, {l: 0.257, t: 0.940, sc: 0.53},
-                    {l: -0.099, t: 0.842, sc: 0.29}, {l: -0.143, t: 0.939, sc: 0.69},
-                    {l: 0.378, t: 0.083, sc: 0.19}, {l: 0.518, t: 0.238, sc: 0.30},
-                    {l: 0.669, t: -0.011, sc: 0.12}, {l: 0.533, t: -0.037, sc: 0.10},
-                    {l: 0.485, t: 0.740, sc: 0.22}, {l: 0.487, t: 0.485, sc: 0.10},
-                    {l: 0.750, t: 0.480, sc: 0.19}
-                ];
-                
-                wms.forEach(wm => {
-                    ctx.save();
-                    ctx.translate(W * wm.l, H * wm.t); 
-                    ctx.transform(1, 0, Math.tan(-12 * Math.PI / 180), 1, 0, 0); 
-                    ctx.font = `${56 * wm.sc * s}px '${wmFont}', sans-serif`;
-                    ctx.fillText(wmText, 0, 0);
-                    ctx.restore();
-                });
                 ctx.restore();
             }
             return;
@@ -6676,59 +6661,92 @@ window.openBPTestEditor = function() {
     }, 100);
 };
 
-// --- ВРЕМЕННЫЙ DEV РЕДАКТОР КООРДИНАТ ДЛЯ СТИЛЯ 2 (PRO ВЕРСИЯ V2) ---
+// --- ВРЕМЕННЫЙ DEV РЕДАКТОР КООРДИНАТ ДЛЯ СТИЛЯ 2 (PRO ВЕРСИЯ V3) ---
 window.tempEditor = {
-    // В scale - общий размер, в scaleX/scaleY - искажение по осям
-    gems: { x: 23, y: -16, scale: 1.16, scaleX: 1, scaleY: 1, rot: 0 },
-    brawler2: { x: 910, y: 10, scale: 0.70, scaleX: 1, scaleY: 1, rot: 0 }, // BP+
-    brawler1: { x: 930, y: 340, scale: 0.75, scaleX: 1, scaleY: 1, rot: 0 }, // BP
-    mainLogo: { x: 744, y: 283, scale: 0.35, scaleX: 1, scaleY: 1, rot: 0 },
+    // Твои сохраненные координаты
+    gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
+    brawler2: { x: 986, y: 7, scale: 0.43, scaleX: 1, scaleY: 1, rot: 0 },
+    brawler1: { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 },
+    mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
+    proIcon: { x: 257, y: 581, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 13 },
+    proText: { x: 427, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, rot: 0 },
+    bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: -6 },
+    bppPrice: { x: 974, y: 142, scale: 1, scaleX: 1, scaleY: 1, rot: -13 },
+    bluePlate: { x: 843, y: 217, scale: 1.65, scaleX: 0.66, scaleY: 1, rot: 0 },
+    bluePrice: { x: 966, y: 258, scale: 0.82, scaleX: 1, scaleY: 1, rot: 0 },
+    bpIcon: { x: 804, y: 400, scale: 1.39, scaleX: 0.78, scaleY: 1, rot: -3 },
+    bpPrice: { x: 938, y: 523, scale: 1, scaleX: 1, scaleY: 1, rot: -8 },
+    yellowPlate: { x: 768, y: 591, scale: 1.81, scaleX: 0.77, scaleY: 1, rot: 0 },
+    yellowPrice: { x: 925, y: 627, scale: 0.78, scaleX: 1, scaleY: 1, rot: 0 },
     
-    proIcon: { x: 30, y: 560, scale: 1, scaleX: 1, scaleY: 1, rot: -12 },
-    proText: { x: 390, y: 650, scale: 1.12, scaleX: 1, scaleY: 1, rot: -10 },
-    
-    bppIcon: { x: 780, y: 30, scale: 1, scaleX: 1, scaleY: 1, rot: -6 },
-    bppPrice: { x: 930, y: 180, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-    bluePlate: { x: 800, y: 260, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-    bluePrice: { x: 920, y: 285, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-    
-    bpIcon: { x: 780, y: 400, scale: 1, scaleX: 1, scaleY: 1, rot: -3 },
-    bpPrice: { x: 940, y: 550, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-    yellowPlate: { x: 800, y: 620, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-    yellowPrice: { x: 920, y: 645, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }
+    // Новые элементы: Цены на гемах (6 штук)
+    gemPrice0: { x: 165, y: 285, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice1: { x: 385, y: 281, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice2: { x: 600, y: 280, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice3: { x: 165, y: 505, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice4: { x: 385, y: 503, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+    gemPrice5: { x: 600, y: 503, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+
+    // Фоновые ники (маленькие)
+    watermarks: [
+        { x: 327, y: -37, scale: 0.70, rot: -12 },
+        { x: -140, y: 5, scale: 0.24, rot: -12 },
+        { x: -187, y: 197, scale: 0.10, rot: -12 },
+        { x: 481, y: 241, scale: 0.10, rot: -12 },
+        { x: 391, y: 562, scale: 0.20, rot: -12 },
+        { x: 308, y: 634, scale: 0.53, rot: -12 },
+        { x: -118, y: 568, scale: 0.29, rot: -12 },
+        { x: -171, y: 633, scale: 0.69, rot: -12 },
+        { x: 453, y: 56, scale: 0.19, rot: -12 },
+        { x: 621, y: 160, scale: 0.30, rot: -12 },
+        { x: 802, y: -7, scale: 0.12, rot: -12 },
+        { x: 639, y: -24, scale: 0.10, rot: -12 },
+        { x: 582, y: 499, scale: 0.22, rot: -12 },
+        { x: 584, y: 327, scale: 0.10, rot: -12 },
+        { x: 900, y: 324, scale: 0.19, rot: -12 }
+    ]
 };
 
 function initDevEditor() {
+    const existing = document.getElementById('dev-editor-panel');
+    if (existing) existing.remove();
+
     const editor = document.createElement('div');
+    editor.id = 'dev-editor-panel';
     editor.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: white; padding: 10px; border-radius: 12px; z-index: 99999; font-family: -apple-system, sans-serif; font-size: 12px; max-height: 95vh; overflow-y: auto; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 310px;';
 
-    const createSliders = (id, label, obj, minX=-200, maxX=1200, minY=-200, maxY=1000) => {
+    const createSliders = (id, label, obj, minX=-200, maxX=1200, minY=-200, maxY=1000, isArray=false, arrIdx=0) => {
+        const onInp = isArray ? `updateDevWm(${arrIdx},` : `updateDev('${id}',`;
         return `
             <div style="margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 6px;">
-                <div style="color: #00A0FF; margin-bottom: 4px; font-weight: 600;">${label}</div>
+                <div style="color: #00A0FF; margin-bottom: 4px; font-weight: 600; display:flex; justify-content:space-between;">
+                    <span>${label}</span>
+                    ${isArray ? `<span style="color:#FF3B30; cursor:pointer;" onclick="deleteWm(${arrIdx})">Удалить</span>` : ''}
+                </div>
                 <div style="display:flex; align-items:center; gap:5px;">
-                    <span style="width:12px;" title="Ось X (вправо/влево)">X</span><input type="range" min="${minX}" max="${maxX}" value="${obj.x}" oninput="updateDev('${id}','x',this.value)" style="flex-grow:1;">
-                    <span id="val-${id}-x" style="width:30px; text-align:right; font-family: monospace;">${obj.x}</span>
+                    <span style="width:12px;">X</span><input type="range" min="${minX}" max="${maxX}" value="${obj.x}" oninput="${onInp}'x',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-x" style="width:30px; text-align:right;">${obj.x}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:12px;" title="Ось Y (вверх/вниз)">Y</span><input type="range" min="${minY}" max="${maxY}" value="${obj.y}" oninput="updateDev('${id}','y',this.value)" style="flex-grow:1;">
-                    <span id="val-${id}-y" style="width:30px; text-align:right; font-family: monospace;">${obj.y}</span>
+                    <span style="width:12px;">Y</span><input type="range" min="${minY}" max="${maxY}" value="${obj.y}" oninput="${onInp}'y',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-y" style="width:30px; text-align:right;">${obj.y}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:12px; color:#FF3B30;" title="Размер (пропорционально)">Р</span><input type="range" min="0.1" max="3" step="0.01" value="${obj.scale}" oninput="updateDev('${id}','scale',this.value)" style="flex-grow:1;">
-                    <span id="val-${id}-scale" style="width:30px; text-align:right; font-family: monospace;">${obj.scale}</span>
+                    <span style="width:12px; color:#FF3B30;">Р</span><input type="range" min="0.05" max="3" step="0.01" value="${obj.scale}" oninput="${onInp}'scale',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-scale" style="width:30px; text-align:right;">${obj.scale}</span>
+                </div>
+                ${!isArray ? `
+                <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
+                    <span style="width:12px; color:#34C759;">Ш</span><input type="range" min="0.1" max="3" step="0.01" value="${obj.scaleX}" oninput="${onInp}'scaleX',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-scaleX" style="width:30px; text-align:right;">${obj.scaleX}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:12px; color:#34C759;" title="Ширина">Ш</span><input type="range" min="0.1" max="3" step="0.01" value="${obj.scaleX}" oninput="updateDev('${id}','scaleX',this.value)" style="flex-grow:1;">
-                    <span id="val-${id}-scaleX" style="width:30px; text-align:right; font-family: monospace;">${obj.scaleX}</span>
-                </div>
+                    <span style="width:12px; color:#34C759;">В</span><input type="range" min="0.1" max="3" step="0.01" value="${obj.scaleY}" oninput="${onInp}'scaleY',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-scaleY" style="width:30px; text-align:right;">${obj.scaleY}</span>
+                </div>` : ''}
                 <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:12px; color:#34C759;" title="Высота">В</span><input type="range" min="0.1" max="3" step="0.01" value="${obj.scaleY}" oninput="updateDev('${id}','scaleY',this.value)" style="flex-grow:1;">
-                    <span id="val-${id}-scaleY" style="width:30px; text-align:right; font-family: monospace;">${obj.scaleY}</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
-                    <span style="width:12px; color:#FF9500;" title="Угол поворота">У</span><input type="range" min="-180" max="180" step="1" value="${obj.rot}" oninput="updateDev('${id}','rot',this.value)" style="flex-grow:1;">
-                    <span id="val-${id}-rot" style="width:30px; text-align:right; font-family: monospace;">${obj.rot}°</span>
+                    <span style="width:12px; color:#FF9500;">У</span><input type="range" min="-180" max="180" step="1" value="${obj.rot}" oninput="${onInp}'rot',this.value)" style="flex-grow:1;">
+                    <span id="val-${id}-rot" style="width:30px; text-align:right;">${obj.rot}°</span>
                 </div>
             </div>
         `;
@@ -6737,18 +6755,35 @@ function initDevEditor() {
     const createGroup = (title, content) => `
         <details style="margin-bottom: 6px; background: rgba(255,255,255,0.08); border-radius: 8px;">
             <summary style="cursor: pointer; font-weight: bold; outline: none; padding: 8px;">${title}</summary>
-            <div style="padding: 0 8px 8px 8px;">${content}</div>
+            <div style="padding: 0 8px 8px 8px; max-height: 300px; overflow-y: auto;">${content}</div>
         </details>
     `;
+
+    let wmHtml = '';
+    window.tempEditor.watermarks.forEach((wm, idx) => {
+        wmHtml += createSliders(`wm-${idx}`, `Ник #${idx+1}`, wm, -500, 1500, -500, 1000, true, idx);
+    });
+    wmHtml += `<button onclick="addWatermark()" style="width:100%; padding:8px; background:#34C759; color:white; border:none; border-radius:8px; cursor:pointer;">+ Добавить ник</button>`;
 
     editor.innerHTML = `
         <div style="font-size:14px; font-weight:bold; margin-bottom:10px; text-align:center;">Ультра-Редактор BP #2</div>
         
+        ${createGroup('Фоновые ники (Watermarks)', wmHtml)}
+
         ${createGroup('Герои, Гемы, Лого', 
             createSliders('gems', 'Сетка гемов', window.tempEditor.gems, -100, 500, -100, 500) +
             createSliders('brawler2', 'Brawler BP+ (Верх)', window.tempEditor.brawler2) +
             createSliders('brawler1', 'Brawler BP (Низ)', window.tempEditor.brawler1) +
             createSliders('mainLogo', 'Логотип по центру', window.tempEditor.mainLogo)
+        )}
+        
+        ${createGroup('Цены на гемах (6 штук)', 
+            createSliders('gemPrice0', 'Цена 1 (верх лево)', window.tempEditor.gemPrice0) +
+            createSliders('gemPrice1', 'Цена 2 (верх центр)', window.tempEditor.gemPrice1) +
+            createSliders('gemPrice2', 'Цена 3 (верх право)', window.tempEditor.gemPrice2) +
+            createSliders('gemPrice3', 'Цена 4 (низ лево)', window.tempEditor.gemPrice3) +
+            createSliders('gemPrice4', 'Цена 5 (низ центр)', window.tempEditor.gemPrice4) +
+            createSliders('gemPrice5', 'Цена 6 (низ право)', window.tempEditor.gemPrice5)
         )}
         
         ${createGroup('Блок Pro Pass (Лев. низ)', 
@@ -6777,8 +6812,25 @@ function initDevEditor() {
 
 window.updateDev = (id, prop, val) => {
     window.tempEditor[id][prop] = parseFloat(val);
-    let displayVal = prop === 'rot' ? val + '°' : val;
-    document.getElementById(`val-${id}-${prop}`).innerText = displayVal;
+    document.getElementById(`val-${id}-${prop}`).innerText = prop === 'rot' ? val + '°' : val;
+    if (typeof startAnimation === 'function') startAnimation();
+};
+
+window.updateDevWm = (idx, prop, val) => {
+    window.tempEditor.watermarks[idx][prop] = parseFloat(val);
+    document.getElementById(`val-wm-${idx}-${prop}`).innerText = prop === 'rot' ? val + '°' : val;
+    if (typeof startAnimation === 'function') startAnimation();
+};
+
+window.addWatermark = () => {
+    window.tempEditor.watermarks.push({ x: 600, y: 300, scale: 0.5, rot: 0 });
+    initDevEditor();
+    if (typeof startAnimation === 'function') startAnimation();
+};
+
+window.deleteWm = (idx) => {
+    window.tempEditor.watermarks.splice(idx, 1);
+    initDevEditor();
     if (typeof startAnimation === 'function') startAnimation();
 };
 
