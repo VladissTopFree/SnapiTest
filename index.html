@@ -4982,9 +4982,9 @@ function drawScene() {
             if (cachedTextCanvas && animText.alpha > 0.01) {
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
-                ctx.translate(W/2, H/2); // Смещаемся в центр холста
-                ctx.translate(-225*s, -115*s); // Настройки из скриншота пользователя
-                ctx.scale(0.7 * animText.scale, 0.7 * animText.scale); // Настройки из скриншота
+                ctx.translate(W/2, H/2);
+                ctx.translate(-225*s, -115*s);
+                ctx.scale(0.7 * animText.scale, 0.7 * animText.scale); 
                 ctx.translate(-W/2, -H/2);
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
@@ -4993,7 +4993,6 @@ function drawScene() {
             // 4. Белые разделительные линии (с тенями)
             ctx.save();
             ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.fillStyle = "white";
-            // Вертикальная наклонная линия (точно по CSS)
             let lineW = 16*s; let lineH = H * 1.5;
             let lineX = W * 0.58 + 6*s; let lineY = -H * 0.25;
             let cx = lineX + lineW/2; let cy = lineY + lineH/2;
@@ -5032,20 +5031,19 @@ function drawScene() {
                 ctx.font = `${size}px 'LilitaOneRus', 'Arial Black', sans-serif`;
                 ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
                 ctx.lineWidth = strokeW; ctx.strokeStyle = "#000000";
-                ctx.strokeText(txt, x, y + size*0.1); // Тень
-                ctx.strokeText(txt, x, y); // Обводка
+                ctx.strokeText(txt, x, y + size*0.1); 
+                ctx.strokeText(txt, x, y); 
                 ctx.fillStyle = color;
-                ctx.fillText(txt, x, y); // Заливка
+                ctx.fillText(txt, x, y); 
                 ctx.restore();
             };
 
             // 5. Сетка гемов
             if (globalAssets.style2Gems) {
                 ctx.save();
-                let gm = window.tempEditor.gems;
-                ctx.translate(gm.x*s, gm.y*s); 
-                ctx.rotate(gm.rot * Math.PI / 180);
-                ctx.scale(gm.scale * gm.scaleX, gm.scale * gm.scaleY);
+                ctx.translate(43*s, 110*s); 
+                ctx.rotate(0);
+                ctx.scale(1 * 0.94, 1 * 1.01);
                 ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 10*s; ctx.shadowOffsetY = 10*s;
                 ctx.drawImage(globalAssets.style2Gems, 0, 0, 742*s, 468*s);
                 ctx.restore();
@@ -5066,62 +5064,71 @@ function drawScene() {
 
             // 7. Pro Pass слева внизу (6)
             if (globalAssets.style2ProIcon) {
-                let pIcon = window.tempEditor.proIcon;
-                drawItem(globalAssets.style2ProIcon, pIcon.x*s, pIcon.y*s, 160*pIcon.scale*pIcon.scaleX*s, 160*pIcon.scale*pIcon.scaleY*s, pIcon.rot, 15);
+                drawItem(globalAssets.style2ProIcon, 257*s, 581*s, 160 * 0.69 * 0.83 * s, 160 * 0.69 * 1 * s, 13, 15);
                 
                 ctx.save();
-                let pTxt = window.tempEditor.proText;
-                ctx.translate(pTxt.x*s, pTxt.y*s); 
-                ctx.rotate(pTxt.rot * Math.PI / 180);
-                ctx.scale(pTxt.scale * pTxt.scaleX, pTxt.scale * pTxt.scaleY);
+                ctx.translate(427*s, 655*s); 
+                ctx.rotate(0);
+                ctx.scale(1.12 * 1, 1.12 * 1);
                 drawS2Text("- " + fmt(6), 0, 0, 58*s, 8*s, "#ffffff");
                 ctx.restore();
             }
 
             // 8. Блок BP+ (Справа сверху)
             let season = window.layerState.bpSeason || 50;
-            let br2 = window.tempEditor.brawler2;
-            drawBrawler(globalAssets[`brawler_${season}_2`], br2.x*s, br2.y*s, br2.scale, br2.scaleX, br2.scaleY, br2.rot); 
-            
-            let bppi = window.tempEditor.bppIcon;
-            drawItem(globalAssets.style2BPP, bppi.x*s, bppi.y*s, 220*bppi.scale*bppi.scaleX*s, 100*bppi.scale*bppi.scaleY*s, bppi.rot, 15);
-            
-            ctx.save(); let bppp = window.tempEditor.bppPrice;
-            ctx.translate(bppp.x*s, bppp.y*s); ctx.rotate(bppp.rot * Math.PI / 180); ctx.scale(bppp.scale * bppp.scaleX, bppp.scale * bppp.scaleY);
-            drawS2Text(fmt(7), 0, 0, 56*s, 8*s); ctx.restore();
 
-            let bpbl = window.tempEditor.bluePlate;
-            drawItem(globalAssets.style2BluePlate, bpbl.x*s, bpbl.y*s, 220*bpbl.scale*bpbl.scaleX*s, 60*bpbl.scale*bpbl.scaleY*s, bpbl.rot, 15);
+            // ОБРЕЗКА ВЕРХНЕГО ПЕРСОНАЖА (не вылезет ниже белой линии)
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, W, H/2 - 8*s); 
+            ctx.clip();
+            drawBrawler(globalAssets[`brawler_${season}_2`], 986*s, 7*s, 0.43, 1, 1, 0); 
+            ctx.restore();
             
-            ctx.save(); let bpblp = window.tempEditor.bluePrice;
-            ctx.translate(bpblp.x*s, bpblp.y*s); ctx.rotate(bpblp.rot * Math.PI / 180); ctx.scale(bpblp.scale * bpblp.scaleX, bpblp.scale * bpblp.scaleY);
-            drawS2Text(fmt(8), 0, 0, 56*s, 8*s); ctx.restore();
+            drawItem(globalAssets.style2BPP, 841*s, 32*s, 220 * 1.31 * 0.77 * s, 100 * 1.31 * 1 * s, -6, 15);
+            
+            ctx.save(); 
+            ctx.translate(974*s, 142*s); ctx.rotate(-13 * Math.PI / 180); ctx.scale(1 * 1, 1 * 1);
+            drawS2Text(fmt(7), 0, 0, 56*s, 8*s); 
+            ctx.restore();
+
+            drawItem(globalAssets.style2BluePlate, 843*s, 217*s, 220 * 1.65 * 0.66 * s, 60 * 1.65 * 1 * s, 0, 15);
+            
+            ctx.save(); 
+            ctx.translate(966*s, 258*s); ctx.rotate(0); ctx.scale(0.82 * 1, 0.82 * 1);
+            drawS2Text(fmt(8), 0, 0, 56*s, 8*s); 
+            ctx.restore();
 
             // 9. Блок BP (Справа снизу)
-            let br1 = window.tempEditor.brawler1;
-            drawBrawler(globalAssets[`brawler_${season}_1`], br1.x*s, br1.y*s, br1.scale, br1.scaleX, br1.scaleY, br1.rot);
-            
-            let bpi = window.tempEditor.bpIcon;
-            drawItem(globalAssets.style2BP, bpi.x*s, bpi.y*s, 220*bpi.scale*bpi.scaleX*s, 100*bpi.scale*bpi.scaleY*s, bpi.rot, 15);
-            
-            ctx.save(); let bpp = window.tempEditor.bpPrice;
-            ctx.translate(bpp.x*s, bpp.y*s); ctx.rotate(bpp.rot * Math.PI / 180); ctx.scale(bpp.scale * bpp.scaleX, bpp.scale * bpp.scaleY);
-            drawS2Text(fmt(9), 0, 0, 56*s, 8*s); ctx.restore();
 
-            let yp = window.tempEditor.yellowPlate;
-            drawItem(globalAssets.style2YellowPlate, yp.x*s, yp.y*s, 220*yp.scale*yp.scaleX*s, 60*yp.scale*yp.scaleY*s, yp.rot, 15);
+            // ОБРЕЗКА НИЖНЕГО ПЕРСОНАЖА (не вылезет выше белой линии)
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, H/2 + 8*s, W, H/2); 
+            ctx.clip();
+            drawBrawler(globalAssets[`brawler_${season}_1`], 920*s, 359*s, 0.54, 1, 1, 0);
+            ctx.restore();
             
-            ctx.save(); let ypp = window.tempEditor.yellowPrice;
-            ctx.translate(ypp.x*s, ypp.y*s); ctx.rotate(ypp.rot * Math.PI / 180); ctx.scale(ypp.scale * ypp.scaleX, ypp.scale * ypp.scaleY);
-            drawS2Text(fmt(10), 0, 0, 56*s, 8*s); ctx.restore();
+            drawItem(globalAssets.style2BP, 804*s, 400*s, 220 * 1.39 * 0.78 * s, 100 * 1.39 * 1 * s, -3, 15);
+            
+            ctx.save(); 
+            ctx.translate(938*s, 523*s); ctx.rotate(-8 * Math.PI / 180); ctx.scale(1 * 1, 1 * 1);
+            drawS2Text(fmt(9), 0, 0, 56*s, 8*s); 
+            ctx.restore();
+
+            drawItem(globalAssets.style2YellowPlate, 768*s, 591*s, 220 * 1.81 * 0.77 * s, 60 * 1.81 * 1 * s, 0, 15);
+            
+            ctx.save(); 
+            ctx.translate(925*s, 627*s); ctx.rotate(0); ctx.scale(0.78 * 1, 0.78 * 1);
+            drawS2Text(fmt(10), 0, 0, 56*s, 8*s); 
+            ctx.restore();
 
             // 10. Логотип Brawl Pass по центру
             if (globalAssets.style2Text) {
                 ctx.save();
-                let ml = window.tempEditor.mainLogo;
-                ctx.translate(ml.x*s, ml.y*s); 
-                ctx.rotate(ml.rot * Math.PI / 180);
-                ctx.scale(ml.scale * ml.scaleX * s, ml.scale * ml.scaleY * s);
+                ctx.translate(871*s, 291*s); 
+                ctx.rotate(0);
+                ctx.scale(0.15 * 1 * s, 0.15 * 1 * s);
                 ctx.drawImage(globalAssets.style2Text, 0, 0);
                 ctx.restore();
             }
@@ -5135,7 +5142,6 @@ function drawScene() {
                 ctx.globalAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3;
                 ctx.fillStyle = "white"; ctx.textAlign = "left"; ctx.textBaseline = "top";
                 
-                // Все 15 штук с точными позициями, скейлом и наклоном skew(-12deg)
                 const wms = [
                     {l: 0.273, t: -0.056, sc: 0.70}, {l: -0.117, t: 0.008, sc: 0.24},
                     {l: -0.156, t: 0.292, sc: 0.10}, {l: 0.401, t: 0.358, sc: 0.10},
@@ -5158,7 +5164,7 @@ function drawScene() {
                 ctx.restore();
             }
             return;
-        } 
+        }
         
         // --- СТИЛЬ 1 ---
         else {
