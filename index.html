@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(20)";
+  const APP_VERSION = "v2.4.9(21)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -695,20 +695,22 @@
     animation: flySpark var(--duration) linear infinite;
   }
 
-  @keyframes flySpark {
+@keyframes flySpark {
     0% {
-      transform: translate(0, 0) scale(0) rotate(0deg);
+      /* Начинаем путь ровно с края кнопки */
+      transform: translate(var(--startX), var(--startY)) scale(0) rotate(0deg);
       opacity: 0;
     }
     15% {
       opacity: 1;
-      transform: translate(calc(var(--dx) * 0.15), calc(var(--dy) * 0.15)) scale(1) rotate(calc(var(--rot) * 0.15));
+      transform: translate(calc(var(--startX) + (var(--endX) - var(--startX)) * 0.15), calc(var(--startY) + (var(--endY) - var(--startY)) * 0.15)) scale(1) rotate(calc(var(--rot) * 0.15));
     }
     80% {
       opacity: 1;
     }
     100% {
-      transform: translate(var(--dx), var(--dy)) scale(0) rotate(var(--rot));
+      /* Заканчиваем путь далеко за пределами кнопки */
+      transform: translate(var(--endX), var(--endY)) scale(0) rotate(var(--rot));
       opacity: 0;
     }
   }
@@ -1876,14 +1878,12 @@
 <div class="ios-btn-create-wrapper" style="position: relative; margin-top: auto; margin-bottom: 10px; width: 100%; display: flex; justify-content: center; align-items: center;">
     <div id="sparks-container"></div>
     
-    <button id="ios-btn-create" class="ios-action-btn">
-        <svg width="28" height="28" viewBox="0 0 32 32" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px; flex-shrink: 0;">
-            <path d="M15 2 C15 10 18 14 26 14 C18 14 15 18 15 26 C15 18 12 14 4 14 C12 14 15 10 15 2 Z"/>
-            <path d="M6 3 C6 6 8 8 11 8 C8 8 6 10 6 13 C6 10 4 8 1 8 C4 8 6 6 6 3 Z"/>
-            <path d="M25 8 C25 10 26 11 28 11 C26 11 25 12 25 14 C25 12 24 11 22 11 C24 11 25 10 25 8 Z"/>
-        </svg>
-        Создать
-    </button>
+<button id="ios-btn-create" class="ios-action-btn">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px; margin-top: 2px; flex-shrink: 0;">
+        <path d="M10.3072 7.21992C10.9493 5.61924 11.2704 4.81889 11.7919 4.70797C11.9291 4.6788 12.0708 4.6788 12.208 4.70797C12.7295 4.81889 13.0506 5.61924 13.6927 7.21992C14.0578 8.1302 14.2404 8.58535 14.582 8.89491C14.6778 8.98174 14.7818 9.05907 14.8926 9.12582C15.2874 9.3638 15.7803 9.40794 16.7661 9.49623C18.4348 9.64568 19.2692 9.7204 19.524 10.1961C19.5768 10.2947 19.6127 10.4014 19.6302 10.5118C19.7146 11.0448 19.1012 11.6028 17.8744 12.719L17.5338 13.0289C16.9602 13.5507 16.6735 13.8116 16.5076 14.1372C16.4081 14.3325 16.3414 14.5429 16.3101 14.7598C16.258 15.1215 16.342 15.5 16.5099 16.257L16.5699 16.5275C16.8711 17.885 17.0217 18.5638 16.8337 18.8974C16.6649 19.1971 16.3538 19.389 16.0102 19.4054C15.6277 19.4236 15.0887 18.9844 14.0107 18.106C13.3005 17.5273 12.9454 17.238 12.5512 17.1249C12.191 17.0216 11.8089 17.0216 11.4487 17.1249C11.0545 17.238 10.6994 17.5273 9.98917 18.106C8.91119 18.9844 8.37221 19.4236 7.98968 19.4054C7.64609 19.389 7.33504 19.1971 7.16617 18.8974C6.97818 18.5638 7.12878 17.885 7.42997 16.5275L7.48998 16.257C7.65794 15.5 7.74191 15.1215 7.6898 14.7598C7.65854 14.5429 7.59182 14.3325 7.49232 14.1372C7.32645 13.8116 7.03968 13.5507 6.46613 13.0289L6.12546 12.719C4.89867 11.6028 4.28527 11.0448 4.36975 10.5118C4.38724 10.4014 4.42312 10.2947 4.47589 10.1961C4.73069 9.7204 5.56507 9.64568 7.23384 9.49623C8.21962 9.40794 8.71251 9.3638 9.10735 9.12582C9.2181 9.05907 9.32211 8.98174 9.41793 8.89491C9.75954 8.58535 9.94211 8.1302 10.3072 7.21992Z"/>
+    </svg>
+    Создать
+</button>
 </div>
   </div>
 </div>
@@ -5022,23 +5022,23 @@ function drawScene() {
 
     if (window.layerState.isBrawlPassMode) {
         
-// --- СТИЛЬ 2 (ФИНАЛЬНЫЙ С ИСПРАВЛЕНИЕМ ГРАНИЦ) ---
+// --- СТИЛЬ 2 (ФИНАЛЬНЫЙ КОД ПОЛНОСТЬЮ) ---
         if (window.layerState.bpStyleIndex === 2) {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
             const s = W / 1280; 
 
+            // Вшитые координаты
             const C = {
                 shadows: { platesAlpha: 0.25, gemsAlpha: 0.35 },
                 mainBg: { x: -525, y: -282, scale: 1.42, skewX: 0 },
                 backgrounds: [
-                    // Увеличили масштаб до 0.65 для перекрытия границ
-                    { x: 838, y: -24, scale: 0.65, skewX: -8 }, 
+                    // Масштаб увеличен до 0.65, чтобы не было пустых щелей по краям
+                    { x: 838, y: -24, scale: 0.65, skewX: -8 },
                     { x: 773, y: 349, scale: 0.65, skewX: -8 }
                 ],
                 gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
-                // Восстановленные размеры персонажей
                 brawler2: { x: 986, y: 7, scale: 0.43, scaleX: 1, scaleY: 1, rot: 0 },
                 brawler1: { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 },
                 mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
@@ -5057,7 +5057,17 @@ function drawScene() {
                 gemPrice2: { x: 616, y: 306, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
                 gemPrice3: { x: 157, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
                 gemPrice4: { x: 379, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
-                gemPrice5: { x: 600, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 }
+                gemPrice5: { x: 600, y: 547, scale: 1.33, scaleX: 1, scaleY: 1, rot: 0 },
+                watermarks: [
+                    { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
+                    { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
+                    { x: 587, y: 598, scale: 0.33, skewX: -12 }, { x: 421, y: 699, scale: 0.72, skewX: -12 },
+                    { x: 734, y: 262, scale: 0.1, skewX: -12 }, { x: 76, y: 602, scale: 0.38, skewX: -12 },
+                    { x: -92, y: 695, scale: 0.87, skewX: -12 }, { x: -52, y: 386, scale: 0.24, skewX: -12 },
+                    { x: 852, y: 189, scale: 0.22, skewX: -12 }, { x: 1237, y: 306, scale: 0.39, skewX: -12 },
+                    { x: 957, y: -21, scale: 0.5, skewX: -12 }, { x: 791, y: 558, scale: 0.21, skewX: -12 },
+                    { x: 878, y: 357, scale: 0.36, skewX: -12 }, { x: 1131, y: 391, scale: 0.13, skewX: -12 }
+                ]
             };
 
             const shadowPlatesA = C.shadows.platesAlpha;
@@ -5067,25 +5077,26 @@ function drawScene() {
             if (rawBgImage) {
                 ctx.save();
                 ctx.translate(C.mainBg.x * s, C.mainBg.y * s);
+                if (C.mainBg.skewX) ctx.transform(1, 0, Math.tan(C.mainBg.skewX * Math.PI / 180), 1, 0, 0);
                 ctx.scale(C.mainBg.scale, C.mainBg.scale);
                 ctx.drawImage(rawBgImage, 0, 0, W, H);
                 ctx.restore();
             }
 
             // 1. ПРАВАЯ ЧАСТЬ (МАСКИРОВАННЫЕ ФОНЫ)
-            if (rawBgImage && C.backgrounds.length >= 2) {
+            if (rawBgImage && C.backgrounds && C.backgrounds.length >= 2) {
                 const drawMaskedBg = (bg, isTop) => {
                     ctx.save();
                     ctx.beginPath();
-                    // Общая маска сектора (за вертикальной линией)
+                    // Вертикальная маска
                     ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
                     ctx.closePath();
                     ctx.clip();
 
-                    // Дополнительная маска горизонтальной линии
+                    // Горизонтальная маска
                     ctx.beginPath();
-                    if (isTop) ctx.rect(0, 0, W, H/2 - 8*s); // Только верх
-                    else ctx.rect(0, H/2 + 8*s, W, H/2);    // Только низ
+                    if (isTop) ctx.rect(0, 0, W, H/2 - 8*s); 
+                    else ctx.rect(0, H/2 + 8*s, W, H/2);    
                     ctx.clip();
 
                     ctx.translate(bg.x * s, bg.y * s);
@@ -5095,12 +5106,9 @@ function drawScene() {
                     ctx.restore();
                 };
 
-                drawMaskedBg(C.backgrounds[0], true);  // Верхний фон
-                drawMaskedBg(C.backgrounds[1], false); // Нижний фон
+                drawMaskedBg(C.backgrounds[0], true);  
+                drawMaskedBg(C.backgrounds[1], false); 
             }
-
-            // ... далее отрисовка линий, текста и персонажей ...
-            // (Убедитесь, что отрисовка brawler1 и brawler2 тоже использует ctx.clip() по горизонтали)
 
             // 2. Оверлеи (Точки и Звезды)
             if (window.layerState.pointsVisible !== false && globalAssets.style2Points) {
@@ -5114,7 +5122,7 @@ function drawScene() {
                 ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
             }
 
-            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ (С наклоном)
+            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ
             if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
                 let wmFont = window.layerState.watermarksFont || 'Font16103';
@@ -5160,7 +5168,6 @@ function drawScene() {
             ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
             ctx.restore();
 
-            // Вспомогательные функции отрисовки
             const drawItem = (img, obj, shadowY) => {
                 if (!img) return;
                 ctx.save();
@@ -6802,46 +6809,79 @@ window.openBPTestEditor = function() {
 // --- ГЕНЕРАТОР ИСКР ВОКРУГ КНОПКИ СОЗДАТЬ ---
 function initSparks() {
     const container = document.getElementById('sparks-container');
-    if (!container) return;
+    const btn = document.getElementById('ios-btn-create');
+    if (!container || !btn) return;
     
     container.innerHTML = ''; 
-    const numSparks = 25; // Увеличили количество звезд
+    const numSparks = 25; 
+    
+    // Получаем реальные размеры кнопки для вычисления ее контура
+    const btnW = btn.offsetWidth || 336;
+    const btnH = btn.offsetHeight || 54;
+    
+    // Радиусы (ширина и высота пополам). 
+    // Отнимаем немного пикселей, чтобы искры вылетали из-под самого края, а не появлялись в воздухе
+    const rx = (btnW / 2) - 15; 
+    const ry = (btnH / 2) - 5;
     
     for (let i = 0; i < numSparks; i++) {
         const spark = document.createElement('div');
         spark.className = 'spark';
         
-        // Разлетаются во все стороны (0-360 градусов)
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 50 + Math.random() * 80; // Дистанция разлета
+        let angle;
+        if (Math.random() > 0.5) {
+            // Правая сторона: от -55° до +15°
+            angle = (Math.random() * 70 - 55) * (Math.PI / 180);
+        } else {
+            // Левая сторона: от 165° до 235°
+            angle = (Math.random() * 70 + 165) * (Math.PI / 180);
+        }
         
-        const dx = Math.cos(angle) * distance;
-        const dy = Math.sin(angle) * distance;
-        const rotation = (Math.random() - 0.5) * 720; // Вращение звезды
+        // Вычисляем точку старта прямо на контуре кнопки (формула эллипса)
+        const radiusAtAngle = (rx * ry) / Math.sqrt(Math.pow(ry * Math.cos(angle), 2) + Math.pow(rx * Math.sin(angle), 2));
         
-        spark.style.setProperty('--dx', `${dx}px`);
-        spark.style.setProperty('--dy', `${dy}px`);
+        const startX = Math.cos(angle) * radiusAtAngle;
+        const startY = Math.sin(angle) * radiusAtAngle;
+        
+        // Дистанция полета УЖЕ ЗА пределами кнопки
+        const travelDist = 40 + Math.random() * 60; 
+        
+        const endX = startX + Math.cos(angle) * travelDist;
+        const endY = startY + Math.sin(angle) * travelDist;
+        
+        const rotation = (Math.random() - 0.5) * 720; 
+        
+        // Передаем точные координаты в CSS
+        spark.style.setProperty('--startX', `${startX}px`);
+        spark.style.setProperty('--startY', `${startY}px`);
+        spark.style.setProperty('--endX', `${endX}px`);
+        spark.style.setProperty('--endY', `${endY}px`);
         spark.style.setProperty('--rot', `${rotation}deg`);
         
-        // Разная скорость жизни от 1.5 до 3.5 секунд
         const duration = 1.5 + Math.random() * 2;
         spark.style.setProperty('--duration', `${duration}s`);
         
-        // Разный размер от 8px до 20px
-        const size = 8 + Math.random() * 12;
+        const size = 8 + Math.random() * 11;
         spark.style.width = `${size}px`;
         spark.style.height = `${size}px`;
         
-        // Равномерная задержка, чтобы они летели постоянным потоком
         spark.style.animationDelay = `${-(Math.random() * duration)}s`;
         
         container.appendChild(spark);
     }
 }
 
-// Запускаем сразу же при загрузке страницы!
+// Запускаем генератор при загрузке и при изменении размеров окна
 document.addEventListener('DOMContentLoaded', initSparks);
-initSparks();
+window.addEventListener('resize', () => {
+    // Пересобираем искры, если пользователь перевернул телефон (изменилась ширина кнопки)
+    clearTimeout(window.sparkResizeTimer);
+    window.sparkResizeTimer = setTimeout(initSparks, 200);
+});
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initSparks();
+}
 
 </script>
 </body>
