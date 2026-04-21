@@ -7114,7 +7114,7 @@
       if(typeof startAnimation === 'function') startAnimation();
   };
 
-window.renderLightsEditor = function() {
+  window.renderLightsEditor = function() {
       let html = `
       <div style="margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px;">
           <label style="font-size: 14px; font-weight: bold; color: #fff;">Настройки персонажа:</label>
@@ -7131,6 +7131,16 @@ window.renderLightsEditor = function() {
       `;
       
       document.getElementById('lights-list').innerHTML = html;
+  };
+
+  window.toggleLightsEditor = function() {
+      let ed = document.getElementById('lights-editor');
+      if (ed.style.display === 'none') {
+          ed.style.display = 'block';
+          renderLightsEditor();
+      } else {
+          ed.style.display = 'none';
+      }
   };
  
 
