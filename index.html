@@ -5122,18 +5122,14 @@
                       x: window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 984, 
                       y: window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7, 
                       scale: window.layerState.brawler2Scale || 0.29, 
-                      scaleX: 1, 
-                      scaleY: 1, 
-                      rot: 0 
+                      scaleX: 1, scaleY: 1, rot: 0 
                   },
                   brawler1: { 
-                      x: window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : 908, 
-                      y: window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : 359, 
-                      scale: window.layerState.brawler1Scale || 0.37, 
-                      scaleX: -1, 
-                      scaleY: 1, 
-                      rot: 0 
-                  },            
+                      x: window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 984, 
+                      y: window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7, 
+                      scale: window.layerState.brawler2Scale || 0.29, 
+                      scaleX: 1, scaleY: 1, rot: 0 
+                  },         
                   proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
                   proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
                   bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: -6 },
@@ -7068,16 +7064,19 @@
       initSparks();
   }
 
-// Brawler 1 (Справа)
-window.layerState.brawler1Scale = 0.37;
-window.layerState.brawler1X = 908;
-window.layerState.brawler1Y = 359;
+// --- ЛОГИКА РЕДАКТОРА СВЕТА И ПЕРСОНАЖЕЙ ---
+window.layerState.brawler1Scale = 0.37; // Стандартный размер нижнего
+window.layerState.brawler1X = 908;      // Стандартная позиция X нижнего
+window.layerState.brawler1Y = 359;      // Стандартная позиция Y нижнего
 
-// Brawler 2 (Слева)
-window.layerState.brawler2Scale = 0.29;
-window.layerState.brawler2X = 984;
-window.layerState.brawler2Y = 7;
+window.layerState.brawler2Scale = 0.29; // Стандартный размер верхнего
+window.layerState.brawler2X = 984;      // Стандартная позиция X верхнего
+window.layerState.brawler2Y = 7;        // Стандартная позиция Y верхнего
 
+// Твои кастомные круги света оставляем без изменений:
+// window.layerState.customLights = [ ... ]; 
+
+// Функции обновления для нижнего персонажа (BP)
 window.updateBrawlerScale = function(val) {
     window.layerState.brawler1Scale = parseFloat(val);
     if(typeof startAnimation === 'function') startAnimation();
@@ -7089,7 +7088,7 @@ window.updateBrawlerPos = function(axis, val) {
     if(typeof startAnimation === 'function') startAnimation();
 };
 
-// Функции для левого персонажа
+// Функции обновления для верхнего персонажа (BP+)
 window.updateBrawler2Scale = function(val) {
     window.layerState.brawler2Scale = parseFloat(val);
     if(typeof startAnimation === 'function') startAnimation();
@@ -7101,89 +7100,51 @@ window.updateBrawler2Pos = function(axis, val) {
     if(typeof startAnimation === 'function') startAnimation();
 };
 
-  // Вшиваем твои 23 передних круга
-  window.layerState.customLights = [
-    { id: 1776795127193, x: 171, y: 199, color: '#aef700', size: 10, blur: 68, opacity: 0.5 },
-    { id: 1776795226290, x: 424, y: 199, color: '#c0fa01', size: 10, blur: 76, opacity: 0.5 },
-    { id: 1776795277547, x: 622, y: 205, color: '#c4fa00', size: 10, blur: 78, opacity: 0.5 },
-    { id: 1776795338068, x: 157, y: 457, color: '#aef700', size: 10, blur: 82, opacity: 0.45 },
-    { id: 1776795358331, x: 378, y: 435, color: '#c6fa00', size: 10, blur: 82, opacity: 0.45 },
-    { id: 1776795383776, x: 617, y: 443, color: '#b6f801', size: 10, blur: 79, opacity: 0.45 },
-    { id: 1776795426076, x: 280, y: 648, color: '#c6f80f', size: 10, blur: 67, opacity: 0.3 },
-    { id: 1776795449982, x: 171, y: 308, color: '#ffffff', size: 10, blur: 37, opacity: 0.15 },
-    { id: 1776795472214, x: 392, y: 309, color: '#ffffff', size: 10, blur: 53, opacity: 0.15 },
-    { id: 1776795502684, x: 610, y: 287, color: '#ffffff', size: 10, blur: 55, opacity: 0.15 },
-    { id: 1776795535514, x: 158, y: 542, color: '#ffffff', size: 10, blur: 51, opacity: 0.15 },
-    { id: 1776795561918, x: 372, y: 542, color: '#ffffff', size: 10, blur: 55, opacity: 0.15 },
-    { id: 1776795587926, x: 596, y: 551, color: '#ffffff', size: 10, blur: 53, opacity: 0.15 },
-    { id: 1776795616771, x: 442, y: 656, color: '#ffffff', size: 10, blur: 51, opacity: 0.15 },
-    { id: 1776795675434, x: 968, y: 100, color: '#e0f7ff', size: 10, blur: 86, opacity: 0.3 },
-    { id: 1776795703948, x: 961, y: 142, color: '#ffffff', size: 10, blur: 58, opacity: 0.15 },
-    { id: 1776795732267, x: 900, y: 256, color: '#00feff', size: 10, blur: 52, opacity: 0.35 },
-    { id: 1776795763405, x: 941, y: 279, color: '#ffffff', size: 10, blur: 42, opacity: 0.15 },
-    { id: 1776795783754, x: 944, y: 305, color: '#ffffff', size: 10, blur: 40, opacity: 0.2 },
-    { id: 1776795825371, x: 941, y: 451, color: '#fff302', size: 10, blur: 62, opacity: 0.4 },
-    { id: 1776795871046, x: 901, y: 523, color: '#ffffff', size: 10, blur: 40, opacity: 0.35 },
-    { id: 1776795894987, x: 900, y: 634, color: '#fed801', size: 10, blur: 67, opacity: 0.25 },
-    { id: 1776795925575, x: 929, y: 623, color: '#ffffff', size: 10, blur: 58, opacity: 0.25 }
-  ];
+window.addLight = function() {
+    window.layerState.customLights.push({ id: Date.now(), x: 600, y: 337, color: '#00A0FF', size: 150, blur: 100, opacity: 0.8 });
+    renderLightsEditor();
+    if(typeof startAnimation === 'function') startAnimation();
+};
 
-  window.updateBrawlerScale = function(val) {
-      window.layerState.brawler1Scale = parseFloat(val);
-      if(typeof startAnimation === 'function') startAnimation();
-  };
+window.updateLight = function(id, prop, value) {
+    let light = window.layerState.customLights.find(l => l.id === id);
+    if(light) {
+        light[prop] = prop === 'color' ? value : parseFloat(value);
+        if(typeof startAnimation === 'function') startAnimation();
+    }
+};
 
-  window.updateBrawlerPos = function(axis, val) {
-      if (axis === 'x') window.layerState.brawler1X = parseInt(val);
-      if (axis === 'y') window.layerState.brawler1Y = parseInt(val);
-      if(typeof startAnimation === 'function') startAnimation();
-  };
+window.removeLight = function(id) {
+    window.layerState.customLights = window.layerState.customLights.filter(l => l.id !== id);
+    renderLightsEditor();
+    if(typeof startAnimation === 'function') startAnimation();
+};
 
-  window.addLight = function() {
-      window.layerState.customLights.push({ id: Date.now(), x: 600, y: 337, color: '#00A0FF', size: 150, blur: 100, opacity: 0.8 });
-      renderLightsEditor();
-      if(typeof startAnimation === 'function') startAnimation();
-  };
-
-  window.updateLight = function(id, prop, value) {
-      let light = window.layerState.customLights.find(l => l.id === id);
-      if(light) {
-          light[prop] = prop === 'color' ? value : parseFloat(value);
-          if(typeof startAnimation === 'function') startAnimation();
-      }
-  };
-
-  window.removeLight = function(id) {
-      window.layerState.customLights = window.layerState.customLights.filter(l => l.id !== id);
-      renderLightsEditor();
-      if(typeof startAnimation === 'function') startAnimation();
-  };
-
-  window.renderLightsEditor = function() {
+window.renderLightsEditor = function() {
     let html = `
     <div style="margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px;">
-        <label style="font-size: 14px; font-weight: bold; color: #fff;">Персонаж 1 (Справа):</label>
+        <label style="font-size: 14px; font-weight: bold; color: #fff;">Нижний персонаж (BP):</label>
         <div style="margin-top: 8px; font-size:13px; color:#ddd;">Размер: 
-            <input type="range" min="0.1" max="1.5" step="0.01" value="${window.layerState.brawler1Scale}" oninput="updateBrawlerScale(this.value)" style="width: 100%;">
+            <input type="range" min="0.1" max="1" step="0.01" value="${window.layerState.brawler1Scale}" oninput="updateBrawlerScale(this.value)" style="width: 100%;">
         </div>
         <div style="margin-top: 6px; font-size:13px; color:#ddd;">X (Влево-вправо): 
-            <input type="range" min="-200" max="1400" step="1" value="${window.layerState.brawler1X}" oninput="updateBrawlerPos('x', this.value)" style="width: 100%;">
+            <input type="range" min="0" max="1200" step="1" value="${window.layerState.brawler1X}" oninput="updateBrawlerPos('x', this.value)" style="width: 100%;">
         </div>
         <div style="margin-top: 6px; font-size:13px; color:#ddd;">Y (Вверх-вниз): 
-            <input type="range" min="-200" max="1000" step="1" value="${window.layerState.brawler1Y}" oninput="updateBrawlerPos('y', this.value)" style="width: 100%;">
+            <input type="range" min="-100" max="900" step="1" value="${window.layerState.brawler1Y}" oninput="updateBrawlerPos('y', this.value)" style="width: 100%;">
         </div>
     </div>
 
     <div style="margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px;">
-        <label style="font-size: 14px; font-weight: bold; color: #fff;">Персонаж 2 (Слева):</label>
+        <label style="font-size: 14px; font-weight: bold; color: #fff;">Верхний персонаж (BP+):</label>
         <div style="margin-top: 8px; font-size:13px; color:#ddd;">Размер: 
-            <input type="range" min="0.1" max="1.5" step="0.01" value="${window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : 0.29}" oninput="updateBrawler2Scale(this.value)" style="width: 100%;">
+            <input type="range" min="0.1" max="1" step="0.01" value="${window.layerState.brawler2Scale}" oninput="updateBrawler2Scale(this.value)" style="width: 100%;">
         </div>
         <div style="margin-top: 6px; font-size:13px; color:#ddd;">X (Влево-вправо): 
-            <input type="range" min="-200" max="1400" step="1" value="${window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 984}" oninput="updateBrawler2Pos('x', this.value)" style="width: 100%;">
+            <input type="range" min="0" max="1200" step="1" value="${window.layerState.brawler2X}" oninput="updateBrawler2Pos('x', this.value)" style="width: 100%;">
         </div>
         <div style="margin-top: 6px; font-size:13px; color:#ddd;">Y (Вверх-вниз): 
-            <input type="range" min="-200" max="1000" step="1" value="${window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7}" oninput="updateBrawler2Pos('y', this.value)" style="width: 100%;">
+            <input type="range" min="-100" max="900" step="1" value="${window.layerState.brawler2Y}" oninput="updateBrawler2Pos('y', this.value)" style="width: 100%;">
         </div>
     </div>
     `;
@@ -7191,15 +7152,15 @@ window.updateBrawler2Pos = function(axis, val) {
     document.getElementById('lights-list').innerHTML = html;
 };
 
-  window.toggleLightsEditor = function() {
-      let ed = document.getElementById('lights-editor');
-      if (ed.style.display === 'none') {
-          ed.style.display = 'block';
-          renderLightsEditor();
-      } else {
-          ed.style.display = 'none';
-      }
-  };
+window.toggleLightsEditor = function() {
+    let ed = document.getElementById('lights-editor');
+    if (ed.style.display === 'none') {
+        ed.style.display = 'block';
+        renderLightsEditor();
+    } else {
+        ed.style.display = 'none';
+    }
+};
  
 
   </script>
