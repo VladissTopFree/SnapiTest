@@ -2121,7 +2121,6 @@
             </g>
         </svg>
         <div class="ios-info-text">
-            <b>Обратите внимание!</b><br>
                 Не обрезайте скриншоты 
                 (если это скриншот из игры).
                 Система сама вырежет.        
@@ -3818,6 +3817,12 @@
           html += `<div class="ios-layer-group ${animCls}">`;
           if (window.layerState.bpStyleIndex === 2) {
               const labels = ["30 gems", "80 gems", "170 gems", "360 gems", "950 gems", "2000 gems", "Pro pass", "BP +", "Улучшение", "BP", "Особая скидка"];
+              html += `
+              <div class="ios-layer-row">
+                  <div style="width: 24px; flex-shrink: 0;"></div>
+                  <div class="ios-layer-name" style="font-size:15px; color:#00A0FF; font-weight:bold;">Доп. Свет (Редактор)</div>
+                  <button class="ios-pill-btn" onclick="toggleLightsEditor()">ОТКРЫТЬ</button>
+              </div>`;
               for(let i=0; i<=10; i++) {
                   let val = (window.layerState.style2Prices && window.layerState.style2Prices[i]) ? window.layerState.style2Prices[i] : "";
                   html += `
@@ -5191,6 +5196,22 @@
                   ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
                   ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
               }
+
+              // 2.4 Временный кастомный свет (Размытые круги)
+              if (window.layerState.customLights && window.layerState.customLights.length > 0) {
+                  window.layerState.customLights.forEach(light => {
+                      ctx.save();
+                      ctx.globalCompositeOperation = "screen"; // "screen" дает эффект свечения. Если нужен обычный цвет - замени на "source-over"
+                      ctx.globalAlpha = light.opacity;
+                      ctx.filter = `blur(${light.blur * s}px)`;
+                      ctx.fillStyle = light.color;
+                      ctx.beginPath();
+                      ctx.arc(light.x * s, light.y * s, light.size * s, 0, Math.PI * 2);
+                      ctx.fill();
+                      ctx.restore();
+                  });
+              }
+
 
               // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ
               if (window.layerState.watermarksVisible !== false) {
@@ -6948,8 +6969,85 @@
       initSparks();
   }
 
+// --- ЛОГИКА РЕДАКТОРА СВЕТА ---
+  window.layerState.customLights = [];
 
+  window.addLight = function() {
+      window.layerState.customLights.push({
+          id: Date.now(),
+          x: 600, // По умолчанию в центре
+          y: 337,
+          color: '#00A0FF',
+          size: 150,
+          blur: 100,
+          opacity: 0.8
+      });
+      renderLightsEditor();
+      if(typeof startAnimation === 'function') startAnimation();
+  };
+
+  window.updateLight = function(id, prop, value) {
+      let light = window.layerState.customLights.find(l => l.id === id);
+      if(light) {
+          light[prop] = prop === 'color' ? value : parseFloat(value);
+          if(typeof startAnimation === 'function') startAnimation();
+      }
+  };
+
+  window.removeLight = function(id) {
+      window.layerState.customLights = window.layerState.customLights.filter(l => l.id !== id);
+      renderLightsEditor();
+      if(typeof startAnimation === 'function') startAnimation();
+  };
+
+  window.renderLightsEditor = function() {
+      let html = '';
+      window.layerState.customLights.forEach((light, index) => {
+          html += `
+          <div style="background: rgba(255,255,255,0.1); padding: 12px; margin-bottom: 10px; border-radius: 10px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                  <b style="font-size: 14px;">Круг ${index + 1}</b>
+                  <span onclick="removeLight(${light.id})" style="color: #FF3B30; cursor:pointer; font-weight: bold;">✕</span>
+              </div>
+              <div style="margin-bottom: 6px; font-size:13px; display:flex; justify-content:space-between; align-items:center;">Цвет: <input type="color" value="${light.color}" oninput="updateLight(${light.id}, 'color', this.value)" style="border:none; background:transparent; width:30px; height:30px; cursor:pointer;"></div>
+              <div style="margin-bottom: 6px; font-size:13px;">X (Лево-Право): <input type="range" min="-200" max="1400" value="${light.x}" oninput="updateLight(${light.id}, 'x', this.value)" style="width:100%"></div>
+              <div style="margin-bottom: 6px; font-size:13px;">Y (Верх-Низ): <input type="range" min="-200" max="900" value="${light.y}" oninput="updateLight(${light.id}, 'y', this.value)" style="width:100%"></div>
+              <div style="margin-bottom: 6px; font-size:13px;">Размер: <input type="range" min="10" max="1000" value="${light.size}" oninput="updateLight(${light.id}, 'size', this.value)" style="width:100%"></div>
+              <div style="margin-bottom: 6px; font-size:13px;">Размытие: <input type="range" min="0" max="300" value="${light.blur}" oninput="updateLight(${light.id}, 'blur', this.value)" style="width:100%"></div>
+              <div style="margin-bottom: 6px; font-size:13px;">Прозрачность: <input type="range" min="0" max="1" step="0.05" value="${light.opacity}" oninput="updateLight(${light.id}, 'opacity', this.value)" style="width:100%"></div>
+          </div>`;
+      });
+      document.getElementById('lights-list').innerHTML = html;
+  };
+
+  window.copyLightsCode = function() {
+      let code = JSON.stringify(window.layerState.customLights, null, 2);
+      navigator.clipboard.writeText(code).then(() => {
+          alert('Массив настроек кругов скопирован:\n\n' + code);
+      }).catch(() => {
+          prompt('Скопируйте этот JSON код:', code);
+      });
+  };
+
+  window.toggleLightsEditor = function() {
+      let ed = document.getElementById('lights-editor');
+      if(ed.style.display === 'none') {
+          ed.style.display = 'block';
+          renderLightsEditor();
+      } else {
+          ed.style.display = 'none';
+      }
+  };
 
   </script>
+
+  <div id="lights-editor" style="display:none; position: fixed; top: 20px; right: 20px; z-index: 9999; background: rgba(28, 28, 30, 0.95); backdrop-filter: blur(10px); color: white; padding: 16px; border-radius: 16px; width: 280px; font-family: -apple-system, sans-serif; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <h3 style="margin-top:0; font-size: 17px; margin-bottom: 12px; color: #fff;">Редактор света (Стиль 2)</h3>
+    <div id="lights-list"></div>
+    <button onclick="addLight()" style="width: 100%; padding: 10px; margin-top: 10px; background: #00A0FF; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">+ Добавить круг</button>
+    <button onclick="copyLightsCode()" style="width: 100%; padding: 10px; margin-top: 8px; background: #34C759; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Скопировать код</button>
+    <button onclick="toggleLightsEditor()" style="width: 100%; padding: 10px; margin-top: 8px; background: #FF3B30; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Закрыть</button>
+  </div>
+
   </body>
   </html>
