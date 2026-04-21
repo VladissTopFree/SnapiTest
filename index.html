@@ -3787,28 +3787,34 @@ function renderLayerPanel(isInitialLoad = false) {
         
         <div class="ios-layer-row">
             <div class="ios-layer-name" style="font-size:14px;">Нижний (Размер)</div>
-            <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : 0.54}" oninput="updateBrawlerParams('brawler1Scale', this.value)">
+            <div id="v-b1s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : 0.54}</div>
+            <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : 0.54}" oninput="document.getElementById('v-b1s').innerText=this.value; updateBrawlerParams('brawler1Scale', this.value)">
         </div>
         <div class="ios-layer-row">
             <div class="ios-layer-name" style="font-size:14px;">Нижний (Влево/Вправо)</div>
-            <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : 920}" oninput="updateBrawlerParams('brawler1X', this.value)">
+            <div id="v-b1x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : 920}</div>
+            <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : 920}" oninput="document.getElementById('v-b1x').innerText=this.value; updateBrawlerParams('brawler1X', this.value)">
         </div>
         <div class="ios-layer-row">
             <div class="ios-layer-name" style="font-size:14px;">Нижний (Вверх/Вниз)</div>
-            <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : 359}" oninput="updateBrawlerParams('brawler1Y', this.value)">
+            <div id="v-b1y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : 359}</div>
+            <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : 359}" oninput="document.getElementById('v-b1y').innerText=this.value; updateBrawlerParams('brawler1Y', this.value)">
         </div>
         
         <div class="ios-layer-row">
             <div class="ios-layer-name" style="font-size:14px;">Верхний (Размер)</div>
-            <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : 0.43}" oninput="updateBrawlerParams('brawler2Scale', this.value)">
+            <div id="v-b2s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : 0.43}</div>
+            <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : 0.43}" oninput="document.getElementById('v-b2s').innerText=this.value; updateBrawlerParams('brawler2Scale', this.value)">
         </div>
         <div class="ios-layer-row">
             <div class="ios-layer-name" style="font-size:14px;">Верхний (Влево/Вправо)</div>
-            <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 986}" oninput="updateBrawlerParams('brawler2X', this.value)">
+            <div id="v-b2x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 986}</div>
+            <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 986}" oninput="document.getElementById('v-b2x').innerText=this.value; updateBrawlerParams('brawler2X', this.value)">
         </div>
         <div class="ios-layer-row" style="border-bottom:none;">
             <div class="ios-layer-name" style="font-size:14px;">Верхний (Вверх/Вниз)</div>
-            <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7}" oninput="updateBrawlerParams('brawler2Y', this.value)">
+            <div id="v-b2y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7}</div>
+            <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7}" oninput="document.getElementById('v-b2y').innerText=this.value; updateBrawlerParams('brawler2Y', this.value)">
         </div>`;
         } else {
             html += `
