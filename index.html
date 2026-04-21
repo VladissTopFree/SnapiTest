@@ -5142,7 +5142,7 @@ function drawScene() {
                 drawMaskedBg(C.backgrounds[1], false); 
             }
 
-            // 1.5. ФОНОВЫЕ РАЗМЫТЫЕ КРУГИ (Надежный Canvas Gradient)
+// 1.5. ФОНОВЫЕ РАЗМЫТЫЕ КРУГИ (Надежный Canvas Gradient)
             ctx.save();
             const colorsMap = {
                 'green': {r: 94, g: 229, b: 104}, 
@@ -5151,6 +5151,9 @@ function drawScene() {
                 'purple': {r: 200, g: 97, b: 255}, 
                 'black': {r: 102, g: 102, b: 102}
             };
+            
+            // Проверяем, загружена ли картинка (FanKit или свой фон)
+            let isCustomBg = !window.layerState.bgColorType;
             let clr = colorsMap[window.layerState.bgColorType] || {r: 255, g: 255, b: 255};
             
             const hardcodedBgLights = [
@@ -5165,17 +5168,27 @@ function drawScene() {
                 ctx.save();
                 let cx = light.x * s;
                 let cy = light.y * s;
-                // Увеличиваем радиус градиента, чтобы он имитировал размытие (size + blur)
                 let radius = (light.size + light.blur) * s; 
                 
                 ctx.globalCompositeOperation = 'screen';
+                
+                // Увеличиваем прозрачность и площадь свечения для картинок
+                let op = isCustomBg ? Math.min(1, light.opacity * 1.5) : light.opacity;
+                let midPoint = isCustomBg ? 0.5 : 0.3; 
+                
                 let rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-                rg.addColorStop(0, `rgba(${clr.r}, ${clr.g}, ${clr.b}, ${light.opacity})`);
-                rg.addColorStop(0.3, `rgba(${clr.r}, ${clr.g}, ${clr.b}, ${light.opacity * 0.5})`);
+                rg.addColorStop(0, `rgba(${clr.r}, ${clr.g}, ${clr.b}, ${op})`);
+                rg.addColorStop(midPoint, `rgba(${clr.r}, ${clr.g}, ${clr.b}, ${op * 0.5})`);
                 rg.addColorStop(1, `rgba(${clr.r}, ${clr.g}, ${clr.b}, 0)`);
                 
                 ctx.fillStyle = rg;
                 ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+                
+                // Дублируем слой свечения для загруженных фонов, чтобы яркость "пробивала" картинку
+                if (isCustomBg) {
+                    ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+                }
+                
                 ctx.restore();
             });
             ctx.restore();
@@ -5375,8 +5388,66 @@ function drawScene() {
                 ctx.drawImage(globalAssets.style2Text, 0, 0);
                 ctx.restore();
             }
+
+            // --- ДОБАВИТЬ СЮДА: 11. ПЕРЕДНИЕ РАЗМЫТЫЕ КРУГИ (СВЕЧЕНИЯ ПОВЕРХ ВСЕГО) ---
+            ctx.save();
+            const foregroundLights = [
+                { id: 1776795127193, x: 171, y: 199, color: '#aef700', size: 10, blur: 68, opacity: 0.5 },
+                { id: 1776795226290, x: 424, y: 199, color: '#c0fa01', size: 10, blur: 76, opacity: 0.5 },
+                { id: 1776795277547, x: 622, y: 205, color: '#c4fa00', size: 10, blur: 78, opacity: 0.5 },
+                { id: 1776795338068, x: 157, y: 457, color: '#aef700', size: 10, blur: 82, opacity: 0.45 },
+                { id: 1776795358331, x: 378, y: 435, color: '#c6fa00', size: 10, blur: 82, opacity: 0.45 },
+                { id: 1776795383776, x: 617, y: 443, color: '#b6f801', size: 10, blur: 79, opacity: 0.45 },
+                { id: 1776795426076, x: 280, y: 648, color: '#c6f80f', size: 10, blur: 67, opacity: 0.3 },
+                { id: 1776795449982, x: 171, y: 308, color: '#ffffff', size: 10, blur: 37, opacity: 0.15 },
+                { id: 1776795472214, x: 392, y: 309, color: '#ffffff', size: 10, blur: 53, opacity: 0.15 },
+                { id: 1776795502684, x: 610, y: 287, color: '#ffffff', size: 10, blur: 55, opacity: 0.15 },
+                { id: 1776795535514, x: 158, y: 542, color: '#ffffff', size: 10, blur: 51, opacity: 0.15 },
+                { id: 1776795561918, x: 372, y: 542, color: '#ffffff', size: 10, blur: 55, opacity: 0.15 },
+                { id: 1776795587926, x: 596, y: 551, color: '#ffffff', size: 10, blur: 53, opacity: 0.15 },
+                { id: 1776795616771, x: 442, y: 656, color: '#ffffff', size: 10, blur: 51, opacity: 0.15 },
+                { id: 1776795675434, x: 968, y: 100, color: '#e0f7ff', size: 10, blur: 86, opacity: 0.3 },
+                { id: 1776795703948, x: 961, y: 142, color: '#ffffff', size: 10, blur: 58, opacity: 0.15 },
+                { id: 1776795732267, x: 900, y: 256, color: '#00feff', size: 10, blur: 52, opacity: 0.35 },
+                { id: 1776795763405, x: 941, y: 279, color: '#ffffff', size: 10, blur: 42, opacity: 0.15 },
+                { id: 1776795783754, x: 944, y: 305, color: '#ffffff', size: 10, blur: 40, opacity: 0.2 },
+                { id: 1776795825371, x: 941, y: 451, color: '#fff302', size: 10, blur: 62, opacity: 0.4 },
+                { id: 1776795871046, x: 901, y: 523, color: '#ffffff', size: 10, blur: 40, opacity: 0.35 },
+                { id: 1776795894987, x: 900, y: 634, color: '#fed801', size: 10, blur: 67, opacity: 0.25 },
+                { id: 1776795925575, x: 929, y: 623, color: '#ffffff', size: 10, blur: 58, opacity: 0.25 }
+            ];
+
+            const hexToRgb = (hex) => {
+                let r = parseInt(hex.slice(1, 3), 16);
+                let g = parseInt(hex.slice(3, 5), 16);
+                let b = parseInt(hex.slice(5, 7), 16);
+                return {r, g, b};
+            };
+
+            foregroundLights.forEach(light => {
+                ctx.save();
+                let cx = light.x * s;
+                let cy = light.y * s;
+                let radius = (light.size + light.blur) * s;
+                
+                ctx.globalCompositeOperation = 'screen';
+                let rgb = hexToRgb(light.color);
+                
+                let rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+                rg.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${light.opacity})`);
+                rg.addColorStop(0.3, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${light.opacity * 0.5})`);
+                rg.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+                
+                ctx.fillStyle = rg;
+                ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
+                ctx.restore();
+            });
+            ctx.restore();
+            // --- КОНЕЦ ДОБАВЛЕНИЯ ---
+
             return;
         }
+        
         
         // --- СТИЛЬ 1 ---
         else {
