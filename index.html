@@ -1746,6 +1746,41 @@
     body.os-non-apple .ios-divider { margin-right: -20px !important; }
     body.os-non-apple .sp-row::after { right: 0 !important; }
 
+  .ios-info-plate {
+    background: color-mix(in srgb, var(--tg-theme-button-color) 30%, transparent); 
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    text-align: left;
+  }
+  
+  body.os-non-apple .ios-info-plate {
+    border-radius: 12px;
+  }
+
+  .ios-info-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    fill: var(--tg-theme-text-color, #000000);
+    margin-top: 2px;
+  }
+
+  .ios-info-text {
+    font-size: 14px;
+    color: var(--tg-theme-text-color, #000000);
+    line-height: 1.35;
+  }
+  
+  .ios-info-text b {
+    color: var(--tg-theme-text-color, #000000);
+    font-weight: 600;
+  }
+
   </style>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -1826,6 +1861,8 @@
           pointer-events: none;
           white-space: nowrap;
       }
+
+      
 
   </style>
   </head>
@@ -2073,21 +2110,35 @@
       <button id="wizard-next-btn2" class="ios-action-btn ios-btn-next">Далее</button>
     </div>
 
-    <div id="wizard-step3" class="wizard-step">
-      <div class="ios-wizard-title">Создание акции</div>
-      <div class="ios-wizard-subtitle">Скриншот. Загрузите скриншоты из игры<br>что бы система смогла их вырезать<br>и вставить на Ваш фон.</div>
-      <div class="ios-upload-link" id="wizard-upload-screens-btn" style="margin-top: 15px;">
-          <span>Загрузить скриншот</span>
-          <svg viewBox="0 0 8 14"><path d="M1 1l6 6-6 6"/></svg>
-      </div>
-      <div id="wizard-uploaded-count" class="ios-uploaded-count"></div>
-      
-      <div id="wizard-screens-preview" class="screens-preview-container"></div>
-      
-      <input type="file" id="file" accept="image/*" multiple style="display:none;">
-      <input type="file" id="file-add-screens" accept="image/*" multiple style="display:none;">
-      <button id="wizard-next-btn3" class="ios-action-btn ios-btn-next">Далее</button>
+  <div id="wizard-step3" class="wizard-step">
+    <div class="ios-wizard-title">Создание акции</div>
+    <div class="ios-wizard-subtitle">Скриншот. Загрузите скриншоты из игры<br>что бы система смогла их вырезать<br>и вставить на Ваш фон.</div>
+    
+    <div class="ios-info-plate">
+        <svg class="ios-info-icon" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
+            <g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor" stroke="none">
+                <path d="M2330 5109 c-305 -29 -646 -126 -910 -259 -273 -138 -559 -356 -755 -576 -384 -432 -602 -931 -655 -1499 -41 -446 55 -949 260 -1355 138 -273 356 -559 576 -755 432 -384 931 -602 1499 -655 446 -41 949 55 1355 260 273 138 559 356 755 576 384 432 602 931 655 1499 41 446 -55 949 -260 1355 -138 273 -356 559 -576 755 -432 384 -931 602 -1499 655 -125 11 -320 11 -445 -1z m352 -1077 c59 -26 124 -91 151 -151 30 -64 30 -178 0 -242 -27 -60 -92 -125 -152 -152 -64 -30 -178 -30 -242 0 -129 59 -202 206 -169 342 43 180 242 278 412 203z m0 -900 c58 -25 124 -91 152 -151 21 -46 21 -48 21 -871 0 -823 0 -825 -21 -871 -28 -60 -93 -125 -153 -152 -64 -30 -178 -30 -242 0 -60 27 -125 92 -153 152 -21 46 -21 52 -24 841 -2 557 0 810 8 847 39 180 241 281 412 205z"/>
+            </g>
+        </svg>
+        <div class="ios-info-text">
+            <b>Обратите внимание!</b><br>
+                Не обрезайте скриншоты 
+                (если это скриншот из игры).
+                Система сама вырежет.        
+        </div>
     </div>
+    <div class="ios-upload-link" id="wizard-upload-screens-btn" style="margin-top: 15px;">
+        <span>Загрузить скриншот</span>
+        <svg viewBox="0 0 8 14"><path d="M1 1l6 6-6 6"/></svg>
+    </div>
+    <div id="wizard-uploaded-count" class="ios-uploaded-count"></div>
+    
+    <div id="wizard-screens-preview" class="screens-preview-container"></div>
+    
+    <input type="file" id="file" accept="image/*" multiple style="display:none;">
+    <input type="file" id="file-add-screens" accept="image/*" multiple style="display:none;">
+    <button id="wizard-next-btn3" class="ios-action-btn ios-btn-next">Далее</button>
+  </div>
 
     <div id="wizard-step3-bp" class="wizard-step">
         <div class="ios-wizard-title">Создание Brawl Pass</div>
