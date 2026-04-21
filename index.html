@@ -3102,7 +3102,11 @@
           watermarksVisible: s.watermarksVisible,
           watermarksOpacity: s.watermarksOpacity,
           watermarksFont: s.watermarksFont,
-          pointsVisible: s.pointsVisible,
+          brawler1Scale: s.brawler1Scale !== undefined ? s.brawler1Scale : 0.37,
+          brawler1X: s.brawler1X !== undefined ? s.brawler1X : 908,
+          brawler1Y: s.brawler1Y !== undefined ? s.brawler1Y : 359,
+          customLights: s.customLights || window.layerState.customLights || [],
+
           offers: []
       };
 
@@ -5122,7 +5126,8 @@
                       scaleX: -1, 
                       scaleY: 1, 
                       rot: 0 
-                  },                  proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
+                  },            
+                  proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
                   proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
                   bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: -6 },
                   bppPrice: { x: 974, y: 142, scale: 1, scaleX: 1, scaleY: 1, rot: -13 },
@@ -6949,6 +6954,11 @@
 
       window.layerState.isBrawlPassMode = true;
       window.layerState.bpStyleIndex = 2;
+      
+      // Инициализируем стартовые значения, если их нет
+      if (window.layerState.brawler1Scale === undefined) window.layerState.brawler1Scale = 0.37;
+      if (window.layerState.brawler1X === undefined) window.layerState.brawler1X = 908;
+      if (window.layerState.brawler1Y === undefined) window.layerState.brawler1Y = 359;
 
       setTimeout(async () => {
           let season = window.layerState.bpSeason || 50;
