@@ -5161,40 +5161,6 @@
                   ctx.restore();
               }
 
-            // 2.6. Кастомное свечение (Множественное)
-            if (window.tempGlows && window.tempGlows.length > 0) {
-                ctx.save();
-                ctx.globalCompositeOperation = 'screen'; // Режим наложения для красивого света
-                
-                window.tempGlows.forEach(glow => {
-                    ctx.save();
-                    ctx.globalAlpha = glow.opacity;
-                    
-                    let cx = glow.x * s;
-                    let cy = glow.y * s;
-                    let r = glow.radius * s;
-                    
-                    if (r > 0) {
-                        let rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-                        
-                        // Преобразуем HEX цвет в RGB
-                        let hex = glow.color.replace('#', '');
-                        let rVal = parseInt(hex.substring(0,2), 16);
-                        let gVal = parseInt(hex.substring(2,4), 16);
-                        let bVal = parseInt(hex.substring(4,6), 16);
-                        
-                        // Делаем плавное размытие от центра к краям (без глючного blur)
-                        rg.addColorStop(0, `rgba(${rVal},${gVal},${bVal},1)`);
-                        rg.addColorStop(1, `rgba(${rVal},${gVal},${bVal},0)`);
-                        
-                        ctx.fillStyle = rg;
-                        ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
-                    }
-                    ctx.restore();
-                });
-                ctx.restore();
-            }
-
               // 3. Главный никнейм (Большой текст позади всего)
               if (cachedTextCanvas && animText.alpha > 0.01) {
                   ctx.save();
@@ -6930,73 +6896,6 @@
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
       initSparks();
   }
-
-// --- МНОЖЕСТВЕННЫЙ РЕДАКТОР СВЕЧЕНИЯ ---
-window.tempGlows = [
-    { x: 640, y: 360, radius: 400, opacity: 0.8, color: '#fff' }
-];
-
-window.updateTempGlow = function(idx, prop, val) {
-    if (prop === 'color') {
-        window.tempGlows[idx][prop] = val;
-    } else {
-        window.tempGlows[idx][prop] = parseFloat(val);
-        document.getElementById('tglow-' + idx + '-' + prop).innerText = val;
-    }
-    if (typeof startAnimation === 'function') startAnimation();
-};
-
-window.addTempGlow = function() {
-    window.tempGlows.push({ x: 640, y: 360, radius: 300, opacity: 0.8, color: '#ff00aa' });
-    window.renderGlowPanel();
-    if (typeof startAnimation === 'function') startAnimation();
-};
-
-window.removeTempGlow = function(idx) {
-    window.tempGlows.splice(idx, 1);
-    window.renderGlowPanel();
-    if (typeof startAnimation === 'function') startAnimation();
-};
-
-window.copyGlowCode = function() {
-    let json = JSON.stringify(window.tempGlows, null, 4);
-    navigator.clipboard.writeText(json).then(() => {
-        alert('✅ Массив свечений скопирован!\n\nОтправь его сюда, и я вставлю его в итоговый код.');
-    }).catch(err => {
-        alert('Не удалось скопировать. Сделай скриншот или скопируй вручную:\n\n' + json);
-    });
-};
-
-window.renderGlowPanel = function() {
-    let panel = document.getElementById('glow-editor-panel');
-    if (!panel) {
-        panel = document.createElement('div');
-        panel.id = 'glow-editor-panel';
-        panel.style.cssText = "position: fixed; bottom: 20px; right: 10px; background: rgba(0,0,0,0.85); color: #fff; padding: 15px; border-radius: 12px; z-index: 999999; font-family: monospace; font-size: 13px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 240px; max-height: 80vh; overflow-y: auto;";
-        document.body.appendChild(panel);
-    }
-    
-    let html = '<div style="color: #00A0FF; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;"><span>Свет (Градиент)</span> <button onclick="addTempGlow()" style="background:#00A0FF; border:none; color:white; border-radius:6px; padding: 4px 8px; cursor:pointer; font-weight: bold;">+ Ещё</button></div>';
-    
-    window.tempGlows.forEach((glow, idx) => {
-        html += `
-        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; margin-bottom: 10px; position: relative;">
-            <button onclick="removeTempGlow(${idx})" style="position: absolute; right: 5px; top: 5px; background: #ff3b30; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 11px; padding: 2px 6px;">Удалить</button>
-            <b style="color:#aaa;">Свечение ${idx + 1}</b><br><br>
-            X: <input type="range" min="-500" max="2000" value="${glow.x}" oninput="updateTempGlow(${idx}, 'x', this.value)"> <span id="tglow-${idx}-x">${glow.x}</span><br>
-            Y: <input type="range" min="-500" max="1500" value="${glow.y}" oninput="updateTempGlow(${idx}, 'y', this.value)"> <span id="tglow-${idx}-y">${glow.y}</span><br>
-            Радиус: <input type="range" min="10" max="2000" value="${glow.radius}" oninput="updateTempGlow(${idx}, 'radius', this.value)"> <span id="tglow-${idx}-radius">${glow.radius}</span><br>
-            Прозрач.: <input type="range" min="0" max="1" step="0.05" value="${glow.opacity}" oninput="updateTempGlow(${idx}, 'opacity', this.value)"> <span id="tglow-${idx}-opacity">${glow.opacity}</span><br>
-            Цвет: <input type="color" value="${glow.color}" oninput="updateTempGlow(${idx}, 'color', this.value)" style="width: 100%; height: 30px; cursor: pointer; margin-top: 8px; border: none; padding: 0; border-radius: 4px;">
-        </div>`;
-    });
-    
-    html += '<button onclick="copyGlowCode()" style="width: 100%; background: #34C759; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 14px;">📋 Скопировать код</button>';
-    
-    panel.innerHTML = html;
-};
-
-window.renderGlowPanel();
 
 
 
