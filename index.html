@@ -545,7 +545,7 @@
     transition: border-color 0.4s ease-in-out; 
   }
   .ios-style-item.active {
-    border-color: #00A0FF;
+    border-color: var(--tg-theme-accent-text-color);
   }
 
   #ios-dashboard {
@@ -3709,8 +3709,22 @@ window.updateBPPrice = (side, val, inputEl) => {
 
 window.updateBPText = (val) => {
     window.layerState.textValue = val;
+    
+    // --- ДИНАМИЧЕСКОЕ ОБНОВЛЕНИЕ ПРЕВЬЮ ШРИФТОВ ---
+    let mainPreviewText = val.trim() !== '' ? val : 'TEXT';
+    let wmPreviewText = mainPreviewText.substring(0, 6); // Водяные знаки обрезаем до 6 символов, как было задумано
+
+    document.querySelectorAll('.main-font-item').forEach(el => {
+        el.innerText = mainPreviewText;
+    });
+
+    document.querySelectorAll('.wm-font-item').forEach(el => {
+        el.innerText = wmPreviewText;
+    });
+    // --- КОНЕЦ ДОБАВЛЕНИЯ ---
+
     window.updateCachedTextCanvas();
-    startAnimation();
+    if (typeof startAnimation === 'function') startAnimation();
 };
 
 window.updateS2PriceLayer = (idx, val) => {
@@ -5052,13 +5066,15 @@ function drawScene() {
                 shadows: { platesAlpha: 0.25, gemsAlpha: 0.35 },
                 mainBg: { x: -525, y: -282, scale: 1.42, skewX: 0 },
                 backgrounds: [
-                    // Масштаб увеличен до 0.65, чтобы не было пустых щелей по краям
                     { x: 838, y: -24, scale: 0.65, skewX: -8 },
                     { x: 773, y: 349, scale: 0.65, skewX: -8 }
                 ],
                 gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
+                
+                // Зафиксированные координаты бравлеров:
                 brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 },
                 brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true },
+                
                 mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
                 proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
                 proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
@@ -5106,12 +5122,10 @@ function drawScene() {
                 const drawMaskedBg = (bg, isTop) => {
                     ctx.save();
                     ctx.beginPath();
-                    // Вертикальная маска
                     ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
                     ctx.closePath();
                     ctx.clip();
 
-                    // Горизонтальная маска
                     ctx.beginPath();
                     if (isTop) ctx.rect(0, 0, W, H/2 - 8*s); 
                     else ctx.rect(0, H/2 + 8*s, W, H/2);    
@@ -5128,38 +5142,43 @@ function drawScene() {
                 drawMaskedBg(C.backgrounds[1], false); 
             }
 
-            // --- ДОБАВИТЬ СЮДА: 1.5. ФОНОВЫЕ РАЗМЫТЫЕ КРУГИ (СВЕЧЕНИЯ) ---
+            // 1.5. ФОНОВЫЕ РАЗМЫТЫЕ КРУГИ (Надежный Canvas Gradient)
             ctx.save();
             const colorsMap = {
-                'green': '#5ee568', 
-                'blue': '#46b3ff', 
-                'orange': '#ffcc00', 
-                'purple': '#c861ff', 
-                'black': '#666666'
+                'green': {r: 94, g: 229, b: 104}, 
+                'blue': {r: 70, g: 179, b: 255}, 
+                'orange': {r: 255, g: 204, b: 0}, 
+                'purple': {r: 200, g: 97, b: 255}, 
+                'black': {r: 102, g: 102, b: 102}
             };
-            let bgLightColor = colorsMap[window.layerState.bgColorType] || '#ffffff';
+            let clr = colorsMap[window.layerState.bgColorType] || {r: 255, g: 255, b: 255};
             
             const hardcodedBgLights = [
-                { id: 1776794001419, x: 391, y: 325, size: 198, blur: 155, opacity: 0.55 },
-                { id: 1776794030451, x: 950, y: 97, size: 10, blur: 121, opacity: 0.7 },
-                { id: 1776794070911, x: 1164, y: 201, size: 59, blur: 100, opacity: 0.75 },
-                { id: 1776794123581, x: 1126, y: 573, size: 61, blur: 123, opacity: 0.7 },
-                { id: 1776794165222, x: 928, y: 470, size: 27, blur: 108, opacity: 0.65 }
+                { x: 391, y: 325, size: 198, blur: 155, opacity: 0.55 },
+                { x: 950, y: 97, size: 10, blur: 121, opacity: 0.7 },
+                { x: 1164, y: 201, size: 59, blur: 100, opacity: 0.75 },
+                { x: 1126, y: 573, size: 61, blur: 123, opacity: 0.7 },
+                { x: 928, y: 470, size: 27, blur: 108, opacity: 0.65 }
             ];
 
             hardcodedBgLights.forEach(light => {
                 ctx.save();
-                ctx.beginPath();
-                // Умножаем на 's' для правильного масштабирования на любом экране
-                ctx.arc(light.x * s, light.y * s, light.size * s, 0, Math.PI * 2);
-                ctx.fillStyle = bgLightColor;
-                ctx.globalAlpha = light.opacity;
-                ctx.filter = `blur(${light.blur * s}px)`;
-                ctx.fill();
+                let cx = light.x * s;
+                let cy = light.y * s;
+                // Увеличиваем радиус градиента, чтобы он имитировал размытие (size + blur)
+                let radius = (light.size + light.blur) * s; 
+                
+                ctx.globalCompositeOperation = 'screen';
+                let rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+                rg.addColorStop(0, `rgba(${clr.r}, ${clr.g}, ${clr.b}, ${light.opacity})`);
+                rg.addColorStop(0.3, `rgba(${clr.r}, ${clr.g}, ${clr.b}, ${light.opacity * 0.5})`);
+                rg.addColorStop(1, `rgba(${clr.r}, ${clr.g}, ${clr.b}, 0)`);
+                
+                ctx.fillStyle = rg;
+                ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
                 ctx.restore();
             });
             ctx.restore();
-            // --- КОНЕЦ ДОБАВЛЕНИЯ ---
 
             // 2. Оверлеи (Точки и Звезды)
             if (window.layerState.pointsVisible !== false && globalAssets.style2Points) {
@@ -5260,7 +5279,6 @@ function drawScene() {
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
                 ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
                 
-                // Добавлена логика отражения
                 if (obj.flipH) {
                     ctx.translate(img.width, 0);
                     ctx.scale(-1, 1);
