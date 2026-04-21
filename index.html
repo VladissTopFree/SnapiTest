@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(21)";
+  const APP_VERSION = "v2.4.9(22)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5057,8 +5057,8 @@ function drawScene() {
                     { x: 773, y: 349, scale: 0.65, skewX: -8 }
                 ],
                 gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
-                brawler2: { x: 986, y: 7, scale: 0.43, scaleX: 1, scaleY: 1, rot: 0 },
-                brawler1: { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 },
+                brawler2: window.tempBrawlerCoords ? window.tempBrawlerCoords.brawler2 : { x: 986, y: 7, scale: 0.43, scaleX: 1, scaleY: 1, rot: 0 },
+                brawler1: window.tempBrawlerCoords ? window.tempBrawlerCoords.brawler1 : { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 },
                 mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
                 proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
                 proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
@@ -5174,7 +5174,12 @@ function drawScene() {
 
             // 4. Белые разделительные линии (с тенями)
             ctx.save();
-            ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.fillStyle = "white";
+            ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.fillStyle = "white";
+            
+            // СНАЧАЛА рисуем горизонтальную (чтобы она была на заднем плане)
+            ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
+
+            // ПОТОМ рисуем вертикальную (она перекроет горизонтальную)
             let lineW = 16*s; let lineH = H * 1.5;
             let lineX = W * 0.58 + 6*s; let lineY = -H * 0.25;
             let lineCx = lineX + lineW/2; let cy = lineY + lineH/2;
@@ -5182,8 +5187,7 @@ function drawScene() {
             ctx.translate(lineCx, cy); ctx.translate(27*s, 2*s); ctx.rotate(7 * Math.PI / 180);
             ctx.fillRect(-lineW/2, -lineH/2, lineW, lineH);
             ctx.restore();
-            
-            ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
+
             ctx.restore();
 
             const drawItem = (img, obj, shadowY) => {
@@ -5859,37 +5863,12 @@ function transitionStep(currentStep, nextStep, currentProg, nextProg, lineProg) 
 wizardNextBtn1.onclick = async () => {
     window.triggerHaptic();
 
-    if (uploadMode === 'ready_bg') {
-        // Если готовый фон и 2 стиль, пропускаем ник, идем на шаг ЦЕН (Шаг 3)
-        if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2) {
-            window.layerState.isReadyBg = true;
-            window.layerState.isGeneratedBg = false;
-            rawBgImage = uploadedReadyBaseImg;
-            window.layerState.textValue = ""; 
-            
-            step1.classList.add('fade-out');
-            setTimeout(() => {
-                step1.classList.remove('active', 'fade-out');
-                document.getElementById('wizard-step3-bp-style2').classList.add('active');
-
-                document.getElementById('prog-step1').classList.remove('active');
-                document.getElementById('prog-step1').classList.add('small');
-                document.getElementById('prog-line1').classList.add('active');
-                
-                document.getElementById('prog-step2').classList.remove('active');
-                document.getElementById('prog-step2').classList.add('small');
-                document.getElementById('prog-line2').classList.add('active');
-
-                document.getElementById('prog-step3').classList.remove('small');
-                document.getElementById('prog-step3').classList.add('active');
-            }, 300);
-            return;
-        }
-
+    // Пропускаем 2 шаг (Ник) ТОЛЬКО если это Акция (action) и выбран готовый фон
+    if (uploadMode === 'ready_bg' && wizardMode === 'action') {
         step1.classList.add('fade-out');
         setTimeout(() => {
             step1.classList.remove('active', 'fade-out');
-            let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : document.getElementById('wizard-step3');
+            let targetStep3 = document.getElementById('wizard-step3');
             targetStep3.classList.add('active');
 
             document.getElementById('prog-step1').classList.remove('active');
@@ -5902,9 +5881,10 @@ wizardNextBtn1.onclick = async () => {
             document.getElementById('prog-step3').classList.add('active');
         }, 300);
     } else {
+        // Во всех остальных случаях (включая ВСЕ стили Brawl Pass) идем на 2 шаг (Ник)
         transitionStep(step1, step2, document.getElementById('prog-step1'), document.getElementById('prog-step2'), document.getElementById('prog-line1'));
     }
-  };
+};
 
   function checkStep2Ready() {
     if (wizardNickInput.value.trim().length > 0) {
@@ -6126,7 +6106,7 @@ window.selectBPSeason = function(season) {
 document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     window.triggerHaptic();
     window.layerState.bpSeason = selectedBPSeason;
-    
+
     document.getElementById('wizard-overlay').style.display = 'none';
 
     // Если это 2-й стиль, подгружаем фон перед созданием
@@ -6135,7 +6115,12 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
             window.layerState.isReadyBg = false;
             window.layerState.isGeneratedBg = true;
             rawBgImage = await createGradientBg(selectedColor);
-        } else if (uploadMode !== 'ready_bg') {
+        } else if (uploadMode === 'ready_bg') { 
+            // Добавлена обработка готового фона для 2-го стиля
+            window.layerState.isReadyBg = true;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = uploadedReadyBaseImg;
+        } else {
             window.layerState.isReadyBg = false;
             window.layerState.isGeneratedBg = false;
             rawBgImage = uploadedBaseImg;
@@ -6900,6 +6885,34 @@ window.addEventListener('resize', () => {
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     initSparks();
 }
+
+
+// --- ВРЕМЕННЫЙ РЕДАКТОР ДЛЯ 2 СТИЛЯ BP ---
+window.tempBrawlerCoords = {
+    brawler1: { x: 920, y: 359, scale: 0.54, scaleX: 1, scaleY: 1, rot: 0 }, // Нижний BP
+    brawler2: { x: 986, y: 7, scale: 0.43, scaleX: 1, scaleY: 1, rot: 0 }    // Верхний BP+
+};
+
+window.updateTempBrawler = function(num, prop, val) {
+    val = parseFloat(val);
+    window.tempBrawlerCoords['brawler' + num][prop] = val;
+    document.getElementById('t-b' + num + '-' + prop).innerText = val;
+    if (typeof startAnimation === 'function') startAnimation();
+};
+
+const panelHtml = `
+<div id="brawler-editor-panel" style="position: fixed; bottom: 20px; left: 10px; background: rgba(0,0,0,0.85); color: #fff; padding: 15px; border-radius: 12px; z-index: 999999; font-family: monospace; font-size: 13px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+    <div style="color: #00A0FF; font-weight: bold; margin-bottom: 5px;">Brawler 1 (Нижний BP)</div>
+    X: <input type="range" min="0" max="1500" value="920" oninput="updateTempBrawler(1, 'x', this.value)"> <span id="t-b1-x">920</span><br>
+    Y: <input type="range" min="-200" max="800" value="359" oninput="updateTempBrawler(1, 'y', this.value)"> <span id="t-b1-y">359</span><br>
+    S: <input type="range" min="0.1" max="1.5" step="0.01" value="0.54" oninput="updateTempBrawler(1, 'scale', this.value)"> <span id="t-b1-scale">0.54</span><br>
+    <div style="color: #00A0FF; font-weight: bold; margin-top: 10px; margin-bottom: 5px;">Brawler 2 (Верхний BP+)</div>
+    X: <input type="range" min="0" max="1500" value="986" oninput="updateTempBrawler(2, 'x', this.value)"> <span id="t-b2-x">986</span><br>
+    Y: <input type="range" min="-200" max="800" value="7" oninput="updateTempBrawler(2, 'y', this.value)"> <span id="t-b2-y">7</span><br>
+    S: <input type="range" min="0.1" max="1.5" step="0.01" value="0.43" oninput="updateTempBrawler(2, 'scale', this.value)"> <span id="t-b2-scale">0.43</span><br>
+</div>`;
+document.body.insertAdjacentHTML('beforeend', panelHtml);
+
 
 </script>
 </body>
