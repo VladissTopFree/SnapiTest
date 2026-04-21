@@ -5115,8 +5115,7 @@
                   ],
                   gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
                   brawler2: { x: 984, y: 7, scale: 0.29, scaleX: 1, scaleY: 1, rot: 0 },
-                  brawler1: { x: 908, y: 359, scale: 0.37, scaleX: 1, scaleY: 1, rot: 0 },
-                  mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
+                  brawler1: { x: 908, y: 359, scale: window.layerState.brawler1Scale || 0.37, scaleX: -1, scaleY: 1, rot: 0 },                  mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
                   proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
                   proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
                   bppIcon: { x: 841, y: 32, scale: 1.31, scaleX: 0.77, scaleY: 1, rot: -6 },
@@ -5197,39 +5196,54 @@
                   ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
               }
 
-              // 2.4 Временный кастомный свет (Исправленный через градиент)
-              if (window.layerState.customLights && window.layerState.customLights.length > 0) {
-                  window.layerState.customLights.forEach(light => {
-                      ctx.save();
-                      ctx.globalCompositeOperation = "screen";
-                      ctx.globalAlpha = light.opacity;
-
-                      // Переводим HEX в RGB
-                      let rHex = parseInt(light.color.slice(1, 3), 16);
-                      let gHex = parseInt(light.color.slice(3, 5), 16);
-                      let bHex = parseInt(light.color.slice(5, 7), 16);
-
-                      let rCore = Math.max(1, light.size * s);
-                      let rBlur = light.blur * s;
-                      let rOuter = rCore + rBlur;
-                      
-                      let rg = ctx.createRadialGradient(light.x * s, light.y * s, 0, light.x * s, light.y * s, rOuter);
-                      let solidRatio = rCore / rOuter;
-                      
-                      // Собираем градиент (от плотного центра к прозрачному краю)
-                      rg.addColorStop(0, `rgba(${rHex},${gHex},${bHex},1)`);
-                      rg.addColorStop(solidRatio, `rgba(${rHex},${gHex},${bHex},1)`);
-                      rg.addColorStop(1, `rgba(${rHex},${gHex},${bHex},0)`);
-
-                      ctx.fillStyle = rg;
-                      ctx.beginPath();
-                      ctx.arc(light.x * s, light.y * s, rOuter, 0, Math.PI * 2);
-                      ctx.fill();
-                      
-                      ctx.filter = "none"; // Дополнительная подстраховка для очистки
-                      ctx.restore();
-                  });
+              // 2.4 Задние зафиксированные круги (Свет позади элементов)
+              let bgLightColor = '#ffffff';
+              // Если фон сгенерирован (выбран цвет, а не FanKit), перекрашиваем свет
+              if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+                  const colorsMap = {
+                      'green': '#5ee568',
+                      'blue': '#46b3ff',
+                      'orange': '#ffcc00',
+                      'purple': '#c861ff',
+                      'black': '#666666'
+                  };
+                  bgLightColor = colorsMap[window.layerState.bgColorType] || '#ffffff';
               }
+
+              const hardcodedBgLights = [
+                  { id: 1776794001419, x: 391, y: 325, size: 198, blur: 155, opacity: 0.55 },
+                  { id: 1776794030451, x: 950, y: 97, size: 10, blur: 121, opacity: 0.7 },
+                  { id: 1776794070911, x: 1164, y: 201, size: 59, blur: 100, opacity: 0.75 },
+                  { id: 1776794123581, x: 1126, y: 573, size: 61, blur: 123, opacity: 0.7 },
+                  { id: 1776794165222, x: 928, y: 470, size: 27, blur: 108, opacity: 0.65 }
+              ];
+
+              hardcodedBgLights.forEach(light => {
+                  ctx.save();
+                  ctx.globalCompositeOperation = "screen";
+                  ctx.globalAlpha = light.opacity;
+
+                  let rHex = parseInt(bgLightColor.slice(1, 3), 16);
+                  let gHex = parseInt(bgLightColor.slice(3, 5), 16);
+                  let bHex = parseInt(bgLightColor.slice(5, 7), 16);
+
+                  let rCore = Math.max(1, light.size * s);
+                  let rBlur = light.blur * s;
+                  let rOuter = rCore + rBlur;
+                  
+                  let rg = ctx.createRadialGradient(light.x * s, light.y * s, 0, light.x * s, light.y * s, rOuter);
+                  let solidRatio = rCore / rOuter;
+                  
+                  rg.addColorStop(0, `rgba(${rHex},${gHex},${bHex},1)`);
+                  rg.addColorStop(solidRatio, `rgba(${rHex},${gHex},${bHex},1)`);
+                  rg.addColorStop(1, `rgba(${rHex},${gHex},${bHex},0)`);
+
+                  ctx.fillStyle = rg;
+                  ctx.beginPath();
+                  ctx.arc(light.x * s, light.y * s, rOuter, 0, Math.PI * 2);
+                  ctx.fill();
+                  ctx.restore();
+              });
 
 
               // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ
@@ -5312,17 +5326,27 @@
                   ctx.restore();
               };
 
-              const drawBrawler = (img, obj) => {
+                const drawBrawler = (img, obj) => {
                   if (!img) return;
                   ctx.save();
                   ctx.translate(obj.x*s, obj.y*s); 
                   if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                   if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
-                  ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
                   
-                  ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
+                  let finalScaleX = obj.scaleX || 1;
+                  // Если отзеркален (scaleX < 0), сдвигаем ось, чтобы картинка не улетела влево
+                  if (finalScaleX < 0) {
+                      ctx.translate(img.width * obj.scale, 0);
+                  }
+                  ctx.scale(obj.scale * finalScaleX, obj.scale * (obj.scaleY||1));
+                  
+                  // Тень тоже нужно отзеркалить по X, если картинка перевернута
+                  let shadowDir = finalScaleX < 0 ? -1 : 1;
+                  ctx.shadowColor = "white"; ctx.shadowBlur = 0; 
+                  ctx.shadowOffsetX = 3 * s * shadowDir; ctx.shadowOffsetY = -6 * s;
                   ctx.drawImage(img, 0, 0);
-                  ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; ctx.drawImage(img, 0, 0);
+                  ctx.shadowOffsetX = 2 * s * shadowDir; ctx.shadowOffsetY = -4 * s; 
+                  ctx.drawImage(img, 0, 0);
                   ctx.restore();
               };
 
@@ -5411,6 +5435,37 @@
                   ctx.drawImage(globalAssets.style2Text, 0, 0);
                   ctx.restore();
               }
+
+// 11. Передний кастомный свет (из временного редактора)
+              if (window.layerState.customLights && window.layerState.customLights.length > 0) {
+                  window.layerState.customLights.forEach(light => {
+                      ctx.save();
+                      ctx.globalCompositeOperation = "screen";
+                      ctx.globalAlpha = light.opacity;
+
+                      let rHex = parseInt(light.color.slice(1, 3), 16);
+                      let gHex = parseInt(light.color.slice(3, 5), 16);
+                      let bHex = parseInt(light.color.slice(5, 7), 16);
+
+                      let rCore = Math.max(1, light.size * s);
+                      let rBlur = light.blur * s;
+                      let rOuter = rCore + rBlur;
+                      
+                      let rg = ctx.createRadialGradient(light.x * s, light.y * s, 0, light.x * s, light.y * s, rOuter);
+                      let solidRatio = rCore / rOuter;
+                      
+                      rg.addColorStop(0, `rgba(${rHex},${gHex},${bHex},1)`);
+                      rg.addColorStop(solidRatio, `rgba(${rHex},${gHex},${bHex},1)`);
+                      rg.addColorStop(1, `rgba(${rHex},${gHex},${bHex},0)`);
+
+                      ctx.fillStyle = rg;
+                      ctx.beginPath();
+                      ctx.arc(light.x * s, light.y * s, rOuter, 0, Math.PI * 2);
+                      ctx.fill();
+                      ctx.restore();
+                  });
+              }
+
               return;
           }
           
@@ -5558,6 +5613,8 @@
       });
   }
 
+
+  
   function drawFallbackRays(ctx, w, h, opacity = 1.0) {
       let cx = Math.round(w / 2); let cy = Math.round(h / 2); let radius = Math.sqrt(w*w + h*h); 
       let numRays = 30; let angleStep = (Math.PI * 2) / numRays;
@@ -7019,8 +7076,21 @@
       if(typeof startAnimation === 'function') startAnimation();
   };
 
+window.layerState.brawler1Scale = 0.37; // Стандартный размер
+
+  window.updateBrawlerScale = function(val) {
+      window.layerState.brawler1Scale = parseFloat(val);
+      if(typeof startAnimation === 'function') startAnimation();
+  };
+
   window.renderLightsEditor = function() {
-      let html = '';
+      let html = `
+      <div style="margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 10px;">
+          <label style="font-size: 14px; font-weight: bold;">Размер нижнего бравлера:</label>
+          <input type="range" min="0.1" max="1" step="0.01" value="${window.layerState.brawler1Scale || 0.37}" oninput="updateBrawlerScale(this.value)" style="width: 100%; margin-top: 8px;">
+      </div>
+      <h4 style="margin-top:0; font-size: 15px; margin-bottom: 8px; color: #fff;">Передние круги (Поверх всего)</h4>
+      `;
       window.layerState.customLights.forEach((light, index) => {
           html += `
           <div style="background: rgba(255,255,255,0.1); padding: 12px; margin-bottom: 10px; border-radius: 10px;">
