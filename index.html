@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(25)";
+  const APP_VERSION = "v2.4.9(26)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -31,17 +31,30 @@
       50: {
           lineColor: '#f09e41', 
           gradientLeft: ['#ff4e00', '#ff8a00'], 
-          gradientRight: ['#6420c2', '#390d8a'] 
+          gradientRight: ['#6420c2', '#390d8a'],
+          // Настройки персонажей для 2 стиля
+          style2Brawlers: {
+              brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, // Нижний
+              brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 }                 // Верхний
+          }
       },
       49: {
           lineColor: '#5ce1e6', 
           gradientLeft: ['#008b8b', '#00ffcc'], 
-          gradientRight: ['#00008b', '#0066ff'] 
+          gradientRight: ['#00008b', '#0066ff'],
+          style2Brawlers: {
+              brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
+              brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 } 
+          }
       },
       48: {
           lineColor: '#ff3366', 
           gradientLeft: ['#8b0000', '#ff0044'], 
-          gradientRight: ['#4a0000', '#cc0000'] 
+          gradientRight: ['#4a0000', '#cc0000'],
+          style2Brawlers: {
+              brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
+              brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 } 
+          }
       }
   };
 
@@ -5094,12 +5107,18 @@ function drawScene() {
 
     if (window.layerState.isBrawlPassMode) {
         
-// --- СТИЛЬ 2 (ФИНАЛЬНЫЙ КОД ПОЛНОСТЬЮ) ---
+        // --- СТИЛЬ 2 (ФИНАЛЬНЫЙ КОД ПОЛНОСТЬЮ) ---
         if (window.layerState.bpStyleIndex === 2) {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
             const s = W / 1280; 
+
+            // Узнаём текущий сезон и берём его настройки (если нет, берём 50 по умолчанию)
+            let currentSeason = window.layerState.bpSeason || 50;
+            let s2Config = (BP_SEASON_CONFIG[currentSeason] && BP_SEASON_CONFIG[currentSeason].style2Brawlers) 
+                ? BP_SEASON_CONFIG[currentSeason].style2Brawlers 
+                : BP_SEASON_CONFIG[50].style2Brawlers;
 
             // Вшитые координаты
             const C = {
@@ -5111,9 +5130,8 @@ function drawScene() {
                 ],
                 gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
                 
-                // Зафиксированные координаты бравлеров:
-                brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 },
-                brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true },
+                brawler2: s2Config.brawler2,
+                brawler1: s2Config.brawler1,
                 
                 mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
                 proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
