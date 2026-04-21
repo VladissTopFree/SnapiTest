@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(21)";
+  const APP_VERSION = "v2.4.9(24)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3713,11 +3713,6 @@ window.updateBPText = (val) => {
     startAnimation();
 };
 
-window.updateBrawlerParams = (param, val) => {
-    window.layerState[param] = parseFloat(val);
-    if (typeof startAnimation === 'function') startAnimation();
-};
-
 window.updateS2PriceLayer = (idx, val) => {
     val = val.replace(/[^0-9]/g, '');
     if (parseInt(val) > 99999) val = "99999";
@@ -3781,41 +3776,6 @@ function renderLayerPanel(isInitialLoad = false) {
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS2PriceLayer(${i}, this.value)" style="width:65px;">
                 </div>`;
             }
-        // Временный редактор персонажей
-        html += `
-        <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖЕЙ (ВРЕМЕННЫЙ)</div>
-        
-        <div class="ios-layer-row">
-            <div class="ios-layer-name" style="font-size:14px;">Нижний (Размер)</div>
-            <div id="v-b1s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : 0.54}</div>
-            <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : 0.54}" oninput="document.getElementById('v-b1s').innerText=this.value; updateBrawlerParams('brawler1Scale', this.value)">
-        </div>
-        <div class="ios-layer-row">
-            <div class="ios-layer-name" style="font-size:14px;">Нижний (Влево/Вправо)</div>
-            <div id="v-b1x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : 920}</div>
-            <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : 920}" oninput="document.getElementById('v-b1x').innerText=this.value; updateBrawlerParams('brawler1X', this.value)">
-        </div>
-        <div class="ios-layer-row">
-            <div class="ios-layer-name" style="font-size:14px;">Нижний (Вверх/Вниз)</div>
-            <div id="v-b1y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : 359}</div>
-            <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : 359}" oninput="document.getElementById('v-b1y').innerText=this.value; updateBrawlerParams('brawler1Y', this.value)">
-        </div>
-        
-        <div class="ios-layer-row">
-            <div class="ios-layer-name" style="font-size:14px;">Верхний (Размер)</div>
-            <div id="v-b2s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : 0.43}</div>
-            <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : 0.43}" oninput="document.getElementById('v-b2s').innerText=this.value; updateBrawlerParams('brawler2Scale', this.value)">
-        </div>
-        <div class="ios-layer-row">
-            <div class="ios-layer-name" style="font-size:14px;">Верхний (Влево/Вправо)</div>
-            <div id="v-b2x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 986}</div>
-            <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 986}" oninput="document.getElementById('v-b2x').innerText=this.value; updateBrawlerParams('brawler2X', this.value)">
-        </div>
-        <div class="ios-layer-row" style="border-bottom:none;">
-            <div class="ios-layer-name" style="font-size:14px;">Верхний (Вверх/Вниз)</div>
-            <div id="v-b2y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7}</div>
-            <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7}" oninput="document.getElementById('v-b2y').innerText=this.value; updateBrawlerParams('brawler2Y', this.value)">
-        </div>`;
         } else {
             html += `
                 <div class="ios-layer-row">
@@ -5087,15 +5047,6 @@ function drawScene() {
             const H = persistentCanvas.height;
             const s = W / 1280; 
 
-            // Читаем значения из состояния или используем стандартные, если их еще нет
-            let b1s = window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : 0.54;
-            let b1x = window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : 920;
-            let b1y = window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : 359;
-            
-            let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : 0.43;
-            let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : 986;
-            let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : 7;
-
             // Вшитые координаты
             const C = {
                 shadows: { platesAlpha: 0.25, gemsAlpha: 0.35 },
@@ -5106,8 +5057,8 @@ function drawScene() {
                     { x: 773, y: 349, scale: 0.65, skewX: -8 }
                 ],
                 gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
-                brawler2: { x: b2x, y: b2y, scale: b2s, scaleX: 1, scaleY: 1, rot: 0 },
-                brawler1: { x: b1x, y: b1y, scale: b1s, scaleX: 1, scaleY: 1, rot: 0, flipH: true },
+                brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 },
+                brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true },
                 mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
                 proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
                 proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
@@ -5176,6 +5127,39 @@ function drawScene() {
                 drawMaskedBg(C.backgrounds[0], true);  
                 drawMaskedBg(C.backgrounds[1], false); 
             }
+
+            // --- ДОБАВИТЬ СЮДА: 1.5. ФОНОВЫЕ РАЗМЫТЫЕ КРУГИ (СВЕЧЕНИЯ) ---
+            ctx.save();
+            const colorsMap = {
+                'green': '#5ee568', 
+                'blue': '#46b3ff', 
+                'orange': '#ffcc00', 
+                'purple': '#c861ff', 
+                'black': '#666666'
+            };
+            let bgLightColor = colorsMap[window.layerState.bgColorType] || '#ffffff';
+            
+            const hardcodedBgLights = [
+                { id: 1776794001419, x: 391, y: 325, size: 198, blur: 155, opacity: 0.55 },
+                { id: 1776794030451, x: 950, y: 97, size: 10, blur: 121, opacity: 0.7 },
+                { id: 1776794070911, x: 1164, y: 201, size: 59, blur: 100, opacity: 0.75 },
+                { id: 1776794123581, x: 1126, y: 573, size: 61, blur: 123, opacity: 0.7 },
+                { id: 1776794165222, x: 928, y: 470, size: 27, blur: 108, opacity: 0.65 }
+            ];
+
+            hardcodedBgLights.forEach(light => {
+                ctx.save();
+                ctx.beginPath();
+                // Умножаем на 's' для правильного масштабирования на любом экране
+                ctx.arc(light.x * s, light.y * s, light.size * s, 0, Math.PI * 2);
+                ctx.fillStyle = bgLightColor;
+                ctx.globalAlpha = light.opacity;
+                ctx.filter = `blur(${light.blur * s}px)`;
+                ctx.fill();
+                ctx.restore();
+            });
+            ctx.restore();
+            // --- КОНЕЦ ДОБАВЛЕНИЯ ---
 
             // 2. Оверлеи (Точки и Звезды)
             if (window.layerState.pointsVisible !== false && globalAssets.style2Points) {
