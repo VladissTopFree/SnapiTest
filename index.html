@@ -29,10 +29,9 @@
 
   const BP_SEASON_CONFIG = {
       50: {
-          lineColor: '#f09e41', 
-          gradientLeft: ['#ff4e00', '#ff8a00'], 
-          gradientRight: ['#6420c2', '#390d8a'],
-          // Настройки персонажей для 2 стиля
+          lineColor: '#6ee8ff', 
+          gradientLeft: ['#f6005e', '#f6005e'], 
+          gradientRight: ['#00009e', '#00009e'],
           style2Brawlers: {
               brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, // Нижний
               brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 }                 // Верхний
@@ -48,9 +47,9 @@
           }
       },
       48: {
-          lineColor: '#ff3366', 
-          gradientLeft: ['#8b0000', '#ff0044'], 
-          gradientRight: ['#4a0000', '#cc0000'],
+          lineColor: '#8ca0f0', 
+          gradientLeft: ['#3d190c', '#3d190c'], 
+          gradientRight: ['#0801a2', '#0801a2'],
           style2Brawlers: {
               brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
               brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 } 
@@ -6042,9 +6041,9 @@ if (fankitGrid && fankitGrid.children.length === 0) {
       const recGrid = document.getElementById('fankit-rec-grid');
       
       const recBackgrounds = [
-          { src: 'BP/bg18_BP50.png', text: 'для 50 сезона BP' },
-          { src: 'BP/bg19_BP49.png', text: 'для 49 сезона BP' },
-          { src: 'BP/bg20_BP48.png', text: 'для 48 сезона BP' }
+          { src: 'bg/bg18_BP50.png', text: 'для 50 сезона BP' },
+          { src: 'bg/bg19_BP49.png', text: 'для 49 сезона BP' },
+          { src: 'bg/bg20_BP48.png', text: 'для 48 сезона BP' }
       ];
 
       // Универсальная функция обработки клика по ЛЮБОМУ фону (чтобы не дублировать код)
