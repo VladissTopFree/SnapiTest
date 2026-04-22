@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(26)";
+  const APP_VERSION = "v2.4.9(27)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3760,6 +3760,14 @@ window.updateBPPrice = (side, val, inputEl) => {
     startAnimation();
 };
 
+// --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
+window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
+
+window.updateBrawlerParams = (param, val) => {
+    window.layerState[param] = parseFloat(val);
+    if (typeof startAnimation === 'function') startAnimation();
+};
+
 window.updateBPText = (val) => {
     window.layerState.textValue = val;
     
@@ -3843,6 +3851,53 @@ function renderLayerPanel(isInitialLoad = false) {
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS2PriceLayer(${i}, this.value)" style="width:65px;">
                 </div>`;
             }
+
+// Временный редактор персонажей
+        if (window.ENABLE_TEMP_EDITOR) {
+            let s2Conf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
+            
+            let b1s = window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : s2Conf.brawler1.scale;
+            let b1x = window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : s2Conf.brawler1.x;
+            let b1y = window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : s2Conf.brawler1.y;
+            
+            let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : s2Conf.brawler2.scale;
+            let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : s2Conf.brawler2.x;
+            let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : s2Conf.brawler2.y;
+
+            html += `
+            <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖЕЙ (ВРЕМЕННЫЙ)</div>
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Нижний (Размер)</div>
+                <div id="v-b1s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b1s}</div>
+                <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b1s}" oninput="document.getElementById('v-b1s').innerText=this.value; updateBrawlerParams('brawler1Scale', this.value)">
+            </div>
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Нижний (X)</div>
+                <div id="v-b1x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b1x}</div>
+                <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${b1x}" oninput="document.getElementById('v-b1x').innerText=this.value; updateBrawlerParams('brawler1X', this.value)">
+            </div>
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Нижний (Y)</div>
+                <div id="v-b1y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b1y}</div>
+                <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${b1y}" oninput="document.getElementById('v-b1y').innerText=this.value; updateBrawlerParams('brawler1Y', this.value)">
+            </div>
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Верхний (Размер)</div>
+                <div id="v-b2s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2s}</div>
+                <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b2s}" oninput="document.getElementById('v-b2s').innerText=this.value; updateBrawlerParams('brawler2Scale', this.value)">
+            </div>
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Верхний (X)</div>
+                <div id="v-b2x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2x}</div>
+                <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${b2x}" oninput="document.getElementById('v-b2x').innerText=this.value; updateBrawlerParams('brawler2X', this.value)">
+            </div>
+            <div class="ios-layer-row" style="border-bottom:none;">
+                <div class="ios-layer-name" style="font-size:14px;">Верхний (Y)</div>
+                <div id="v-b2y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2y}</div>
+                <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${b2y}" oninput="document.getElementById('v-b2y').innerText=this.value; updateBrawlerParams('brawler2Y', this.value)">
+            </div>`;
+        }
+
         } else {
             html += `
                 <div class="ios-layer-row">
@@ -5115,10 +5170,22 @@ function drawScene() {
             const s = W / 1280; 
 
             // Узнаём текущий сезон и берём его настройки (если нет, берём 50 по умолчанию)
+// Узнаём текущий сезон и берём его настройки
             let currentSeason = window.layerState.bpSeason || 50;
             let s2Config = (BP_SEASON_CONFIG[currentSeason] && BP_SEASON_CONFIG[currentSeason].style2Brawlers) 
                 ? BP_SEASON_CONFIG[currentSeason].style2Brawlers 
                 : BP_SEASON_CONFIG[50].style2Brawlers;
+
+            // Применяем значения из временного редактора, если они есть
+            let b1 = { ...s2Config.brawler1 };
+            if (window.layerState.brawler1X !== undefined) b1.x = window.layerState.brawler1X;
+            if (window.layerState.brawler1Y !== undefined) b1.y = window.layerState.brawler1Y;
+            if (window.layerState.brawler1Scale !== undefined) b1.scale = window.layerState.brawler1Scale;
+
+            let b2 = { ...s2Config.brawler2 };
+            if (window.layerState.brawler2X !== undefined) b2.x = window.layerState.brawler2X;
+            if (window.layerState.brawler2Y !== undefined) b2.y = window.layerState.brawler2Y;
+            if (window.layerState.brawler2Scale !== undefined) b2.scale = window.layerState.brawler2Scale;
 
             // Вшитые координаты
             const C = {
@@ -5130,9 +5197,10 @@ function drawScene() {
                 ],
                 gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
                 
-                brawler2: s2Config.brawler2,
-                brawler1: s2Config.brawler1,
-                
+                // Подключаем бравлеров:
+                brawler2: b2,
+                brawler1: b1,
+                                
                 mainLogo: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 },
                 proIcon: { x: 237, y: 592, scale: 0.69, scaleX: 0.83, scaleY: 1, rot: 2 },
                 proText: { x: 442, y: 655, scale: 1.12, scaleX: 1, scaleY: 1, skewX: -10 },
