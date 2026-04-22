@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(30)";
+  const APP_VERSION = "v2.4.9(31)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -37,7 +37,7 @@
               brawler1: { x: 971, y: 386, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
 
           },
-          style1Brawlers: {
+          style1Brawlers: { // yes
               brawler1: { x: 469, y: 512, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
           }
@@ -46,7 +46,7 @@
           lineColor: '#5ce1e6', 
           gradientLeft: ['#008b8b', '#00ffcc'], 
           gradientRight: ['#00008b', '#0066ff'],
-          style2Brawlers: {
+          style2Brawlers: { // yes
               brawler1: { x: 1011, y: 381, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
               brawler2: { x: 968, y: 22, scale: 0.23, scaleX: 1, scaleY: 1, rot: 0 } 
           },
@@ -59,7 +59,7 @@
           lineColor: '#008b8b', 
           gradientLeft: ['#008b8b', '#00ffcc'], 
           gradientRight: ['#0801a2', '#0801a2'],
-          style2Brawlers: {
+          style2Brawlers: { // yes
               brawler1: { x: 1005, y: 276, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
               brawler2: { x: 1057, y: -24, scale: 0.26, scaleX: 1, scaleY: 1, rot: 0 } 
           },
@@ -3838,6 +3838,8 @@ window.updateBrawlerParams = (param, val) => {
     if (typeof startAnimation === 'function') startAnimation();
 };
 
+
+
 window.toggleBrawlerFlip = (brawlerKey) => {
     let stateKey = brawlerKey + 'Flip';
     if (window.layerState[stateKey] === undefined) {
@@ -3851,6 +3853,95 @@ window.toggleBrawlerFlip = (brawlerKey) => {
     
     renderLayerPanel(); // Обновляем кнопку в интерфейсе
     if (typeof startAnimation === 'function') startAnimation(); // Перерисовываем холст
+};
+
+window.updateGradientParam = (param, val) => {
+    window.layerState[param] = val;
+    let txtEl = document.getElementById('txt-' + param);
+    if (txtEl) txtEl.innerText = val.toUpperCase();
+    window.rebuildStyle1Background();
+};
+
+window.rebuildStyle1Background = () => {
+    const WIDTH = 1200;
+    const HEIGHT = 675;
+    const c = document.createElement('canvas');
+    c.width = WIDTH; c.height = HEIGHT;
+    const ctx = c.getContext('2d');
+
+    let season = window.layerState.bpSeason || 50;
+    let config = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
+
+    let startX = WIDTH * 0.39 + ((WIDTH * 0.34 - WIDTH * 0.39) / (HEIGHT * 0.50)) * (-20);
+    let endX = WIDTH * 0.316 + ((WIDTH * 0.316 - WIDTH * 0.37) / (HEIGHT - HEIGHT * 0.46)) * 20;
+
+    // Левый градиент
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(0, HEIGHT + 20); ctx.closePath();
+    ctx.clip();
+    let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+    grad1.addColorStop(0, window.layerState.tempGradL0 || config.gradientLeft[0]); 
+    grad1.addColorStop(1, window.layerState.tempGradL1 || config.gradientLeft[1]);
+    ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+    ctx.restore();
+
+    // Правый градиент
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
+    ctx.clip();
+    let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+    grad2.addColorStop(0, window.layerState.tempGradR0 || config.gradientRight[0]); 
+    grad2.addColorStop(1, window.layerState.tempGradR1 || config.gradientRight[1]);
+    ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+    ctx.restore();
+
+    // Линия
+    ctx.save();
+    let currentLineColor = window.layerState.tempLineColor || config.lineColor;
+    ctx.strokeStyle = currentLineColor;
+    ctx.lineWidth = 9;
+    ctx.lineJoin = 'miter';
+    ctx.beginPath();
+    ctx.moveTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20);
+    ctx.stroke();
+    ctx.restore();
+
+    let starH = HEIGHT * 0.70; 
+    let starY = HEIGHT - (HEIGHT * 0.16 + 56);
+
+    const drawLargeGlow = (x, y, radius) => {
+        ctx.save(); 
+        ctx.globalCompositeOperation = 'screen';
+        let rg = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        rg.addColorStop(0, 'rgba(255,255,255,0.8)');
+        rg.addColorStop(0.4, 'rgba(255,255,255,0.2)');
+        rg.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rg; 
+        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2); 
+        ctx.restore();
+    };
+
+    if (!window.layerState.isGeneratedBg) {
+        drawLargeGlow(WIDTH / 2, starY - (starH / 2), 320); 
+    }
+
+    if (globalAssets.bpStar) {
+        let sw = starH * (globalAssets.bpStar.width / globalAssets.bpStar.height);
+        ctx.drawImage(globalAssets.bpStar, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
+    }
+
+    if (globalAssets.bpPanelL) ctx.drawImage(globalAssets.bpPanelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
+    if (globalAssets.bpPanelR) ctx.drawImage(globalAssets.bpPanelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
+    
+    // Обновляем фоновое изображение
+    window.bpForegroundImage.src = c.toDataURL('image/png');
+    window.bpForegroundImage.onload = () => {
+        if (typeof startAnimation === 'function') startAnimation();
+    };
 };
 
 window.updateBPText = (val) => {
@@ -4123,6 +4214,38 @@ function renderLayerPanel(isInitialLoad = false) {
             </div>`;
         }
         // --- КОНЕЦ ВСТАВКИ РЕДАКТОРА ---
+
+// Читаем текущие цвета или берем по умолчанию из конфига
+            let curL0 = window.layerState.tempGradL0 || seasonConf.gradientLeft[0];
+            let curL1 = window.layerState.tempGradL1 || seasonConf.gradientLeft[1];
+            let curR0 = window.layerState.tempGradR0 || seasonConf.gradientRight[0];
+            let curR1 = window.layerState.tempGradR1 || seasonConf.gradientRight[1];
+            let curLine = window.layerState.tempLineColor || seasonConf.lineColor;
+
+            html += `
+            <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ГРАДИЕНТА (BP СТИЛЬ 1)</div>
+            <div class="ios-layer-group">
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Цвет линии</div>
+                    <div id="txt-tempLineColor" style="font-family:monospace; font-size:14px; margin-right:10px; color:#8E8E93;">${curLine.toUpperCase()}</div>
+                    <input type="color" value="${curLine}" oninput="updateGradientParam('tempLineColor', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Левый (верх)</div>
+                    <div id="txt-tempGradL0" style="font-family:monospace; font-size:14px; margin-right:10px; color:#8E8E93;">${curL0.toUpperCase()}</div>
+                    <input type="color" value="${curL0}" oninput="updateGradientParam('tempGradL0', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Левый (низ)</div>
+                    <div id="txt-tempGradL1" style="font-family:monospace; font-size:14px; margin-right:10px; color:#8E8E93;">${curL1.toUpperCase()}</div>
+                    <input type="color" value="${curL1}" oninput="updateGradientParam('tempGradL1', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Правый (верх)</div>
+                    <div id="txt-tempGradR0" style="font-family:monospace; font-size:14px; margin-right:10px; color:#8E8E93;">${curR0.toUpperCase()}</div>
+                    <input type="color" value="${curR0}" oninput="updateGradientParam('tempGradR0', this.value)">
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Правый (низ)</div>
+                    <div id="txt-tempGradR1" style="font-family:monospace; font-size:14px; margin-right:10px; color:#8E8E93;">${curR1.toUpperCase()}</div>
+                    <input type="color" value="${curR1}" oninput="updateGradientParam('tempGradR1', this.value)">
+                </div>
+            </div>`;
 
         layerPanel.innerHTML = html;
         layerPanel.style.display = 'flex';
@@ -6996,8 +7119,14 @@ async function generateBrawlPassTest() {
     const [luch, starsEff, pointEff, star, brawler1, brawler2, panelL, priceL, panelR, priceR] = await Promise.all([
         loadImg('BP/Luch.png'), loadImg('BP/bp_starsEff.png'), loadImg('BP/bp_pointEff.png'), loadImg('BP/bp_star.png'),
         loadImg(`BP/brawler_s${season}_2.png`), loadImg(`BP/brawler_s${season}_1.png`), 
-        loadImg('BP/bp_panel_left.png'), loadImg('BP/bp_price_bg_left.png'),
-        loadImg('BP/bp_panel_right.png'), loadImg('BP/bp_price_bg_right.png')
+        
+        // Динамический файл только для левой панели
+        loadImg(`BP/bp_panel_left${season}.png`), 
+        loadImg('BP/bp_price_bg_left.png'),
+        
+        // Правая панель остается статичной
+        loadImg('BP/bp_panel_right.png'), 
+        loadImg('BP/bp_price_bg_right.png')
     ]);
     
     globalAssets.luchImg = luch;
@@ -7005,7 +7134,9 @@ async function generateBrawlPassTest() {
     globalAssets.bpPointsImg = pointEff;
     globalAssets.bpPriceL = priceL;
     globalAssets.bpPriceR = priceR;
-
+    globalAssets.bpStar = star;
+    globalAssets.bpPanelL = panelL;
+    globalAssets.bpPanelR = panelR;
     globalAssets[`brawler_${season}_2`] = brawler2;
     globalAssets[`brawler_${season}_1`] = brawler1;
 
