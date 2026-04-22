@@ -3884,7 +3884,12 @@ window.rebuildStyle1Background = () => {
     grad1.addColorStop(0, window.layerState.tempGradL0 || config.gradientLeft[0]); 
     grad1.addColorStop(1, window.layerState.tempGradL1 || config.gradientLeft[1]);
     ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+    
+    // ИСПРАВЛЕНИЕ: Накладываем только если это НЕ сгенерированный градиент
+    if (rawBgImage && !window.layerState.isGeneratedBg) { 
+        ctx.globalCompositeOperation = 'overlay'; 
+        ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); 
+    }
     ctx.restore();
 
     // Правый градиент
@@ -3896,7 +3901,12 @@ window.rebuildStyle1Background = () => {
     grad2.addColorStop(0, window.layerState.tempGradR0 || config.gradientRight[0]); 
     grad2.addColorStop(1, window.layerState.tempGradR1 || config.gradientRight[1]);
     ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+    
+    // ИСПРАВЛЕНИЕ: Накладываем только если это НЕ сгенерированный градиент
+    if (rawBgImage && !window.layerState.isGeneratedBg) { 
+        ctx.globalCompositeOperation = 'overlay'; 
+        ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); 
+    }
     ctx.restore();
 
     // Линия
