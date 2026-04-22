@@ -4212,7 +4212,6 @@ function renderLayerPanel(isInitialLoad = false) {
                     <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler2')">${b2f ? 'ДА' : 'НЕТ'}</button>
                 </div>
             </div>`;
-        }
         // --- КОНЕЦ ВСТАВКИ РЕДАКТОРА ---
 
 // Читаем текущие цвета или берем по умолчанию из конфига
@@ -4246,6 +4245,7 @@ function renderLayerPanel(isInitialLoad = false) {
                     <input type="color" value="${curR1}" oninput="updateGradientParam('tempGradR1', this.value)">
                 </div>
             </div>`;
+          }
 
         layerPanel.innerHTML = html;
         layerPanel.style.display = 'flex';
