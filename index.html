@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(29)";
+  const APP_VERSION = "v2.4.9(30)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -33,12 +33,12 @@
           gradientLeft: ['#f6005e', '#f6005e'], 
           gradientRight: ['#00009e', '#00009e'],
           style2Brawlers: {
-              brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, // Нижний
-              brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 }                 // Верхний
+              brawler1: { x: 972, y: 381, scale: 0.37, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, // Нижний
+              brawler2: { x: 978, y: 7, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0 }                 // Верхний
           },
           style1Brawlers: {
-              brawler1: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler2: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
+              brawler1: { x: 469, y: 511, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
+              brawler2: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
           }
       },
       49: {
@@ -46,8 +46,8 @@
           gradientLeft: ['#008b8b', '#00ffcc'], 
           gradientRight: ['#00008b', '#0066ff'],
           style2Brawlers: {
-              brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
-              brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 } 
+              brawler1: { x: 1014, y: 375, scale: 0.64, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
+              brawler2: { x: 960, y: 3, scale: 0.59, scaleX: 1, scaleY: 1, rot: 0 } 
           },
           style1Brawlers: {
               brawler1: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
@@ -59,12 +59,12 @@
           gradientLeft: ['#008b8b', '#00ffcc'], 
           gradientRight: ['#0801a2', '#0801a2'],
           style2Brawlers: {
-              brawler1: { x: 957, y: 356, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
-              brawler2: { x: 978, y: 5, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0 } 
+              brawler1: { x: 1008, y: 263, scale: 0.32, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
+              brawler2: { x: 1054, y: -20, scale: 0.32, scaleX: 1, scaleY: 1, rot: 0 } 
           },
           style1Brawlers: {
-              brawler1: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler2: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
+              brawler1: { x: 688, y: 511, scale: 0.53, flipH: false }, // Нижний (x: 1200*0.42-30)
+              brawler2: { x: 485, y: 511, scale: 0.64, flipH: false }  // Верхний (x: 1200*0.58-30)
           }
       }
   };
@@ -5789,7 +5789,7 @@ function drawScene() {
                 persistentCtx.shadowBlur = 0;
                 
                 // ТВОЯ НАСТРОЙКА: Увеличь эту цифру, чтобы сделать обводку еще толще (было 3)
-                let strokeSize = 6; 
+                let strokeSize = 9; 
                 let diag = strokeSize * 0.75; // Высчитываем диагонали, чтобы обводка была круглой, а не квадратной
                 
                 // Используем 8 направлений, чтобы толстая обводка была плотной и без дырок по углам
