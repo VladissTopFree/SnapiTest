@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(27)";
+  const APP_VERSION = "v2.4.9(28)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1480,13 +1480,71 @@
 
   .fankit-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr); /* 3 колонки вместо 2 */
+    gap: 8px; /* Уменьшаем отступ для 3 колонок */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 5px 20px 20px 20px; 
     height: 100%;
     box-sizing: border-box;
+  }
+
+  /* Стили для блока рекомендаций */
+  .fankit-recommended-wrapper {
+    background: var(--tg-theme-section-bg-color, #ffffff);
+    border-radius: 16px;
+    padding: 12px;
+    margin: 0 20px 10px 20px;
+  }
+  
+  .fankit-rec-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--tg-theme-subtitle-text-color, #8E8E93);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+  
+  .fankit-rec-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .fankit-rec-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    background-color: var(--tg-theme-section-separator-color, #E5E5EA);
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s, border-color 0.2s;
+    overflow: hidden;
+  }
+  
+  .fankit-rec-item.selected {
+    border-color: var(--tg-theme-accent-text-color);
+  }
+  
+  .fankit-rec-item:active {
+    transform: scale(0.95);
+  }
+  
+  .fankit-rec-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--tg-theme-accent-text-color);
+    color: #fff;
+    font-size: 8.5px;
+    font-weight: 600;
+    padding: 3px 5px;
+    border-radius: 8px 0 0 0;
+    font-family: -apple-system, sans-serif;
   }
 
   .fankit-item {
@@ -1985,7 +2043,7 @@
             </div>
             <div class="cat-info">
                 <div class="cat-name">Создание Brawl Pass</div>
-                <div class="cat-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
+                <div class="cat-desc">На основе Ваших пожеланий, фона, деталей, ника, сезона, генерируется готовая работа Brawl Pass.</div>
                 <div id="cat-badge-wrap-bp" class="cat-badge-wrap">
                     <div class="cat-badge-inner">
                         <div class="cat-badge">выбрано</div>
@@ -2017,7 +2075,7 @@
             </div>
             <div class="cat-info" style="justify-content: center; height: 78px;">
                 <div class="cat-name">Стиль #1</div>
-                <div class="cat-desc">Более детализированная работа.</div>
+                <div class="cat-desc">Включает в себя BP, BP+ и детали для улучшения работы.</div>
             </div>
         </div>
         
@@ -2030,7 +2088,7 @@
             </div>
             <div class="cat-info" style="justify-content: center; height: 78px;">
                 <div class="cat-name">Стиль #2</div>
-                <div class="cat-desc">Более детализированная работа.</div>
+                <div class="cat-desc">Включает в себя BP, BP+, особую скидку, улучшение, Pro Pass, кристаллы и детали для улучшения работы.</div>
             </div>
         </div>
 
@@ -2043,7 +2101,7 @@
             </div>
             <div class="cat-info" style="justify-content: center; height: 78px;">
                 <div class="cat-name">Стиль #3</div>
-                <div class="cat-desc">Более детализированная работа.</div>
+                <div class="cat-desc">Включает в себя BP, BP+, Pro Pass и детали для улучшения работы.</div>
             </div>
         </div>
 
@@ -2173,7 +2231,7 @@
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 19 апреля.</div>
+                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 7 мая.</div>
             </div>
          </div>
          
@@ -2186,7 +2244,7 @@
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">49 сезон</div>
-                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 5 марта.</div>
+                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 2 апреля.</div>
             </div>
          </div>
 
@@ -2199,7 +2257,7 @@
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">48 сезон</div>
-                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 6 февраля.</div>
+                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 5 марта.</div>
             </div>
          </div>
 
@@ -3768,6 +3826,21 @@ window.updateBrawlerParams = (param, val) => {
     if (typeof startAnimation === 'function') startAnimation();
 };
 
+window.toggleBrawlerFlip = (brawlerKey) => {
+    let stateKey = brawlerKey + 'Flip';
+    if (window.layerState[stateKey] === undefined) {
+        // Если еще не трогали, берем начальное значение из конфига
+        let currentSeason = window.layerState.bpSeason || 50;
+        let s2Conf = BP_SEASON_CONFIG[currentSeason].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
+        window.layerState[stateKey] = !!s2Conf[brawlerKey].flipH;
+    }
+    // Переключаем true на false и наоборот
+    window.layerState[stateKey] = !window.layerState[stateKey];
+    
+    renderLayerPanel(); // Обновляем кнопку в интерфейсе
+    if (typeof startAnimation === 'function') startAnimation(); // Перерисовываем холст
+};
+
 window.updateBPText = (val) => {
     window.layerState.textValue = val;
     
@@ -3859,10 +3932,12 @@ function renderLayerPanel(isInitialLoad = false) {
             let b1s = window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : s2Conf.brawler1.scale;
             let b1x = window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : s2Conf.brawler1.x;
             let b1y = window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : s2Conf.brawler1.y;
+            let b1f = window.layerState.brawler1Flip !== undefined ? window.layerState.brawler1Flip : !!s2Conf.brawler1.flipH;
             
             let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : s2Conf.brawler2.scale;
             let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : s2Conf.brawler2.x;
             let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : s2Conf.brawler2.y;
+            let b2f = window.layerState.brawler2Flip !== undefined ? window.layerState.brawler2Flip : !!s2Conf.brawler2.flipH;
 
             html += `
             <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖЕЙ (ВРЕМЕННЫЙ)</div>
@@ -3882,6 +3957,11 @@ function renderLayerPanel(isInitialLoad = false) {
                 <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${b1y}" oninput="document.getElementById('v-b1y').innerText=this.value; updateBrawlerParams('brawler1Y', this.value)">
             </div>
             <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Нижний (Отразить)</div>
+                <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler1')">${b1f ? 'ДА' : 'НЕТ'}</button>
+            </div>
+            
+            <div class="ios-layer-row">
                 <div class="ios-layer-name" style="font-size:14px;">Верхний (Размер)</div>
                 <div id="v-b2s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2s}</div>
                 <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b2s}" oninput="document.getElementById('v-b2s').innerText=this.value; updateBrawlerParams('brawler2Scale', this.value)">
@@ -3891,10 +3971,14 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div id="v-b2x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2x}</div>
                 <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${b2x}" oninput="document.getElementById('v-b2x').innerText=this.value; updateBrawlerParams('brawler2X', this.value)">
             </div>
-            <div class="ios-layer-row" style="border-bottom:none;">
+            <div class="ios-layer-row">
                 <div class="ios-layer-name" style="font-size:14px;">Верхний (Y)</div>
                 <div id="v-b2y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2y}</div>
                 <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${b2y}" oninput="document.getElementById('v-b2y').innerText=this.value; updateBrawlerParams('brawler2Y', this.value)">
+            </div>
+            <div class="ios-layer-row" style="border-bottom:none;">
+                <div class="ios-layer-name" style="font-size:14px;">Верхний (Отразить)</div>
+                <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler2')">${b2f ? 'ДА' : 'НЕТ'}</button>
             </div>`;
         }
 
@@ -5169,8 +5253,7 @@ function drawScene() {
             const H = persistentCanvas.height;
             const s = W / 1280; 
 
-            // Узнаём текущий сезон и берём его настройки (если нет, берём 50 по умолчанию)
-// Узнаём текущий сезон и берём его настройки
+            // Узнаём текущий сезон и берём его настройки
             let currentSeason = window.layerState.bpSeason || 50;
             let s2Config = (BP_SEASON_CONFIG[currentSeason] && BP_SEASON_CONFIG[currentSeason].style2Brawlers) 
                 ? BP_SEASON_CONFIG[currentSeason].style2Brawlers 
@@ -5181,11 +5264,13 @@ function drawScene() {
             if (window.layerState.brawler1X !== undefined) b1.x = window.layerState.brawler1X;
             if (window.layerState.brawler1Y !== undefined) b1.y = window.layerState.brawler1Y;
             if (window.layerState.brawler1Scale !== undefined) b1.scale = window.layerState.brawler1Scale;
+            if (window.layerState.brawler1Flip !== undefined) b1.flipH = window.layerState.brawler1Flip; // ДОБАВИЛИ ЭТО
 
             let b2 = { ...s2Config.brawler2 };
             if (window.layerState.brawler2X !== undefined) b2.x = window.layerState.brawler2X;
             if (window.layerState.brawler2Y !== undefined) b2.y = window.layerState.brawler2Y;
             if (window.layerState.brawler2Scale !== undefined) b2.scale = window.layerState.brawler2Scale;
+            if (window.layerState.brawler2Flip !== undefined) b2.flipH = window.layerState.brawler2Flip; // И ЭТО
 
             // Вшитые координаты
             const C = {
@@ -5943,71 +6028,111 @@ function drawBeautifulNick(ctx, text, w, h) {
   const fankitSheet = document.getElementById('fankit-sheet'); 
   const fankitGrid = document.getElementById('fankit-grid');
 
-  if (fankitGrid && fankitGrid.children.length === 0) {
-      for (let i = 1; i <= 16; i++) {
+if (fankitGrid && fankitGrid.children.length === 0) {
+      // 1. Создаем блок рекомендуемых фонов
+      const recWrapper = document.createElement('div');
+      recWrapper.className = 'fankit-recommended-wrapper';
+      recWrapper.innerHTML = `
+          <div class="fankit-rec-title">РЕКОМЕНДУЕМ</div>
+          <div class="fankit-rec-grid" id="fankit-rec-grid"></div>
+      `;
+      // Вставляем блок перед сеткой с остальными фонами
+      document.querySelector('.fankit-grid-container').before(recWrapper);
+
+      const recGrid = document.getElementById('fankit-rec-grid');
+      
+      const recBackgrounds = [
+          { src: 'BP/bg18_BP50.png', text: 'для 50 сезона BP' },
+          { src: 'BP/bg19_BP49.png', text: 'для 49 сезона BP' },
+          { src: 'BP/bg20_BP48.png', text: 'для 48 сезона BP' }
+      ];
+
+      // Универсальная функция обработки клика по ЛЮБОМУ фону (чтобы не дублировать код)
+      const handleFankitSelection = (itemElement, imgSrc) => {
+          if (itemElement.classList.contains('loading')) return; 
+          window.triggerHaptic();
+          
+          document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
+          itemElement.classList.add('selected');
+
+          if (window.fankitContext === 'editor') {
+              let img = new Image();
+              img.crossOrigin = "anonymous";
+              img.onload = () => {
+                  rawBgImage = img; 
+                  window.layerState.isGeneratedBg = false;
+                  window.layerState.bgColorType = null;
+                  window.layerState.isReadyBg = false;
+                  
+                  if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex === 2) {
+                      if (typeof startAnimation === 'function') startAnimation();
+                  } else {
+                      generateBrawlPassTest(); 
+                  }
+                  
+                  window.closeFankitGlobal();
+              };
+              img.src = imgSrc;
+              return;
+          }
+
+          selectedColor = null;
+          uploadMode = 'normal_bg';
+          wizardColorWraps.forEach(w => w.classList.remove('selected'));
+          
+          window.layerState.isReadyBg = false;
+          window.layerState.textVisible = true;
+          window.layerState.luchVisible = true;
+          window.layerState.starsVisible = true;
+          window.layerState.pointsVisible = true;
+          window.layerState.watermarksVisible = true;
+          
+          document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
+
+          uploadedBaseImg.onload = () => {
+              document.getElementById('wizard-upload-text').innerText = "Фон с Fankit выбран";
+              checkStep1Ready();
+          };
+          uploadedBaseImg.src = imgSrc;
+
+          setTimeout(() => window.closeFankitGlobal(), 200);
+      };
+
+      // Заполняем раздел "Рекомендуем"
+      recBackgrounds.forEach((bg) => {
           let item = document.createElement('div');
-          item.className = 'fankit-item loading'; 
-          fankitGrid.appendChild(item); 
+          item.className = 'fankit-rec-item loading';
+          item.innerHTML = `<div class="fankit-rec-badge">${bg.text}</div>`;
+          recGrid.appendChild(item);
 
           let img = new Image();
-          img.crossOrigin = "anonymous"; 
+          img.crossOrigin = "anonymous";
           img.onload = () => {
               item.classList.remove('loading');
               item.style.backgroundImage = `url('${img.src}')`;
           };
-          img.src = `bg/bg${i}.png`;
-          
-          item.onclick = async () => {
-              if (item.classList.contains('loading')) return; 
-              window.triggerHaptic();
-              
-              document.querySelectorAll('.fankit-item').forEach(el => el.classList.remove('selected'));
-              item.classList.add('selected');
+          img.src = bg.src;
+          item.onclick = () => handleFankitSelection(item, bg.src);
+      });
 
-              if (window.fankitContext === 'editor') {
-                  let img = new Image();
-                  img.crossOrigin = "anonymous";
-                  img.onload = () => {
-                      rawBgImage = img; 
-                      window.layerState.isGeneratedBg = false;
-                      window.layerState.bgColorType = null;
-                      window.layerState.isReadyBg = false;
-                      
-                      // ИСПРАВЛЕНИЕ: Не вызываем функцию 1-го стиля, если мы во 2-м!
-                      if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex === 2) {
-                          if (typeof startAnimation === 'function') startAnimation();
-                      } else {
-                          generateBrawlPassTest(); 
-                      }
-                      
-                      window.closeFankitGlobal();
-                  };
-                  img.src = `bg/bg${i}.png`;
-                  return;
-              }
+      // 2. Заполняем остальные фоны (1-17 и 21)
+      const standardBackgrounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21];
+      
+      standardBackgrounds.forEach((num) => {
+          let item = document.createElement('div');
+          item.className = 'fankit-item loading';
+          fankitGrid.appendChild(item);
 
-              selectedColor = null;
-              uploadMode = 'normal_bg';
-              wizardColorWraps.forEach(w => w.classList.remove('selected'));
-              
-              window.layerState.isReadyBg = false;
-              window.layerState.textVisible = true;
-              window.layerState.luchVisible = true;
-              window.layerState.starsVisible = true;
-              window.layerState.pointsVisible = true;
-              window.layerState.watermarksVisible = true;
-              
-              document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
-
-              uploadedBaseImg.onload = () => {
-                  document.getElementById('wizard-upload-text').innerText = `Фон с Fankit #${i} выбран`;
-                  checkStep1Ready();
-              };
-              uploadedBaseImg.src = `bg/bg${i}.png`;
-
-              setTimeout(() => window.closeFankitGlobal(), 200);
+          let img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+              item.classList.remove('loading');
+              item.style.backgroundImage = `url('${img.src}')`;
           };
-      }
+          img.src = `bg/bg${num}.png`;
+          
+          item.onclick = () => handleFankitSelection(item, `bg/bg${num}.png`);
+      });
   }
 
   window.fankitContext = 'wizard'; 
