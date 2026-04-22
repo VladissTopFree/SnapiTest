@@ -5784,11 +5784,23 @@ function drawScene() {
                 persistentCtx.translate(sx, sy);
                 if (flip) persistentCtx.scale(-1, 1);
                 
+                // Рисуем обводку
                 persistentCtx.shadowColor = '#000';
                 persistentCtx.shadowBlur = 0;
-                const offsets = [[3,0], [-3,0], [0,3], [0,-3]];
+                
+                // ТВОЯ НАСТРОЙКА: Увеличь эту цифру, чтобы сделать обводку еще толще (было 3)
+                let strokeSize = 6; 
+                let diag = strokeSize * 0.75; // Высчитываем диагонали, чтобы обводка была круглой, а не квадратной
+                
+                // Используем 8 направлений, чтобы толстая обводка была плотной и без дырок по углам
+                const offsets = [
+                    [strokeSize, 0], [-strokeSize, 0], [0, strokeSize], [0, -strokeSize], // Крест
+                    [diag, diag], [-diag, -diag], [diag, -diag], [-diag, diag]            // Диагонали
+                ];
+                
                 offsets.forEach(([dx, dy]) => {
-                    persistentCtx.shadowOffsetX = dx; persistentCtx.shadowOffsetY = dy;
+                    persistentCtx.shadowOffsetX = dx; 
+                    persistentCtx.shadowOffsetY = dy;
                     persistentCtx.drawImage(img, -bw/2, -bh, bw, bh);
                 });
                 
