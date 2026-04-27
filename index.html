@@ -5547,7 +5547,7 @@ window.updateCachedTextCanvas = () => {
     cachedTextCanvas.height = persistentCanvas.height;
     let ctx = cachedTextCanvas.getContext('2d');
     
-    if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex !== 2) {
+    if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 3) {
         drawBPNickText(ctx, window.layerState.textValue || "SNAPI", persistentCanvas.width, persistentCanvas.height);
     } else {
         drawBeautifulNick(ctx, window.layerState.textValue, persistentCanvas.width, persistentCanvas.height);
