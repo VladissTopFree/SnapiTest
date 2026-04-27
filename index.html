@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.9(31)";
+  const APP_VERSION = "v2.5.0";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -689,7 +689,7 @@
 
   #ios-btn-create { 
     align-self: center; 
-    background: linear-gradient(110deg, var(--tg-theme-button-color, #3390ec) 38%, #8ad0ff 50%, var(--tg-theme-button-color, #3390ec) 62%);
+    background: linear-gradient(110deg, #9b8dff 38%, #d9a5ff 50%, #9b8dff 62%);
     background-size: 300% 100%;
     animation: shimmerBg 4s infinite linear;
     z-index: 2; /* Кнопка поверх искр */
@@ -3884,12 +3884,7 @@ window.rebuildStyle1Background = () => {
     grad1.addColorStop(0, window.layerState.tempGradL0 || config.gradientLeft[0]); 
     grad1.addColorStop(1, window.layerState.tempGradL1 || config.gradientLeft[1]);
     ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    
-    // ИСПРАВЛЕНИЕ: Накладываем только если это НЕ сгенерированный градиент
-    if (rawBgImage && !window.layerState.isGeneratedBg) { 
-        ctx.globalCompositeOperation = 'overlay'; 
-        ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); 
-    }
+    if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
     ctx.restore();
 
     // Правый градиент
@@ -3901,12 +3896,7 @@ window.rebuildStyle1Background = () => {
     grad2.addColorStop(0, window.layerState.tempGradR0 || config.gradientRight[0]); 
     grad2.addColorStop(1, window.layerState.tempGradR1 || config.gradientRight[1]);
     ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    
-    // ИСПРАВЛЕНИЕ: Накладываем только если это НЕ сгенерированный градиент
-    if (rawBgImage && !window.layerState.isGeneratedBg) { 
-        ctx.globalCompositeOperation = 'overlay'; 
-        ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); 
-    }
+    if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
     ctx.restore();
 
     // Линия
@@ -4981,243 +4971,424 @@ function drawPriceText(ctx, w, h, textStr, info) {
 }
 
 function runMagicLogic(img) {
-  const w = img.width; const h = img.height;
-  const tmpCanvas = document.createElement('canvas');
-  tmpCanvas.width = w; tmpCanvas.height = h;
-  const tCtx = tmpCanvas.getContext('2d', { willReadFrequently: true });
-  tCtx.drawImage(img, 0, 0);
-  
-  const imgData = tCtx.getImageData(0, 0, w, h);
-  const d = imgData.data;
+    const w = img.width; 
+    const h = img.height;
+    const tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = w; 
+    tmpCanvas.height = h;
+    const tCtx = tmpCanvas.getContext('2d', { willReadFrequently: true });
+    tCtx.drawImage(img, 0, 0);
+    
+    const imgData = tCtx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+    const totalPixels = w * h;
 
-  const gray = new Uint8Array(w * h);
-  for(let i=0; i < w*h; i++) gray[i] = 0.299*d[i*4] + 0.587*d[i*4+1] + 0.114*d[i*4+2];
-
-  const edges = new Uint8Array(w * h);
-  const dilated = new Uint8Array(w * h);
-  
-  for(let y=1; y < h-1; y++) {
-    for(let x=1; x < w-1; x++) {
-      let i = y*w + x;
-      let p00 = gray[(y-1)*w+(x-1)], p02 = gray[(y-1)*w+(x+1)];
-      let p10 = gray[y*w+(x-1)],     p12 = gray[y*w+(x+1)];
-      let p20 = gray[(y+1)*w+(x-1)], p22 = gray[(y+1)*w+(x+1)];
-      let p01 = gray[(y-1)*w+x],     p21 = gray[(y+1)*w+x];
-
-      let gx = -p00 + p02 - 2*p10 + 2*p12 - p20 + p22;
-      let gy = -p00 - 2*p01 - p02 + p20 + 2*p21 + p22;
-      if (Math.sqrt(gx*gx + gy*gy) > 35) edges[i] = 1; 
-    }
-  }
-
-  for(let y=2; y < h-2; y++) {
-    for(let x=2; x < w-2; x++) {
-      if (edges[y*w+x]) {
-        for(let dy=-1; dy<=1; dy++) {
-          for(let dx=-1; dx<=1; dx++) { dilated[(y+dy)*w+(x+dx)] = 1; }
-        }
-      }
-    }
-  }
-
-  const colorBins = {}; let sampleCount = 0;
-  const bandY = Math.floor(h * 0.10); const bandX = Math.floor(w * 0.10);
-
-  function sampleArea(startY, endY, startX, endX) {
-    for(let y = startY; y < endY; y += 4) {
-      for(let x = startX; x < endX; x += 4) {
-        let i = (y * w + x) * 4;
-        let r = Math.round(d[i]/32)*32, g = Math.round(d[i+1]/32)*32, b = Math.round(d[i+2]/32)*32;
-        let key = `${r},${g},${b}`;
-        colorBins[key] = (colorBins[key] || 0) + 1;
-        sampleCount++;
-      }
-    }
-  }
-
-  sampleArea(0, bandY, 0, w); sampleArea(h - bandY, h, 0, w); 
-  sampleArea(bandY, h - bandY, 0, bandX); sampleArea(bandY, h - bandY, w - bandX, w); 
-
-  const targetColors = [];
-  const threshold = sampleCount * 0.05; 
-  for (const [key, count] of Object.entries(colorBins)) {
-    if (count > threshold) targetColors.push(key.split(',').map(Number));
-  }
-
-  function isBgColor(r, g, b) {
-    for (let tc of targetColors) {
-      if (Math.sqrt((r-tc[0])**2 + (g-tc[1])**2 + (b-tc[2])**2) < 60) return true;
-    }
-    return false;
-  }
-
-  const visited = new Uint8Array(w * h);
-  const stackX = new Int32Array(w * h); const stackY = new Int32Array(w * h);
-  let stackLen = 0;
-
-  function tryEraseAndSpread(nx, ny) {
-    if (nx < 0 || nx >= w || ny < 0 || ny >= h) return;
-    let ni = ny * w + nx;
-    if (visited[ni]) return;
-    visited[ni] = 1;
-    let r = d[ni*4], g = d[ni*4+1], b = d[ni*4+2];
-    if (dilated[ni] && r < 110 && g < 110 && b < 145) return;
-    if (isBgColor(r, g, b)) {
-        d[ni*4+3] = 0; stackX[stackLen] = nx; stackY[stackLen] = ny; stackLen++;
-    }
-  }
-
-  for(let y=0; y < Math.min(h, 5); y++) {
-    for(let x=0; x < w; x++) { tryEraseAndSpread(x, y); tryEraseAndSpread(x, h-1-y); }
-  }
-  for(let y=0; y < h; y++) {
-    for(let x=0; x < Math.min(w, 5); x++) { tryEraseAndSpread(x, y); tryEraseAndSpread(w-1-x, y); }
-  }
-
-  while(stackLen > 0) {
-    stackLen--;
-    let x = stackX[stackLen], y = stackY[stackLen];
-    tryEraseAndSpread(x+1, y); tryEraseAndSpread(x-1, y); tryEraseAndSpread(x, y+1); tryEraseAndSpread(x, y-1);
-  }
-
-  const islandIDs = new Int32Array(w * h); let currentID = 1;
-  const islandRects = [ {minY: h, maxY: 0, minX: w, maxX: 0} ];
-
-  for(let y=0; y < h; y++) {
-    for(let x=0; x < w; x++) {
-      let i = y * w + x;
-      if (d[i*4+3] > 0 && islandIDs[i] === 0) {
-        let minY = y, maxY = y, minX = x, maxX = x;
-        stackLen = 0; stackX[stackLen] = x; stackY[stackLen] = y; stackLen++;
-        islandIDs[i] = currentID;
-
-        while(stackLen > 0) {
-          stackLen--;
-          let cx = stackX[stackLen], cy = stackY[stackLen];
-          if (cy < minY) minY = cy; if (cy > maxY) maxY = cy;
-          if (cx < minX) minX = cx; if (cx > maxX) maxX = cx;
-
-          const check = (nx, ny) => {
-            if(nx >= 0 && nx < w && ny >= 0 && ny < h) {
-              let ni = ny * w + nx;
-              if (d[ni*4+3] > 0 && islandIDs[ni] === 0) {
-                islandIDs[ni] = currentID; stackX[stackLen] = nx; stackY[stackLen] = ny; stackLen++;
-              }
-            }
-          };
-          check(cx+1, cy); check(cx-1, cy); check(cx, cy+1); check(cx, cy-1);
-        }
-        islandRects.push({minY, maxY, minX, maxX});
-        currentID++;
-      }
-    }
-  }
-
-  for (let i = 0; i < w * h; i++) {
-    if (d[i*4+3] > 0) {
-      let id = islandIDs[i]; let rect = islandRects[id];
-      let objHeight = rect.maxY - rect.minY;
-      let touchesEdges = (rect.minX <= 5 || rect.maxX >= w - 6);
-      if (objHeight < h * 0.30 || touchesEdges) { d[i*4+3] = 0; islandIDs[i] = 0; }
-    }
-  }
-
-  for(let pass = 0; pass < 2; pass++) {
-    const currentAlpha = new Uint8Array(w * h);
-    for (let i = 0; i < w * h; i++) currentAlpha[i] = d[i * 4 + 3];
+    // 1. ПОИСК ГРАНИЦ
+    const edges = new Uint8Array(totalPixels);
     for (let y = 1; y < h - 1; y++) {
-      for (let x = 1; x < w - 1; x++) {
-        let i = y * w + x;
-        if (currentAlpha[i] > 0 && (currentAlpha[i - 1] === 0 || currentAlpha[i + 1] === 0 || currentAlpha[i - w] === 0 || currentAlpha[i + w] === 0)) {
-          d[i * 4 + 3] = 0;
+        for (let x = 1; x < w - 1; x++) {
+            let idx = y * w + x;
+            let i4 = idx * 4;
+            
+            let r = data[i4], g = data[i4+1], b = data[i4+2];
+            let rx = data[i4+4], gx = data[i4+5], bx = data[i4+6];
+            let ry = data[i4 + w*4], gy = data[i4 + w*4 + 1], by = data[i4 + w*4 + 2];
+
+            let diffX = Math.max(Math.abs(r-rx), Math.abs(g-gx), Math.abs(b-bx));
+            let diffY = Math.max(Math.abs(r-ry), Math.abs(g-gy), Math.abs(b-by));
+
+            let isSharpEdge = Math.max(diffX, diffY) > 40; 
+            let maxC = Math.max(r, g, b);
+            let minC = Math.min(r, g, b);
+
+            let isBlackBorder = maxC < 95 && (maxC - minC) < 40; 
+            let isWhiteBorder = minC > 200 && (maxC - minC) < 20;
+
+            if (isSharpEdge || isBlackBorder || isWhiteBorder) { 
+                edges[idx] = 1;
+            }
         }
-      }
     }
-  }
 
-  const blurAlpha = new Uint8Array(w * h);
-  for (let i = 0; i < w * h; i++) blurAlpha[i] = d[i * 4 + 3];
-  for (let y = 1; y < h - 1; y++) {
-    for (let x = 1; x < w - 1; x++) {
-      let i = y * w + x;
-      if (blurAlpha[i] > 0 && (blurAlpha[i-1]===0 || blurAlpha[i+1]===0 || blurAlpha[i-w]===0 || blurAlpha[i+w]===0)) {
-        d[i * 4 + 3] = (blurAlpha[i] * 2 + blurAlpha[i-1] + blurAlpha[i+1] + blurAlpha[i-w] + blurAlpha[i+w]) / 6; 
-      }
+    // 2. УКРЕПЛЕНИЕ ГРАНИЦ
+    const solidEdges = new Uint8Array(totalPixels);
+    for (let y = 1; y < h - 1; y++) {
+        for (let x = 1; x < w - 1; x++) {
+            let idx = y * w + x;
+            if (edges[idx] || 
+                edges[idx-1] || edges[idx+1] || 
+                edges[idx-w] || edges[idx+w] ||
+                edges[idx-w-1] || edges[idx-w+1] || 
+                edges[idx+w-1] || edges[idx+w+1]) {
+                solidEdges[idx] = 1;
+            }
+        }
     }
-  }
 
-  const finalIslands = new Map();
-  for (let y = 0; y < h; y++) {
+    // 3. ЗАЛИВКА ФОНА
+    const bgMask = new Uint8Array(totalPixels);
+    const stack = new Int32Array(totalPixels);
+    let stackPtr = 0;
+
     for (let x = 0; x < w; x++) {
-      let i = y * w + x;
-      if (d[i*4+3] > 0 && islandIDs[i] > 0) {
-        let id = islandIDs[i];
-        if (!finalIslands.has(id)) { finalIslands.set(id, { minX: x, maxX: x, minY: y, maxY: y }); } 
-        else {
-          let rect = finalIslands.get(id);
-          if (x < rect.minX) rect.minX = x; if (x > rect.maxX) rect.maxX = x;
-          if (y < rect.minY) rect.minY = y; if (y > rect.maxY) rect.maxY = y;
-        }
-      }
+        if (!solidEdges[x]) { bgMask[x] = 1; stack[stackPtr++] = x; }
+        let bIdx = (h - 1) * w + x;
+        if (!solidEdges[bIdx]) { bgMask[bIdx] = 1; stack[stackPtr++] = bIdx; }
     }
-  }
-
-  if (finalIslands.size === 0) { checkBatchCompletion(); return; }
-
-  const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].minX - b[1].minX);
-
-  sortedIslands.forEach(([id, rect], index) => {
-    let margin = 5; 
-    let minX = Math.max(0, rect.minX - margin); let minY = Math.max(0, rect.minY - margin);
-    let maxX = Math.min(w - 1, rect.maxX + margin); let maxY = Math.min(h - 1, rect.maxY + margin);
-    let cW = maxX - minX + 1; let cH = maxY - minY + 1;
-
-    const c = document.createElement('canvas');
-    c.width = cW; c.height = cH;
-    const cx = c.getContext('2d', { willReadFrequently: true });
-    
-    const layerData = cx.createImageData(cW, cH);
-    const ld = layerData.data;
-
-    for (let y = minY; y <= maxY; y++) {
-      for (let x = minX; x <= maxX; x++) {
-        let sourceIdx = y * w + x;
-        if (islandIDs[sourceIdx] === id) {
-          let destIdx = ((y - minY) * cW + (x - minX)) * 4;
-          ld[destIdx] = d[sourceIdx * 4]; ld[destIdx + 1] = d[sourceIdx * 4 + 1]; 
-          ld[destIdx + 2] = d[sourceIdx * 4 + 2]; ld[destIdx + 3] = d[sourceIdx * 4 + 3]; 
-        }
-      }
+    for (let y = 0; y < h; y++) {
+        let lIdx = y * w;
+        if (!solidEdges[lIdx] && !bgMask[lIdx]) { bgMask[lIdx] = 1; stack[stackPtr++] = lIdx; }
+        let rIdx = y * w + w - 1;
+        if (!solidEdges[rIdx] && !bgMask[rIdx]) { bgMask[rIdx] = 1; stack[stackPtr++] = rIdx; }
     }
-    cx.putImageData(layerData, 0, 0);
 
-    let eraseResult = autoReplacePrice(cx, cW, cH);
-    let drawInfo = eraseResult || {
-        blankedImgData: cx.getImageData(0, 0, cW, cH),
-        textX: cW / 2, textY: cH - cH * 0.1, boxHeight: Math.max(20, cH * 0.15)
-    };
+    while (stackPtr > 0) {
+        let curr = stack[--stackPtr];
+        let cx = curr % w, cy = Math.floor(curr / w);
+        if (cx > 0) { let n = curr - 1; if (!solidEdges[n] && !bgMask[n]) { bgMask[n] = 1; stack[stackPtr++] = n; } }
+        if (cx < w - 1) { let n = curr + 1; if (!solidEdges[n] && !bgMask[n]) { bgMask[n] = 1; stack[stackPtr++] = n; } }
+        if (cy > 0) { let n = curr - w; if (!solidEdges[n] && !bgMask[n]) { bgMask[n] = 1; stack[stackPtr++] = n; } }
+        if (cy < h - 1) { let n = curr + w; if (!solidEdges[n] && !bgMask[n]) { bgMask[n] = 1; stack[stackPtr++] = n; } }
+    }
 
-    drawPriceText(cx, cW, cH, "FREE", drawInfo);
+    // 4. ИЗОЛЯЦИЯ КАРТОЧЕК
+    let fgMask = new Uint8Array(totalPixels);
+    const labels = new Int32Array(totalPixels);
+    let currentLabel = 1;
+    const comps = [];
 
-    let offerIdx = allGeneratedCards.length;
-    let offerObj = { canvas: c, x: minX, y: minY, info: drawInfo };
+    for (let i = 0; i < totalPixels; i++) {
+        if (!bgMask[i] && !labels[i]) {
+            let area = 0;
+            let minX = w, minY = h, maxX = 0, maxY = 0;
+            stackPtr = 0;
+            stack[stackPtr++] = i;
+            labels[i] = currentLabel;
+
+            while (stackPtr > 0) {
+                const curr = stack[--stackPtr];
+                area++;
+                const cx = curr % w, cy = Math.floor(curr / w);
+                
+                if (cx < minX) minX = cx;
+                if (cx > maxX) maxX = cx;
+                if (cy < minY) minY = cy;
+                if (cy > maxY) maxY = cy;
+
+                if (cx > 0) { const n = curr - 1; if (!bgMask[n] && !labels[n]) { labels[n] = currentLabel; stack[stackPtr++] = n; } }
+                if (cx < w - 1) { const n = curr + 1; if (!bgMask[n] && !labels[n]) { labels[n] = currentLabel; stack[stackPtr++] = n; } }
+                if (cy > 0) { const n = curr - w; if (!bgMask[n] && !labels[n]) { labels[n] = currentLabel; stack[stackPtr++] = n; } }
+                if (cy < h - 1) { const n = curr + w; if (!bgMask[n] && !labels[n]) { labels[n] = currentLabel; stack[stackPtr++] = n; } }
+            }
+            comps.push({ label: currentLabel, area, minX, minY, maxX, maxY });
+            currentLabel++;
+        }
+    }
+
+    const validLabels = new Uint8Array(currentLabel + 1);
+    for (let i = 0; i < comps.length; i++) {
+        const comp = comps[i];
+        const compW = comp.maxX - comp.minX;
+        const compH = comp.maxY - comp.minY;
+        const bboxArea = compW * compH;
+        const fillRatio = comp.area / (bboxArea || 1); 
+        
+        const centerX = comp.minX + compW / 2;
+        const centerY = comp.minY + compH / 2;
+
+        const isLeftUI = (centerX < w * 0.18); 
+        const isTopUI = (centerY < h * 0.18);
+
+        if (comp.area > totalPixels * 0.015 && 
+            compH > h * 0.25 &&          
+            fillRatio > 0.40 &&
+            !isLeftUI && 
+            !isTopUI)    
+        {
+            validLabels[comp.label] = 1;
+        }
+    }
     
-    allGeneratedCards.push(offerObj);
-    
-    let stateOffer = {
-        id: offerIdx,
-        visible: true,
-        hasStroke: true,
-        price: "FREE",
-        ref: offerObj,
-        anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
-        target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 },
-        cache: null
-    };
-    window.layerState.offers.push(stateOffer);
-  });
+    let hasValid = false;
+    for (let i = 0; i < totalPixels; i++) {
+        if (validLabels[labels[i]]) {
+            fgMask[i] = 1;
+            hasValid = true;
+        }
+    }
 
-  checkBatchCompletion();
+    if (!hasValid) { 
+        checkBatchCompletion(); 
+        return; 
+    }
+
+    // 5. ИДЕАЛЬНОЕ СГЛАЖИВАНИЕ ФОРМЫ (v3)
+    const integralMask = new Int32Array(totalPixels);
+    for (let y = 0; y < h; y++) {
+        let sum = 0;
+        let rowOffset = y * w;
+        let prevRowOffset = (y - 1) * w;
+        for (let x = 0; x < w; x++) {
+            sum += fgMask[rowOffset + x];
+            integralMask[rowOffset + x] = sum + (y > 0 ? integralMask[prevRowOffset + x] : 0);
+        }
+    }
+
+    let smoothMask = new Uint8Array(totalPixels);
+    const R_SMOOTH = 3; 
+    const THRESHOLD = 0.55; 
+
+    for (let y = 0; y < h; y++) {
+        let rowOffset = y * w;
+        for (let x = 0; x < w; x++) {
+            let x1 = Math.max(0, x - R_SMOOTH);
+            let y1 = Math.max(0, y - R_SMOOTH);
+            let x2 = Math.min(w - 1, x + R_SMOOTH);
+            let y2 = Math.min(h - 1, y + R_SMOOTH);
+
+            let A = (x1 > 0 && y1 > 0) ? integralMask[(y1 - 1) * w + (x1 - 1)] : 0;
+            let B = (y1 > 0) ? integralMask[(y1 - 1) * w + x2] : 0;
+            let C = (x1 > 0) ? integralMask[y2 * w + (x1 - 1)] : 0;
+            let D = integralMask[y2 * w + x2];
+
+            let area = (x2 - x1 + 1) * (y2 - y1 + 1);
+            let sum = D - B - C + A;
+
+            if (sum > area * THRESHOLD) {
+                smoothMask[rowOffset + x] = 1;
+            }
+        }
+    }
+
+    const isBlackPixel = new Uint8Array(totalPixels);
+    for (let i = 0; i < totalPixels; i++) {
+        const r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
+        const maxC = Math.max(r, g, b);
+        const minC = Math.min(r, g, b);
+        if (maxC < 130 && (maxC - minC) < 50) {
+            isBlackPixel[i] = 1;
+        }
+    }
+
+    const erodedMask = new Uint8Array(totalPixels);
+    for (let y = 1; y < h - 1; y++) {
+        for (let x = 1; x < w - 1; x++) {
+            const idx = y * w + x;
+            if (smoothMask[idx] && smoothMask[idx - 1] && smoothMask[idx + 1] &&
+                smoothMask[idx - w] && smoothMask[idx + w]) {
+                erodedMask[idx] = 1;
+            }
+        }
+    }
+
+    let restoredBlack = new Uint8Array(totalPixels);
+    for (let i = 0; i < totalPixels; i++) restoredBlack[i] = erodedMask[i];
+
+    for (let pass = 0; pass < 5; pass++) {
+        const tempMask = new Uint8Array(totalPixels);
+        for (let i = 0; i < totalPixels; i++) tempMask[i] = restoredBlack[i];
+
+        for (let y = 1; y < h - 1; y++) {
+            for (let x = 1; x < w - 1; x++) {
+                const idx = y * w + x;
+                if (isBlackPixel[idx] && !restoredBlack[idx]) {
+                    if (restoredBlack[idx - 1] || restoredBlack[idx + 1] ||
+                        restoredBlack[idx - w] || restoredBlack[idx + w]) {
+                        tempMask[idx] = 1;
+                    }
+                }
+            }
+        }
+        restoredBlack = tempMask;
+    }
+
+    const integralClean = new Int32Array(totalPixels);
+    for (let y = 0; y < h; y++) {
+        let sum = 0;
+        let rowOffset = y * w;
+        let prevRowOffset = (y - 1) * w;
+        for (let x = 0; x < w; x++) {
+            sum += restoredBlack[rowOffset + x];
+            integralClean[rowOffset + x] = sum + (y > 0 ? integralClean[prevRowOffset + x] : 0);
+        }
+    }
+
+    const finalCleanMask = new Uint8Array(totalPixels);
+    const R_SMOOTH_2 = 2; 
+    for (let y = 0; y < h; y++) {
+        let rowOffset = y * w;
+        for (let x = 0; x < w; x++) {
+            let x1 = Math.max(0, x - R_SMOOTH_2);
+            let y1 = Math.max(0, y - R_SMOOTH_2);
+            let x2 = Math.min(w - 1, x + R_SMOOTH_2);
+            let y2 = Math.min(h - 1, y + R_SMOOTH_2);
+
+            let A = (x1 > 0 && y1 > 0) ? integralClean[(y1 - 1) * w + (x1 - 1)] : 0;
+            let B = (y1 > 0) ? integralClean[(y1 - 1) * w + x2] : 0;
+            let C = (x1 > 0) ? integralClean[y2 * w + (x1 - 1)] : 0;
+            let D = integralClean[y2 * w + x2];
+
+            let area = (x2 - x1 + 1) * (y2 - y1 + 1);
+            let sum = D - B - C + A;
+
+            if (sum > area * 0.5) { 
+                finalCleanMask[rowOffset + x] = 1;
+            }
+        }
+    }
+
+    // 6. МЯГКИЙ ANTI-ALIASING
+    const integralAA = new Int32Array(totalPixels);
+    for (let y = 0; y < h; y++) {
+        let sum = 0;
+        let rowOffset = y * w;
+        let prevRowOffset = (y - 1) * w;
+        for (let x = 0; x < w; x++) {
+            sum += finalCleanMask[rowOffset + x]; 
+            integralAA[rowOffset + x] = sum + (y > 0 ? integralAA[prevRowOffset + x] : 0);
+        }
+    }
+
+    const alpha = new Uint8Array(totalPixels);
+    const R_AA = 1; 
+    for (let y = 0; y < h; y++) {
+        let rowOffset = y * w;
+        for (let x = 0; x < w; x++) {
+            let x1 = Math.max(0, x - R_AA);
+            let y1 = Math.max(0, y - R_AA);
+            let x2 = Math.min(w - 1, x + R_AA);
+            let y2 = Math.min(h - 1, y + R_AA);
+
+            let A = (x1 > 0 && y1 > 0) ? integralAA[(y1 - 1) * w + (x1 - 1)] : 0;
+            let B = (y1 > 0) ? integralAA[(y1 - 1) * w + x2] : 0;
+            let C = (x1 > 0) ? integralAA[y2 * w + (x1 - 1)] : 0;
+            let D = integralAA[y2 * w + x2];
+
+            let area = (x2 - x1 + 1) * (y2 - y1 + 1);
+            let sum = D - B - C + A;
+            
+            alpha[rowOffset + x] = Math.floor((sum / area) * 255);
+        }
+    }
+
+    for (let i = 0; i < totalPixels; i++) {
+        data[i * 4 + 3] = alpha[i];
+    }
+
+    // 7. ФИНАЛЬНАЯ ИЗОЛЯЦИЯ ПО АЛЬФЕ (ЗАЩИТА ОТ АРТЕФАКТОВ)
+    const islandIDs = new Int32Array(totalPixels); 
+    let currentID = 1;
+    const finalIslands = new Map();
+    const stackX = new Int32Array(totalPixels); 
+    const stackY = new Int32Array(totalPixels);
+
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            let i = y * w + x;
+            if (data[i * 4 + 3] > 0 && islandIDs[i] === 0) {
+                let minX = x, maxX = x, minY = y, maxY = y;
+                let stackLen = 0;
+                stackX[stackLen] = x; 
+                stackY[stackLen] = y; 
+                stackLen++;
+                islandIDs[i] = currentID;
+
+                while (stackLen > 0) {
+                    stackLen--;
+                    let cx = stackX[stackLen], cy = stackY[stackLen];
+                    if (cx < minX) minX = cx; if (cx > maxX) maxX = cx;
+                    if (cy < minY) minY = cy; if (cy > maxY) maxY = cy;
+
+                    const check = (nx, ny) => {
+                        if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                            let ni = ny * w + nx;
+                            if (data[ni * 4 + 3] > 0 && islandIDs[ni] === 0) {
+                                islandIDs[ni] = currentID; 
+                                stackX[stackLen] = nx; 
+                                stackY[stackLen] = ny; 
+                                stackLen++;
+                            }
+                        }
+                    };
+                    check(cx + 1, cy); check(cx - 1, cy); check(cx, cy + 1); check(cx, cy - 1);
+                }
+                
+                let objHeight = maxY - minY;
+                if (objHeight > h * 0.25) {
+                    finalIslands.set(currentID, { minX, maxX, minY, maxY });
+                }
+                currentID++;
+            }
+        }
+    }
+
+    if (finalIslands.size === 0) { 
+        checkBatchCompletion(); 
+        return; 
+    }
+
+    const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].minX - b[1].minX);
+
+    sortedIslands.forEach(([id, rect]) => {
+        let margin = 5; 
+        let minX = Math.max(0, rect.minX - margin); 
+        let minY = Math.max(0, rect.minY - margin);
+        let maxX = Math.min(w - 1, rect.maxX + margin); 
+        let maxY = Math.min(h - 1, rect.maxY + margin);
+        let cW = maxX - minX + 1; 
+        let cH = maxY - minY + 1;
+
+        const c = document.createElement('canvas');
+        c.width = cW; 
+        c.height = cH;
+        const cx = c.getContext('2d', { willReadFrequently: true });
+        
+        const layerData = cx.createImageData(cW, cH);
+        const ld = layerData.data;
+
+        // КОПИРУЕМ ТОЛЬКО ПИКСЕЛИ ТЕКУЩЕГО ОСТРОВА (КАРТОЧКИ)
+        for (let y = minY; y <= maxY; y++) {
+            for (let x = minX; x <= maxX; x++) {
+                let sourceIdx = y * w + x;
+                if (islandIDs[sourceIdx] === id) { // <-- ЭТОТ ШАГ РЕШАЕТ ПРОБЛЕМУ ОБРЕЗКОВ
+                    let destIdx = ((y - minY) * cW + (x - minX)) * 4;
+                    ld[destIdx] = data[sourceIdx * 4];
+                    ld[destIdx + 1] = data[sourceIdx * 4 + 1];
+                    ld[destIdx + 2] = data[sourceIdx * 4 + 2];
+                    ld[destIdx + 3] = data[sourceIdx * 4 + 3];
+                }
+            }
+        }
+        cx.putImageData(layerData, 0, 0);
+
+        // Стираем оригинальный ценник
+        let eraseResult = autoReplacePrice(cx, cW, cH);
+        let drawInfo = eraseResult || {
+            blankedImgData: cx.getImageData(0, 0, cW, cH),
+            textX: cW / 2, textY: cH - cH * 0.1, boxHeight: Math.max(20, cH * 0.15)
+        };
+
+        drawPriceText(cx, cW, cH, "FREE", drawInfo);
+
+        let offerIdx = allGeneratedCards.length;
+        let offerObj = { canvas: c, x: minX, y: minY, info: drawInfo };
+        
+        allGeneratedCards.push(offerObj);
+        
+        let stateOffer = {
+            id: offerIdx,
+            visible: true,
+            hasStroke: true,
+            price: "FREE",
+            ref: offerObj,
+            anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
+            target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 },
+            cache: null
+        };
+        window.layerState.offers.push(stateOffer);
+    });
+
+    checkBatchCompletion();
 }
 
 function checkBatchCompletion() {
@@ -6287,111 +6458,130 @@ function drawBeautifulNick(ctx, text, w, h) {
   const fankitGrid = document.getElementById('fankit-grid');
 
 if (fankitGrid && fankitGrid.children.length === 0) {
-      // 1. Создаем блок рекомендуемых фонов
-      const recWrapper = document.createElement('div');
-      recWrapper.className = 'fankit-recommended-wrapper';
-      recWrapper.innerHTML = `
-          <div class="fankit-rec-title">РЕКОМЕНДУЕМ</div>
-          <div class="fankit-rec-grid" id="fankit-rec-grid"></div>
-      `;
-      // Вставляем блок перед сеткой с остальными фонами
-      document.querySelector('.fankit-grid-container').before(recWrapper);
+    // 1. Создаем блок рекомендуемых фонов
+    const recWrapper = document.createElement('div');
+    recWrapper.className = 'fankit-recommended-wrapper';
+    recWrapper.innerHTML = `
+        <div class="fankit-rec-title">РЕКОМЕНДУЕМ</div>
+        <div class="fankit-rec-grid" id="fankit-rec-grid"></div>
+    `;
+    document.querySelector('.fankit-grid-container').before(recWrapper);
 
-      const recGrid = document.getElementById('fankit-rec-grid');
-      
-      const recBackgrounds = [
-          { src: 'bg/bg18_BP50.png', text: 'для 50 сезона BP' },
-          { src: 'bg/bg19_BP49.png', text: 'для 49 сезона BP' },
-          { src: 'bg/bg20_BP48.png', text: 'для 48 сезона BP' }
-      ];
+    const recGrid = document.getElementById('fankit-rec-grid');
+    
+    const recBackgrounds = [
+        { src: 'bg/bg18_BP50.png', text: 'для 50 сезона BP' },
+        { src: 'bg/bg19_BP49.png', text: 'для 49 сезона BP' },
+        { src: 'bg/bg20_BP48.png', text: 'для 48 сезона BP' }
+    ];
 
-      // Универсальная функция обработки клика по ЛЮБОМУ фону (чтобы не дублировать код)
-      const handleFankitSelection = (itemElement, imgSrc) => {
-          if (itemElement.classList.contains('loading')) return; 
-          window.triggerHaptic();
-          
-          document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
-          itemElement.classList.add('selected');
+    const handleFankitSelection = (itemElement, imgSrc) => {
+        if (itemElement.classList.contains('loading')) return; 
+        window.triggerHaptic();
+        
+        document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
+        itemElement.classList.add('selected');
 
-          if (window.fankitContext === 'editor') {
-              let img = new Image();
-              img.crossOrigin = "anonymous";
-              img.onload = () => {
-                  rawBgImage = img; 
-                  window.layerState.isGeneratedBg = false;
-                  window.layerState.bgColorType = null;
-                  window.layerState.isReadyBg = false;
-                  
-                  if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex === 2) {
-                      if (typeof startAnimation === 'function') startAnimation();
-                  } else {
-                      generateBrawlPassTest(); 
-                  }
-                  
-                  window.closeFankitGlobal();
-              };
-              img.src = imgSrc;
-              return;
-          }
+        if (window.fankitContext === 'editor') {
+            let img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+                rawBgImage = img; 
+                window.layerState.isGeneratedBg = false;
+                window.layerState.bgColorType = null;
+                window.layerState.isReadyBg = false;
+                
+                if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex === 2) {
+                    if (typeof startAnimation === 'function') startAnimation();
+                } else {
+                    generateBrawlPassTest(); 
+                }
+                
+                window.closeFankitGlobal();
+            };
+            img.src = imgSrc;
+            return;
+        }
 
-          selectedColor = null;
-          uploadMode = 'normal_bg';
-          wizardColorWraps.forEach(w => w.classList.remove('selected'));
-          
-          window.layerState.isReadyBg = false;
-          window.layerState.textVisible = true;
-          window.layerState.luchVisible = true;
-          window.layerState.starsVisible = true;
-          window.layerState.pointsVisible = true;
-          window.layerState.watermarksVisible = true;
-          
-          document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
+        selectedColor = null;
+        uploadMode = 'normal_bg';
+        wizardColorWraps.forEach(w => w.classList.remove('selected'));
+        
+        window.layerState.isReadyBg = false;
+        window.layerState.textVisible = true;
+        window.layerState.luchVisible = true;
+        window.layerState.starsVisible = true;
+        window.layerState.pointsVisible = true;
+        window.layerState.watermarksVisible = true;
+        
+        document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
 
-          uploadedBaseImg.onload = () => {
-              document.getElementById('wizard-upload-text').innerText = "Фон с Fankit выбран";
-              checkStep1Ready();
-          };
-          uploadedBaseImg.src = imgSrc;
+        uploadedBaseImg.onload = () => {
+            document.getElementById('wizard-upload-text').innerText = "Фон с Fankit выбран";
+            checkStep1Ready();
+        };
+        uploadedBaseImg.src = imgSrc;
 
-          setTimeout(() => window.closeFankitGlobal(), 200);
-      };
+        setTimeout(() => window.closeFankitGlobal(), 200);
+    };
 
-      // Заполняем раздел "Рекомендуем"
-      recBackgrounds.forEach((bg) => {
-          let item = document.createElement('div');
-          item.className = 'fankit-rec-item loading';
-          item.innerHTML = `<div class="fankit-rec-badge">${bg.text}</div>`;
-          recGrid.appendChild(item);
+    // --- ЛЕНИВАЯ ЗАГРУЗКА И АСИНХРОННЫЙ РЕНДЕР ---
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                let item = entry.target;
+                let imgSrc = item.getAttribute('data-src'); // Берем путь, который спрятали
 
-          let img = new Image();
-          img.crossOrigin = "anonymous";
-          img.onload = () => {
-              item.classList.remove('loading');
-              item.style.backgroundImage = `url('${img.src}')`;
-          };
-          img.src = bg.src;
-          item.onclick = () => handleFankitSelection(item, bg.src);
-      });
+                let img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = imgSrc;
 
-      // 2. Заполняем остальные фоны (1-17 и 21)
-      const standardBackgrounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21];
-      
-      standardBackgrounds.forEach((num) => {
-          let item = document.createElement('div');
-          item.className = 'fankit-item loading';
-          fankitGrid.appendChild(item);
+                // Метод decode() расшифровывает тяжелые PNG без фризов интерфейса
+                img.decode().then(() => {
+                    item.classList.remove('loading');
+                    item.style.backgroundImage = `url('${imgSrc}')`;
+                }).catch(() => {
+                    // Фоллбэк, если decode() не сработал (редко, но бывает)
+                    img.onload = () => {
+                        item.classList.remove('loading');
+                        item.style.backgroundImage = `url('${imgSrc}')`;
+                    };
+                });
 
-          let img = new Image();
-          img.crossOrigin = "anonymous";
-          img.onload = () => {
-              item.classList.remove('loading');
-              item.style.backgroundImage = `url('${img.src}')`;
-          };
-          img.src = `bg/bg${num}.png`;
-          
-          item.onclick = () => handleFankitSelection(item, `bg/bg${num}.png`);
-      });
-  }
+                observer.unobserve(item); // Картинка пошла качаться, больше за ней не следим
+            }
+        });
+    }, { rootMargin: '250px' }); // Начинаем качать за 250px до того, как юзер доскроллит
+
+    // 2. Заполняем раздел "Рекомендуем"
+    recBackgrounds.forEach((bg) => {
+        let item = document.createElement('div');
+        item.className = 'fankit-rec-item loading';
+        item.innerHTML = `<div class="fankit-rec-badge">${bg.text}</div>`;
+        recGrid.appendChild(item);
+
+        item.setAttribute('data-src', bg.src); // Прячем путь в атрибут
+        item.onclick = () => handleFankitSelection(item, bg.src);
+
+        imageObserver.observe(item); // Отдаем обсерверу
+    });
+
+    // 3. Заполняем остальные фоны (1-17 и 21)
+    const standardBackgrounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21];
+    
+    standardBackgrounds.forEach((num) => {
+        let item = document.createElement('div');
+        item.className = 'fankit-item loading';
+        fankitGrid.appendChild(item);
+
+        let originalSrc = `bg/bg${num}.png`;
+        
+        item.setAttribute('data-src', originalSrc); // Прячем путь в атрибут
+        item.onclick = () => handleFankitSelection(item, originalSrc);
+
+        imageObserver.observe(item); // Отдаем обсерверу
+    });
+}
 
   window.fankitContext = 'wizard'; 
   
