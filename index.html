@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(1)";
+  const APP_VERSION = "v2.5.1(2)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -29,9 +29,9 @@
 
   const BP_SEASON_CONFIG = {
       50: {
-          lineColor: '#6ee8ff', 
-          gradientLeft: ['#f6005e', '#f6005e'], 
-          gradientRight: ['#00009e', '#00009e'],
+          lineColor: '#7084f4', 
+          gradientLeft: ['#6e8282d0', '#6e8282d0'], 
+          gradientRight: ['#7084f4cd', '#7084f4cd'],
           style2Brawlers: { // yes
               brawler2: { x: 990, y: 12, scale: 0.3, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
               brawler1: { x: 971, y: 386, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
@@ -57,8 +57,8 @@
       },
       48: {
           lineColor: '#b32700', 
-          gradientLeft: ['#39150b', '#39150b'], 
-          gradientRight: ['#003cff', '#003cff'],
+          gradientLeft: ['#5c1e0dda', '#5c1e0dda'], 
+          gradientRight: ['#006effcc', '#006effcc'],
           style2Brawlers: { // yes
               brawler1: { x: 1005, y: 276, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
               brawler2: { x: 1057, y: -24, scale: 0.26, scaleX: 1, scaleY: 1, rot: 0 } 
@@ -1978,6 +1978,24 @@
     animation: counterBlurUpdate 0.2s ease-out forwards;
 }
 
+/* --- СТИЛЬ ДЛЯ НОМЕРА СТИЛЯ BP --- */
+  .bp-style-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #bbf7d0; 
+      color: #16a34a; 
+      font-size: 20px;
+      font-weight: 600;
+      padding: 0 10px;
+      height: 28px; /* Фиксированная высота для ровности */
+      border-radius: 10px;
+      margin-left: 6px;
+      vertical-align: middle;
+      position: relative;
+      top: -3px; 
+  }
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -2125,10 +2143,10 @@
             <div class="cat-img-wrapper">
                 <img src="miniprewiev.png" class="cat-img" onload="this.classList.add('loaded')" onerror="this.style.opacity='0'; this.parentElement.style.animation='none'; this.parentElement.style.background='#ddd';">
             </div>
-            <div class="cat-info" style="justify-content: center; height: 78px;">
-                <div class="cat-name">Стиль #1</div>
-                <div class="cat-desc">Включает в себя BP, BP+ и детали для улучшения работы.</div>
-            </div>
+                <div class="cat-info" style="justify-content: center; min-height: 78px;">
+                    <div class="cat-name">Стиль #1</div>
+                    <div class="cat-desc">Включает в себя BP, BP+ и детали для улучшения работы.</div>
+                </div>
         </div>
         
         <div class="cat-card" onclick="selectBPStyle(2)">
@@ -2138,10 +2156,10 @@
             <div class="cat-img-wrapper">
                 <img src="miniprewiev.png" class="cat-img" onload="this.classList.add('loaded')" onerror="this.style.opacity='0'; this.parentElement.style.animation='none'; this.parentElement.style.background='#ddd';">
             </div>
-            <div class="cat-info" style="justify-content: center; height: 78px;">
-                <div class="cat-name">Стиль #2</div>
-                <div class="cat-desc">Включает в себя BP, BP+, особую скидку, улучшение, Pro Pass, кристаллы и детали для улучшения работы.</div>
-            </div>
+                <div class="cat-info" style="justify-content: center; min-height: 78px;">
+                    <div class="cat-name">Стиль #2</div>
+                    <div class="cat-desc">Включает в себя BP, BP+, особую скидку, улучшение, Pro Pass, кристаллы и детали для улучшения работы.</div>
+                </div>
         </div>
 
         <div class="cat-card" onclick="selectBPStyle(3)">
@@ -2151,10 +2169,10 @@
             <div class="cat-img-wrapper">
                 <img src="miniprewiev.png" class="cat-img" onload="this.classList.add('loaded')" onerror="this.style.opacity='0'; this.parentElement.style.animation='none'; this.parentElement.style.background='#ddd';">
             </div>
-            <div class="cat-info" style="justify-content: center; height: 78px;">
-                <div class="cat-name">Стиль #3</div>
-                <div class="cat-desc">Включает в себя BP, BP+, Pro Pass и детали для улучшения работы.</div>
-            </div>
+                <div class="cat-info" style="justify-content: center; min-height: 78px;">
+                    <div class="cat-name">Стиль #3</div>
+                    <div class="cat-desc">Включает в себя BP, BP+, Pro Pass и детали для улучшения работы.</div>
+                </div>
         </div>
 
     </div>
@@ -2252,19 +2270,22 @@
     <button id="wizard-next-btn3" class="ios-action-btn ios-btn-next">Далее</button>
   </div>
 
-  <div id="wizard-step3-bp" class="wizard-step">
+<div id="wizard-step3-bp" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
       <div class="ios-wizard-title">Создание Brawl Pass</div>
-      <div class="ios-wizard-subtitle">Цены. Напишите в поля для ввода<br>цены для Brawl Pass и Brawl Pass Plus.</div>
+      <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цены. Укажите цены для 1-го стиля.</div>
 
-      <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 30px; width: 100%; max-width: 280px; align-items: center;">
-        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <span style="font-size: 22px; font-weight: 600; color: var(--tg-theme-text-color, #000); letter-spacing: 0.5px;">BP</span>
-            <input type="text" inputmode="numeric" pattern="[0-9]*" id="wizard-bp-price" placeholder="Введите цену..." style="background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 14px; padding: 14px 16px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; width: 160px; text-align: left;" maxlength="5">
-        </div>
-        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <span style="font-size: 22px; font-weight: 600; color: var(--tg-theme-text-color, #000); letter-spacing: 0.5px;">BP PLUS</span>
-            <input type="text" inputmode="numeric" pattern="[0-9]*" id="wizard-bpplus-price" placeholder="Введите цену..." style="background: var(--tg-theme-section-bg-color, #ffffff); border: none; border-radius: 14px; padding: 14px 16px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; width: 160px; text-align: left;" maxlength="5">
-        </div>
+      <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
+          <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
+              <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                  <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
+                  <input type="text" inputmode="numeric" maxlength="5" id="wizard-bp-price" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); checkStep3BPReady();">
+              </div>
+
+              <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                  <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">BP Plus</div>
+                  <input type="text" inputmode="numeric" maxlength="5" id="wizard-bpplus-price" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); checkStep3BPReady();">
+              </div>
+          </div>
       </div>
 
       <button id="wizard-next-btn3-bp" class="ios-action-btn ios-btn-next">Далее</button>
@@ -2449,23 +2470,23 @@
 
 <div id="wizard-step3-bp-style3" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
     <div class="ios-wizard-title">Создание Brawl Pass</div>
-    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цены. Укажите цены для 3-го стиля.</div>
+    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цены. Укажите нужные значения.</div>
 
     <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
         <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
             <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass (Слева)</div>
-                <input type="text" inputmode="numeric" maxlength="5" id="ws3-p0" placeholder="Например: 899" style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPStyle3Ready();">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws3-p0" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPStyle3Ready();">
             </div>
 
             <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">BP Plus (Центр)</div>
-                <input type="text" inputmode="numeric" maxlength="5" id="ws3-p1" placeholder="Например: 1249" style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPStyle3Ready();">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">BP Plus</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws3-p1" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPStyle3Ready();">
             </div>
 
             <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Pro Pass (Справа)</div>
-                <input type="text" inputmode="numeric" maxlength="5" id="ws3-p2" placeholder="Например: 2999" style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPStyle3Ready();">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Pro Pass</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws3-p2" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPStyle3Ready();">
             </div>
         </div>
     </div>
@@ -3429,12 +3450,27 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('bp-style-overlay').style.display = 'none';
     window.layerState.bpStyleIndex = selectedBPStyle;
 
-    document.getElementById('wizard-title-step1').innerText = 'Создание Brawl Pass';
-    document.getElementById('wizard-title-step2').innerText = 'Создание Brawl Pass';
+    // Формируем HTML-код заголовка с нашим новым бейджиком
+    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">#${selectedBPStyle}</span></span>`;
+
+    // Подставляем этот заголовок во ВСЕ шаги создания Brawl Pass
+    document.getElementById('wizard-title-step1').innerHTML = bpTitleHtml;
+    document.getElementById('wizard-title-step2').innerHTML = bpTitleHtml;
+    
+    // Подставляем в заголовки шагов с ценами (для всех трех стилей) и сезоном
+    let step3bp = document.querySelector('#wizard-step3-bp .ios-wizard-title');
+    if(step3bp) step3bp.innerHTML = bpTitleHtml;
+    
+    let step3bpStyle2 = document.querySelector('#wizard-step3-bp-style2 .ios-wizard-title');
+    if(step3bpStyle2) step3bpStyle2.innerHTML = bpTitleHtml;
+    
+    let step3bpStyle3 = document.querySelector('#wizard-step3-bp-style3 .ios-wizard-title');
+    if(step3bpStyle3) step3bpStyle3.innerHTML = bpTitleHtml;
+    
+    let step4bp = document.querySelector('#wizard-step4-bp .ios-wizard-title');
+    if(step4bp) step4bp.innerHTML = bpTitleHtml;
 
     document.getElementById('result-box').style.display = 'none';
-    let btnWrap = document.getElementById('download-btn-wrap');
-    if (btnWrap) btnWrap.style.display = 'none';
 
     document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
     document.getElementById('wizard-step1').classList.add('active');
@@ -4093,10 +4129,10 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div class="ios-layer-name" style="flex-grow: 0; margin-right: 12px; font-size: 15px;">Текст</div>
                 <div style="position: relative; flex-grow: 1; display: flex; align-items: center;" id="layer-nick-wrap">
                     <input type="text" id="bp-nick-input"
-                           style="width: 100%; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 30px 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
-                           maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" 
-                           onkeydown="if(this.value.length >= 16 && this.selectionStart === this.selectionEnd && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) { let w = document.getElementById('layer-nick-wrap'); w.classList.remove('shake-anim'); void w.offsetWidth; w.classList.add('shake-anim'); if(window.triggerHaptic) window.triggerHaptic(); }"
-                           oninput="updateBPText(this.value); if(window.updateBPTextCounter) window.updateBPTextCounter(this);">
+                        style="width: 100%; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 30px 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
+                        maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" 
+                        onkeydown="if(this.value.length >= 16 && this.selectionStart === this.selectionEnd && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) { let w = document.getElementById('layer-nick-wrap'); w.classList.remove('shake-anim'); void w.offsetWidth; w.classList.add('shake-anim'); if(window.triggerHaptic) window.triggerHaptic(); setTimeout(() => w.classList.remove('shake-anim'), 300); }"
+                        oninput="updateBPText(this.value); if(window.updateBPTextCounter) window.updateBPTextCounter(this);">
                     <div class="wizard-char-counter" id="bp-nick-counter" style="right: 10px;"></div>
                 </div>
             </div>
@@ -6297,9 +6333,9 @@ function drawScene() {
             
             // Прячем зоны, если пользователь выбрал цветной фон (isGeneratedBg)
             if (!window.layerState.isGeneratedBg) {
-                drawZone('#ffaa00', -20, 0, 507, 736, -76, 0.46);
-                drawZone('#0015ff', 488, -5, 436, 736, -76, 0.46);
-                drawZone('#005e0e', 924, -2, 451, 736, -76, 0.46);
+                drawZone('#ffaa00', -20, 0, 507, 736, -76, 0);
+                drawZone('#0015ff', 488, -5, 436, 736, -76, 0);
+                drawZone('#005e0e', 924, -2, 451, 736, -76, 0);
             }
 
             // 4. Плашки и Цены (Картинки)
@@ -6744,7 +6780,7 @@ function drawBeautifulNick(ctx, text, w, h) {
   const wizardNickCounter = document.getElementById('wizard-nick-counter');
   let lastNickLeft = 16;
 
-  // Логика тряски при достижении лимита
+// Логика тряски при достижении лимита
   wizardNickInput.addEventListener('keydown', (e) => {
       // Проверяем, что введено >= 16 символов, нет выделения текста и нажимается буква/цифра
       if (wizardNickInput.value.length >= 16 && 
@@ -6752,10 +6788,17 @@ function drawBeautifulNick(ctx, text, w, h) {
           e.key.length === 1 && 
           !e.ctrlKey && !e.metaKey && !e.altKey) {
           
+          // Вызываем Haptic
           if (window.triggerHaptic) window.triggerHaptic();
+          
           wizardInputWrap.classList.remove('shake-anim');
           void wizardInputWrap.offsetWidth; // перезапуск CSS анимации
           wizardInputWrap.classList.add('shake-anim');
+          
+          // УДАЛЯЕМ КЛАСС ПОСЛЕ ЗАВЕРШЕНИЯ АНИМАЦИИ (чтобы не тряслось при повторном открытии)
+          setTimeout(() => {
+              wizardInputWrap.classList.remove('shake-anim');
+          }, 300);
       }
   });
 
