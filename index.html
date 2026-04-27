@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1";
+  const APP_VERSION = "v2.5.1(1)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -43,9 +43,9 @@
           }
       },
       49: {
-          lineColor: '#5ce1e6', 
-          gradientLeft: ['#008b8b', '#00ffcc'], 
-          gradientRight: ['#00008b', '#0066ff'],
+          lineColor: '#ffa800', 
+          gradientLeft: ['#ff5e00', '#ff5e00'], 
+          gradientRight: ['#7b00d9', '#7b00d9'],
           style2Brawlers: { // yes
               brawler1: { x: 1011, y: 381, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
               brawler2: { x: 968, y: 22, scale: 0.23, scaleX: 1, scaleY: 1, rot: 0 } 
@@ -56,9 +56,9 @@
           }
       },
       48: {
-          lineColor: '#008b8b', 
-          gradientLeft: ['#008b8b', '#00ffcc'], 
-          gradientRight: ['#0801a2', '#0801a2'],
+          lineColor: '#b32700', 
+          gradientLeft: ['#39150b', '#39150b'], 
+          gradientRight: ['#003cff', '#003cff'],
           style2Brawlers: { // yes
               brawler1: { x: 1005, y: 276, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
               brawler2: { x: 1057, y: -24, scale: 0.26, scaleX: 1, scaleY: 1, rot: 0 } 
@@ -148,7 +148,7 @@
     --app-top-padding-sm: 26px;
     --app-result-padding: 20px;
   }
-
+  body:not(.os-desktop) #category-overlay,
   body:not(.os-desktop) #ios-dashboard,
   body:not(.os-desktop) #saved-projects-overlay,
   body:not(.os-desktop) #settings-overlay {
@@ -1425,7 +1425,7 @@
     opacity: 1;
   }
 
-  .fankit-sheet {
+    .fankit-sheet {
     background: var(--tg-theme-secondary-bg-color, #F2F2F7);
     width: 100%;
     max-height: 85vh;
@@ -1437,6 +1437,10 @@
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    
+    /* --- ДОБАВЛЕННАЯ СТРОКА --- */
+    overflow-x: hidden; 
+    /* -------------------------- */
   }
 
   #fankit-overlay.show .fankit-sheet {
@@ -1490,11 +1494,17 @@
     mask-image: linear-gradient(to top, black 0%, transparent 100%);
   }
 
-  .fankit-grid {
+    .fankit-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 колонки вместо 2 */
     gap: 8px; /* Уменьшаем отступ для 3 колонок */
     overflow-y: auto;
+    
+    /* --- ДОБАВЛЕННЫЕ СТРОКИ --- */
+    overflow-x: hidden; /* Жестко обрезаем все, что выходит по горизонтали */
+    touch-action: pan-y; /* Говорим браузеру телефона: здесь можно свайпать ТОЛЬКО вверх и вниз */
+    /* -------------------------- */
+    
     -webkit-overflow-scrolling: touch;
     padding: 5px 20px 20px 20px; 
     height: 100%;
@@ -1938,6 +1948,36 @@
         white-space: nowrap;
     }
 
+/* --- СТИЛИ ДЛЯ СЧЁТЧИКА И АНИМАЦИЙ ВВОДА --- */
+.wizard-char-counter {
+    position: absolute;
+    right: 54px;
+    font-size: 15px;
+    color: var(--tg-theme-subtitle-text-color, #8E8E93);
+    pointer-events: none;
+    user-select: none;
+    font-weight: 500;
+}
+
+@keyframes shake-horizontal {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+.shake-anim {
+    animation: shake-horizontal 0.3s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes counterBlurUpdate {
+    0% { filter: blur(0px); opacity: 1; transform: scale(1); }
+    50% { filter: blur(3px); opacity: 0.5; transform: scale(1.2); }
+    100% { filter: blur(0px); opacity: 1; transform: scale(1); }
+}
+.counter-blur-anim {
+    display: inline-block;
+    animation: counterBlurUpdate 0.2s ease-out forwards;
+}
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -2172,8 +2212,9 @@
     <div class="ios-wizard-title" id="wizard-title-step2">Создание акции</div>
     <div class="ios-wizard-subtitle">Ник. Напишите свой ник, который<br>будет располагаться на Вашей работе.</div>
     
-    <div class="wizard-input-wrapper">
+    <div class="wizard-input-wrapper" id="wizard-input-wrap">
         <input type="text" id="wizard-nick-input" placeholder="Введите свой ник..." maxlength="16">
+        <div class="wizard-char-counter" id="wizard-nick-counter"></div>
         <div class="wizard-caps-btn" id="wizard-caps-btn">A</div>
     </div>
     
@@ -4003,6 +4044,26 @@ window.updateBPText = (val) => {
     if (typeof startAnimation === 'function') startAnimation();
 };
 
+window.lastBPNickLeft = 16;
+window.updateBPTextCounter = function(el) {
+    let counter = document.getElementById('bp-nick-counter');
+    if (!counter) return;
+    let left = 16 - el.value.length;
+    // Если 0 (лимит) или 16 (пусто), то скрываем
+    if (left === 0 || left === 16) {
+        counter.innerText = '';
+        window.lastBPNickLeft = left;
+    } else {
+        counter.innerText = left;
+        if (left !== window.lastBPNickLeft) {
+            counter.classList.remove('counter-blur-anim');
+            void counter.offsetWidth; // перезапуск анимации
+            counter.classList.add('counter-blur-anim');
+        }
+        window.lastBPNickLeft = left;
+    }
+};
+
 window.updateS2PriceLayer = (idx, val) => {
     val = val.replace(/[^0-9]/g, '');
     if (parseInt(val) > 99999) val = "99999";
@@ -4030,9 +4091,14 @@ function renderLayerPanel(isInitialLoad = false) {
                     ${getEyeSVG(window.layerState.textVisible)}
                 </div>
                 <div class="ios-layer-name" style="flex-grow: 0; margin-right: 12px; font-size: 15px;">Текст</div>
-                <input type="text" id="bp-nick-input"
-                       style="flex-grow:1; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
-                       maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" oninput="updateBPText(this.value)">
+                <div style="position: relative; flex-grow: 1; display: flex; align-items: center;" id="layer-nick-wrap">
+                    <input type="text" id="bp-nick-input"
+                           style="width: 100%; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 30px 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
+                           maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" 
+                           onkeydown="if(this.value.length >= 16 && this.selectionStart === this.selectionEnd && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) { let w = document.getElementById('layer-nick-wrap'); w.classList.remove('shake-anim'); void w.offsetWidth; w.classList.add('shake-anim'); if(window.triggerHaptic) window.triggerHaptic(); }"
+                           oninput="updateBPText(this.value); if(window.updateBPTextCounter) window.updateBPTextCounter(this);">
+                    <div class="wizard-char-counter" id="bp-nick-counter" style="right: 10px;"></div>
+                </div>
             </div>
         `;
         html += `<div class="ios-font-label">Изменить шрифт</div>`;
@@ -4140,6 +4206,46 @@ function renderLayerPanel(isInitialLoad = false) {
                 </div>`;
             }
         }
+        /* --- НАЧАЛО ДОБАВЛЕННОГО КОДА 3 СТИЛЯ --- */
+        else if (window.layerState.bpStyleIndex === 3) {
+            const labels = ["Brawl Pass", "BP Plus", "Pro Pass"];
+            for(let i=0; i<3; i++) {
+                let val = (window.layerState.style3Prices && window.layerState.style3Prices[i]) ? window.layerState.style3Prices[i] : "";
+                html += `
+                <div class="ios-layer-row" ${i===2 && !window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
+                    <div style="width: 24px; flex-shrink: 0;"></div>
+                    <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
+                    <div class="ios-layer-action-text">цена</div>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS3PriceLayer(${i}, this.value)" style="width:65px;">
+                </div>`;
+            }
+
+            // Добавляем временный редактор текста для 3-го стиля
+            if (window.ENABLE_TEMP_EDITOR) {
+                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : -225;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : -115;
+                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 0.7;
+
+                html += `
+                <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ТЕКСТА (Стиль 3)</div>
+                <div class="ios-layer-row">
+                    <div class="ios-layer-name" style="font-size:14px;">Текст (Размер)</div>
+                    <div id="v3-txts" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${txtS}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${txtS}" oninput="document.getElementById('v3-txts').innerText=this.value; updateBrawlerParams('s3TextScale', this.value)">
+                </div>
+                <div class="ios-layer-row">
+                    <div class="ios-layer-name" style="font-size:14px;">Текст (X)</div>
+                    <div id="v3-txtx" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${txtX}</div>
+                    <input type="range" class="ios-slider" min="-600" max="600" step="1" value="${txtX}" oninput="document.getElementById('v3-txtx').innerText=this.value; updateBrawlerParams('s3TextX', this.value)">
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none;">
+                    <div class="ios-layer-name" style="font-size:14px;">Текст (Y)</div>
+                    <div id="v3-txty" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${txtY}</div>
+                    <input type="range" class="ios-slider" min="-400" max="400" step="1" value="${txtY}" oninput="document.getElementById('v3-txty').innerText=this.value; updateBrawlerParams('s3TextY', this.value)">
+                </div>`;
+            }
+        }
+        /* --- КОНЕЦ ДОБАВЛЕННОГО КОДА 3 СТИЛЯ --- */
         
         else {
             html += `
@@ -4489,6 +4595,13 @@ function renderLayerPanel(isInitialLoad = false) {
     html += `</div>`;
 
     layerPanel.innerHTML = html;
+    setTimeout(() => {
+        let bpInput = document.getElementById('bp-nick-input');
+        if(bpInput && window.updateBPTextCounter) {
+            window.lastBPNickLeft = 16; 
+            window.updateBPTextCounter(bpInput);
+        }
+    }, 0);
     layerPanel.style.display = 'flex';
 }
 
@@ -6181,9 +6294,13 @@ function drawScene() {
             if (window.layerState.detailsVisible !== false) {
                 drawLayer(globalAssets.s3Details, 0, 0, 1280, 720, 1, 1, 'source-over');
             }
-            drawZone('#ffaa00', -20, 0, 507, 736, -76, 0.26);
-            drawZone('#0015ff', 488, -5, 436, 736, -76, 0.26);
-            drawZone('#005e0e', 924, -2, 451, 736, -76, 0.26);
+            
+            // Прячем зоны, если пользователь выбрал цветной фон (isGeneratedBg)
+            if (!window.layerState.isGeneratedBg) {
+                drawZone('#ffaa00', -20, 0, 507, 736, -76, 0.46);
+                drawZone('#0015ff', 488, -5, 436, 736, -76, 0.46);
+                drawZone('#005e0e', 924, -2, 451, 736, -76, 0.46);
+            }
 
             // 4. Плашки и Цены (Картинки)
             drawLayer(globalAssets.s3PanelL, 34, 33, 417, 520, 1, 1, 'source-over');
@@ -6247,6 +6364,11 @@ function drawScene() {
 
             // Если нужен большой текст SNAPI по центру (как в остальных стилях)
             if (cachedTextCanvas && animText.alpha > 0.01) {
+
+                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : -225;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : -115;
+                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 0.7;
+
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
                 let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
@@ -6618,6 +6740,42 @@ function drawBeautifulNick(ctx, text, w, h) {
   let selectedColor = null;
   let savedNick = localStorage.getItem('Snapi_last_nick');
 
+  const wizardInputWrap = document.getElementById('wizard-input-wrap');
+  const wizardNickCounter = document.getElementById('wizard-nick-counter');
+  let lastNickLeft = 16;
+
+  // Логика тряски при достижении лимита
+  wizardNickInput.addEventListener('keydown', (e) => {
+      // Проверяем, что введено >= 16 символов, нет выделения текста и нажимается буква/цифра
+      if (wizardNickInput.value.length >= 16 && 
+          wizardNickInput.selectionStart === wizardNickInput.selectionEnd && 
+          e.key.length === 1 && 
+          !e.ctrlKey && !e.metaKey && !e.altKey) {
+          
+          if (window.triggerHaptic) window.triggerHaptic();
+          wizardInputWrap.classList.remove('shake-anim');
+          void wizardInputWrap.offsetWidth; // перезапуск CSS анимации
+          wizardInputWrap.classList.add('shake-anim');
+      }
+  });
+
+  // Функция обновления самого счетчика с блюром
+  function updateNickCounter() {
+      let left = 16 - wizardNickInput.value.length;
+      if (left === 0 || left === 16) {
+          wizardNickCounter.innerText = '';
+          lastNickLeft = left;
+      } else {
+          wizardNickCounter.innerText = left;
+          if (left !== lastNickLeft) {
+              wizardNickCounter.classList.remove('counter-blur-anim');
+              void wizardNickCounter.offsetWidth;
+              wizardNickCounter.classList.add('counter-blur-anim');
+          }
+          lastNickLeft = left;
+      }
+  }
+
   if (savedNick) {
       wizardInsertText.innerText = savedNick;
       wizardInsertBtn.style.display = 'flex';
@@ -6629,6 +6787,9 @@ function drawBeautifulNick(ctx, text, w, h) {
       uploadedBaseImg.removeAttribute('src');
       uploadedReadyBaseImg.removeAttribute('src');
       wizardColorWraps.forEach(w => w.classList.remove('selected'));
+
+      document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
+
       document.getElementById('wizard-upload-text').innerText = "Фон с Fankit";
       document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
       wizardNextBtn1.classList.remove('show');
@@ -6636,6 +6797,7 @@ function drawBeautifulNick(ctx, text, w, h) {
       wizardNickInput.value = '';
       wizardNextBtn2.classList.remove('show');
       document.getElementById('wizard-caps-btn').classList.remove('visible');
+      if (typeof updateNickCounter === 'function') updateNickCounter(); // <--- ВОТ СЮДА
       
       stagedFiles = [];
       updateDropzoneUI();
@@ -6676,6 +6838,9 @@ function drawBeautifulNick(ctx, text, w, h) {
      wrap.onclick = () => {
          wizardColorWraps.forEach(w => w.classList.remove('selected'));
          wrap.classList.add('selected');
+
+         document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
+
          selectedColor = wrap.getAttribute('data-color');
          uploadMode = 'color';
          uploadedBaseImg.removeAttribute('src');
@@ -6887,6 +7052,9 @@ if (fankitGrid && fankitGrid.children.length === 0) {
       selectedColor = null;
       uploadMode = 'normal_bg';
       wizardColorWraps.forEach(w => w.classList.remove('selected'));
+
+      document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
+
       document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
       uploadedReadyBaseImg.removeAttribute('src');
 
@@ -6903,6 +7071,9 @@ if (fankitGrid && fankitGrid.children.length === 0) {
       selectedColor = null;
       uploadMode = 'ready_bg';
       wizardColorWraps.forEach(w => w.classList.remove('selected'));
+
+      document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
+
       document.getElementById('wizard-upload-text').innerText = "Фон с Fankit";
       uploadedBaseImg.removeAttribute('src');
 
@@ -6988,6 +7159,7 @@ wizardNextBtn1.onclick = async () => {
   wizardNickInput.addEventListener('input', () => {
     checkStep2Ready();
     updateCapsBtnState();
+    updateNickCounter(); // <--- ВОТ СЮДА
   });
 
   wizardInsertBtn.onclick = () => {
@@ -7001,6 +7173,7 @@ wizardNextBtn1.onclick = async () => {
         wizardNickInput.value = savedNick;
         checkStep2Ready();
         updateCapsBtnState();
+        updateNickCounter(); // <--- ВОТ СЮДА
     }, 200); 
   };
 
@@ -7015,6 +7188,7 @@ wizardNextBtn1.onclick = async () => {
     }
     checkStep2Ready();
     updateCapsBtnState();
+    updateNickCounter(); // <--- ВОТ СЮДА
   };
 
 
