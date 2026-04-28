@@ -3962,7 +3962,7 @@ window.updateBPPrice = (side, val, inputEl) => {
 };
 
 // --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
-window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
+window.ENABLE_TEMP_EDITOR = false; // Измени на false, чтобы скрыть редактор
 
 window.updateBrawlerParams = (param, val) => {
     window.layerState[param] = parseFloat(val);
@@ -4247,9 +4247,9 @@ function renderLayerPanel(isInitialLoad = false) {
             }
 
             if (window.ENABLE_TEMP_EDITOR) {
-                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : -225;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : -115;
-                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 0.7;
+                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 162;
+                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.0;
 
                 html += `
                 <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ТЕКСТА</div>
@@ -5646,17 +5646,6 @@ const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].min
 function checkBatchCompletion() {
   filesProcessed++;
   if (filesProcessed === filesToProcess) {
-    
-    // === ДОБАВЛЯЕМ ПРОВЕРКУ НА УСПЕШНОЕ ВЫРЕЗАНИЕ ===
-    if (window.layerState.offers.length === 0 && !window.layerState.isBrawlPassMode) {
-        alert("Акции не были вырезаны!\nПроверьте, какие Вы загрузили скриншоты. В хорошем ли они качестве, поменяйте свой выбор и повторите попытку.");
-        
-        // Возвращаем пользователя обратно в меню загрузки скриншотов
-        document.getElementById('result-box').style.display = 'none';
-        document.getElementById('wizard-overlay').style.display = 'flex';
-        return; // Прерываем переход в редактор
-    }
-    // ================================================
 
     setupPersistentCanvas();
     renderLayerPanel(true);
@@ -6456,9 +6445,9 @@ function drawScene() {
             // Если нужен большой текст SNAPI по центру (как в остальных стилях)
             if (cachedTextCanvas && animText.alpha > 0.01) {
 
-                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : -225;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : -115;
-                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 0.7;
+                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 162;
+                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.0;
 
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
@@ -7042,7 +7031,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
                 window.layerState.bgColorType = null;
                 window.layerState.isReadyBg = false;
                 
-                if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex === 2) {
+                if (window.layerState.isBrawlPassMode && (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3)) {
                     if (typeof startAnimation === 'function') startAnimation();
                 } else {
                     generateBrawlPassTest(); 
@@ -8279,10 +8268,18 @@ window.openBPStyle3Editor = function() {
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
         
         // Загрузка ассетов 3-го стиля
+        let season = window.layerState.bpSeason || 50;
+        
         if (!globalAssets.s3Rays) globalAssets.s3Rays = await load('BP/bp_luch_3style.png');
         if (!globalAssets.s3Dots) globalAssets.s3Dots = await load('BP/bp_points_3style.png');
         if (!globalAssets.s3Details) globalAssets.s3Details = await load('BP/bp_details_3style.png');
-        if (!globalAssets.s3PanelL) globalAssets.s3PanelL = await load('BP/bp_panel_left49.png');
+        
+        // Динамическая загрузка панели в зависимости от сезона
+        if (!globalAssets[`s3PanelL_${season}`]) {
+            globalAssets[`s3PanelL_${season}`] = await load(`BP/bp_panel_left${season}.png`);
+        }
+        globalAssets.s3PanelL = globalAssets[`s3PanelL_${season}`];
+        
         if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await load('BP/bp_price_bg_left.png');
         if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await load('BP/bp_panel_right.png');
         if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await load('BP/bp_price_bg_right.png');
