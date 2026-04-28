@@ -3962,7 +3962,7 @@ window.updateBPPrice = (side, val, inputEl) => {
 };
 
 // --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
-window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
+window.ENABLE_TEMP_EDITOR = false; // Измени на false, чтобы скрыть редактор
 
 window.updateBrawlerParams = (param, val) => {
     window.layerState[param] = parseFloat(val);
@@ -5884,17 +5884,22 @@ function drawScene() {
                 : BP_SEASON_CONFIG[50].style2Brawlers;
 
             // Применяем значения из временного редактора, если они есть
+// Применяем значения из временного редактора ТОЛЬКО если он включен
             let b1 = { ...s2Config.brawler1 };
-            if (window.layerState.brawler1X !== undefined) b1.x = window.layerState.brawler1X;
-            if (window.layerState.brawler1Y !== undefined) b1.y = window.layerState.brawler1Y;
-            if (window.layerState.brawler1Scale !== undefined) b1.scale = window.layerState.brawler1Scale;
-            if (window.layerState.brawler1Flip !== undefined) b1.flipH = window.layerState.brawler1Flip; // ДОБАВИЛИ ЭТО
+            if (window.ENABLE_TEMP_EDITOR) {
+                if (window.layerState.brawler1X !== undefined) b1.x = window.layerState.brawler1X;
+                if (window.layerState.brawler1Y !== undefined) b1.y = window.layerState.brawler1Y;
+                if (window.layerState.brawler1Scale !== undefined) b1.scale = window.layerState.brawler1Scale;
+                if (window.layerState.brawler1Flip !== undefined) b1.flipH = window.layerState.brawler1Flip;
+            }
 
             let b2 = { ...s2Config.brawler2 };
-            if (window.layerState.brawler2X !== undefined) b2.x = window.layerState.brawler2X;
-            if (window.layerState.brawler2Y !== undefined) b2.y = window.layerState.brawler2Y;
-            if (window.layerState.brawler2Scale !== undefined) b2.scale = window.layerState.brawler2Scale;
-            if (window.layerState.brawler2Flip !== undefined) b2.flipH = window.layerState.brawler2Flip; // И ЭТО
+            if (window.ENABLE_TEMP_EDITOR) {
+                if (window.layerState.brawler2X !== undefined) b2.x = window.layerState.brawler2X;
+                if (window.layerState.brawler2Y !== undefined) b2.y = window.layerState.brawler2Y;
+                if (window.layerState.brawler2Scale !== undefined) b2.scale = window.layerState.brawler2Scale;
+                if (window.layerState.brawler2Flip !== undefined) b2.flipH = window.layerState.brawler2Flip;
+            }
 
             // Вшитые координаты
             const C = {
@@ -6492,15 +6497,15 @@ function drawScene() {
             let seasonConf = BP_SEASON_CONFIG[currentSeason];
             let s1Config = (seasonConf && seasonConf.style1Brawlers) ? seasonConf.style1Brawlers : BP_SEASON_CONFIG[50].style1Brawlers;
 
-            let b1x = window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : s1Config.brawler1.x;
-            let b1y = window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : s1Config.brawler1.y;
-            let b1s = window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : s1Config.brawler1.scale;
-            let b1f = window.layerState.brawler1Flip !== undefined ? window.layerState.brawler1Flip : !!s1Config.brawler1.flipH;
+            let b1x = (window.ENABLE_TEMP_EDITOR && window.layerState.brawler1X !== undefined) ? window.layerState.brawler1X : s1Config.brawler1.x;
+            let b1y = (window.ENABLE_TEMP_EDITOR && window.layerState.brawler1Y !== undefined) ? window.layerState.brawler1Y : s1Config.brawler1.y;
+            let b1s = (window.ENABLE_TEMP_EDITOR && window.layerState.brawler1Scale !== undefined) ? window.layerState.brawler1Scale : s1Config.brawler1.scale;
+            let b1f = (window.ENABLE_TEMP_EDITOR && window.layerState.brawler1Flip !== undefined) ? window.layerState.brawler1Flip : !!s1Config.brawler1.flipH;
 
-            let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : s1Config.brawler2.x;
-            let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : s1Config.brawler2.y;
-            let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : s1Config.brawler2.scale;
-            let b2f = window.layerState.brawler2Flip !== undefined ? window.layerState.brawler2Flip : !!s1Config.brawler2.flipH;
+            let b2x = (window.ENABLE_TEMP_EDITOR && window.layerState.brawler2X !== undefined) ? window.layerState.brawler2X : s1Config.brawler2.x;
+            let b2y = (window.ENABLE_TEMP_EDITOR && window.layerState.brawler2Y !== undefined) ? window.layerState.brawler2Y : s1Config.brawler2.y;
+            let b2s = (window.ENABLE_TEMP_EDITOR && window.layerState.brawler2Scale !== undefined) ? window.layerState.brawler2Scale : s1Config.brawler2.scale;
+            let b2f = (window.ENABLE_TEMP_EDITOR && window.layerState.brawler2Flip !== undefined) ? window.layerState.brawler2Flip : !!s1Config.brawler2.flipH;
 
             const drawBrawlerS1 = (img, x, y, scale, flip) => {
                 if (!img) return;
