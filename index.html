@@ -3962,7 +3962,7 @@ window.updateBPPrice = (side, val, inputEl) => {
 };
 
 // --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
-window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
+window.ENABLE_TEMP_EDITOR = false; // Измени на false, чтобы скрыть редактор
 
 
 // Глобальный ограничитель кадров для ползунков (спасает процессоры iPhone)
@@ -4262,7 +4262,7 @@ function renderLayerPanel(isInitialLoad = false) {
 
             if (window.ENABLE_TEMP_EDITOR) {
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 656;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 626;
                 let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 html += `
@@ -6413,9 +6413,9 @@ function drawScene() {
             
             // Прячем зоны, если пользователь выбрал цветной фон (isGeneratedBg)
             if (!window.layerState.isGeneratedBg) {
-                drawZone('#ffaa00', -20, 0, 507, 736, -76, 0.56);
-                drawZone('#0015ff', 488, -5, 436, 736, -76, 0.56);
-                drawZone('#005e0e', 924, -2, 451, 736, -76, 0.56);
+                drawZone('#ffaa00', -20, 0, 507, 736, -76, 0.36);
+                drawZone('#0015ff', 488, -5, 436, 736, -76, 0.36);
+                drawZone('#005e0e', 924, -2, 451, 736, -76, 0.36);
             }
 
             // 4. Плашки и Цены (Картинки)
@@ -6438,7 +6438,7 @@ function drawScene() {
             drawTextObj(p[1] + ' ₽', '#ffffff', 567, 494, 164, 67, 1.05);
             drawTextObj(p[2] + ' ₽', '#ffffff', 988, 468, 184, 68, 1);
 
-// 8. Финальная цветокоррекция (Filter) и перенос на видимый холст
+            // 8. Финальная цветокоррекция (Filter) и перенос на видимый холст
             ctx.save();
             ctx.filter = 'saturate(135%) brightness(110%) contrast(105%)';
             ctx.drawImage(offC, 0, 0);
@@ -6448,7 +6448,7 @@ function drawScene() {
             if (cachedTextCanvas && animText.alpha > 0.01) {
 
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 656;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 626;
                 let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 ctx.save();
