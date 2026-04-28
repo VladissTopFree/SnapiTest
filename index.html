@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(4)";
+  const APP_VERSION = "v2.5.1(5)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -30,7 +30,7 @@
   const BP_SEASON_CONFIG = {
       50: {
           lineColor: '#8698ff', 
-          gradientLeft: ['#a0dede', '#a0dede'], 
+          gradientLeft: ['#a0dedeb0', '#a0dedeb0'], 
           gradientRight: ['#7084f4', '#7084f4'],
           style2Brawlers: { // yes
               brawler2: { x: 990, y: 12, scale: 0.3, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
@@ -3448,6 +3448,20 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     window.triggerHaptic();
     if (!selectedBPStyle) return;
 
+    // === ДОБАВЬ ЭТУ ОЧИСТКУ ===
+    delete window.layerState.brawler1X;
+    delete window.layerState.brawler1Y;
+    delete window.layerState.brawler1Scale;
+    delete window.layerState.brawler1Flip;
+    delete window.layerState.brawler2X;
+    delete window.layerState.brawler2Y;
+    delete window.layerState.brawler2Scale;
+    delete window.layerState.brawler2Flip;
+    delete window.layerState.s3TextX;
+    delete window.layerState.s3TextY;
+    delete window.layerState.s3TextScale;
+    // ==========================
+
     document.getElementById('bp-style-overlay').style.display = 'none';
     window.layerState.bpStyleIndex = selectedBPStyle;
 
@@ -4384,7 +4398,7 @@ function renderLayerPanel(isInitialLoad = false) {
     }
 
     // --- ОБВОДКА И АКЦИИ (Только для Обычных Акций) ---
-    if (window.layerState.offers && window.layerState.offers.length > 0) {
+    if (!window.layerState.isBrawlPassMode && window.layerState.offers && window.layerState.offers.length > 0) {
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
             <div class="ios-layer-row">
@@ -6922,6 +6936,20 @@ function drawBeautifulNick(ctx, text, w, h) {
           let el = document.getElementById(id);
           if (el) el.value = '';
       });
+
+      window.layerState.offers = [];
+      window.layerState.customWatermarks = null;
+      delete window.layerState.brawler1X;
+      delete window.layerState.brawler1Y;
+      delete window.layerState.brawler1Scale;
+      delete window.layerState.brawler1Flip;
+      delete window.layerState.brawler2X;
+      delete window.layerState.brawler2Y;
+      delete window.layerState.brawler2Scale;
+      delete window.layerState.brawler2Flip;
+      delete window.layerState.s3TextX;
+      delete window.layerState.s3TextY;
+      delete window.layerState.s3TextScale;
       
       if (typeof selectedBPSeason !== 'undefined') {
           selectedBPSeason = 50;
