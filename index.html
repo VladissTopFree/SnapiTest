@@ -3964,11 +3964,25 @@ window.updateBPPrice = (side, val, inputEl) => {
 // --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
 window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
 
-window.updateBrawlerParams = (param, val) => {
-    window.layerState[param] = parseFloat(val);
-    if (typeof startAnimation === 'function') startAnimation();
+
+// Глобальный ограничитель кадров для ползунков (спасает процессоры iPhone)
+window.requestRender = function() {
+    if (window.renderThrottle) return;
+    window.renderThrottle = setTimeout(() => {
+        if (typeof startAnimation === 'function') startAnimation();
+        window.renderThrottle = null;
+    }, 35); // 35мс = плавные ~30 FPS без зависаний ползунка
 };
 
+window.updateBrawlerParams = (param, val) => {
+    window.layerState[param] = parseFloat(val);
+    window.requestRender(); // Используем умный рендер
+};
+
+window.changeOpacity = (layerName, value) => {
+    window.layerState[layerName + 'Opacity'] = parseFloat(value);
+    window.requestRender(); // Используем умный рендер
+};
 
 
 window.toggleBrawlerFlip = (brawlerKey) => {
@@ -4248,7 +4262,7 @@ function renderLayerPanel(isInitialLoad = false) {
 
             if (window.ENABLE_TEMP_EDITOR) {
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 700;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 656;
                 let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 html += `
@@ -4687,25 +4701,6 @@ window.toggleCosmeticLayer = (layerName) => {
     window.layerState[layerName + 'Visible'] = !window.layerState[layerName + 'Visible'];
     renderLayerPanel();
     startAnimation(); 
-};
-
-let opacityThrottle = false;
-
-window.changeOpacity = (layerName, value) => {
-    window.layerState[layerName + 'Opacity'] = parseFloat(value);
-    
-    let isNonApple = document.body.classList.contains('os-non-apple');
-    
-    if (!isNonApple) {
-        startAnimation();
-        return;
-    }
-
-    if (!opacityThrottle) {
-        startAnimation();
-        opacityThrottle = true;
-        setTimeout(() => { opacityThrottle = false; }, 80); 
-    }
 };
 
 window.downloadCosmeticLayer = (layerName) => {
@@ -6368,6 +6363,41 @@ function drawScene() {
             // 1. Фон
             if (rawBgImage) offCtx.drawImage(rawBgImage, 0, 0, W, H);
 
+            // ==========================================
+            // ВСТАВЛЯЕМ ВОДЯНЫЕ ЗНАКИ СЮДА (СРАЗУ ПОСЛЕ ФОНА)
+            // ==========================================
+            if (window.layerState.watermarksVisible !== false) {
+                let wmText = window.layerState.textValue || "SNAPI";
+                let wmFont = window.layerState.watermarksFont || 'LilitaOneRus';
+                let wmAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.86;
+                
+                let wmData = window.layerState.customWatermarks || [
+                    {x: 957, y: 578, scale: 0.41, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
+                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: 18, y: 677, scale: 1.30, skewX: -12},
+                    {x: 215, y: 641, scale: 0.69, skewX: -12}, {x: 48, y: 610, scale: 0.45, skewX: -12},
+                    {x: -158, y: 125, scale: 1.02, skewX: -12}, {x: 332, y: -26, scale: 0.89, skewX: -12},
+                    {x: 887, y: 11, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.32, skewX: -12}
+                ];
+
+                offCtx.save();
+                offCtx.globalCompositeOperation = 'overlay';
+                offCtx.globalAlpha = wmAlpha;
+                offCtx.fillStyle = '#ffffff';
+                offCtx.textAlign = 'left';
+                offCtx.textBaseline = 'top';
+
+                wmData.forEach(wm => {
+                    offCtx.save();
+                    offCtx.translate(wm.x * s, wm.y * s); 
+                    if (wm.skewX) offCtx.transform(1, 0, Math.tan(wm.skewX * Math.PI / 180), 1, 0, 0); 
+                    offCtx.font = `${56 * wm.scale * s}px "${wmFont}", sans-serif`;
+                    offCtx.fillText(wmText, 0, 0);
+                    offCtx.restore();
+                });
+                offCtx.restore();
+            }
+            // ==========================================
+
             // 2. Лучи и Точки
             if (window.layerState.luchVisible !== false) {
                 drawLayer(globalAssets.s3Rays, 0, 0, 1280, 720, 1, window.layerState.luchOpacity !== undefined ? window.layerState.luchOpacity : 1, 'overlay');
@@ -6408,38 +6438,6 @@ function drawScene() {
             drawTextObj(p[1] + ' ₽', '#ffffff', 567, 494, 164, 67, 1.05);
             drawTextObj(p[2] + ' ₽', '#ffffff', 988, 468, 184, 68, 1);
 
-// 7. Водяные знаки (Watermarks)
-            if (window.layerState.watermarksVisible !== false) {
-                let wmText = window.layerState.textValue || "SNAPI";
-                let wmFont = window.layerState.watermarksFont || 'LilitaOneRus';
-                let wmAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.86;
-                
-                let wmData = window.layerState.customWatermarks || [
-                    {x: 957, y: 578, scale: 0.41, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
-                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: 18, y: 677, scale: 1.30, skewX: -12},
-                    {x: 215, y: 641, scale: 0.69, skewX: -12}, {x: 48, y: 610, scale: 0.45, skewX: -12},
-                    {x: -158, y: 125, scale: 1.02, skewX: -12}, {x: 332, y: -26, scale: 0.89, skewX: -12},
-                    {x: 887, y: 11, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.32, skewX: -12}
-                ];
-
-                offCtx.save();
-                offCtx.globalCompositeOperation = 'overlay';
-                offCtx.globalAlpha = wmAlpha;
-                offCtx.fillStyle = '#ffffff';
-                offCtx.textAlign = 'left';
-                offCtx.textBaseline = 'top';
-
-                wmData.forEach(wm => {
-                    offCtx.save();
-                    offCtx.translate(wm.x * s, wm.y * s); 
-                    if (wm.skewX) offCtx.transform(1, 0, Math.tan(wm.skewX * Math.PI / 180), 1, 0, 0); 
-                    offCtx.font = `${56 * wm.scale * s}px "${wmFont}", sans-serif`;
-                    offCtx.fillText(wmText, 0, 0);
-                    offCtx.restore();
-                });
-                offCtx.restore();
-            }
-
 // 8. Финальная цветокоррекция (Filter) и перенос на видимый холст
             ctx.save();
             ctx.filter = 'saturate(135%) brightness(110%) contrast(105%)';
@@ -6450,7 +6448,7 @@ function drawScene() {
             if (cachedTextCanvas && animText.alpha > 0.01) {
 
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 700;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 656;
                 let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 ctx.save();
