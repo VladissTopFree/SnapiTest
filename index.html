@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(3)";
+  const APP_VERSION = "v2.5.1(4)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -30,7 +30,7 @@
   const BP_SEASON_CONFIG = {
       50: {
           lineColor: '#8698ff', 
-          gradientLeft: ['#6e8282', '#6e8282'], 
+          gradientLeft: ['#a0dede', '#a0dede'], 
           gradientRight: ['#7084f4', '#7084f4'],
           style2Brawlers: { // yes
               brawler2: { x: 990, y: 12, scale: 0.3, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
@@ -149,6 +149,7 @@
     --app-result-padding: 20px;
   }
   body:not(.os-desktop) #category-overlay,
+  body:not(.os-desktop) #bp-style-overlay,
   body:not(.os-desktop) #ios-dashboard,
   body:not(.os-desktop) #saved-projects-overlay,
   body:not(.os-desktop) #settings-overlay {
@@ -1047,7 +1048,7 @@
   .wizard-step.active .ios-wizard-subtitle { animation: textBlurIn 0.5s ease-out forwards; }
   .wizard-step.fade-out .ios-wizard-subtitle { animation: textBlurOut 0.3s ease-in forwards; }
 
-  .ios-wizard-title { font-size: 32px; font-weight: 700; color: var(--tg-theme-text-color, #000000); margin-bottom: 10px; text-align: center; }
+  .ios-wizard-title { font-size: 26px; font-weight: 700; color: var(--tg-theme-text-color, #000000); margin-bottom: 10px; text-align: center; }
   .ios-wizard-subtitle { font-size: 15px; color: var(--tg-theme-subtitle-text-color, #8E8E93); text-align: center; line-height: 1.35; margin-bottom: 12px; font-weight: 400; max-width: 300px;}
 
   .ios-color-presets { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
@@ -1983,14 +1984,14 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background-color: #00ff5949; 
+      background-color: #00ff592f; 
       color: #16a34a; 
-      font-size: 12px;
+      font-size: 16px;
       font-weight: 600;
       padding: 0 10px;
       height: 28px; /* Фиксированная высота для ровности */
-      border-radius: 12px;
-      margin-left: -3px;
+      border-radius: 6px;
+      margin-left: 0;
       vertical-align: middle;
       position: relative;
       top: 0; 
@@ -4139,7 +4140,7 @@ function renderLayerPanel(isInitialLoad = false) {
         `;
         html += `<div class="ios-font-label">Изменить шрифт</div>`;
         html += `<div class="ios-font-grid">`;
-        FONT_OPTIONS.forEach((f, idx) => {
+        FONT_OPTIONS.forEach((f) => {
             let activeCls = window.layerState.textFont === f.family ? 'active' : '';
             html += `<div class="ios-font-item main-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setFont('${f.family}')">${window.layerState.textValue || 'TEXT'}</div>`;
         });
@@ -4154,14 +4155,15 @@ function renderLayerPanel(isInitialLoad = false) {
         });
         html += `</div></div>`;
 
-        // ПРАВИЛЬНЫЕ ЦЕНЫ (Стиль 2 vs Стиль 1)
+        // ПРАВИЛЬНЫЕ ЦЕНЫ (Стиль 2 vs Стиль 3 vs Стиль 1)
         html += `<div class="ios-layer-group ${animCls}">`;
+        
         if (window.layerState.bpStyleIndex === 2) {
             const labels = ["30 gems", "80 gems", "170 gems", "360 gems", "950 gems", "2000 gems", "Pro pass", "BP +", "Улучшение", "BP", "Особая скидка"];
             for(let i=0; i<=10; i++) {
                 let val = (window.layerState.style2Prices && window.layerState.style2Prices[i]) ? window.layerState.style2Prices[i] : "";
                 html += `
-                <div class="ios-layer-row" ${i===10 ? 'style="border-bottom:none;"' : ''}>
+                <div class="ios-layer-row" ${i===10 && !window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
                     <div style="width: 24px; flex-shrink: 0;"></div>
                     <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
                     <div class="ios-layer-action-text">цена</div>
@@ -4169,80 +4171,54 @@ function renderLayerPanel(isInitialLoad = false) {
                 </div>`;
             }
 
-// Временный редактор персонажей
-        if (window.ENABLE_TEMP_EDITOR) {
-            let s2Conf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
-            
-            let b1s = window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : s2Conf.brawler1.scale;
-            let b1x = window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : s2Conf.brawler1.x;
-            let b1y = window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : s2Conf.brawler1.y;
-            let b1f = window.layerState.brawler1Flip !== undefined ? window.layerState.brawler1Flip : !!s2Conf.brawler1.flipH;
-            
-            let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : s2Conf.brawler2.scale;
-            let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : s2Conf.brawler2.x;
-            let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : s2Conf.brawler2.y;
-            let b2f = window.layerState.brawler2Flip !== undefined ? window.layerState.brawler2Flip : !!s2Conf.brawler2.flipH;
+            if (window.ENABLE_TEMP_EDITOR) {
+                let s2Conf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
+                
+                let b1s = window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : s2Conf.brawler1.scale;
+                let b1x = window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : s2Conf.brawler1.x;
+                let b1y = window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : s2Conf.brawler1.y;
+                let b1f = window.layerState.brawler1Flip !== undefined ? window.layerState.brawler1Flip : !!s2Conf.brawler1.flipH;
+                
+                let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : s2Conf.brawler2.scale;
+                let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : s2Conf.brawler2.x;
+                let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : s2Conf.brawler2.y;
+                let b2f = window.layerState.brawler2Flip !== undefined ? window.layerState.brawler2Flip : !!s2Conf.brawler2.flipH;
 
-            html += `
-            <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖЕЙ (ВРЕМЕННЫЙ)</div>
-            <div class="ios-layer-row">
-                <div class="ios-layer-name" style="font-size:14px;">Нижний (Размер)</div>
-                <div id="v-b1s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b1s}</div>
-                <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b1s}" oninput="document.getElementById('v-b1s').innerText=this.value; updateBrawlerParams('brawler1Scale', this.value)">
-            </div>
-            <div class="ios-layer-row">
-                <div class="ios-layer-name" style="font-size:14px;">Нижний (X)</div>
-                <div id="v-b1x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b1x}</div>
-                <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${b1x}" oninput="document.getElementById('v-b1x').innerText=this.value; updateBrawlerParams('brawler1X', this.value)">
-            </div>
-            <div class="ios-layer-row">
-                <div class="ios-layer-name" style="font-size:14px;">Нижний (Y)</div>
-                <div id="v-b1y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b1y}</div>
-                <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${b1y}" oninput="document.getElementById('v-b1y').innerText=this.value; updateBrawlerParams('brawler1Y', this.value)">
-            </div>
-            <div class="ios-layer-row">
-                <div class="ios-layer-name" style="font-size:14px;">Нижний (Отразить)</div>
-                <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler1')">${b1f ? 'ДА' : 'НЕТ'}</button>
-            </div>
-            
-            <div class="ios-layer-row">
-                <div class="ios-layer-name" style="font-size:14px;">Верхний (Размер)</div>
-                <div id="v-b2s" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2s}</div>
-                <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b2s}" oninput="document.getElementById('v-b2s').innerText=this.value; updateBrawlerParams('brawler2Scale', this.value)">
-            </div>
-            <div class="ios-layer-row">
-                <div class="ios-layer-name" style="font-size:14px;">Верхний (X)</div>
-                <div id="v-b2x" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2x}</div>
-                <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${b2x}" oninput="document.getElementById('v-b2x').innerText=this.value; updateBrawlerParams('brawler2X', this.value)">
-            </div>
-            <div class="ios-layer-row">
-                <div class="ios-layer-name" style="font-size:14px;">Верхний (Y)</div>
-                <div id="v-b2y" style="margin-right: 10px; font-size: 14px; color: #8E8E93; width: 35px; text-align: right;">${b2y}</div>
-                <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${b2y}" oninput="document.getElementById('v-b2y').innerText=this.value; updateBrawlerParams('brawler2Y', this.value)">
-            </div>
-            <div class="ios-layer-row" style="border-bottom:none;">
-                <div class="ios-layer-name" style="font-size:14px;">Верхний (Отразить)</div>
-                <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler2')">${b2f ? 'ДА' : 'НЕТ'}</button>
-            </div>`;
-        }
-
-        } 
-
-        /* --- НАЧАЛО ДОБАВЛЕННОГО КОДА 3 СТИЛЯ --- */
-        else if (window.layerState.bpStyleIndex === 3) {
-            const labels = ["Brawl Pass", "BP Plus", "Pro Pass"];
-            for(let i=0; i<3; i++) {
-                let val = (window.layerState.style3Prices && window.layerState.style3Prices[i]) ? window.layerState.style3Prices[i] : "";
                 html += `
-                <div class="ios-layer-row" ${i===2 ? 'style="border-bottom:none;"' : ''}>
-                    <div style="width: 24px; flex-shrink: 0;"></div>
-                    <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
-                    <div class="ios-layer-action-text">цена</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS3PriceLayer(${i}, this.value)" style="width:65px;">
+                <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖЕЙ</div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Нижний (Размер)</div>
+                    <div id="v-b1s" style="margin-right:10px; color:#8E8E93;">${b1s}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b1s}" oninput="document.getElementById('v-b1s').innerText=this.value; updateBrawlerParams('brawler1Scale', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Нижний (X)</div>
+                    <div id="v-b1x" style="margin-right:10px; color:#8E8E93;">${b1x}</div>
+                    <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${b1x}" oninput="document.getElementById('v-b1x').innerText=this.value; updateBrawlerParams('brawler1X', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Нижний (Y)</div>
+                    <div id="v-b1y" style="margin-right:10px; color:#8E8E93;">${b1y}</div>
+                    <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${b1y}" oninput="document.getElementById('v-b1y').innerText=this.value; updateBrawlerParams('brawler1Y', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Нижний (Отразить)</div>
+                    <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler1')">${b1f ? 'ДА' : 'НЕТ'}</button>
+                </div>
+                
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Верхний (Размер)</div>
+                    <div id="v-b2s" style="margin-right:10px; color:#8E8E93;">${b2s}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b2s}" oninput="document.getElementById('v-b2s').innerText=this.value; updateBrawlerParams('brawler2Scale', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Верхний (X)</div>
+                    <div id="v-b2x" style="margin-right:10px; color:#8E8E93;">${b2x}</div>
+                    <input type="range" class="ios-slider" min="0" max="1300" step="1" value="${b2x}" oninput="document.getElementById('v-b2x').innerText=this.value; updateBrawlerParams('brawler2X', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Верхний (Y)</div>
+                    <div id="v-b2y" style="margin-right:10px; color:#8E8E93;">${b2y}</div>
+                    <input type="range" class="ios-slider" min="-200" max="800" step="1" value="${b2y}" oninput="document.getElementById('v-b2y').innerText=this.value; updateBrawlerParams('brawler2Y', this.value)">
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Верхний (Отразить)</div>
+                    <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler2')">${b2f ? 'ДА' : 'НЕТ'}</button>
                 </div>`;
             }
         }
-        /* --- НАЧАЛО ДОБАВЛЕННОГО КОДА 3 СТИЛЯ --- */
         else if (window.layerState.bpStyleIndex === 3) {
             const labels = ["Brawl Pass", "BP Plus", "Pro Pass"];
             for(let i=0; i<3; i++) {
@@ -4256,33 +4232,27 @@ function renderLayerPanel(isInitialLoad = false) {
                 </div>`;
             }
 
-            // Добавляем временный редактор текста для 3-го стиля
             if (window.ENABLE_TEMP_EDITOR) {
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : -225;
                 let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : -115;
                 let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 0.7;
 
                 html += `
-                <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ТЕКСТА (Стиль 3)</div>
-                <div class="ios-layer-row">
-                    <div class="ios-layer-name" style="font-size:14px;">Текст (Размер)</div>
-                    <div id="v3-txts" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${txtS}</div>
+                <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ТЕКСТА</div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Текст (Размер)</div>
+                    <div id="v3-txts" style="margin-right:10px; color:#8E8E93;">${txtS}</div>
                     <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${txtS}" oninput="document.getElementById('v3-txts').innerText=this.value; updateBrawlerParams('s3TextScale', this.value)">
                 </div>
-                <div class="ios-layer-row">
-                    <div class="ios-layer-name" style="font-size:14px;">Текст (X)</div>
-                    <div id="v3-txtx" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${txtX}</div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Текст (X)</div>
+                    <div id="v3-txtx" style="margin-right:10px; color:#8E8E93;">${txtX}</div>
                     <input type="range" class="ios-slider" min="-600" max="600" step="1" value="${txtX}" oninput="document.getElementById('v3-txtx').innerText=this.value; updateBrawlerParams('s3TextX', this.value)">
                 </div>
-                <div class="ios-layer-row" style="border-bottom:none;">
-                    <div class="ios-layer-name" style="font-size:14px;">Текст (Y)</div>
-                    <div id="v3-txty" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${txtY}</div>
+                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Текст (Y)</div>
+                    <div id="v3-txty" style="margin-right:10px; color:#8E8E93;">${txtY}</div>
                     <input type="range" class="ios-slider" min="-400" max="400" step="1" value="${txtY}" oninput="document.getElementById('v3-txty').innerText=this.value; updateBrawlerParams('s3TextY', this.value)">
                 </div>`;
             }
         }
-        /* --- КОНЕЦ ДОБАВЛЕННОГО КОДА 3 СТИЛЯ --- */
-        
         else {
             html += `
                 <div class="ios-layer-row">
@@ -4291,91 +4261,31 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div class="ios-layer-action-text">значение</div>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this.value, this)">
                 </div>
-                <div class="ios-layer-row" style="border-bottom:none;">
+                <div class="ios-layer-row" ${!window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
                     <div style="width: 24px; flex-shrink: 0;"></div>
                     <div class="ios-layer-name">Правая цена</div>
                     <div class="ios-layer-action-text">значение</div>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this.value, this)">
                 </div>
             `;
-        }
-        html += `</div>`;
 
-        // КОСМЕТИКА (Без лучей для стиля 2)
-        let starsEyeClass = window.layerState.starsVisible ? '' : 'hidden';
-        let pointsEyeClass = window.layerState.pointsVisible ? '' : 'hidden';
-        let wmEyeClass = window.layerState.watermarksVisible ? '' : 'hidden';
+            if (window.ENABLE_TEMP_EDITOR) {
+                let currentSeason = window.layerState.bpSeason || 50;
+                let seasonConf = BP_SEASON_CONFIG[currentSeason];
+                let sConf = seasonConf.style1Brawlers || BP_SEASON_CONFIG[50].style1Brawlers;
+                
+                let b1s = window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : sConf.brawler1.scale;
+                let b1x = window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : sConf.brawler1.x;
+                let b1y = window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : sConf.brawler1.y;
+                let b1f = window.layerState.brawler1Flip !== undefined ? window.layerState.brawler1Flip : !!sConf.brawler1.flipH;
+                
+                let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : sConf.brawler2.scale;
+                let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : sConf.brawler2.x;
+                let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : sConf.brawler2.y;
+                let b2f = window.layerState.brawler2Flip !== undefined ? window.layerState.brawler2Flip : !!sConf.brawler2.flipH;
 
-        html += `<div class="ios-layer-group ${animCls}">`;
-        
-        if (window.layerState.bpStyleIndex !== 2) {
-            let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
-            html += `
-                <div class="ios-layer-row">
-                    <div class="ios-icon-btn ios-eye-icon ${luchEyeClass}" onclick="toggleCosmeticLayer('luch')">
-                         ${getEyeSVG(window.layerState.luchVisible)}
-                    </div>
-                    <div class="ios-layer-name">Лучи</div>
-                    <div class="ios-layer-action-text">прозрачность</div>
-                    <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.luchOpacity}" oninput="changeOpacity('luch', this.value)">
-                </div>
-            `;
-        }
-
-        html += `
-            <div class="ios-layer-row">
-                <div class="ios-icon-btn ios-eye-icon ${starsEyeClass}" onclick="toggleCosmeticLayer('stars')">
-                     ${getEyeSVG(window.layerState.starsVisible)}
-                </div>
-                <div class="ios-layer-name">Звёзды</div>
-                <div class="ios-layer-action-text">прозрачность</div>
-                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.starsOpacity}" oninput="changeOpacity('stars', this.value)">
-            </div>
-            <div class="ios-layer-row">
-                <div class="ios-icon-btn ios-eye-icon ${pointsEyeClass}" onclick="toggleCosmeticLayer('points')">
-                     ${getEyeSVG(window.layerState.pointsVisible)}
-                </div>
-                <div class="ios-layer-name">Точки</div>
-                <div class="ios-layer-action-text">прозрачность</div>
-                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.pointsOpacity}" oninput="changeOpacity('points', this.value)">
-            </div>
-            <div class="ios-layer-row" style="border-bottom:none; padding-bottom:0;">
-                <div class="ios-icon-btn ios-eye-icon ${wmEyeClass}" onclick="toggleCosmeticLayer('watermarks')">
-                     ${getEyeSVG(window.layerState.watermarksVisible)}
-                </div>
-                <div class="ios-layer-name">Текст min</div>
-                <div class="ios-layer-action-text">прозрачность</div>
-                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.watermarksOpacity}" oninput="changeOpacity('watermarks', this.value)">
-            </div>
-            <div class="ios-font-label">Шрифт Текст min</div>
-            <div class="ios-font-grid" style="border-bottom:none; padding-bottom:10px;">
-        `;
-        FONT_OPTIONS.forEach((f) => {
-            let activeCls = window.layerState.watermarksFont === f.family ? 'active' : '';
-            let previewText = (window.layerState.textValue || 'TEXT').substring(0, 6);
-            html += `<div class="ios-font-item wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setWmFont('${f.family}')">${previewText}</div>`;
-        });
-        html += `</div></div>`;
-
-        // --- ВРЕМЕННЫЙ РЕДАКТОР ДЛЯ 1 СТИЛЯ ---
-        if (window.ENABLE_TEMP_EDITOR) {
-            let currentSeason = window.layerState.bpSeason || 50;
-            let seasonConf = BP_SEASON_CONFIG[currentSeason];
-            let sConf = seasonConf.style1Brawlers || BP_SEASON_CONFIG[50].style1Brawlers;
-            
-            let b1s = window.layerState.brawler1Scale !== undefined ? window.layerState.brawler1Scale : sConf.brawler1.scale;
-            let b1x = window.layerState.brawler1X !== undefined ? window.layerState.brawler1X : sConf.brawler1.x;
-            let b1y = window.layerState.brawler1Y !== undefined ? window.layerState.brawler1Y : sConf.brawler1.y;
-            let b1f = window.layerState.brawler1Flip !== undefined ? window.layerState.brawler1Flip : !!sConf.brawler1.flipH;
-            
-            let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : sConf.brawler2.scale;
-            let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : sConf.brawler2.x;
-            let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : sConf.brawler2.y;
-            let b2f = window.layerState.brawler2Flip !== undefined ? window.layerState.brawler2Flip : !!sConf.brawler2.flipH;
-
-            html += `
-            <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖЕЙ (BP СТИЛЬ 1)</div>
-            <div class="ios-layer-group">
+                html += `
+                <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖЕЙ</div>
                 <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Нижний (Размер)</div>
                     <div id="v1-b1s" style="margin-right:10px; color:#8E8E93;">${b1s}</div>
                     <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b1s}" oninput="document.getElementById('v1-b1s').innerText=this.value; updateBrawlerParams('brawler1Scale', this.value)">
@@ -4388,11 +4298,9 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div id="v1-b1y" style="margin-right:10px; color:#8E8E93;">${b1y}</div>
                     <input type="range" class="ios-slider" min="0" max="800" step="1" value="${b1y}" oninput="document.getElementById('v1-b1y').innerText=this.value; updateBrawlerParams('brawler1Y', this.value)">
                 </div>
-                <div class="ios-layer-row">
-                    <div class="ios-layer-name" style="font-size:14px;">Нижний (Отразить)</div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Нижний (Отразить)</div>
                     <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler1')">${b1f ? 'ДА' : 'НЕТ'}</button>
                 </div>
-                
                 <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Верхний (Размер)</div>
                     <div id="v1-b2s" style="margin-right:10px; color:#8E8E93;">${b2s}</div>
                     <input type="range" class="ios-slider" min="0.1" max="1.5" step="0.01" value="${b2s}" oninput="document.getElementById('v1-b2s').innerText=this.value; updateBrawlerParams('brawler2Scale', this.value)">
@@ -4405,23 +4313,18 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div id="v1-b2y" style="margin-right:10px; color:#8E8E93;">${b2y}</div>
                     <input type="range" class="ios-slider" min="0" max="800" step="1" value="${b2y}" oninput="document.getElementById('v1-b2y').innerText=this.value; updateBrawlerParams('brawler2Y', this.value)">
                 </div>
-                <div class="ios-layer-row" style="border-bottom:none;">
-                    <div class="ios-layer-name" style="font-size:14px;">Верхний (Отразить)</div>
+                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Верхний (Отразить)</div>
                     <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler2')">${b2f ? 'ДА' : 'НЕТ'}</button>
-                </div>
-            </div>`;
-        // --- КОНЕЦ ВСТАВКИ РЕДАКТОРА ---
+                </div>`;
 
-// Читаем текущие цвета или берем по умолчанию из конфига
-            let curL0 = window.layerState.tempGradL0 || seasonConf.gradientLeft[0];
-            let curL1 = window.layerState.tempGradL1 || seasonConf.gradientLeft[1];
-            let curR0 = window.layerState.tempGradR0 || seasonConf.gradientRight[0];
-            let curR1 = window.layerState.tempGradR1 || seasonConf.gradientRight[1];
-            let curLine = window.layerState.tempLineColor || seasonConf.lineColor;
+                let curL0 = window.layerState.tempGradL0 || seasonConf.gradientLeft[0];
+                let curL1 = window.layerState.tempGradL1 || seasonConf.gradientLeft[1];
+                let curR0 = window.layerState.tempGradR0 || seasonConf.gradientRight[0];
+                let curR1 = window.layerState.tempGradR1 || seasonConf.gradientRight[1];
+                let curLine = window.layerState.tempLineColor || seasonConf.lineColor;
 
-            html += `
-            <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ГРАДИЕНТА (BP СТИЛЬ 1)</div>
-            <div class="ios-layer-group">
+                html += `
+                <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ГРАДИЕНТА</div>
                 <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Цвет линии</div>
                     <div id="txt-tempLineColor" style="font-family:monospace; font-size:14px; margin-right:10px; color:#8E8E93;">${curLine.toUpperCase()}</div>
                     <input type="color" value="${curLine}" oninput="updateGradientParam('tempLineColor', this.value)">
@@ -4441,44 +4344,35 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Правый (низ)</div>
                     <div id="txt-tempGradR1" style="font-family:monospace; font-size:14px; margin-right:10px; color:#8E8E93;">${curR1.toUpperCase()}</div>
                     <input type="color" value="${curR1}" oninput="updateGradientParam('tempGradR1', this.value)">
-                </div>
-            </div>`;
-          }
-
-        layerPanel.innerHTML = html;
-        layerPanel.style.display = 'flex';
-        return; 
-    }
-
-    if (!window.layerState.isReadyBg) {
-        let isTop = window.layerState.textPosition !== 'bottom';
-        let textEyeClass = window.layerState.textVisible ? '' : 'hidden';
-
-        html += `<div class="ios-layer-group ${animCls}">`;
+                </div>`;
+            }
+        }
+        html += `</div>`; // Закрываем блок с ценами и персонажами
+    } else {
+        // --- ДЛЯ ОБЫЧНЫХ АКЦИЙ ---
         html += `
+            <div class="ios-layer-group ${animCls}">
             <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
-                <div class="ios-icon-btn ios-eye-icon ${textEyeClass}" onclick="toggleTextLayer()">
+                <div class="ios-icon-btn ios-eye-icon ${window.layerState.textVisible ? '' : 'hidden'}" onclick="toggleTextLayer()">
                     ${getEyeSVG(window.layerState.textVisible)}
                 </div>
                 <div class="ios-layer-name" style="max-width: 120px;">${(window.layerState.textValue || 'SNAPI').substring(0, 10)}${(window.layerState.textValue || '').length > 10 ? '...' : ''}</div>
                 <div class="ios-layer-action-text">расположение</div>
                 <button class="ios-pill-btn" onclick="toggleTextPosition()">
-                    ${isTop ? 'ВВЕРХ' : 'ВНИЗ'}
+                    ${window.layerState.textPosition !== 'bottom' ? 'ВВЕРХ' : 'ВНИЗ'}
                 </button>
                 <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadTextLayer()">
                     ${downloadIconSVG}
                 </div>
             </div>
         `;
-
         html += `<div class="ios-font-label">Изменить шрифт</div>`;
         html += `<div class="ios-font-grid">`;
-        FONT_OPTIONS.forEach((f, idx) => {
+        FONT_OPTIONS.forEach((f) => {
             let activeCls = window.layerState.textFont === f.family ? 'active' : '';
             html += `<div class="ios-font-item main-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setFont('${f.family}')">${window.layerState.textValue || 'TEXT'}</div>`;
         });
         html += `</div>`;
-
         html += `<div class="ios-font-label">Изменить стиль</div>`;
         html += `<div class="ios-style-grid">`;
         TEXT_STYLES.forEach((st, sIdx) => {
@@ -4486,10 +4380,10 @@ function renderLayerPanel(isInitialLoad = false) {
             let previewDataUrl = createStylePreviewURL(st, window.layerState.textFont);
             html += `<div class="ios-style-item main-style-item ${activeCls}" data-style="${sIdx}" style="background-image: url(${previewDataUrl});" onclick="setStyle(${sIdx})"></div>`;
         });
-        html += `</div>`;
-        html += `</div>`;
+        html += `</div></div>`;
     }
 
+    // --- ОБВОДКА И АКЦИИ (Только для Обычных Акций) ---
     if (window.layerState.offers && window.layerState.offers.length > 0) {
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
@@ -4505,21 +4399,20 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
             </div>
         `;
-
         window.layerState.offers.forEach((offer, idx) => {
             let isFree = offer.price.trim().toUpperCase() === 'FREE';
             let priceBg = isFree ? '#34C759' : '#99D5F9';
             let offerEyeClass = offer.visible ? '' : 'hidden';
 
-              html += `
-                <div class="ios-layer-row">
+            html += `
+                <div class="ios-layer-row" ${idx === window.layerState.offers.length - 1 ? 'style="border-bottom:none;"' : ''}>
                     <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" onclick="toggleOffer(${idx})">
                         ${getEyeSVG(offer.visible)}
                     </div>
                     <div class="ios-layer-name">Акция ${idx + 1}</div>
                     <div class="ios-layer-action-text">цена</div>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5"
-                           style="background: ${priceBg};" oninput="updateOfferPriceFromLayer(${idx}, this.value)">
+                            style="background: ${priceBg};" oninput="updateOfferPriceFromLayer(${idx}, this.value)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
                         ${downloadIconSVG}
                     </div>
@@ -4529,30 +4422,33 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `</div>`;
     }
 
+    // --- КОСМЕТИКА ---
     html += `<div class="ios-layer-group ${animCls}">`;
 
     if (!window.layerState.isReadyBg) {
-        let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
-        html += `
-            <div class="ios-layer-row">
-                <div class="ios-icon-btn ios-eye-icon ${luchEyeClass}" onclick="toggleCosmeticLayer('luch')">
-                     ${getEyeSVG(window.layerState.luchVisible)}
+        if (window.layerState.bpStyleIndex !== 2) { 
+            let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
+            html += `
+                <div class="ios-layer-row">
+                    <div class="ios-icon-btn ios-eye-icon ${luchEyeClass}" onclick="toggleCosmeticLayer('luch')">
+                        ${getEyeSVG(window.layerState.luchVisible)}
+                    </div>
+                    <div class="ios-layer-name">Лучи</div>
+                    <div class="ios-layer-action-text">прозрачность</div>
+                    <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.luchOpacity}" oninput="changeOpacity('luch', this.value)">
+                    <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('luch')">
+                        ${downloadIconSVG}
+                    </div>
                 </div>
-                <div class="ios-layer-name">Лучи</div>
-                <div class="ios-layer-action-text">прозрачность</div>
-                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.luchOpacity}" oninput="changeOpacity('luch', this.value)">
-                <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('luch')">
-                     ${downloadIconSVG}
-                </div>
-            </div>
-        `;
+            `;
+        }
 
         if (window.layerState.bpStyleIndex === 3) {
             let detailsEyeClass = window.layerState.detailsVisible !== false ? '' : 'hidden';
             html += `
             <div class="ios-layer-row">
                 <div class="ios-icon-btn ios-eye-icon ${detailsEyeClass}" onclick="toggleCosmeticLayer('details')">
-                     ${getEyeSVG(window.layerState.detailsVisible !== false)}
+                    ${getEyeSVG(window.layerState.detailsVisible !== false)}
                 </div>
                 <div class="ios-layer-name">Детали взади</div>
                 <div style="flex-grow:1;"></div>
@@ -4564,21 +4460,22 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `
             <div class="ios-layer-row" style="border-bottom:none; padding-bottom:0;">
                 <div class="ios-icon-btn ios-eye-icon ${wmEyeClass}" onclick="toggleCosmeticLayer('watermarks')">
-                     ${getEyeSVG(window.layerState.watermarksVisible)}
+                    ${getEyeSVG(window.layerState.watermarksVisible)}
                 </div>
                 <div class="ios-layer-name">Текст min</div>
                 <div class="ios-layer-action-text">прозрачность</div>
                 <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.watermarksOpacity}" oninput="changeOpacity('watermarks', this.value)">
                 <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('watermarks')">
-                     ${downloadIconSVG}
+                    ${downloadIconSVG}
                 </div>
             </div>
         `;
-        html += `<div class="ios-font-label">Изменить шрифт</div>`;
-        html += `<div class="ios-font-grid">`;
-        FONT_OPTIONS.forEach((f, idx) => {
+        html += `<div class="ios-font-label">Шрифт Текст min</div>`;
+        html += `<div class="ios-font-grid" style="border-bottom:none; padding-bottom:10px;">`;
+        FONT_OPTIONS.forEach((f) => {
             let activeCls = window.layerState.watermarksFont === f.family ? 'active' : '';
-            html += `<div class="ios-font-item wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setWmFont('${f.family}')">${window.layerState.textValue || 'TEXT'}</div>`;
+            let previewText = (window.layerState.textValue || 'TEXT').substring(0, 6);
+            html += `<div class="ios-font-item wm-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setWmFont('${f.family}')">${previewText}</div>`;
         });
         html += `</div>`;
 
@@ -4586,13 +4483,13 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `
             <div class="ios-layer-row">
                 <div class="ios-icon-btn ios-eye-icon ${starsEyeClass}" onclick="toggleCosmeticLayer('stars')">
-                     ${getEyeSVG(window.layerState.starsVisible)}
+                    ${getEyeSVG(window.layerState.starsVisible)}
                 </div>
                 <div class="ios-layer-name">Звёзды</div>
                 <div class="ios-layer-action-text">прозрачность</div>
                 <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.starsOpacity}" oninput="changeOpacity('stars', this.value)">
                 <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('stars')">
-                     ${downloadIconSVG}
+                    ${downloadIconSVG}
                 </div>
             </div>
         `;
@@ -4602,12 +4499,12 @@ function renderLayerPanel(isInitialLoad = false) {
             html += `
                 <div class="ios-layer-row">
                     <div class="ios-icon-btn ios-eye-icon ${pointsEyeClass}" onclick="toggleCosmeticLayer('points')">
-                         ${getEyeSVG(window.layerState.pointsVisible)}
+                        ${getEyeSVG(window.layerState.pointsVisible)}
                     </div>
                     <div class="ios-layer-name">Точки</div>
                     <div style="flex-grow:1;"></div>
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('points')">
-                         ${downloadIconSVG}
+                        ${downloadIconSVG}
                     </div>
                 </div>
             `;
@@ -4616,19 +4513,88 @@ function renderLayerPanel(isInitialLoad = false) {
 
     let bgEyeClass = window.layerState.bgVisible ? '' : 'hidden';
     html += `
-        <div class="ios-layer-row">
+        <div class="ios-layer-row" style="border-bottom:none;">
             <div class="ios-icon-btn ios-eye-icon ${bgEyeClass}" onclick="toggleCosmeticLayer('bg')">
-                 ${getEyeSVG(window.layerState.bgVisible)}
+                ${getEyeSVG(window.layerState.bgVisible)}
             </div>
             <div class="ios-layer-name">Фон</div>
             <div style="flex-grow:1;"></div>
             <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('bg')">
-                 ${downloadIconSVG}
+                ${downloadIconSVG}
             </div>
         </div>
     `;
+    html += `</div>`; // Закрываем косметику
 
-    html += `</div>`;
+    // --- РЕДАКТОР ВОДЯНЫХ ЗНАКОВ (ОБЩИЙ ДЛЯ ВСЕХ) ---
+    if (window.ENABLE_TEMP_EDITOR) {
+        if (!window.layerState.customWatermarks) {
+            if (!window.layerState.isBrawlPassMode) { // Для обычных акций
+                window.layerState.customWatermarks = [
+                    { x: 50, y: 130, scale: 0.74, skewX: -10, align: "left" },
+                    { x: 25, y: 310, scale: 0.25, skewX: -10, align: "left" },
+                    { x: 38, y: 633, scale: 1.10, skewX: -10, align: "left" },
+                    { x: 1152, y: 158, scale: 0.80, skewX: -10, align: "right" },
+                    { x: 1176, y: 324, scale: 1.60, skewX: -10, align: "right" },
+                    { x: 1164, y: 612, scale: 0.70, skewX: -10, align: "right" }
+                ];
+            } else { // Для Brawl Pass
+                window.layerState.customWatermarks = [
+                    { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
+                    { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
+                    { x: 587, y: 598, scale: 0.33, skewX: -12 }, { x: 421, y: 699, scale: 0.72, skewX: -12 },
+                    { x: 734, y: 262, scale: 0.1, skewX: -12 }, { x: 76, y: 602, scale: 0.38, skewX: -12 },
+                    { x: -92, y: 695, scale: 0.87, skewX: -12 }, { x: -52, y: 386, scale: 0.24, skewX: -12 },
+                    { x: 852, y: 189, scale: 0.22, skewX: -12 }, { x: 1237, y: 306, scale: 0.39, skewX: -12 },
+                    { x: 957, y: -21, scale: 0.5, skewX: -12 }, { x: 791, y: 558, scale: 0.21, skewX: -12 },
+                    { x: 878, y: 357, scale: 0.36, skewX: -12 }, { x: 1131, y: 391, scale: 0.13, skewX: -12 }
+                ];
+            }
+        }
+        window.layerState.activeWmIndex = window.layerState.activeWmIndex || 0;
+        if (window.layerState.activeWmIndex >= window.layerState.customWatermarks.length) {
+            window.layerState.activeWmIndex = Math.max(0, window.layerState.customWatermarks.length - 1);
+        }
+        
+        let activeWm = window.layerState.customWatermarks[window.layerState.activeWmIndex];
+        
+        html += `<div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР МАЛЕНЬКИХ НИКОВ</div>`;
+        html += `<div class="ios-layer-group ${animCls}">`;
+        
+        html += `
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Выбрать ник</div>
+                <select onchange="window.layerState.activeWmIndex = parseInt(this.value); renderLayerPanel();" style="background:var(--tg-theme-secondary-bg-color, #F2F2F7); border:none; border-radius:8px; padding:6px; outline:none; color:var(--tg-theme-text-color, #000); max-width: 120px;">
+                    ${window.layerState.customWatermarks.map((_, i) => `<option value="${i}" ${i === window.layerState.activeWmIndex ? 'selected' : ''}>Ник #${i+1}</option>`).join('')}
+                </select>
+            </div>
+            <div class="ios-layer-row">
+                <button class="ios-pill-btn" style="background:#34C759; flex-grow:1; margin-right:8px;" onclick="window.layerState.customWatermarks.push({x:600, y:300, scale:0.5, skewX:-10, align:'center'}); window.layerState.activeWmIndex = window.layerState.customWatermarks.length-1; renderLayerPanel(); startAnimation();">+ Добавить</button>
+                <button class="ios-pill-btn" style="background:#FF3B30; flex-grow:1;" onclick="if(window.layerState.customWatermarks.length>0){ window.layerState.customWatermarks.splice(window.layerState.activeWmIndex, 1); window.layerState.activeWmIndex=Math.max(0, window.layerState.activeWmIndex-1); renderLayerPanel(); startAnimation(); }">- Удалить</button>
+            </div>
+        `;
+
+        if (activeWm) {
+            html += `
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Размер</div>
+                <div id="v-wm-s" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${activeWm.scale}</div>
+                <input type="range" class="ios-slider" min="0.05" max="3.0" step="0.01" value="${activeWm.scale}" oninput="document.getElementById('v-wm-s').innerText=this.value; window.layerState.customWatermarks[window.layerState.activeWmIndex].scale = parseFloat(this.value); startAnimation();">
+            </div>
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Позиция X</div>
+                <div id="v-wm-x" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${activeWm.x}</div>
+                <input type="range" class="ios-slider" min="-200" max="2500" step="1" value="${activeWm.x}" oninput="document.getElementById('v-wm-x').innerText=this.value; window.layerState.customWatermarks[window.layerState.activeWmIndex].x = parseFloat(this.value); startAnimation();">
+            </div>
+            <div class="ios-layer-row" style="border-bottom:none;">
+                <div class="ios-layer-name" style="font-size:14px;">Позиция Y</div>
+                <div id="v-wm-y" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${activeWm.y}</div>
+                <input type="range" class="ios-slider" min="-200" max="1500" step="1" value="${activeWm.y}" oninput="document.getElementById('v-wm-y').innerText=this.value; window.layerState.customWatermarks[window.layerState.activeWmIndex].y = parseFloat(this.value); startAnimation();">
+            </div>
+            `;
+        }
+        html += `</div>`;
+    }
 
     layerPanel.innerHTML = html;
     setTimeout(() => {
@@ -4640,6 +4606,7 @@ function renderLayerPanel(isInitialLoad = false) {
     }, 0);
     layerPanel.style.display = 'flex';
 }
+   
 
 window.changeGlobalStroke = (delta) => {
     window.layerState.globalStrokeWidth = Math.max(0, window.layerState.globalStrokeWidth + delta);
@@ -5052,10 +5019,12 @@ function autoReplacePrice(ctx, w, h) {
   }
   let bgR = Math.round(sumR/sumC), bgG = Math.round(sumG/sumC), bgB = Math.round(sumB/sumC);
 
-  function isBg(x, y) {
+function isBg(x, y) {
     if (x<0 || x>=w || y<0 || y>=h) return false;
     let i = (y*w + x)*4;
     if (d[i+3] < 128) return false;
+    // ЗАЩИТА: не даем алгоритму заливки съедать черную обводку
+    if (d[i] < 70 && d[i+1] < 70 && d[i+2] < 70) return false;
     return Math.abs(d[i]-bgR) < 30 && Math.abs(d[i+1]-bgG) < 30 && Math.abs(d[i+2]-bgB) < 30;
   }
 
@@ -5340,7 +5309,7 @@ function runMagicLogic(img) {
         return; 
     }
 
-    // 5. ИДЕАЛЬНОЕ СГЛАЖИВАНИЕ ФОРМЫ (v3)
+// 5. ИДЕАЛЬНОЕ СГЛАЖИВАНИЕ ФОРМЫ (v3)
     const integralMask = new Int32Array(totalPixels);
     for (let y = 0; y < h; y++) {
         let sum = 0;
@@ -5545,10 +5514,63 @@ function runMagicLogic(img) {
         return; 
     }
 
-    const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].minX - b[1].minX);
+const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].minX - b[1].minX);
 
     sortedIslands.forEach(([id, rect]) => {
-        let margin = 5; 
+        // --- 1. СКАНИРУЕМ ДНО КАРТОЧКИ ---
+        let bottomY = new Int32Array(rect.maxX - rect.minX + 1);
+        bottomY.fill(-1);
+
+        for (let x = rect.minX; x <= rect.maxX; x++) {
+            for (let y = rect.maxY; y >= rect.minY; y--) {
+                if (islandIDs[y * w + x] === id) {
+                    bottomY[x - rect.minX] = y;
+                    break;
+                }
+            }
+        }
+
+        // --- 2. УМНЫЙ ПОИСК ИСТИННОГО ДНА ---
+        let cardW = rect.maxX - rect.minX + 1;
+        let cardH = rect.maxY - rect.minY;
+        let searchStartY = rect.maxY - Math.floor(cardH * 0.15); // Ищем только в нижних 15%
+        
+        let yFreq = {};
+        for (let i = 0; i < bottomY.length; i++) {
+            let y = bottomY[i];
+            if (y >= searchStartY && y !== -1) {
+                yFreq[y] = (yFreq[y] || 0) + 1;
+            }
+        }
+
+        let validYs = [];
+        // Ищем все горизонтальные линии, которые занимают хотя бы 10% ширины карточки
+        for (let yStr in yFreq) {
+            if (yFreq[yStr] > cardW * 0.10) {
+                validYs.push(parseInt(yStr));
+            }
+        }
+
+        let baselineY = rect.maxY;
+        if (validYs.length > 0) {
+            // МАГИЯ ЗДЕСЬ: Берём самую ВЫСОКУЮ линию (наименьший Y). 
+            // Она гарантированно пройдет по черной рамке и отсечет все "наросты" снизу!
+            baselineY = Math.min(...validYs);
+        }
+
+        // --- 3. "ХИРУРГИЧЕСКОЕ" УДАЛЕНИЕ БУГОРКОВ ---
+        for (let y = baselineY + 1; y <= rect.maxY; y++) {
+            for (let x = rect.minX; x <= rect.maxX; x++) {
+                if (islandIDs[y * w + x] === id) {
+                    islandIDs[y * w + x] = 0; // Жестко стираем мусор
+                }
+            }
+        }
+
+        rect.maxY = baselineY; // Обновляем границу карточки
+
+        // --- 4. ВЫРЕЗАЕМ ИДЕАЛЬНУЮ КАРТОЧКУ БЕЗ ВОЗДУХА ---
+        let margin = 0; // 0 отступов, чтобы акции стояли вплотную
         let minX = Math.max(0, rect.minX - margin); 
         let minY = Math.max(0, rect.minY - margin);
         let maxX = Math.min(w - 1, rect.maxX + margin); 
@@ -5564,11 +5586,10 @@ function runMagicLogic(img) {
         const layerData = cx.createImageData(cW, cH);
         const ld = layerData.data;
 
-        // КОПИРУЕМ ТОЛЬКО ПИКСЕЛИ ТЕКУЩЕГО ОСТРОВА (КАРТОЧКИ)
         for (let y = minY; y <= maxY; y++) {
             for (let x = minX; x <= maxX; x++) {
                 let sourceIdx = y * w + x;
-                if (islandIDs[sourceIdx] === id) { // <-- ЭТОТ ШАГ РЕШАЕТ ПРОБЛЕМУ ОБРЕЗКОВ
+                if (islandIDs[sourceIdx] === id) {
                     let destIdx = ((y - minY) * cW + (x - minX)) * 4;
                     ld[destIdx] = data[sourceIdx * 4];
                     ld[destIdx + 1] = data[sourceIdx * 4 + 1];
@@ -5579,7 +5600,6 @@ function runMagicLogic(img) {
         }
         cx.putImageData(layerData, 0, 0);
 
-        // Стираем оригинальный ценник
         let eraseResult = autoReplacePrice(cx, cW, cH);
         let drawInfo = eraseResult || {
             blankedImgData: cx.getImageData(0, 0, cW, cH),
@@ -5743,15 +5763,15 @@ function calculateLayoutTarget() {
               let rowRatioSum = rowCards.reduce((a, b) => a + b, 0);
               if (rowRatioSum > maxRowRatioSum) maxRowRatioSum = rowRatioSum;
           }
-          let gapRatioX = 0.05; let gapRatioY = 0.08;
+          let gapRatioX = 0.01; let gapRatioY = 0.02;          
           let maxH_width = boxW / (maxRowRatioSum + gapRatioX * (cols - 1));
           let maxH_height = boxH / (rows + gapRatioY * (rows - 1));
           let currentH = Math.min(maxH_width, maxH_height);
 
           if (currentH > bestH) { bestH = currentH; bestCols = cols; bestRows = rows; }
       }
-      gapX = bestH * 0.05; gapY = bestH * 0.08;
-  }
+        gapX = bestH * 0.01; gapY = bestH * 0.02;  
+    }
   
   let totalGridH = bestRows * bestH + (bestRows - 1) * gapY;
   let startGridY = boxTop + (boxH - totalGridH) / 2;
@@ -6015,7 +6035,9 @@ function drawScene() {
                 ctx.globalAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3;
                 ctx.fillStyle = "white"; ctx.textAlign = "left"; ctx.textBaseline = "top";
                 
-                C.watermarks.forEach(wm => {
+                // Берем кастомный массив, если он есть, иначе стандартный
+                let wmArray = window.layerState.customWatermarks || C.watermarks;
+                wmArray.forEach(wm => {
                     ctx.save();
                     ctx.translate(wm.x * s, wm.y * s); 
                     if (wm.skewX) ctx.transform(1, 0, Math.tan(wm.skewX * Math.PI / 180), 1, 0, 0); 
@@ -6358,41 +6380,43 @@ function drawScene() {
             drawTextObj(p[1] + ' ₽', '#ffffff', 567, 494, 164, 67, 1.05);
             drawTextObj(p[2] + ' ₽', '#ffffff', 988, 468, 184, 68, 1);
 
-            // 7. Водяные знаки (Watermarks)
+// 7. Водяные знаки (Watermarks)
             if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
                 let wmFont = window.layerState.watermarksFont || 'LilitaOneRus';
                 let wmAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.86;
                 
-                const wmData = [
-                    {x: 957, y: 578, w: 104, h: 23, scale: 1}, {x: 1037, y: 657, w: 186, h: 42, scale: 1},
-                    {x: 1173, y: 541, w: 174, h: 32, scale: 1}, {x: 18, y: 677, w: 254, h: 73, scale: 1},
-                    {x: 215, y: 641, w: 173, h: 32, scale: 1.2}, {x: 48, y: 610, w: 119, h: 25, scale: 1},
-                    {x: -158, y: 125, w: 210, h: 57, scale: 1}, {x: 332, y: -26, w: 200, h: 50, scale: 1},
-                    {x: 887, y: 11, w: 67, h: 22, scale: 1}, {x: 1242, y: 476, w: 200, h: 50, scale: 0.36}
+                // Используем наш настраиваемый массив
+                let wmData = window.layerState.customWatermarks || [
+                    { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
+                    { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
+                    { x: 587, y: 598, scale: 0.33, skewX: -12 }, { x: 421, y: 699, scale: 0.72, skewX: -12 },
+                    { x: 734, y: 262, scale: 0.1, skewX: -12 }, { x: 76, y: 602, scale: 0.38, skewX: -12 },
+                    { x: -92, y: 695, scale: 0.87, skewX: -12 }, { x: -52, y: 386, scale: 0.24, skewX: -12 },
+                    { x: 852, y: 189, scale: 0.22, skewX: -12 }, { x: 1237, y: 306, scale: 0.39, skewX: -12 },
+                    { x: 957, y: -21, scale: 0.5, skewX: -12 }, { x: 791, y: 558, scale: 0.21, skewX: -12 },
+                    { x: 878, y: 357, scale: 0.36, skewX: -12 }, { x: 1131, y: 391, scale: 0.13, skewX: -12 }
                 ];
 
                 offCtx.save();
                 offCtx.globalCompositeOperation = 'overlay';
                 offCtx.globalAlpha = wmAlpha;
                 offCtx.fillStyle = '#ffffff';
-                offCtx.textAlign = 'center';
-                offCtx.textBaseline = 'middle';
+                offCtx.textAlign = 'left';
+                offCtx.textBaseline = 'top';
 
                 wmData.forEach(wm => {
-                    const cw = wm.w * wm.scale * s;
-                    const ch = wm.h * wm.scale * s;
-                    const cx = wm.x * s + cw / 2;
-                    const cy = wm.y * s + ch / 2;
-                    const fontSize = ch * 0.7;
-                    
-                    offCtx.font = `italic ${fontSize}px "${wmFont}", sans-serif`;
-                    offCtx.fillText(wmText, cx, cy);
+                    offCtx.save();
+                    offCtx.translate(wm.x * s, wm.y * s); 
+                    if (wm.skewX) offCtx.transform(1, 0, Math.tan(wm.skewX * Math.PI / 180), 1, 0, 0); 
+                    offCtx.font = `${56 * wm.scale * s}px "${wmFont}", sans-serif`;
+                    offCtx.fillText(wmText, 0, 0);
+                    offCtx.restore();
                 });
                 offCtx.restore();
             }
 
-            // 8. Финальная цветокоррекция (Filter) и перенос на видимый холст
+// 8. Финальная цветокоррекция (Filter) и перенос на видимый холст
             ctx.save();
             ctx.filter = 'saturate(135%) brightness(110%) contrast(105%)';
             ctx.drawImage(offC, 0, 0);
@@ -6409,13 +6433,16 @@ function drawScene() {
                 ctx.globalAlpha = animText.alpha;
                 let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
                 ctx.translate(tw2, th2);
-                ctx.translate(-225*s, -115*s); 
-                ctx.scale(0.7 * animText.scale, 0.7 * animText.scale); 
+                // ИСПРАВЛЕНИЕ: Теперь используем переменные txtX, txtY и txtS с ползунков!
+                ctx.translate(txtX * s, txtY * s); 
+                ctx.scale(txtS * animText.scale, txtS * animText.scale); 
                 ctx.translate(-W/2, -H/2);
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
-            return; // Не забываем return, чтобы он не пошел рисовать 1 стиль
             } 
+            
+            // ИСПРАВЛЕНИЕ: Вынесли return за скобку, чтобы всё работало даже при скрытом тексте
+            return; 
         }
         // --- СТИЛЬ 1 ---
         else {
@@ -6635,20 +6662,58 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
     ctx.globalCompositeOperation = forExport ? "source-over" : "overlay"; 
     ctx.globalAlpha = opacity; 
     ctx.fillStyle = "#ffffff";
-    
-    let baseFontSize = Math.floor(h * 0.022); if (baseFontSize < 10) baseFontSize = 10;
     ctx.textBaseline = "middle";
     
-    const watermarks = [
-      { x: w * 0.04, y: h * 0.18, scale: 1.50, align: "left" }, { x: w * 0.02, y: h * 0.43, scale: 0.60, align: "left" }, 
-      { x: w * 0.03, y: h * 0.88, scale: 1.10, align: "left" }, { x: w * 0.96, y: h * 0.22, scale: 0.80, align: "right" }, 
-      { x: w * 0.98, y: h * 0.45, scale: 1.60, align: "right" }, { x: w * 0.97, y: h * 0.85, scale: 0.70, align: "right" }  
-    ];
+    // Подхватываем наши кастомные водяные знаки, которые мы настроили в панельке
+    let wmArray = window.layerState.customWatermarks;
     
-    watermarks.forEach(wm => {
-      ctx.save(); ctx.textAlign = wm.align; let currentFontSize = Math.floor(baseFontSize * wm.scale);
-      ctx.font = `${currentFontSize}px '${window.layerState.watermarksFont}', sans-serif`;
-      ctx.translate(Math.round(wm.x), Math.round(wm.y)); ctx.transform(1, 0, -0.10, 1, 0, 0); ctx.fillText(text, 0, 0); ctx.restore();
+    // Запасной план: если массив вдруг пустой, загружаем стандартный шаблон
+    if (!wmArray || wmArray.length === 0) {
+        if (!window.layerState.isBrawlPassMode) { // Для акций
+            wmArray = [
+                { x: 49, y: 79, scale: 0.35, skewX: -10, align: "center" },
+                { x: 58, y: 233, scale: 0.54, skewX: -10, align: "center" },
+                { x: 125, y: 347, scale: 0.23, skewX: -10, align: "center" },
+                { x: 131, y: 719, scale: 1.1, skewX: -10, align: "center" },
+                { x: 178, y: 488, scale: 0.44, skewX: -10, align: "center" },
+                { x: 74, y: 600, scale: 0.14, skewX: -10, align: "center" },
+                { x: 1248, y: 9, scale: 0.88, skewX: -10, align: "center" },
+                { x: 1120, y: 159, scale: 0.28, skewX: -10, align: "center" },
+                { x: 1247, y: 306, scale: 0.5, skewX: -10, align: "center" },
+                { x: 1092, y: 405, scale: 0.17, skewX: -10, align: "center" },
+                { x: 1230, y: 512, scale: 0.61, skewX: -10, align: "center" },
+                { x: 1071, y: 675, scale: 0.79, skewX: -10, align: "center" }
+            ];
+        } else { // Для Brawl Pass
+            wmArray = [
+                { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
+                { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
+                { x: 587, y: 598, scale: 0.33, skewX: -12 }, { x: 421, y: 699, scale: 0.72, skewX: -12 },
+                { x: 734, y: 262, scale: 0.1, skewX: -12 }, { x: 76, y: 602, scale: 0.38, skewX: -12 },
+                { x: -92, y: 695, scale: 0.87, skewX: -12 }, { x: -52, y: 386, scale: 0.24, skewX: -12 },
+                { x: 852, y: 189, scale: 0.22, skewX: -12 }, { x: 1237, y: 306, scale: 0.39, skewX: -12 },
+                { x: 957, y: -21, scale: 0.5, skewX: -12 }, { x: 791, y: 558, scale: 0.21, skewX: -12 },
+                { x: 878, y: 357, scale: 0.36, skewX: -12 }, { x: 1131, y: 391, scale: 0.13, skewX: -12 }
+            ];
+        }
+        window.layerState.customWatermarks = wmArray;
+    }
+
+    // Рассчитываем динамический масштаб
+    let s = w / 1280;
+
+    wmArray.forEach(wm => {
+        ctx.save(); 
+        ctx.textAlign = wm.align || "center"; 
+        
+        let currentFontSize = Math.floor(56 * wm.scale * s);
+        ctx.font = `${currentFontSize}px '${window.layerState.watermarksFont}', sans-serif`;
+        
+        ctx.translate(Math.round(wm.x * s), Math.round(wm.y * s)); 
+        let skew = wm.skewX || -10;
+        ctx.transform(1, 0, Math.tan(skew * Math.PI / 180), 1, 0, 0); 
+        ctx.fillText(text, 0, 0); 
+        ctx.restore();
     });
     ctx.restore();
 }
