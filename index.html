@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(7)";
+  const APP_VERSION = "v2.5.1(8)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -29,7 +29,7 @@
 
   const BP_SEASON_CONFIG = {
       50: {
-          lineColor: '#8698ff', 
+          lineColor: '#b2beff', 
           gradientLeft: ['#90c4c486', '#90c4c486'], 
           gradientRight: ['#7084f4', '#7084f4'],
           style2Brawlers: { // yes
@@ -3962,7 +3962,7 @@ window.updateBPPrice = (side, val, inputEl) => {
 };
 
 // --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
-window.ENABLE_TEMP_EDITOR = false; // Измени на false, чтобы скрыть редактор
+window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
 
 window.updateBrawlerParams = (param, val) => {
     window.layerState[param] = parseFloat(val);
@@ -4248,8 +4248,8 @@ function renderLayerPanel(isInitialLoad = false) {
 
             if (window.ENABLE_TEMP_EDITOR) {
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 600;
-                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.3;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 700;
+                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 html += `
                 <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ТЕКСТА</div>
@@ -4554,11 +4554,11 @@ function renderLayerPanel(isInitialLoad = false) {
                 ];
             } else if (window.layerState.bpStyleIndex === 3) { // Для 3-го стиля Brawl Pass
                 window.layerState.customWatermarks = [
-                    {x: 957, y: 578, scale: 1, skewX: -12}, {x: 1037, y: 657, scale: 1, skewX: -12},
-                    {x: 1173, y: 541, scale: 1, skewX: -12}, {x: 18, y: 677, scale: 1, skewX: -12},
-                    {x: 215, y: 641, scale: 1.2, skewX: -12}, {x: 48, y: 610, scale: 1, skewX: -12},
-                    {x: -158, y: 125, scale: 1, skewX: -12}, {x: 332, y: -26, scale: 1, skewX: -12},
-                    {x: 887, y: 11, scale: 1, skewX: -12}, {x: 1242, y: 476, scale: 0.36, skewX: -12}
+                    {x: 957, y: 578, scale: 0.41, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
+                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: 18, y: 677, scale: 1.30, skewX: -12},
+                    {x: 215, y: 641, scale: 0.69, skewX: -12}, {x: 48, y: 610, scale: 0.45, skewX: -12},
+                    {x: -158, y: 125, scale: 1.02, skewX: -12}, {x: 332, y: -26, scale: 0.89, skewX: -12},
+                    {x: 887, y: 11, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.32, skewX: -12}
                 ];
             } else { // Для 1 и 2 стиля Brawl Pass
                 window.layerState.customWatermarks = [
@@ -6415,11 +6415,11 @@ function drawScene() {
                 let wmAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.86;
                 
                 let wmData = window.layerState.customWatermarks || [
-                    {x: 957, y: 578, scale: 1, skewX: -12}, {x: 1037, y: 657, scale: 1, skewX: -12},
-                    {x: 1173, y: 541, scale: 1, skewX: -12}, {x: 18, y: 677, scale: 1, skewX: -12},
-                    {x: 215, y: 641, scale: 1.2, skewX: -12}, {x: 48, y: 610, scale: 1, skewX: -12},
-                    {x: -158, y: 125, scale: 1, skewX: -12}, {x: 332, y: -26, scale: 1, skewX: -12},
-                    {x: 887, y: 11, scale: 1, skewX: -12}, {x: 1242, y: 476, scale: 0.36, skewX: -12}
+                    {x: 957, y: 578, scale: 0.41, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
+                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: 18, y: 677, scale: 1.30, skewX: -12},
+                    {x: 215, y: 641, scale: 0.69, skewX: -12}, {x: 48, y: 610, scale: 0.45, skewX: -12},
+                    {x: -158, y: 125, scale: 1.02, skewX: -12}, {x: 332, y: -26, scale: 0.89, skewX: -12},
+                    {x: 887, y: 11, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.32, skewX: -12}
                 ];
 
                 offCtx.save();
@@ -6450,8 +6450,8 @@ function drawScene() {
             if (cachedTextCanvas && animText.alpha > 0.01) {
 
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 600;
-                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.3;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 700;
+                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
@@ -6710,13 +6710,13 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
             ];
             } else if (window.layerState.bpStyleIndex === 3) { // Для 3 стиля Brawl Pass
                 wmArray = [
-                    {x: 957, y: 578, scale: 1, skewX: -12}, {x: 1037, y: 657, scale: 1, skewX: -12},
-                    {x: 1173, y: 541, scale: 1, skewX: -12}, {x: 18, y: 677, scale: 1, skewX: -12},
-                    {x: 215, y: 641, scale: 1.2, skewX: -12}, {x: 48, y: 610, scale: 1, skewX: -12},
-                    {x: -158, y: 125, scale: 1, skewX: -12}, {x: 332, y: -26, scale: 1, skewX: -12},
-                    {x: 887, y: 11, scale: 1, skewX: -12}, {x: 1242, y: 476, scale: 0.36, skewX: -12}
+                    {x: 957, y: 578, scale: 0.41, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
+                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: 18, y: 677, scale: 1.30, skewX: -12},
+                    {x: 215, y: 641, scale: 0.69, skewX: -12}, {x: 48, y: 610, scale: 0.45, skewX: -12},
+                    {x: -158, y: 125, scale: 1.02, skewX: -12}, {x: 332, y: -26, scale: 0.89, skewX: -12},
+                    {x: 887, y: 11, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.32, skewX: -12}
                 ];
-            } else { // Для 1 и 2 стиля Brawl Pass
+            } else { // Для 1 и 2 стиля Brawl Pass // Для 1 и 2 стиля Brawl Pass
                 wmArray = [
                     { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
                     { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
@@ -6946,6 +6946,9 @@ function drawBeautifulNick(ctx, text, w, h) {
           if (el) el.value = '';
       });
 
+      // === ДОБАВЬ ЭТОТ БЛОК ДЛЯ ПОЛНОЙ ОЧИСТКИ КЭША СЛОЕВ И КООРДИНАТ ===
+      window.layerState.isBrawlPassMode = false;
+      window.layerState.bpStyleIndex = null;
       window.layerState.offers = [];
       window.layerState.customWatermarks = null;
       delete window.layerState.brawler1X;
