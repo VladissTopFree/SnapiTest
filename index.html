@@ -5646,6 +5646,18 @@ const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].min
 function checkBatchCompletion() {
   filesProcessed++;
   if (filesProcessed === filesToProcess) {
+    
+    // === ДОБАВЛЯЕМ ПРОВЕРКУ НА УСПЕШНОЕ ВЫРЕЗАНИЕ ===
+    if (window.layerState.offers.length === 0 && !window.layerState.isBrawlPassMode) {
+        alert("Акции не были вырезаны!\nПроверьте, какие Вы загрузили скриншоты. В хорошем ли они качестве, поменяйте свой выбор и повторите попытку.");
+        
+        // Возвращаем пользователя обратно в меню загрузки скриншотов
+        document.getElementById('result-box').style.display = 'none';
+        document.getElementById('wizard-overlay').style.display = 'flex';
+        return; // Прерываем переход в редактор
+    }
+    // ================================================
+
     setupPersistentCanvas();
     renderLayerPanel(true);
     calculateLayoutTarget();
