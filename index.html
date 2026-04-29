@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(8)";
+  const APP_VERSION = "v2.5.1(9)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3951,18 +3951,17 @@ function drawBPWatermarks(ctx, text, w, h, opacity) {
     ctx.restore();
 }
 
-window.updateBPPrice = (side, val, inputEl) => {
-    if (/^\d+$/.test(val) && parseInt(val) > 99999) {
-        val = "99999";
-        if(inputEl) inputEl.value = val;
-    }
+window.updateBPPrice = (side, inputEl) => {
+    let val = inputEl.value.replace(/[^0-9]/g, '');
+    if (val && parseInt(val) > 99999) val = "99999";
+    inputEl.value = val; // Стираем буквы
     if (side === 'left') window.layerState.bpPriceLeft = val;
     if (side === 'right') window.layerState.bpPriceRight = val;
-    startAnimation();
+    window.requestRender();
 };
 
 // --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
-window.ENABLE_TEMP_EDITOR = false; // Измени на false, чтобы скрыть редактор
+window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
 
 
 // Глобальный ограничитель кадров для ползунков (спасает процессоры iPhone)
@@ -4129,14 +4128,15 @@ window.updateBPTextCounter = function(el) {
     }
 };
 
-window.updateS2PriceLayer = (idx, val) => {
-    val = val.replace(/[^0-9]/g, '');
-    if (parseInt(val) > 99999) val = "99999";
+window.updateS2PriceLayer = (idx, inputEl) => {
+    let val = inputEl.value.replace(/[^0-9]/g, '');
+    if (val && parseInt(val) > 99999) val = "99999";
+    inputEl.value = val; // Стираем буквы прямо в поле
     if (!window.layerState.style2Prices) window.layerState.style2Prices = [];
     window.layerState.style2Prices[idx] = val;
     let wsInp = document.getElementById('ws2-p' + idx);
     if (wsInp) wsInp.value = val;
-    if (typeof startAnimation === 'function') startAnimation();
+    window.requestRender();
 };
 
 function renderLayerPanel(isInitialLoad = false) {
@@ -4676,25 +4676,21 @@ window.toggleOffer = (idx) => {
     calculateLayoutTarget(); 
 };
 
-window.updateOfferPriceFromLayer = (idx, val) => {
-    if (/^\d+$/.test(val) && parseInt(val) > 99999) {
-        val = "99999";
-        let layerInput = document.getElementById(`layer-price-${idx}`);
-        if(layerInput) layerInput.value = val;
-    }
-
+window.updateOfferPriceFromLayer = (idx, inputEl) => {
+    let val = inputEl.value.replace(/[^0-9]/g, '');
+    if (val && parseInt(val) > 99999) val = "99999";
+    inputEl.value = val; // Стираем буквы
+    
     let offer = window.layerState.offers[idx];
     offer.price = val;
-    
-    let layerInput = document.getElementById(`layer-price-${idx}`);
-    if(layerInput) layerInput.style.background = (val.trim().toUpperCase() === 'FREE') ? '#34C759' : '#99D5F9';
+    inputEl.style.background = (val === '' || val.toUpperCase() === 'FREE') ? '#34C759' : '#99D5F9';
     
     let cx = offer.ref.canvas.getContext('2d');
     cx.putImageData(offer.ref.info.blankedImgData, 0, 0);
     drawPriceText(cx, offer.ref.canvas.width, offer.ref.canvas.height, val, offer.ref.info);
     
     generateOfferCache(offer, offer.target.w, offer.target.h);
-    startAnimation();
+    window.requestRender();
 };
 
 window.toggleCosmeticLayer = (layerName) => {
@@ -6945,9 +6941,17 @@ function drawBeautifulNick(ctx, text, w, h) {
       });
 
       // === ДОБАВЬ ЭТОТ БЛОК ДЛЯ ПОЛНОЙ ОЧИСТКИ КЭША СЛОЕВ И КООРДИНАТ ===
+      window.layerState.offers = [];
+      // Жесткая очистка кэша координат персонажей и стилей
       window.layerState.isBrawlPassMode = false;
       window.layerState.bpStyleIndex = null;
-      window.layerState.offers = [];
+      
+      const keysToDelete = [
+          'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip',
+          'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip',
+          's3TextX', 's3TextY', 's3TextScale'
+      ];
+      keysToDelete.forEach(k => delete window.layerState[k]);
       window.layerState.customWatermarks = null;
       delete window.layerState.brawler1X;
       delete window.layerState.brawler1Y;
@@ -8297,12 +8301,13 @@ window.openBPStyle3Editor = function() {
     }, 100);
 };
 
-window.updateS3PriceLayer = (idx, val) => {
-    val = val.replace(/[^0-9]/g, '');
-    if (parseInt(val) > 99999) val = "99999";
+window.updateS3PriceLayer = (idx, inputEl) => {
+    let val = inputEl.value.replace(/[^0-9]/g, '');
+    if (val && parseInt(val) > 99999) val = "99999";
+    inputEl.value = val; // Стираем буквы
     if (!window.layerState.style3Prices) window.layerState.style3Prices = ["899", "1249", "2999"];
     window.layerState.style3Prices[idx] = val;
-    if (typeof startAnimation === 'function') startAnimation();
+    window.requestRender();
 };
 
 // --- ГЕНЕРАТОР ИСКР ВОКРУГ КНОПКИ СОЗДАТЬ ---
