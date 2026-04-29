@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(9)";
+  const APP_VERSION = "v2.5.1(10)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1984,7 +1984,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background-color: #00ff592f; 
+      background-color: #00ff591f; 
       color: #16a34a; 
       font-size: 16px;
       font-weight: 600;
@@ -1994,7 +1994,7 @@
       margin-left: 0;
       vertical-align: middle;
       position: relative;
-      top: 0; 
+      top: -1px; 
   }
 
 </style>
@@ -3961,7 +3961,7 @@ window.updateBPPrice = (side, inputEl) => {
 };
 
 // --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
-window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
+window.ENABLE_TEMP_EDITOR = false; // Измени на false, чтобы скрыть редактор
 
 
 // Глобальный ограничитель кадров для ползунков (спасает процессоры iPhone)
@@ -4195,7 +4195,7 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div style="width: 24px; flex-shrink: 0;"></div>
                     <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
                     <div class="ios-layer-action-text">цена</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS2PriceLayer(${i}, this.value)" style="width:65px;">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS2PriceLayer(${i}, this)" style="width:65px;">
                 </div>`;
             }
 
@@ -4256,13 +4256,13 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div style="width: 24px; flex-shrink: 0;"></div>
                     <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
                     <div class="ios-layer-action-text">цена</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS3PriceLayer(${i}, this.value)" style="width:65px;">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS3PriceLayer(${i}, this)" style="width:65px;">
                 </div>`;
             }
 
             if (window.ENABLE_TEMP_EDITOR) {
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 626;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 612;
                 let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 html += `
@@ -4287,13 +4287,13 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div style="width: 24px; flex-shrink: 0;"></div>
                     <div class="ios-layer-name">Левая цена</div>
                     <div class="ios-layer-action-text">значение</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this.value, this)">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this)">
                 </div>
                 <div class="ios-layer-row" ${!window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
                     <div style="width: 24px; flex-shrink: 0;"></div>
                     <div class="ios-layer-name">Правая цена</div>
                     <div class="ios-layer-action-text">значение</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this.value, this)">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this)">
                 </div>
             `;
 
@@ -4440,7 +4440,7 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div class="ios-layer-name">Акция ${idx + 1}</div>
                     <div class="ios-layer-action-text">цена</div>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5"
-                            style="background: ${priceBg};" oninput="updateOfferPriceFromLayer(${idx}, this.value)">
+                            style="background: ${priceBg};" oninput="updateOfferPriceFromLayer(${idx}, this)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
                         ${downloadIconSVG}
                     </div>
@@ -4568,11 +4568,11 @@ function renderLayerPanel(isInitialLoad = false) {
                 ];
             } else if (window.layerState.bpStyleIndex === 3) { // Для 3-го стиля Brawl Pass
                 window.layerState.customWatermarks = [
-                    {x: 957, y: 578, scale: 0.41, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
-                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: 18, y: 677, scale: 1.30, skewX: -12},
-                    {x: 215, y: 641, scale: 0.69, skewX: -12}, {x: 48, y: 610, scale: 0.45, skewX: -12},
-                    {x: -158, y: 125, scale: 1.02, skewX: -12}, {x: 332, y: -26, scale: 0.89, skewX: -12},
-                    {x: 887, y: 11, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.32, skewX: -12}
+                    {x: 1019, y: 601, scale: 0.3, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
+                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: -114, y: 687, scale: 0.93, skewX: -12},
+                    {x: 167, y: 666, scale: 0.26, skewX: -12}, {x: 23, y: 610, scale: 0.45, skewX: -12},
+                    {x: -158, y: 125, scale: 0.54, skewX: -12}, {x: 332, y: -27, scale: 0.72, skewX: -12},
+                    {x: 887, y: 7, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.21, skewX: -12}
                 ];
             } else { // Для 1 и 2 стиля Brawl Pass
                 window.layerState.customWatermarks = [
@@ -6368,11 +6368,11 @@ function drawScene() {
                 let wmAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.86;
                 
                 let wmData = window.layerState.customWatermarks || [
-                    {x: 957, y: 578, scale: 0.41, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
-                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: 18, y: 677, scale: 1.30, skewX: -12},
-                    {x: 215, y: 641, scale: 0.69, skewX: -12}, {x: 48, y: 610, scale: 0.45, skewX: -12},
-                    {x: -158, y: 125, scale: 1.02, skewX: -12}, {x: 332, y: -26, scale: 0.89, skewX: -12},
-                    {x: 887, y: 11, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.32, skewX: -12}
+                    {x: 1019, y: 601, scale: 0.3, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
+                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: -114, y: 687, scale: 0.93, skewX: -12},
+                    {x: 167, y: 666, scale: 0.26, skewX: -12}, {x: 23, y: 610, scale: 0.45, skewX: -12},
+                    {x: -158, y: 125, scale: 0.54, skewX: -12}, {x: 332, y: -27, scale: 0.72, skewX: -12},
+                    {x: 887, y: 7, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.21, skewX: -12}
                 ];
 
                 offCtx.save();
@@ -6444,7 +6444,7 @@ function drawScene() {
             if (cachedTextCanvas && animText.alpha > 0.01) {
 
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 626;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 612;
                 let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 ctx.save();
@@ -6704,11 +6704,11 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
             ];
             } else if (window.layerState.bpStyleIndex === 3) { // Для 3 стиля Brawl Pass
                 wmArray = [
-                    {x: 957, y: 578, scale: 0.41, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
-                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: 18, y: 677, scale: 1.30, skewX: -12},
-                    {x: 215, y: 641, scale: 0.69, skewX: -12}, {x: 48, y: 610, scale: 0.45, skewX: -12},
-                    {x: -158, y: 125, scale: 1.02, skewX: -12}, {x: 332, y: -26, scale: 0.89, skewX: -12},
-                    {x: 887, y: 11, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.32, skewX: -12}
+                    {x: 1019, y: 601, scale: 0.3, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
+                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: -114, y: 687, scale: 0.93, skewX: -12},
+                    {x: 167, y: 666, scale: 0.26, skewX: -12}, {x: 23, y: 610, scale: 0.45, skewX: -12},
+                    {x: -158, y: 125, scale: 0.54, skewX: -12}, {x: 332, y: -27, scale: 0.72, skewX: -12},
+                    {x: 887, y: 7, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.21, skewX: -12}
                 ];
             } else { // Для 1 и 2 стиля Brawl Pass // Для 1 и 2 стиля Brawl Pass
                 wmArray = [
