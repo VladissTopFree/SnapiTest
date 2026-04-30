@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(13)";
+  const APP_VERSION = "v2.5.1(14)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1997,6 +1997,273 @@
       top: -1px; 
   }
 
+/* --- СТИЛИ ДЛЯ ГОЛУБОЙ ПЛАЖКИ --- */
+/* --- СТИЛИ ДЛЯ ГОЛУБОЙ ПЛАЖКИ --- */
+.promo-banner {
+    position: relative;
+    width: 100%; 
+    height: 116px; 
+    min-height: 116px; 
+    flex-shrink: 0;    
+background: linear-gradient(to right, #70b0ff 0%, #3991ff 100%);    border-radius: 24px;
+    margin: 0 auto 24px auto; 
+    
+    /* Добавляем умную обрезку: сверху/сбоку не режем, а снизу режем строго по линии и закругляем нижние углы на 24px */
+    -webkit-clip-path: inset(-500px -200px 0 -200px round 0 0 24px 24px);
+    clip-path: inset(-500px -200px 0 -200px round 0 0 24px 24px);
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 20px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    
+    /* Твои идеальные координаты */
+    --b2-x: -63px; --b2-y: -26px; --b2-s: 1.15; /* Левый персонаж */
+    --b1-x: -18px; --b1-y: -4px;  --b1-s: 0.86;  /* Правый персонаж */
+    --star-x: -11px; --star-y: -1px; --star-s: 0.73; /* Бейджик "Звезда" */
+    --txt-x: 0px; --txt-y: 0px; /* Текст */
+  }
+  
+  .promo-banner:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+    transition: all 0.1s ease;
+  }
+
+.promo-custom-star {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    transform-origin: center;
+    opacity: 1;
+    /* mix-blend-mode: overlay; Раскомментируй, если нужен режим наложения */
+  }
+  
+body.os-non-apple .promo-banner {
+    border-radius: 16px !important;
+    -webkit-clip-path: inset(-500px -200px 0 -200px round 0 0 16px 16px) !important;
+    clip-path: inset(-500px -200px 0 -200px round 0 0 16px 16px) !important;
+  }
+  
+  .promo-brawler-left {
+    position: absolute;
+    bottom: calc(-5px + var(--b2-y));
+    right: calc(110px + var(--b2-x)); 
+    height: 140px; 
+    z-index: 2;
+    pointer-events: none;
+    transform: scale(var(--b2-s));
+    transform-origin: bottom right;
+  }
+  
+  .promo-brawler-right {
+    position: absolute;
+    bottom: calc(-5px + var(--b1-y));
+    right: calc(-10px + var(--b1-x));
+    height: 130px; 
+    z-index: 1;
+    pointer-events: none;
+    transform: scale(var(--b1-s));
+    transform-origin: bottom right;
+  }
+  
+  /* --- SVG ЗВЕЗДА --- */
+  .promo-badge {
+    position: absolute;
+    right: calc(60px + var(--star-x));
+    top: 53%;
+    transform: translateY(-50%) scale(var(--star-s));
+    margin-top: var(--star-y);
+    width: 60px;
+    height: 60px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .badge-bg {
+    position: absolute;
+    width: 140%; 
+    height: 140%;
+    top: -20%;
+    left: -20%;
+    z-index: -1;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  }
+  
+  .promo-badge span {
+    font-family: 'LilitaOneRus', 'Arial Black', sans-serif;
+    color: #924000;
+    font-size: 31px; /* Большой текст */
+    z-index: 1;
+    margin-top: -2px;
+  }
+  
+  .promo-content {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transform: translate(var(--txt-x), var(--txt-y));
+  }
+  
+  .promo-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+.promo-title {
+    /* Вызываем родной сверхтолстый скругленный шрифт Apple (SF Pro Rounded Black) */
+    font-family: ui-rounded, 'SF Pro Rounded', 'ArialRoundedOld', 'Arial Rounded MT Bold', sans-serif;
+    font-weight: 800; /* Задаем максимальную толщину (Black) */
+    font-size: 28px;
+    
+    /* Полностью убираем искусственную обводку */
+    -webkit-text-stroke: 0px transparent; 
+    
+    background: #ffef9e;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.1;
+  }
+
+  body.os-non-apple .promo-title {
+    font-family: 'Roboto', sans-serif !important;
+    font-weight: 900 !important;
+    -webkit-text-stroke: 0px transparent;
+  }
+  
+  .promo-action {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .promo-action svg {
+    width: 6px;
+    height: 10px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .promo-badge-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--badge-glow-size, 106px);
+    height: var(--badge-glow-size, 106px);
+    background: var(--badge-glow-color, #caefffde);
+    filter: blur(var(--badge-glow-blur, 30px));
+    opacity: var(--badge-glow-opacity, 0.8);
+    border-radius: 50%;
+    z-index: -2; /* Чтобы быть точно позади бейджика */
+    pointer-events: none;
+  }
+
+/* Анимация обновления таймера (только размытие и прозрачность) */
+  @keyframes timeUpdateBlur {
+    0% { filter: blur(4px); opacity: 0.5; }
+    100% { filter: blur(0px); opacity: 1; }
+  }
+  .timer-tick {
+    animation: timeUpdateBlur 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    display: inline-block; 
+  }
+
+  /* Возвращаем градиент отдельным цифрам таймера */
+  .promo-title span {
+    background: #ffef9e;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+
+  /* ========================================== */
+  /* АНИМАЦИЯ СЧЁТЧИКА ТАЙМЕРА                  */
+  /* ========================================== */
+
+  /* Контейнеры для кусочков времени (часы, минуты, секунды) */
+  .timer-part {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Двоеточия и сами цифры с золотым градиентом */
+  .timer-colon, .digit-old, .digit-new {
+    background: linear-gradient(180deg, #ffef9e 0%, #ffb82c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+
+  .timer-colon {
+    margin: 0; /* Притягиваем цифры по бокам. Можно сделать -4px, если захочется ещё плотнее */
+    position: relative;
+    top: -2px; /* Чуть-чуть приподнимаем двоеточие, если оно кажется смещенным вниз */
+  }
+
+  /* Старая цифра: улетает вверх, уменьшается, растворяется */
+  .digit-old {
+    position: absolute;
+    animation: digitOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Новая цифра: появляется с размытием снизу на своё место */
+  .digit-new {
+    animation: digitIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Ключевые кадры анимации */
+  @keyframes digitOut {
+    0% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
+    100% { transform: translateY(-70%) scale(0.6); opacity: 0; filter: blur(2px); }
+  }
+
+  @keyframes digitIn {
+    0% { transform: translateY(15%) scale(0.9); opacity: 0; filter: blur(5px); }
+    100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
+  }
+
+  /* ========================================== */
+  /* АНИМАЦИЯ И СТИЛИ ДЛЯ ОКОНЧАНИЯ ТАЙМЕРА     */
+  /* ========================================== */
+
+  /* Анимация плавного переключения всего контента плашки */
+  @keyframes contentBlurSwap {
+    0% { filter: blur(0px); opacity: 1; transform: scale(1); }
+    50% { filter: blur(10px); opacity: 0; transform: scale(0.95); }
+    100% { filter: blur(0px); opacity: 1; transform: scale(1); }
+  }
+  
+  .promo-content.swapping {
+    animation: contentBlurSwap 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Стиль для нового абзаца (который встанет вместо таймера) */
+/* Стиль для нового абзаца (который встанет вместо таймера) */
+  .promo-desc {
+    color: #ffe47a; 
+    font-size: 12px; 
+    font-weight: 500;
+    line-height: 1.35; 
+    max-width: 170px; 
+    margin: 0; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -2011,8 +2278,59 @@
       </div>
     </div>
 
-    <div class="ios-section-title">ПУНКТ УПРАВЛЕНИЯ</div>
+<!-- НОВАЯ ГОЛУБАЯ ПЛАЖКА -->
+<!-- НОВАЯ ГОЛУБАЯ ПЛАЖКА -->
+<div class="promo-banner" id="main-promo" onclick="window.openBPFromPromo()">
+<!-- ВАША НОВАЯ ЗВЕЗДА (только форма звезды, без фона) -->
+<!-- Контейнер для динамических фоновых звёзд -->
+<!-- Контейнер для динамических фоновых звёзд -->
+<div id="promo-bg-stars-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99;"></div>
+      <img src="BP/brawler_s50_2.png" class="promo-brawler-left" alt="">
+      <img src="BP/brawler_s50_1.png" class="promo-brawler-right" alt="">
+      
+      <!-- ИДЕАЛЬНАЯ ЗВЕЗДА ИЗ SVG -->
+<!-- ИДЕАЛЬНАЯ ЗВЕЗДА ИЗ SVG -->
+      <div class="promo-badge">
+        <div class="promo-badge-glow"></div>
+        
+        <svg class="badge-bg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- Создаем ваш золотой градиент -->
+          <defs>
+            <linearGradient id="star-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ffef9e"/>
+              <stop offset="100%" stop-color="#ffb82c"/>
+            </linearGradient>
+          </defs>
 
+          <!-- 1. Оранжевая основа -->
+          <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
+                fill="#cd6a2e" stroke="#cd6a2e" stroke-width="24" stroke-linejoin="round"/>
+          
+          <!-- 2. Светлая обводка -->
+          <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
+                fill="#fff0c7" stroke="#fff0c7" stroke-width="14" stroke-linejoin="round"/>
+          
+          <!-- 3. Внутренняя сердцевина с ГРАДИЕНТОМ -->
+          <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
+                fill="url(#star-grad)" stroke="url(#star-grad)" stroke-width="6" stroke-linejoin="round"/>
+        </svg>
+        <span>50</span>
+      </div>
+      
+      <!-- Текст -->
+      <div class="promo-content">
+        <div class="promo-subtitle">Новый сезон скоро выйдет!</div>
+        <div class="promo-title" id="promo-timer">Загрузка...</div>
+        <div class="promo-action">
+          Пора оформить 
+          <svg viewBox="0 0 8 14"><path d="M1 1l6 6-6 6"></path></svg>
+        </div>
+      </div>
+    </div>
+    <!-- КОНЕЦ ПЛАЖКИ -->
+
+    <div class="ios-section-title" style="margin-top: 0;">ПУНКТ УПРАВЛЕНИЯ</div>
+    
     <div class="ios-card ios-menu-item" onclick="openSavedProjects()" style="border-radius: 100px;">
       <div class="ios-icon-box" style="background: linear-gradient(180deg, #619af7 0%, #467af9 100%);">
          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet" style="margin-left: 1px;">
@@ -8393,6 +8711,249 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     initSparks();
 }
 
+window.promoBgStars = [
+    { x: 53, y: 85, s: 0.1, o: 1 },
+    { x: 47, y: 51, s: 0.2, o: 1 },
+    { x: 55, y: 22, s: 0.15, o: 1 },
+    { x: 76, y: 93, s: 0.06, o: 1 },
+    { x: 81, y: 10, s: 0.1, o: 1 },
+    { x: 89, y: 0, s: 0.2, o: 1 },
+     // Одна стартовая звезда для примера (координаты в процентах)
+];
+window.activePromoBgStarIndex = 0;
+
+window.renderPromoBgStars = function() {
+    const container = document.getElementById('promo-bg-stars-container');
+    if (!container) return;
+    
+    let html = '';
+    window.promoBgStars.forEach(star => {
+        html += `
+        <svg class="promo-custom-star" style="left: ${star.x}%; top: ${star.y}%; transform: translate(-50%, -50%) scale(${star.s}); opacity: ${star.o};" viewBox="0 0 1800 1800" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(0,1800) scale(0.1,-0.1)" fill="#ffffff" stroke="none">
+            <path d="M 4068 15095 c44 -9 104 -24 134 -34 29 -10 1195 -496 2590 -1080 l2538-1062 2537 1062 c1396 584 2562 1070 2591 1080 132 46 312 61 452 38 100 -15 251 -71 342 -125 113 -67 276 -230 339 -339 158 -273 182 -575 67 -856 -19-46 -523 -1140 -1121 -2432 l-1087 -2347 1087 -2348 c598 -1291 1102 -2385 1121 -2431 180 -439 8 -944 -407 -1195 -89 -54 -240 -109 -341 -125 -140 -23 -320 -8 -452 38 -29 10 -1195 496 -2591 1080 l-2537 1062 -2538 -1062 c-1395-584 -2561 -1070 -2590 -1080 -132 -46 -312 -61 -452 -38 -100 15 -251 71-342 125 -115 68 -276 230 -343 344 -55 94 -109 241 -124 340 -26 157 -4 348 56 500 17 41 521 1136 1121 2432 l1092 2358 -1092 2357 c-600 1297 -1104 2392 -1121 2433 -109 276 -84 576 72 845 63 109 226 272 339 339 87 52 241 109 332 125 88 14 241 12 328 -4z"/>
+          </g>
+        </svg>`;
+    });
+    container.innerHTML = html;
+    window.updatePromoStarUI();
+};
+
+window.updatePromoStarUI = function() {
+    const select = document.getElementById('promo-star-select');
+    if (!select) return;
+    
+    // Обновляем выпадающий список
+    select.innerHTML = window.promoBgStars.map((_, i) => `<option value="${i}">Звезда #${i + 1}</option>`).join('');
+    select.value = window.activePromoBgStarIndex;
+    
+    // Подтягиваем значения в ползунки
+    const activeStar = window.promoBgStars[window.activePromoBgStarIndex];
+    if (activeStar) {
+        document.getElementById('n-ps-x').value = activeStar.x; document.getElementById('r-ps-x').value = activeStar.x;
+        document.getElementById('n-ps-y').value = activeStar.y; document.getElementById('r-ps-y').value = activeStar.y;
+        document.getElementById('n-ps-s').value = activeStar.s; document.getElementById('r-ps-s').value = activeStar.s;
+        document.getElementById('n-ps-o').value = activeStar.o; document.getElementById('r-ps-o').value = activeStar.o;
+    }
+};
+
+window.changeActivePromoStar = function(idx) {
+    window.activePromoBgStarIndex = parseInt(idx);
+    window.updatePromoStarUI();
+};
+
+window.addPromoStar = function() {
+    window.promoBgStars.push({ x: 50, y: 50, s: 1, o: 0.2 });
+    window.activePromoBgStarIndex = window.promoBgStars.length - 1;
+    window.renderPromoBgStars();
+};
+
+window.removePromoStar = function() {
+    if (window.promoBgStars.length > 0) {
+        window.promoBgStars.splice(window.activePromoBgStarIndex, 1);
+        window.activePromoBgStarIndex = Math.max(0, window.activePromoBgStarIndex - 1);
+        window.renderPromoBgStars();
+    }
+};
+
+window.updateActivePromoStar = function(param, value) {
+    if (window.promoBgStars.length === 0) return;
+    window.promoBgStars[window.activePromoBgStarIndex][param] = parseFloat(value);
+    window.renderPromoBgStars();
+};
+
+// Вызываем один раз при загрузке страницы, чтобы отрисовать начальную звезду
+setTimeout(() => { window.renderPromoBgStars(); }, 150);
+
+
+// ==========================================
+// НАСТРОЙКА ТАЙМЕРА
+// Формат: ГГГГ-ММ-ДДTЧЧ:ММ:СС+03:00 (где +03:00 это часовой пояс Москвы)
+const TARGET_DATE_STRING = "2026-05-01T02:03:00+03:00"; // Поставил на пару дней вперед для теста
+// ==========================================
+
+window.initPromoTimer = function() {
+    const timerEl = document.getElementById('promo-timer');
+    if (!timerEl) return;
+
+    // Размечаем таймер на 3 гибкие группы. 
+    // Внутрь них скрипт сам добавит нужное количество цифр!
+// Выстраиваем всё в одну линию без пробелов и переносов
+    timerEl.innerHTML = `<span id="promo-h" style="display:inline-flex;"></span><span class="timer-colon">:</span><span id="promo-m" style="display:inline-flex;"></span><span class="timer-colon">:</span><span id="promo-s" style="display:inline-flex;"></span>`;
+
+    const elH = document.getElementById('promo-h');
+    const elM = document.getElementById('promo-m');
+    const elS = document.getElementById('promo-s');
+
+    let offset = 0; 
+    let targetTime = new Date(TARGET_DATE_STRING).getTime();
+
+    // Память для хранения предыдущих значений (теперь любой длины)
+    let prevH = "", prevM = "", prevS = "";
+
+    // Отрисовка анимации для ОДНОГО символа
+    const animateDigit = (elId, oldChar, newChar) => {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        if (!oldChar) {
+            el.innerHTML = `<span class="digit-new">${newChar}</span>`;
+        } else {
+            el.innerHTML = `<span class="digit-old">${oldChar}</span><span class="digit-new">${newChar}</span>`;
+        }
+    };
+
+    // Умная функция обновления целой группы (часов, минут или секунд)
+    const updateGroup = (groupEl, oldStr, newStr) => {
+        // Если длина изменилась (например, со 100 часов до 99), 
+        // перерисовываем все ячейки в этой группе заново
+        if (!oldStr || oldStr.length !== newStr.length) {
+            groupEl.innerHTML = '';
+            for (let i = 0; i < newStr.length; i++) {
+                const span = document.createElement('span');
+                span.id = `${groupEl.id}-${i}`;
+                span.className = 'timer-part';
+                groupEl.appendChild(span);
+                animateDigit(span.id, "", newStr[i]);
+            }
+        } else {
+            // Если длина та же, анимируем ТОЛЬКО те цифры, которые поменялись!
+            for (let i = 0; i < newStr.length; i++) {
+                if (oldStr[i] !== newStr[i]) {
+                    animateDigit(`${groupEl.id}-${i}`, oldStr[i], newStr[i]);
+                }
+            }
+        }
+    };
+
+    const updateTimer = () => {
+        const currentTime = new Date().getTime() + offset;
+        const diff = targetTime - currentTime;
+
+        // Если время вышло
+        if (diff <= 0) {
+            // Флаг, чтобы анимация сработала ровно один раз
+            if (timerEl.dataset.swapped === "true") return;
+            timerEl.dataset.swapped = "true";
+
+            // Находим весь контейнер с текстом
+            const contentContainer = timerEl.closest('.promo-content');
+            const subtitleEl = contentContainer.querySelector('.promo-subtitle');
+            
+            // Запускаем эффект размытия и исчезновения
+            contentContainer.classList.add('swapping');
+            
+            // Магия: ждем 400мс (ровно половину анимации, когда контент полностью прозрачен),
+            // и в этот момент "под капотом" подменяем весь текст и классы!
+            setTimeout(() => {
+                if (subtitleEl) subtitleEl.innerText = "Новый сезон уже вышел!";
+                
+                // Меняем класс, чтобы убрать гигантский золотой шрифт и применить наш новый .promo-desc
+                timerEl.className = "promo-desc";
+                timerEl.innerHTML = "На выбор - стили работ, текста и многое другое";
+            }, 400);
+
+            return;
+        }
+
+        // Вычисляем ЧАСЫ без ограничения (будет и 48, и 120, и 999)
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        // padStart гарантирует минимум 2 символа, но не обрезает, если их больше
+        const h = String(hours).padStart(2, '0'); 
+        const m = String(minutes).padStart(2, '0');
+        const s = String(seconds).padStart(2, '0');
+
+        // Отправляем на проверку и анимацию
+        if (h !== prevH) { updateGroup(elH, prevH, h); prevH = h; }
+        if (m !== prevM) { updateGroup(elM, prevM, m); prevM = m; }
+        if (s !== prevS) { updateGroup(elS, prevS, s); prevS = s; }
+    };
+
+    // 1. ЗАПУСКАЕМ МОМЕНТАЛЬНО
+    updateTimer(); 
+    setInterval(updateTimer, 1000);
+
+    // 2. АСИНХРОННО В ФОНЕ проверяем точное МСК время
+    fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow')
+        .then(res => res.json())
+        .then(data => {
+            const serverTime = new Date(data.datetime).getTime();
+            const localTime = new Date().getTime();
+            offset = serverTime - localTime; 
+            updateTimer(); 
+        })
+        .catch(err => {
+            console.warn('API времени недоступно. Работаем по системному.', err);
+        });
+};
+
+// Инициализация
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    window.initPromoTimer();
+} else {
+    document.addEventListener('DOMContentLoaded', window.initPromoTimer);
+}
+
+// Быстрый переход к созданию Brawl Pass при клике на промо-плашку
+window.openBPFromPromo = function() {
+    if (window.triggerHaptic) window.triggerHaptic();
+    if (window.resetWizardState) window.resetWizardState();
+
+    isCurrentProjectSaved = false; 
+    
+    // Скрываем главный экран и лишние элементы
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('result-box').style.display = 'none';
+    let btnWrap = document.getElementById('download-btn-wrap');
+    if (btnWrap) btnWrap.style.display = 'none';
+
+    // Устанавливаем нужные режимы
+    wizardMode = 'bp';
+    selectedCategory = 'bp';
+
+    // Включаем 4-й шаг прогресс-бара, так как это Brawl Pass
+    document.getElementById('prog-line3').style.display = 'block';
+    document.getElementById('prog-step4').style.display = 'flex';
+
+    // Сбрасываем выбранный стиль, чтобы начать заново
+    selectedBPStyle = null;
+    for (let i = 1; i <= 3; i++) {
+        let radio = document.getElementById(`bp-radio-${i}`);
+        if (radio) radio.classList.remove('checked');
+    }
+    let nextBtn = document.getElementById('bp-style-btn-next');
+    if (nextBtn) nextBtn.classList.remove('show');
+
+    // Показываем окно выбора стиля BP
+    document.getElementById('bp-style-overlay').style.display = 'flex';
+    window.scrollTo(0,0);
+    
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+        window.Telegram.WebApp.BackButton.show();
+    }
+};
 </script>
 </body>
 </html>
