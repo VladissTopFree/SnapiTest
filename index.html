@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(11)";
+  const APP_VERSION = "v2.5.1(12)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6133,19 +6133,21 @@ function drawScene() {
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
                 
-                // Добавили * s в скейл, чтобы размер не плыл
-                ctx.scale(obj.scale * (obj.scaleX||1) * s, obj.scale * (obj.scaleY||1) * s);
+                // РЕШЕНИЕ: Фиксируем размер жестко относительно базы в 1200px.
+                // Теперь хоть 8K картинку загрузи — она идеально встанет на своё место
+                // и будет корректно реагировать на HD-скейлинг (* s).
+                let targetH = 1200 * obj.scale * (obj.scaleY || 1) * s;
+                let targetW = targetH * (img.width / img.height) * (obj.scaleX || 1);
                 
                 if (obj.flipH) {
-                    ctx.translate(img.width, 0);
+                    ctx.translate(targetW, 0);
                     ctx.scale(-1, 1);
                 }
                 
-                // Убрали * s из теней, так как масштаб уже применен выше
-                ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3; ctx.shadowOffsetY = -6;
-                ctx.drawImage(img, 0, 0);
-                ctx.shadowOffsetX = 2; ctx.shadowOffsetY = -4; 
-                ctx.drawImage(img, 0, 0);
+                ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
+                ctx.drawImage(img, 0, 0, targetW, targetH);
+                ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; 
+                ctx.drawImage(img, 0, 0, targetW, targetH);
                 ctx.restore();
             };
 
