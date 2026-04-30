@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(12)";
+  const APP_VERSION = "v2.5.1(13)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3961,7 +3961,7 @@ window.updateBPPrice = (side, inputEl) => {
 };
 
 // --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
-window.ENABLE_TEMP_EDITOR = true; // Измени на false, чтобы скрыть редактор
+window.ENABLE_TEMP_EDITOR = false; // Измени на false, чтобы скрыть редактор
 
 
 // Глобальный ограничитель кадров для ползунков (спасает процессоры iPhone)
@@ -6126,28 +6126,22 @@ function drawScene() {
                 ctx.restore();
             };
 
-            const drawBrawler = (img, obj) => {
+              const drawBrawler = (img, obj) => {
                 if (!img) return;
                 ctx.save();
                 ctx.translate(obj.x*s, obj.y*s); 
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
-                
-                // РЕШЕНИЕ: Фиксируем размер жестко относительно базы в 1200px.
-                // Теперь хоть 8K картинку загрузи — она идеально встанет на своё место
-                // и будет корректно реагировать на HD-скейлинг (* s).
-                let targetH = 1200 * obj.scale * (obj.scaleY || 1) * s;
-                let targetW = targetH * (img.width / img.height) * (obj.scaleX || 1);
+                ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
                 
                 if (obj.flipH) {
-                    ctx.translate(targetW, 0);
+                    ctx.translate(img.width, 0);
                     ctx.scale(-1, 1);
                 }
                 
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
-                ctx.drawImage(img, 0, 0, targetW, targetH);
-                ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; 
-                ctx.drawImage(img, 0, 0, targetW, targetH);
+                ctx.drawImage(img, 0, 0);
+                ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; ctx.drawImage(img, 0, 0);
                 ctx.restore();
             };
 
