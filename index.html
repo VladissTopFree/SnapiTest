@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(21)";
+  const APP_VERSION = "v2.5.1(22)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -5133,12 +5133,9 @@ function renderLayerPanel(isInitialLoad = false) {
         }
     }
 
-    let bgEyeClass = window.layerState.bgVisible ? '' : 'hidden';
+    window.layerState.bgVisible = true; 
     html += `
         <div class="ios-layer-row" style="border-bottom:none;">
-            <div class="ios-icon-btn ios-eye-icon ${bgEyeClass}" onclick="toggleCosmeticLayer('bg')">
-                ${getEyeSVG(window.layerState.bgVisible)}
-            </div>
             <div class="ios-layer-name">Фон</div>
             <div style="flex-grow:1;"></div>
             <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('bg')">
@@ -5146,7 +5143,7 @@ function renderLayerPanel(isInitialLoad = false) {
             </div>
         </div>
     `;
-    html += `</div>`; 
+    html += `</div>`;
 
     if (window.ENABLE_TEMP_EDITOR) {
         if (!window.layerState.customWatermarks) {
