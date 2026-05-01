@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(15)";
+  const APP_VERSION = "v2.5.1(16)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
   const SHOW_PROMO_BANNER = true; 
@@ -2349,6 +2349,22 @@ body.os-non-apple .promo-banner {
   animation: digitIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* --- СТИЛИ ДЛЯ ЗАГРУЗКИ ПЛАШКИ --- */
+
+.promo-banner.is-loading {
+  /* Приятный статичный светло-серый цвет без градиентов */
+  background: var(--tg-theme-section-bg-color, #ffffff) !important; 
+  pointer-events: none !important; /* Отключаем клики во время загрузки */
+}
+
+.promo-banner > * {
+  transition: opacity 0.4s ease-in-out;
+}
+
+.promo-banner.is-loading > * {
+  opacity: 0 !important;
+}
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -2365,8 +2381,8 @@ body.os-non-apple .promo-banner {
 
 <!-- НОВАЯ ГОЛУБАЯ ПЛАЖКА -->
 <!-- НОВАЯ ГОЛУБАЯ ПЛАЖКА -->
-<div class="promo-banner" id="main-promo" onclick="window.openBPFromPromo()">
-<!-- ВАША НОВАЯ ЗВЕЗДА (только форма звезды, без фона) -->
+<div class="promo-banner is-loading" id="main-promo" onclick="window.openBPFromPromo()">
+    <!-- ВАША НОВАЯ ЗВЕЗДА (только форма звезды, без фона) -->
 <!-- Контейнер для динамических фоновых звёзд -->
 <!-- Контейнер для динамических фоновых звёзд -->
 <div id="promo-bg-stars-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99;"></div>
@@ -8873,7 +8889,7 @@ setTimeout(() => { window.renderPromoBgStars(); }, 150);
 // ==========================================
 // НАСТРОЙКА ТАЙМЕРА
 // Формат: ГГГГ-ММ-ДДTЧЧ:ММ:СС+03:00 (где +03:00 это часовой пояс Москвы)
-const TARGET_DATE_STRING = "2026-05-01T13:36:00+03:00"; // Поставил на пару дней вперед для теста
+const TARGET_DATE_STRING = "2026-05-01T14:06:00+03:00"; // Поставил на пару дней вперед для теста
 // ==========================================
 
 window.initPromoTimer = function() {
@@ -8996,21 +9012,55 @@ window.initPromoTimer = function() {
         isFirstRender = false; 
     };
 
+// ... остальной код функции updateTimer() ...
+
     updateTimer(); 
     setInterval(updateTimer, 1000);
 
+    // === 1. АСИНХРОННАЯ ЗАГРУЗКА ВРЕМЕНИ ПО API ===
+    // Она работает на фоне и поправит таймер, как только придет ответ
     fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow')
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error('worldtimeapi error');
+            return res.json();
+        })
         .then(data => {
             const serverTime = new Date(data.datetime).getTime();
             const localTime = new Date().getTime();
             offset = serverTime - localTime; 
-            updateTimer(); 
+            updateTimer(); // Пересчитываем с учетом реального времени!
         })
-        .catch(err => {
-            console.warn('API времени недоступно. Работаем по системному.', err);
+        .catch(() => {
+            // Резервный API на случай, если worldtimeapi "лежит" или тормозит
+            fetch('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Moscow')
+                .then(res => res.json())
+                .then(data => {
+                    const serverTime = new Date(data.dateTime).getTime();
+                    const localTime = new Date().getTime();
+                    offset = serverTime - localTime; 
+                    updateTimer(); 
+                })
+                .catch(() => console.warn('Оба API времени недоступны. Работаем по системному.'));
         });
-};
+
+    // === 2. БЫСТРЫЙ ЗАГРУЗЧИК ПЛАШКИ (ТОЛЬКО КАРТИНКИ) ===
+    const banner = document.getElementById('main-promo');
+    if (banner) {
+        const images = Array.from(banner.querySelectorAll('img'));
+        const imagePromises = images.map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => { img.onload = img.onerror = resolve; });
+        });
+
+        // Снимаем класс is-loading как только скачались картинки, но не дольше чем через 800мс
+        Promise.race([
+            Promise.all(imagePromises),
+            new Promise(resolve => setTimeout(resolve, 800))
+        ]).then(() => {
+            banner.classList.remove('is-loading');
+        });
+    }
+}; // Конец функции window.initPromoTimer
 
 // Инициализация
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
