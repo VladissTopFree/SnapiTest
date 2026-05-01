@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(16)";
+  const APP_VERSION = "v2.5.1(17)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
   const SHOW_PROMO_BANNER = true; 
@@ -414,8 +414,8 @@
   }
 
   .ios-price-input {
-    background: #99D5F9;
-    color: #fff;
+    background: #01a2ff1f;
+    color: #01a2ff;
     border-radius: 12px;
     border: none;
     padding: 0 10px;
@@ -694,23 +694,21 @@
     background: linear-gradient(110deg, #9b8dff 38%, #d9a5ff 50%, #9b8dff 62%);
     background-size: 300% 100%;
     animation: shimmerBg 4s infinite linear;
-    z-index: 2; /* Кнопка поверх искр */
+    z-index: 2;
   }
 
-  /* Стили для контейнера с искрами */
   #sparks-container {
     position: absolute;
     width: calc(100vw - 104px);
     max-width: 336px;
     height: 54px;
-    z-index: 1; /* Под кнопкой */
-    pointer-events: none; /* Чтобы искры не блокировали нажатие */
+    z-index: 1; 
+    pointer-events: none;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  /* Внешний вид одной искры (твоя SVG-иконка цвета #88b3ff) */
   .spark {
     position: absolute;
     opacity: 0;
@@ -724,7 +722,6 @@
 
 @keyframes flySpark {
     0% {
-      /* Начинаем путь ровно с края кнопки */
       transform: translate(var(--startX), var(--startY)) scale(0) rotate(0deg);
       opacity: 0;
     }
@@ -736,7 +733,6 @@
       opacity: 1;
     }
     100% {
-      /* Заканчиваем путь далеко за пределами кнопки */
       transform: translate(var(--endX), var(--endY)) scale(0) rotate(var(--rot));
       opacity: 0;
     }
@@ -1440,9 +1436,7 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     
-    /* --- ДОБАВЛЕННАЯ СТРОКА --- */
     overflow-x: hidden; 
-    /* -------------------------- */
   }
 
   #fankit-overlay.show .fankit-sheet {
@@ -1498,14 +1492,12 @@
 
     .fankit-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 колонки вместо 2 */
-    gap: 8px; /* Уменьшаем отступ для 3 колонок */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 8px;
     overflow-y: auto;
     
-    /* --- ДОБАВЛЕННЫЕ СТРОКИ --- */
-    overflow-x: hidden; /* Жестко обрезаем все, что выходит по горизонтали */
-    touch-action: pan-y; /* Говорим браузеру телефона: здесь можно свайпать ТОЛЬКО вверх и вниз */
-    /* -------------------------- */
+    overflow-x: hidden; 
+    touch-action: pan-y; 
     
     -webkit-overflow-scrolling: touch;
     padding: 5px 20px 20px 20px; 
@@ -1513,7 +1505,6 @@
     box-sizing: border-box;
   }
 
-  /* Стили для блока рекомендаций */
   .fankit-recommended-wrapper {
     background: var(--tg-theme-section-bg-color, #ffffff);
     border-radius: 16px;
@@ -1873,7 +1864,6 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-    /* Стили для Стиля #2 */
     .brawl-font {
         font-family: 'LilitaOneRus', 'Lilita One', sans-serif !important;
         color: #ffffff;
@@ -1950,7 +1940,6 @@
         white-space: nowrap;
     }
 
-/* --- СТИЛИ ДЛЯ СЧЁТЧИКА И АНИМАЦИЙ ВВОДА --- */
 .wizard-char-counter {
     position: absolute;
     right: 54px;
@@ -1980,7 +1969,6 @@
     animation: counterBlurUpdate 0.2s ease-out forwards;
 }
 
-/* --- СТИЛЬ ДЛЯ НОМЕРА СТИЛЯ BP --- */
   .bp-style-badge {
       display: inline-flex;
       align-items: center;
@@ -1990,7 +1978,7 @@
       font-size: 16px;
       font-weight: 600;
       padding: 0 10px;
-      height: 28px; /* Фиксированная высота для ровности */
+      height: 28px; 
       border-radius: 6px;
       margin-left: 0;
       vertical-align: middle;
@@ -2000,8 +1988,8 @@
 
 .promo-banner {
     position: relative;
-    width: 100%;       /* Вернули как просили */
-    height: 116px;     /* Жесткая высота */
+    width: 100%;     
+    height: 116px;    
     min-height: 116px; 
     flex-shrink: 0;    
     background: linear-gradient(to right, #70b0ff 0%, #3991ff 100%);    
@@ -2014,16 +2002,14 @@
     display: flex;
     flex-direction: column;
     
-    /* ЭТО СВОЙСТВО АВТОМАТИЧЕСКИ ЦЕНТРИРУЕТ ТЕКСТ ПО ВЕРТИКАЛИ (ДЕЛИТ ОТСТУПЫ ПОРОВНУ СВЕРХУ И СНИЗУ) */
     justify-content: center; 
     
-    padding: 0 20px; /* Отступы только по бокам, верх и низ высчитывает justify-content */
+    padding: 0 20px; 
     box-sizing: border-box;
     
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     
-    /* Твои идеальные координаты */
     --b2-x: -68px; --b2-y: -26px; --b2-s: 1.15; 
     --b1-x: -7px; --b1-y: -4px;  --b1-s: 0.86;  
     --star-x: -14px; --star-y: -1px; --star-s: 0.73; 
@@ -2042,7 +2028,6 @@
     height: 100px;
     transform-origin: center;
     opacity: 1;
-    /* mix-blend-mode: overlay; Раскомментируй, если нужен режим наложения */
   }
   
 body.os-non-apple .promo-banner {
@@ -2073,7 +2058,6 @@ body.os-non-apple .promo-banner {
     transform-origin: bottom right;
   }
   
-  /* --- SVG ЗВЕЗДА --- */
   .promo-badge {
     position: absolute;
     right: calc(60px + var(--star-x));
@@ -2101,7 +2085,7 @@ body.os-non-apple .promo-banner {
   .promo-badge span {
     font-family: 'LilitaOneRus', 'Arial Black', sans-serif;
     color: #924000;
-    font-size: 31px; /* Большой текст */
+    font-size: 31px;
     z-index: 1;
     margin-top: -2px;
   }
@@ -2113,7 +2097,7 @@ body.os-non-apple .promo-banner {
     flex-direction: column;
     gap: 0px;
     max-width: 180px; 
-    margin: 0; /* Обязательно убираем внешние отступы! */
+    margin: 0;
   }
   
 .promo-subtitle {
@@ -2122,16 +2106,14 @@ body.os-non-apple .promo-banner {
     font-weight: 500;
     line-height: 1.2;
     white-space: normal;
-    word-wrap: break-word; /* Жесткий перенос слов, если не влезают */
+    word-wrap: break-word; 
   }
   
 .promo-title {
-    /* Вызываем родной сверхтолстый скругленный шрифт Apple (SF Pro Rounded Black) */
     font-family: ui-rounded, 'SF Pro Rounded', 'ArialRoundedOld', 'Arial Rounded MT Bold', sans-serif;
-    font-weight: 800; /* Задаем максимальную толщину (Black) */
+    font-weight: 800; 
     font-size: 28px;
     
-    /* Полностью убираем искусственную обводку */
     -webkit-text-stroke: 0px transparent; 
     
     background: #ffef9e;
@@ -2166,18 +2148,16 @@ body.os-non-apple .promo-banner {
   stroke-linecap: round;
   stroke-linejoin: round;
   
-  /* --- НОВЫЕ СТРОКИ --- */
-  margin-top: 2px; /* Опускаем стрелочку чуть ниже (можно сделать 1px или 3px для идеала) */
-  animation: arrowBounce 1.2s ease-in-out infinite; /* Запускаем бесконечную анимацию */
+  margin-top: 2px; 
+  animation: arrowBounce 1.2s ease-in-out infinite; 
 }
 
-/* Добавляем саму анимацию движения */
 @keyframes arrowBounce {
   0%, 100% {
     transform: translateX(0);
   }
   50% {
-    transform: translateX(4px); /* Сдвигаем вправо на 4px (можно увеличить, если нужно сильнее) */
+    transform: translateX(4px); 
   }
 }
 
@@ -2192,11 +2172,10 @@ body.os-non-apple .promo-banner {
     filter: blur(var(--badge-glow-blur, 30px));
     opacity: var(--badge-glow-opacity, 0.8);
     border-radius: 50%;
-    z-index: -2; /* Чтобы быть точно позади бейджика */
+    z-index: -2; 
     pointer-events: none;
   }
 
-/* Анимация обновления таймера (только размытие и прозрачность) */
   @keyframes timeUpdateBlur {
     0% { filter: blur(4px); opacity: 0.5; }
     100% { filter: blur(0px); opacity: 1; }
@@ -2206,7 +2185,6 @@ body.os-non-apple .promo-banner {
     display: inline-block; 
   }
 
-  /* Возвращаем градиент отдельным цифрам таймера */
   .promo-title span {
     background: #ffef9e;
     -webkit-background-clip: text;
@@ -2214,11 +2192,6 @@ body.os-non-apple .promo-banner {
     display: inline-block;
   }
 
-  /* ========================================== */
-  /* АНИМАЦИЯ СЧЁТЧИКА ТАЙМЕРА                  */
-  /* ========================================== */
-
-  /* Контейнеры для кусочков времени (часы, минуты, секунды) */
   .timer-part {
     position: relative;
     display: inline-flex;
@@ -2226,7 +2199,6 @@ body.os-non-apple .promo-banner {
     align-items: center;
   }
   
-  /* Двоеточия и сами цифры с золотым градиентом */
   .timer-colon, .digit-old, .digit-new {
     background: linear-gradient(180deg, #ffef9e 0%, #ffb82c 100%);
     -webkit-background-clip: text;
@@ -2235,23 +2207,20 @@ body.os-non-apple .promo-banner {
   }
 
   .timer-colon {
-    margin: 0; /* Притягиваем цифры по бокам. Можно сделать -4px, если захочется ещё плотнее */
+    margin: 0; 
     position: relative;
-    top: -2px; /* Чуть-чуть приподнимаем двоеточие, если оно кажется смещенным вниз */
+    top: -2px; 
   }
 
-  /* Старая цифра: улетает вверх, уменьшается, растворяется */
   .digit-old {
     position: absolute;
     animation: digitOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  /* Новая цифра: появляется с размытием снизу на своё место */
   .digit-new {
     animation: digitIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  /* Ключевые кадры анимации */
   @keyframes digitOut {
     0% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
     100% { transform: translateY(-70%) scale(0.6); opacity: 0; filter: blur(2px); }
@@ -2262,11 +2231,6 @@ body.os-non-apple .promo-banner {
     100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
   }
 
-  /* ========================================== */
-  /* АНИМАЦИЯ И СТИЛИ ДЛЯ ОКОНЧАНИЯ ТАЙМЕРА     */
-  /* ========================================== */
-
-  /* Анимация плавного переключения всего контента плашки */
   @keyframes contentBlurSwap {
     0% { filter: blur(0px); opacity: 1; transform: scale(1); }
     50% { filter: blur(10px); opacity: 0; transform: scale(0.95); }
@@ -2277,8 +2241,6 @@ body.os-non-apple .promo-banner {
     animation: contentBlurSwap 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
-  /* Стиль для нового абзаца (который встанет вместо таймера) */
-/* Стиль для нового абзаца (который встанет вместо таймера) */
 .promo-desc {
     color: #ffe47a; 
     font-size: 12px; 
@@ -2286,22 +2248,19 @@ body.os-non-apple .promo-banner {
     line-height: 1.35; 
     margin: 8px 0 10px 0; 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    /* Убираем жесткие 170px, теперь он сам подстроится под 55% родителя */
     max-width: 100%; 
   }
 
-/* Класс для быстрого скрытия плажки */
   .promo-hidden {
     display: none !important;
   }
 
-  /* --- 4. ДОБАВИТЬ ЭТО В КОНЕЦ <style> (Адаптация под очень маленькие экраны) --- */
   @media (max-width: 380px) {
     .promo-content {
-      max-width: 160px; /* На узких телефонах фиксируем ширину */
+      max-width: 160px; 
     }
     .promo-subtitle {
-      font-size: 11px; /* Чуть уменьшаем шрифты */
+      font-size: 11px; 
     }
     .promo-desc {
       font-size: 11px;
@@ -2316,13 +2275,11 @@ body.os-non-apple .promo-banner {
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 3;
   pointer-events: none;
-  /* Убрали overflow: hidden и маски, выпускаем свет на свободу! */
 }
 
 .promo-text-glow::before {
   content: "";
   position: absolute;
-  /* Отступаем от краев, чтобы размытие плавно уходило в ноль */
   top: 25px;      
   bottom: 25px;   
   left: 30px; 
@@ -2330,10 +2287,9 @@ body.os-non-apple .promo-banner {
   background: #70b0ffc9; 
   filter: blur(26px); 
   opacity: 0.76;
-  border-radius: 50%; /* Превращаем квадрат в овал для идеального градиента */
+  border-radius: 50%; 
 }
 
-/* Универсальные классы для покадровой анимации слов */
 .flip-wrapper {
   position: relative;
   display: inline-block;
@@ -2349,12 +2305,10 @@ body.os-non-apple .promo-banner {
   animation: digitIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* --- СТИЛИ ДЛЯ ЗАГРУЗКИ ПЛАШКИ --- */
 
 .promo-banner.is-loading {
-  /* Приятный статичный светло-серый цвет без градиентов */
   background: var(--tg-theme-section-bg-color, #ffffff) !important; 
-  pointer-events: none !important; /* Отключаем клики во время загрузки */
+  pointer-events: none !important; 
 }
 
 .promo-banner > * {
@@ -2388,18 +2342,10 @@ body.os-non-apple .promo-banner {
       </div>
     </div>
 
-<!-- НОВАЯ ГОЛУБАЯ ПЛАЖКА -->
-<!-- НОВАЯ ГОЛУБАЯ ПЛАЖКА -->
 <div class="promo-banner is-loading" id="main-promo" onclick="window.openBPFromPromo()">
-    <!-- ВАША НОВАЯ ЗВЕЗДА (только форма звезды, без фона) -->
-<!-- Контейнер для динамических фоновых звёзд -->
-<!-- Контейнер для динамических фоновых звёзд -->
 <div id="promo-bg-stars-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99;"></div>
       <img src="BP/brawler_s50_2.png" class="promo-brawler-left" alt="">
       <img src="BP/brawler_s50_1.png" class="promo-brawler-right" alt="">
-      
-      <!-- ИДЕАЛЬНАЯ ЗВЕЗДА ИЗ SVG -->
-<!-- ИДЕАЛЬНАЯ ЗВЕЗДА ИЗ SVG -->
 
     <div class="promo-text-glow"></div>
 
@@ -2407,7 +2353,6 @@ body.os-non-apple .promo-banner {
         <div class="promo-badge-glow"></div>
         
         <svg class="badge-bg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <!-- Создаем ваш золотой градиент -->
           <defs>
             <linearGradient id="star-grad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stop-color="#ffef9e"/>
@@ -2415,22 +2360,18 @@ body.os-non-apple .promo-banner {
             </linearGradient>
           </defs>
 
-          <!-- 1. Оранжевая основа -->
           <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
                 fill="#cd6a2e" stroke="#cd6a2e" stroke-width="24" stroke-linejoin="round"/>
           
-          <!-- 2. Светлая обводка -->
           <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
                 fill="#fff0c7" stroke="#fff0c7" stroke-width="14" stroke-linejoin="round"/>
           
-          <!-- 3. Внутренняя сердцевина с ГРАДИЕНТОМ -->
           <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
                 fill="url(#star-grad)" stroke="url(#star-grad)" stroke-width="6" stroke-linejoin="round"/>
         </svg>
         <span>50</span>
       </div>
       
-      <!-- Текст -->
       <div class="promo-content">
         <div class="promo-subtitle">Новый сезон скоро выйдет!</div>
         <div class="promo-title" id="promo-timer"></div>        
@@ -2440,7 +2381,6 @@ body.os-non-apple .promo-banner {
         </div>
       </div>
     </div>
-    <!-- КОНЕЦ ПЛАЖКИ -->
 
     <div class="ios-section-title" style="margin-top: 0;">ПУНКТ УПРАВЛЕНИЯ</div>
     
@@ -2886,7 +2826,6 @@ body.os-non-apple .promo-banner {
         }
     };
     
-    // ДОБАВЛЯЕШЬ ПРОВЕРКУ ДЛЯ 3-го СТИЛЯ СЮДА
     window.checkBPStyle3Ready = function() {
         let allFilled = ['ws3-p0', 'ws3-p1', 'ws3-p2'].every(id => document.getElementById(id).value.trim() !== '');
         let btn = document.getElementById('wizard-next-btn3-bp-style3');
@@ -2897,7 +2836,7 @@ body.os-non-apple .promo-banner {
     };
     
     setTimeout(window.checkBPStyle2Ready, 50);
-    setTimeout(window.checkBPStyle3Ready, 50); // И не забудь вызвать!
+    setTimeout(window.checkBPStyle3Ready, 50);
 </script>
 
 <div id="wizard-step3-bp-style3" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
@@ -3270,7 +3209,6 @@ let globalAssets = {
 };
 let isCurrentProjectSaved = false; 
 
-// 1. Создаем строгую именованную функцию для кнопки "Назад"
 function handleBackButtonClick() {
     try {
         let fankitOverlay = document.getElementById('fankit-overlay');
@@ -3284,7 +3222,6 @@ function handleBackButtonClick() {
             return; 
         }
 
-        // Массив всех возможных экранов для безопасного скрытия
         const overlays = [
             'wizard-overlay', 'result-box', 'download-overlay', 
             'saved-projects-overlay', 'settings-overlay', 
@@ -3300,14 +3237,12 @@ function handleBackButtonClick() {
         let btnWrap = document.getElementById('download-btn-wrap');
         if (btnWrap) btnWrap.style.display = 'none';
         
-        // Возвращаем главный дашборд и сбрасываем стили
         document.getElementById('ios-dashboard').style.display = 'flex';
         document.body.style.background = "var(--tg-theme-secondary-bg-color, #F2F2F7)";
         document.body.style.color = "var(--tg-theme-text-color, #000000)";
         document.body.style.overflow = ''; 
         window.scrollTo(0,0);
         
-        // Скрываем саму кнопку Назад
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
             window.Telegram.WebApp.BackButton.hide();
         }
@@ -3316,17 +3251,15 @@ function handleBackButtonClick() {
     }
 }
 
-// 2. Безопасная регистрация клика с очисткой старых слушателей
 if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
     window.Telegram.WebApp.BackButton.offClick(handleBackButtonClick);
     window.Telegram.WebApp.BackButton.onClick(handleBackButtonClick);
 }
 
 document.addEventListener('pointerdown', (e) => {
-    // Если фокус находится на поле ввода, а клик произошел мимо него
     if (document.activeElement && document.activeElement.tagName === 'INPUT') {
         if (e.target.tagName !== 'INPUT' && !e.target.closest('.wizard-caps-btn')) {
-            document.activeElement.blur(); // Скрываем клавиатуру
+            document.activeElement.blur(); 
         }
     }
 });
@@ -3828,13 +3761,11 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         document.getElementById('wizard-title-step1').innerText = 'Создание акции';
         document.getElementById('wizard-title-step2').innerText = 'Создание акции';
         
-        // ВАЖНО: Скрываем окно выбора категории
         document.getElementById('category-overlay').style.display = 'none';
         
         document.getElementById('prog-line3').style.display = 'none';
         document.getElementById('prog-step4').style.display = 'none';
 
-        // Восстанавливаем видимость основных шагов (для акций)
         document.getElementById('prog-line1').style.display = 'block';
         document.getElementById('prog-step2').style.display = 'flex';
         document.getElementById('prog-line2').style.display = 'block';
@@ -3879,7 +3810,6 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     window.triggerHaptic();
     if (!selectedBPStyle) return;
 
-    // === ДОБАВЬ ЭТУ ОЧИСТКУ ===
     delete window.layerState.brawler1X;
     delete window.layerState.brawler1Y;
     delete window.layerState.brawler1Scale;
@@ -3891,19 +3821,15 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     delete window.layerState.s3TextX;
     delete window.layerState.s3TextY;
     delete window.layerState.s3TextScale;
-    // ==========================
 
     document.getElementById('bp-style-overlay').style.display = 'none';
     window.layerState.bpStyleIndex = selectedBPStyle;
 
-    // Формируем HTML-код заголовка с нашим новым бейджиком
     let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">#${selectedBPStyle}</span></span>`;
 
-    // Подставляем этот заголовок во ВСЕ шаги создания Brawl Pass
     document.getElementById('wizard-title-step1').innerHTML = bpTitleHtml;
     document.getElementById('wizard-title-step2').innerHTML = bpTitleHtml;
     
-    // Подставляем в заголовки шагов с ценами (для всех трех стилей) и сезоном
     let step3bp = document.querySelector('#wizard-step3-bp .ios-wizard-title');
     if(step3bp) step3bp.innerHTML = bpTitleHtml;
     
@@ -3929,7 +3855,6 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('prog-line3').className = 'line';       
     document.getElementById('prog-step4').className = 'step small'; 
 
-    // Теперь для ВСЕХ стилей BP мы показываем 4 шага (Сезон)
     document.getElementById('prog-line1').style.display = 'block';
     document.getElementById('prog-step2').style.display = 'flex';
     document.getElementById('prog-line2').style.display = 'block';
@@ -4391,43 +4316,39 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-// --- ТУМБЛЕР ВРЕМЕННОГО РЕДАКТОРА ---
-window.ENABLE_TEMP_EDITOR = false; // Измени на false, чтобы скрыть редактор
+window.ENABLE_TEMP_EDITOR = false; 
 
 
-// Глобальный ограничитель кадров для ползунков (спасает процессоры iPhone)
 window.requestRender = function() {
     if (window.renderThrottle) return;
     window.renderThrottle = setTimeout(() => {
         if (typeof startAnimation === 'function') startAnimation();
         window.renderThrottle = null;
-    }, 35); // 35мс = плавные ~30 FPS без зависаний ползунка
+    }, 35); 
 };
 
 window.updateBrawlerParams = (param, val) => {
     window.layerState[param] = parseFloat(val);
-    window.requestRender(); // Используем умный рендер
+    window.requestRender(); 
 };
 
 window.changeOpacity = (layerName, value) => {
     window.layerState[layerName + 'Opacity'] = parseFloat(value);
-    window.requestRender(); // Используем умный рендер
+    window.requestRender(); 
 };
 
 
 window.toggleBrawlerFlip = (brawlerKey) => {
     let stateKey = brawlerKey + 'Flip';
     if (window.layerState[stateKey] === undefined) {
-        // Если еще не трогали, берем начальное значение из конфига
         let currentSeason = window.layerState.bpSeason || 50;
         let s2Conf = BP_SEASON_CONFIG[currentSeason].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
         window.layerState[stateKey] = !!s2Conf[brawlerKey].flipH;
     }
-    // Переключаем true на false и наоборот
     window.layerState[stateKey] = !window.layerState[stateKey];
     
-    renderLayerPanel(); // Обновляем кнопку в интерфейсе
-    if (typeof startAnimation === 'function') startAnimation(); // Перерисовываем холст
+    renderLayerPanel(); 
+    if (typeof startAnimation === 'function') startAnimation(); 
 };
 
 window.updateGradientParam = (param, val) => {
@@ -4450,7 +4371,6 @@ window.rebuildStyle1Background = () => {
     let startX = WIDTH * 0.39 + ((WIDTH * 0.34 - WIDTH * 0.39) / (HEIGHT * 0.50)) * (-20);
     let endX = WIDTH * 0.316 + ((WIDTH * 0.316 - WIDTH * 0.37) / (HEIGHT - HEIGHT * 0.46)) * 20;
 
-    // Левый градиент
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(0, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(0, HEIGHT + 20); ctx.closePath();
@@ -4462,7 +4382,6 @@ window.rebuildStyle1Background = () => {
     if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
     ctx.restore();
 
-    // Правый градиент
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
@@ -4474,7 +4393,6 @@ window.rebuildStyle1Background = () => {
     if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
     ctx.restore();
 
-    // Линия
     ctx.save();
     let currentLineColor = window.layerState.tempLineColor || config.lineColor;
     ctx.strokeStyle = currentLineColor;
@@ -4512,7 +4430,6 @@ window.rebuildStyle1Background = () => {
     if (globalAssets.bpPanelL) ctx.drawImage(globalAssets.bpPanelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
     if (globalAssets.bpPanelR) ctx.drawImage(globalAssets.bpPanelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
     
-    // Обновляем фоновое изображение
     window.bpForegroundImage.src = c.toDataURL('image/png');
     window.bpForegroundImage.onload = () => {
         if (typeof startAnimation === 'function') startAnimation();
@@ -4522,9 +4439,8 @@ window.rebuildStyle1Background = () => {
 window.updateBPText = (val) => {
     window.layerState.textValue = val;
     
-    // --- ДИНАМИЧЕСКОЕ ОБНОВЛЕНИЕ ПРЕВЬЮ ШРИФТОВ ---
     let mainPreviewText = val.trim() !== '' ? val : 'TEXT';
-    let wmPreviewText = mainPreviewText.substring(0, 6); // Водяные знаки обрезаем до 6 символов, как было задумано
+    let wmPreviewText = mainPreviewText.substring(0, 6); 
 
     document.querySelectorAll('.main-font-item').forEach(el => {
         el.innerText = mainPreviewText;
@@ -4533,7 +4449,6 @@ window.updateBPText = (val) => {
     document.querySelectorAll('.wm-font-item').forEach(el => {
         el.innerText = wmPreviewText;
     });
-    // --- КОНЕЦ ДОБАВЛЕНИЯ ---
 
     window.updateCachedTextCanvas();
     if (typeof startAnimation === 'function') startAnimation();
@@ -4544,7 +4459,6 @@ window.updateBPTextCounter = function(el) {
     let counter = document.getElementById('bp-nick-counter');
     if (!counter) return;
     let left = 16 - el.value.length;
-    // Если 0 (лимит) или 16 (пусто), то скрываем
     if (left === 0 || left === 16) {
         counter.innerText = '';
         window.lastBPNickLeft = left;
@@ -4552,7 +4466,7 @@ window.updateBPTextCounter = function(el) {
         counter.innerText = left;
         if (left !== window.lastBPNickLeft) {
             counter.classList.remove('counter-blur-anim');
-            void counter.offsetWidth; // перезапуск анимации
+            void counter.offsetWidth; 
             counter.classList.add('counter-blur-anim');
         }
         window.lastBPNickLeft = left;
@@ -4562,7 +4476,7 @@ window.updateBPTextCounter = function(el) {
 window.updateS2PriceLayer = (idx, inputEl) => {
     let val = inputEl.value.replace(/[^0-9]/g, '');
     if (val && parseInt(val) > 99999) val = "99999";
-    inputEl.value = val; // Стираем буквы прямо в поле
+    inputEl.value = val; 
     if (!window.layerState.style2Prices) window.layerState.style2Prices = [];
     window.layerState.style2Prices[idx] = val;
     let wsInp = document.getElementById('ws2-p' + idx);
@@ -4614,7 +4528,6 @@ function renderLayerPanel(isInitialLoad = false) {
         });
         html += `</div></div>`;
 
-        // ПРАВИЛЬНЫЕ ЦЕНЫ (Стиль 2 vs Стиль 3 vs Стиль 1)
         html += `<div class="ios-layer-group ${animCls}">`;
         
         if (window.layerState.bpStyleIndex === 2) {
@@ -4806,9 +4719,8 @@ function renderLayerPanel(isInitialLoad = false) {
                 </div>`;
             }
         }
-        html += `</div>`; // Закрываем блок с ценами и персонажами
+        html += `</div>`; 
     } else {
-        // --- ДЛЯ ОБЫЧНЫХ АКЦИЙ ---
         html += `
             <div class="ios-layer-group ${animCls}">
             <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
@@ -4842,7 +4754,6 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `</div></div>`;
     }
 
-    // --- ОБВОДКА И АКЦИИ (Только для Обычных Акций) ---
     if (!window.layerState.isBrawlPassMode && window.layerState.offers && window.layerState.offers.length > 0) {
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
@@ -4858,9 +4769,26 @@ function renderLayerPanel(isInitialLoad = false) {
                 <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
             </div>
         `;
+
+        if (window.layerState.isReadyBg) {
+            let offersPos = window.layerState.offersPosition || 'bottom';
+            html += `
+            <div class="ios-layer-row">
+                <div style="width: 24px; flex-shrink: 0;"></div>
+                <div class="ios-layer-name">Акции</div>
+                <div class="ios-layer-action-text">расположение</div>
+                <button class="ios-pill-btn" onclick="toggleOffersPosition()">
+                    ${offersPos !== 'bottom' ? 'ВНИЗ' : 'ВВЕРХ'}
+                </button>
+                <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
+            </div>
+            `;
+        }
+
         window.layerState.offers.forEach((offer, idx) => {
             let isFree = offer.price.trim().toUpperCase() === 'FREE';
-            let priceBg = isFree ? '#34C759' : '#99D5F9';
+            let priceBg = isFree ? '#00ff591f' : '#01a2ff1f';
+            let priceColor = isFree ? '#16a34a' : '#0178ff'; 
             let offerEyeClass = offer.visible ? '' : 'hidden';
 
             html += `
@@ -4870,8 +4798,7 @@ function renderLayerPanel(isInitialLoad = false) {
                     </div>
                     <div class="ios-layer-name">Акция ${idx + 1}</div>
                     <div class="ios-layer-action-text">цена</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5"
-                            style="background: ${priceBg};" oninput="updateOfferPriceFromLayer(${idx}, this)">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5" style="background: ${priceBg}; color: ${priceColor};" oninput="updateOfferPriceFromLayer(${idx}, this)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
                         ${downloadIconSVG}
                     </div>
@@ -4881,7 +4808,6 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `</div>`;
     }
 
-    // --- КОСМЕТИКА ---
     html += `<div class="ios-layer-group ${animCls}">`;
 
     if (!window.layerState.isReadyBg) {
@@ -4983,12 +4909,11 @@ function renderLayerPanel(isInitialLoad = false) {
             </div>
         </div>
     `;
-    html += `</div>`; // Закрываем косметику
+    html += `</div>`; 
 
-    // --- РЕДАКТОР ВОДЯНЫХ ЗНАКОВ (ОБЩИЙ ДЛЯ ВСЕХ) ---
     if (window.ENABLE_TEMP_EDITOR) {
         if (!window.layerState.customWatermarks) {
-            if (!window.layerState.isBrawlPassMode) { // Для обычных акций
+            if (!window.layerState.isBrawlPassMode) { 
                 window.layerState.customWatermarks = [
                     { x: 50, y: 130, scale: 0.74, skewX: -10, align: "left" },
                     { x: 25, y: 310, scale: 0.25, skewX: -10, align: "left" },
@@ -4997,7 +4922,7 @@ function renderLayerPanel(isInitialLoad = false) {
                     { x: 1176, y: 324, scale: 1.60, skewX: -10, align: "right" },
                     { x: 1164, y: 612, scale: 0.70, skewX: -10, align: "right" }
                 ];
-            } else if (window.layerState.bpStyleIndex === 3) { // Для 3-го стиля Brawl Pass
+            } else if (window.layerState.bpStyleIndex === 3) { 
                 window.layerState.customWatermarks = [
                     {x: 1019, y: 601, scale: 0.3, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
                     {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: -114, y: 687, scale: 0.93, skewX: -12},
@@ -5005,7 +4930,7 @@ function renderLayerPanel(isInitialLoad = false) {
                     {x: -158, y: 125, scale: 0.54, skewX: -12}, {x: 332, y: -27, scale: 0.72, skewX: -12},
                     {x: 887, y: 7, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.21, skewX: -12}
                 ];
-            } else { // Для 1 и 2 стиля Brawl Pass
+            } else { 
                 window.layerState.customWatermarks = [
                     { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
                     { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
@@ -5036,7 +4961,7 @@ function renderLayerPanel(isInitialLoad = false) {
                 </select>
             </div>
             <div class="ios-layer-row">
-                <button class="ios-pill-btn" style="background:#34C759; flex-grow:1; margin-right:8px;" onclick="window.layerState.customWatermarks.push({x:600, y:300, scale:0.5, skewX:-10, align:'center'}); window.layerState.activeWmIndex = window.layerState.customWatermarks.length-1; renderLayerPanel(); startAnimation();">+ Добавить</button>
+                <button class="ios-pill-btn" style="background:#00ff591f; flex-grow:1; margin-right:8px;" onclick="window.layerState.customWatermarks.push({x:600, y:300, scale:0.5, skewX:-10, align:'center'}); window.layerState.activeWmIndex = window.layerState.customWatermarks.length-1; renderLayerPanel(); startAnimation();">+ Добавить</button>
                 <button class="ios-pill-btn" style="background:#FF3B30; flex-grow:1;" onclick="if(window.layerState.customWatermarks.length>0){ window.layerState.customWatermarks.splice(window.layerState.activeWmIndex, 1); window.layerState.activeWmIndex=Math.max(0, window.layerState.activeWmIndex-1); renderLayerPanel(); startAnimation(); }">- Удалить</button>
             </div>
         `;
@@ -5100,6 +5025,12 @@ window.toggleTextPosition = () => {
     calculateLayoutTarget(); 
 };
 
+window.toggleOffersPosition = () => {
+    window.layerState.offersPosition = window.layerState.offersPosition === 'top' ? 'bottom' : 'top';
+    renderLayerPanel();
+    calculateLayoutTarget(); 
+};
+
 window.toggleOffer = (idx) => {
     let offer = window.layerState.offers[idx];
     offer.visible = !offer.visible;
@@ -5110,11 +5041,12 @@ window.toggleOffer = (idx) => {
 window.updateOfferPriceFromLayer = (idx, inputEl) => {
     let val = inputEl.value.replace(/[^0-9]/g, '');
     if (val && parseInt(val) > 99999) val = "99999";
-    inputEl.value = val; // Стираем буквы
+    inputEl.value = val; 
     
     let offer = window.layerState.offers[idx];
     offer.price = val;
-    inputEl.style.background = (val === '' || val.toUpperCase() === 'FREE') ? '#34C759' : '#99D5F9';
+    inputEl.style.background = (val === '' || val.toUpperCase() === 'FREE') ? '#00ff591f' : '#01a2ff1f';
+    inputEl.style.color = (val === '' || val.toUpperCase() === 'FREE') ? '#16a34a' : '#0178ff'; 
     
     let cx = offer.ref.canvas.getContext('2d');
     cx.putImageData(offer.ref.info.blankedImgData, 0, 0);
@@ -5138,8 +5070,51 @@ window.downloadCosmeticLayer = (layerName) => {
     tempC.width = w; tempC.height = h;
     let ctx = tempC.getContext('2d');
     
-    if (layerName === 'bg' && rawBgImage) {
-        ctx.drawImage(rawBgImage, 0, 0, w, h);
+    if (layerName === 'bg') {
+        if (!window.layerState.isBrawlPassMode) {
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            if (rawBgImage) {
+                ctx.drawImage(rawBgImage, 0, 0, w, h);
+            }
+            
+            if (window.layerState.isGeneratedBg && window.layerState.pointsVisible && globalAssets.pointsImg) {
+                ctx.save();
+                ctx.globalCompositeOperation = "source-over";
+                ctx.drawImage(globalAssets.pointsImg, 0, 0, w, h);
+                ctx.restore();
+            }
+            
+            if (window.layerState.luchVisible) {
+                ctx.save();
+                ctx.globalCompositeOperation = "overlay"; 
+                if (globalAssets.luchImg) {
+                    ctx.globalAlpha = window.layerState.luchOpacity !== undefined ? window.layerState.luchOpacity : 1;
+                    let luchW = w * 2; let luchH = h * 2;
+                    ctx.drawImage(globalAssets.luchImg, -(luchW-w)/2, -(luchH-h)/2, luchW, luchH);
+                } else {
+                    drawFallbackRays(ctx, w, h, window.layerState.luchOpacity !== undefined ? window.layerState.luchOpacity : 1);
+                }
+                ctx.restore();
+            }
+            
+            if (window.layerState.starsVisible && globalAssets.starImg) {
+                drawStars(ctx, globalAssets.starImg, w, h, window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1, false);
+            }
+            
+            if (window.layerState.watermarksVisible && window.layerState.textValue) {
+                drawWatermarks(ctx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.8, false);
+            }
+            
+            if (window.layerState.textVisible && window.layerState.textValue) {
+                drawBeautifulNick(ctx, window.layerState.textValue, w, h);
+            }
+        } else {
+            if (rawBgImage) {
+                ctx.drawImage(rawBgImage, 0, 0, w, h);
+            }
+        }
     } else if (layerName === 'points') {
         if (globalAssets.pointsImg) {
             ctx.globalCompositeOperation = "source-over";
@@ -5467,7 +5442,6 @@ function isBg(x, y) {
     if (x<0 || x>=w || y<0 || y>=h) return false;
     let i = (y*w + x)*4;
     if (d[i+3] < 128) return false;
-    // ЗАЩИТА: не даем алгоритму заливки съедать черную обводку
     if (d[i] < 70 && d[i+1] < 70 && d[i+2] < 70) return false;
     return Math.abs(d[i]-bgR) < 30 && Math.abs(d[i+1]-bgG) < 30 && Math.abs(d[i+2]-bgB) < 30;
   }
@@ -5571,7 +5545,7 @@ function drawPriceText(ctx, w, h, textStr, info) {
   let isNumber = !isNaN(textStr.trim()) && textStr.trim() !== '';
   let numStr = textStr.trim(); 
   let symStr = isNumber ? " ₽" : ""; 
-  let mainColor = isFree ? "#3bf83b" : "#ffffff";
+  let mainColor = isFree ? "#3bf83b" : "#fff";
   let fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
   let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
 
@@ -5614,7 +5588,6 @@ function runMagicLogic(img) {
     const data = imgData.data;
     const totalPixels = w * h;
 
-    // 1. ПОИСК ГРАНИЦ
     const edges = new Uint8Array(totalPixels);
     for (let y = 1; y < h - 1; y++) {
         for (let x = 1; x < w - 1; x++) {
@@ -5641,7 +5614,6 @@ function runMagicLogic(img) {
         }
     }
 
-    // 2. УКРЕПЛЕНИЕ ГРАНИЦ
     const solidEdges = new Uint8Array(totalPixels);
     for (let y = 1; y < h - 1; y++) {
         for (let x = 1; x < w - 1; x++) {
@@ -5656,7 +5628,6 @@ function runMagicLogic(img) {
         }
     }
 
-    // 3. ЗАЛИВКА ФОНА
     const bgMask = new Uint8Array(totalPixels);
     const stack = new Int32Array(totalPixels);
     let stackPtr = 0;
@@ -5682,7 +5653,6 @@ function runMagicLogic(img) {
         if (cy < h - 1) { let n = curr + w; if (!solidEdges[n] && !bgMask[n]) { bgMask[n] = 1; stack[stackPtr++] = n; } }
     }
 
-    // 4. ИЗОЛЯЦИЯ КАРТОЧЕК
     let fgMask = new Uint8Array(totalPixels);
     const labels = new Int32Array(totalPixels);
     let currentLabel = 1;
@@ -5753,7 +5723,6 @@ function runMagicLogic(img) {
         return; 
     }
 
-// 5. ИДЕАЛЬНОЕ СГЛАЖИВАНИЕ ФОРМЫ (v3)
     const integralMask = new Int32Array(totalPixels);
     for (let y = 0; y < h; y++) {
         let sum = 0;
@@ -5868,7 +5837,6 @@ function runMagicLogic(img) {
         }
     }
 
-    // 6. МЯГКИЙ ANTI-ALIASING
     const integralAA = new Int32Array(totalPixels);
     for (let y = 0; y < h; y++) {
         let sum = 0;
@@ -5906,7 +5874,6 @@ function runMagicLogic(img) {
         data[i * 4 + 3] = alpha[i];
     }
 
-    // 7. ФИНАЛЬНАЯ ИЗОЛЯЦИЯ ПО АЛЬФЕ (ЗАЩИТА ОТ АРТЕФАКТОВ)
     const islandIDs = new Int32Array(totalPixels); 
     let currentID = 1;
     const finalIslands = new Map();
@@ -5961,7 +5928,6 @@ function runMagicLogic(img) {
 const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].minX - b[1].minX);
 
     sortedIslands.forEach(([id, rect]) => {
-        // --- 1. СКАНИРУЕМ ДНО КАРТОЧКИ ---
         let bottomY = new Int32Array(rect.maxX - rect.minX + 1);
         bottomY.fill(-1);
 
@@ -5974,10 +5940,9 @@ const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].min
             }
         }
 
-        // --- 2. УМНЫЙ ПОИСК ИСТИННОГО ДНА ---
         let cardW = rect.maxX - rect.minX + 1;
         let cardH = rect.maxY - rect.minY;
-        let searchStartY = rect.maxY - Math.floor(cardH * 0.15); // Ищем только в нижних 15%
+        let searchStartY = rect.maxY - Math.floor(cardH * 0.15); 
         
         let yFreq = {};
         for (let i = 0; i < bottomY.length; i++) {
@@ -5988,7 +5953,6 @@ const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].min
         }
 
         let validYs = [];
-        // Ищем все горизонтальные линии, которые занимают хотя бы 10% ширины карточки
         for (let yStr in yFreq) {
             if (yFreq[yStr] > cardW * 0.10) {
                 validYs.push(parseInt(yStr));
@@ -5997,24 +5961,20 @@ const sortedIslands = Array.from(finalIslands.entries()).sort((a, b) => a[1].min
 
         let baselineY = rect.maxY;
         if (validYs.length > 0) {
-            // МАГИЯ ЗДЕСЬ: Берём самую ВЫСОКУЮ линию (наименьший Y). 
-            // Она гарантированно пройдет по черной рамке и отсечет все "наросты" снизу!
             baselineY = Math.min(...validYs);
         }
 
-        // --- 3. "ХИРУРГИЧЕСКОЕ" УДАЛЕНИЕ БУГОРКОВ ---
         for (let y = baselineY + 1; y <= rect.maxY; y++) {
             for (let x = rect.minX; x <= rect.maxX; x++) {
                 if (islandIDs[y * w + x] === id) {
-                    islandIDs[y * w + x] = 0; // Жестко стираем мусор
+                    islandIDs[y * w + x] = 0; 
                 }
             }
         }
 
-        rect.maxY = baselineY; // Обновляем границу карточки
+        rect.maxY = baselineY; 
 
-        // --- 4. ВЫРЕЗАЕМ ИДЕАЛЬНУЮ КАРТОЧКУ БЕЗ ВОЗДУХА ---
-        let margin = 0; // 0 отступов, чтобы акции стояли вплотную
+        let margin = 0; 
         let minX = Math.max(0, rect.minX - margin); 
         let minY = Math.max(0, rect.minY - margin);
         let maxX = Math.min(w - 1, rect.maxX + margin); 
@@ -6142,7 +6102,6 @@ function setupPersistentCanvas() {
     
     let scale = getHDScale();
     
-    // --- ИСПРАВЛЕНИЕ: ЖЕСТКАЯ ФИКСАЦИЯ 1280x720 ДЛЯ BRAWL PASS ---
     if (window.layerState.isBrawlPassMode) {
         persistentCanvas.width = 1280 * scale;
         persistentCanvas.height = 720 * scale;
@@ -6220,6 +6179,16 @@ function calculateLayoutTarget() {
   
   let totalGridH = bestRows * bestH + (bestRows - 1) * gapY;
   let startGridY = boxTop + (boxH - totalGridH) / 2;
+  
+  if (!window.layerState.isBrawlPassMode && window.layerState.isReadyBg) {
+      let pos = window.layerState.offersPosition || 'bottom';
+      if (pos === 'top') {
+          startGridY = bgH * 0.05; 
+      } else {
+          startGridY = bgH * 0.96 - totalGridH; 
+      }
+  }
+
   let currentY = startGridY;
   
   for (let r = 0; r < bestRows; r++) {
@@ -6294,28 +6263,23 @@ function drawScene() {
     persistentCtx.imageSmoothingEnabled = true;
     persistentCtx.imageSmoothingQuality = 'high';
 
-    // Отрисовка фона
     if (rawBgImage) {
         persistentCtx.drawImage(rawBgImage, 0, 0, w, h);
     }
 
     if (window.layerState.isBrawlPassMode) {
         
-        // --- СТИЛЬ 2 (ФИНАЛЬНЫЙ КОД ПОЛНОСТЬЮ) ---
         if (window.layerState.bpStyleIndex === 2) {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
             const s = W / 1280; 
 
-            // Узнаём текущий сезон и берём его настройки
             let currentSeason = window.layerState.bpSeason || 50;
             let s2Config = (BP_SEASON_CONFIG[currentSeason] && BP_SEASON_CONFIG[currentSeason].style2Brawlers) 
                 ? BP_SEASON_CONFIG[currentSeason].style2Brawlers 
                 : BP_SEASON_CONFIG[50].style2Brawlers;
 
-            // Применяем значения из временного редактора, если они есть
-// Применяем значения из временного редактора ТОЛЬКО если он включен
             let b1 = { ...s2Config.brawler1 };
             if (window.ENABLE_TEMP_EDITOR) {
                 if (window.layerState.brawler1X !== undefined) b1.x = window.layerState.brawler1X;
@@ -6332,7 +6296,6 @@ function drawScene() {
                 if (window.layerState.brawler2Flip !== undefined) b2.flipH = window.layerState.brawler2Flip;
             }
 
-            // Вшитые координаты
             const C = {
                 shadows: { platesAlpha: 0.25, gemsAlpha: 0.35 },
                 mainBg: { x: -525, y: -282, scale: 1.42, skewX: 0 },
@@ -6342,7 +6305,6 @@ function drawScene() {
                 ],
                 gems: { x: 43, y: 110, scale: 1, scaleX: 0.94, scaleY: 1.01, rot: 0 },
                 
-                // Подключаем бравлеров:
                 brawler2: b2,
                 brawler1: b1,
                                 
@@ -6378,7 +6340,6 @@ function drawScene() {
             const shadowPlatesA = C.shadows.platesAlpha;
             const shadowGemsA = C.shadows.gemsAlpha;
 
-            // 0. ОСНОВНОЙ ФОН
             if (rawBgImage) {
                 ctx.save();
                 ctx.translate(C.mainBg.x * s, C.mainBg.y * s);
@@ -6388,7 +6349,6 @@ function drawScene() {
                 ctx.restore();
             }
 
-            // 1. ПРАВАЯ ЧАСТЬ (МАСКИРОВАННЫЕ ФОНЫ)
             if (rawBgImage && C.backgrounds && C.backgrounds.length >= 2) {
                 const drawMaskedBg = (bg, isTop) => {
                     ctx.save();
@@ -6413,7 +6373,6 @@ function drawScene() {
                 drawMaskedBg(C.backgrounds[1], false); 
             }
 
-// 1.5. ФОНОВЫЕ РАЗМЫТЫЕ КРУГИ (Надежный Canvas Gradient)
             ctx.save();
             const colorsMap = {
                 'green': {r: 94, g: 229, b: 104}, 
@@ -6423,7 +6382,6 @@ function drawScene() {
                 'black': {r: 102, g: 102, b: 102}
             };
             
-            // Проверяем, загружена ли картинка (FanKit или свой фон)
             let isCustomBg = !window.layerState.bgColorType;
             let clr = colorsMap[window.layerState.bgColorType] || {r: 255, g: 255, b: 255};
             
@@ -6443,7 +6401,6 @@ function drawScene() {
                 
                 ctx.globalCompositeOperation = 'screen';
                 
-                // Увеличиваем прозрачность и площадь свечения для картинок
                 let op = isCustomBg ? Math.min(1, light.opacity * 1.5) : light.opacity;
                 let midPoint = isCustomBg ? 0.5 : 0.3; 
                 
@@ -6455,7 +6412,6 @@ function drawScene() {
                 ctx.fillStyle = rg;
                 ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
                 
-                // Дублируем слой свечения для загруженных фонов, чтобы яркость "пробивала" картинку
                 if (isCustomBg) {
                     ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
                 }
@@ -6464,7 +6420,6 @@ function drawScene() {
             });
             ctx.restore();
 
-            // 2. Оверлеи (Точки и Звезды)
             if (window.layerState.pointsVisible !== false && globalAssets.style2Points) {
                 ctx.save(); ctx.globalCompositeOperation = "overlay";
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
@@ -6476,7 +6431,6 @@ function drawScene() {
                 ctx.drawImage(globalAssets.style2Stars, 0, 0, W, H); ctx.restore();
             }
 
-            // 2.5. ФОНОВЫЕ ВОДЯНЫЕ ЗНАКИ
             if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
                 let wmFont = window.layerState.watermarksFont || 'Font16103';
@@ -6485,7 +6439,6 @@ function drawScene() {
                 ctx.globalAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.3;
                 ctx.fillStyle = "white"; ctx.textAlign = "left"; ctx.textBaseline = "top";
                 
-                // Берем кастомный массив, если он есть, иначе стандартный
                 let wmArray = window.layerState.customWatermarks || C.watermarks;
                 wmArray.forEach(wm => {
                     ctx.save();
@@ -6498,7 +6451,6 @@ function drawScene() {
                 ctx.restore();
             }
 
-            // 3. Главный никнейм (Большой текст позади всего)
             if (cachedTextCanvas && animText.alpha > 0.01) {
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
@@ -6510,27 +6462,21 @@ function drawScene() {
                 ctx.restore();
             }
 
-            // 4. Белые разделительные линии (с тенями)
             let lineW = 16*s; let lineH = H * 1.5;
             let lineX = W * 0.58 + 6*s; let lineY = -H * 0.25;
             let lineCx = lineX + lineW/2; let cy = lineY + lineH/2;
 
-            // ШАГ 1: Рисуем вертикальную линию с тенью (она ляжет на фон)
             ctx.save();
             ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.fillStyle = "white";
             ctx.translate(lineCx, cy); ctx.translate(27*s, 2*s); ctx.rotate(7 * Math.PI / 180);
             ctx.fillRect(-lineW/2, -lineH/2, lineW, lineH);
             ctx.restore();
             
-            // ШАГ 2: Рисуем горизонтальную линию с тенью. 
-            // Она перекроет тень вертикальной линии, как и нужно.
             ctx.save();
             ctx.shadowBlur = 35 * s; ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.fillStyle = "white";
             ctx.fillRect((742 + 40)*s, H/2 - 8*s, W, 16*s);
             ctx.restore();
 
-            // ШАГ 3: Рисуем вертикальную линию ЕЩЁ РАЗ, но БЕЗ ТЕНИ,
-            // чтобы сама белая линия оказалась поверх горизонтальной.
             ctx.save();
             ctx.fillStyle = "white";
             ctx.translate(lineCx, cy); ctx.translate(27*s, 2*s); ctx.rotate(7 * Math.PI / 180);
@@ -6593,7 +6539,6 @@ function drawScene() {
                 ctx.restore();
             };
 
-            // 5. Сетка гемов
             if (globalAssets.style2Gems) {
                 ctx.save();
                 ctx.translate(C.gems.x*s, C.gems.y*s); 
@@ -6609,7 +6554,6 @@ function drawScene() {
             const p = window.layerState.style2Prices || [];
             const fmt = (i) => p[i] === "" ? "0 ₽" : p[i] + " ₽";
             
-            // 6. Цены на гемах
             drawS2TextObj(fmt(0), C.gemPrice0, 28*s, 5*s);
             drawS2TextObj(fmt(1), C.gemPrice1, 28*s, 5*s);
             drawS2TextObj(fmt(2), C.gemPrice2, 28*s, 5*s);
@@ -6617,13 +6561,11 @@ function drawScene() {
             drawS2TextObj(fmt(4), C.gemPrice4, 28*s, 5*s);
             drawS2TextObj(fmt(5), C.gemPrice5, 28*s, 5*s);
 
-            // 7. Pro Pass слева внизу (6)
             if (globalAssets.style2ProIcon) {
                 drawItem(globalAssets.style2ProIcon, C.proIcon, 15);
                 drawS2TextObj("- " + fmt(6), C.proText, 58*s, 8*s, "#ffffff");
             }
 
-            // 8. Блок BP+ (Справа сверху)
             let season = window.layerState.bpSeason || 50;
 
             ctx.save();
@@ -6638,7 +6580,6 @@ function drawScene() {
             drawItem(globalAssets.style2BluePlate, C.bluePlate, 15);
             drawS2TextObj(fmt(8), C.bluePrice, 56*s, 8*s);
 
-            // 9. Блок BP (Справа снизу)
             ctx.save();
             ctx.beginPath();
             ctx.rect(0, H/2 + 8*s, W, H/2); 
@@ -6651,7 +6592,6 @@ function drawScene() {
             drawItem(globalAssets.style2YellowPlate, C.yellowPlate, 15);
             drawS2TextObj(fmt(10), C.yellowPrice, 56*s, 8*s);
 
-            // 10. Логотип Brawl Pass по центру
             if (globalAssets.style2Text) {
                 ctx.save();
                 ctx.translate(C.mainLogo.x*s, C.mainLogo.y*s); 
@@ -6662,7 +6602,6 @@ function drawScene() {
                 ctx.restore();
             }
 
-            // --- ДОБАВИТЬ СЮДА: 11. ПЕРЕДНИЕ РАЗМЫТЫЕ КРУГИ (СВЕЧЕНИЯ ПОВЕРХ ВСЕГО) ---
             ctx.save();
             const foregroundLights = [
                 { id: 1776795127193, x: 171, y: 199, color: '#aef700', size: 10, blur: 68, opacity: 0.5 },
@@ -6716,19 +6655,16 @@ function drawScene() {
                 ctx.restore();
             });
             ctx.restore();
-            // --- КОНЕЦ ДОБАВЛЕНИЯ ---
 
             return;
         }
         
-        // --- СТИЛЬ 3 ---
         else if (window.layerState.bpStyleIndex === 3) {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
             const s = W / 1280;
 
-            // Буферный холст для применения эффектов цветокоррекции на все слои
             const offC = document.createElement('canvas');
             offC.width = W; offC.height = H;
             const offCtx = offC.getContext('2d');
@@ -6770,7 +6706,6 @@ function drawScene() {
                 offCtx.textAlign = 'center';
                 offCtx.textBaseline = 'middle';
                 
-                // Тень и обводка
                 offCtx.shadowColor = '#000000';
                 offCtx.shadowOffsetX = 0;
                 offCtx.shadowOffsetY = 3 * scale * s;
@@ -6787,12 +6722,8 @@ function drawScene() {
                 offCtx.restore();
             };
 
-            // 1. Фон
             if (rawBgImage) offCtx.drawImage(rawBgImage, 0, 0, W, H);
 
-            // ==========================================
-            // ВСТАВЛЯЕМ ВОДЯНЫЕ ЗНАКИ СЮДА (СРАЗУ ПОСЛЕ ФОНА)
-            // ==========================================
             if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
                 let wmFont = window.layerState.watermarksFont || 'LilitaOneRus';
@@ -6823,9 +6754,7 @@ function drawScene() {
                 });
                 offCtx.restore();
             }
-            // ==========================================
 
-            // 2. Лучи и Точки
             if (window.layerState.luchVisible !== false) {
                 drawLayer(globalAssets.s3Rays, 0, 0, 1280, 720, 1, window.layerState.luchOpacity !== undefined ? window.layerState.luchOpacity : 1, 'overlay');
             }
@@ -6833,19 +6762,16 @@ function drawScene() {
                 drawLayer(globalAssets.s3Dots, 0, 0, 1280, 720, 1, window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1, 'overlay');
             }
 
-            // 3. Детали и Зоны
             if (window.layerState.detailsVisible !== false) {
                 drawLayer(globalAssets.s3Details, 0, 0, 1280, 720, 1, 1, 'source-over');
             }
             
-            // Прячем зоны, если пользователь выбрал цветной фон (isGeneratedBg)
             if (!window.layerState.isGeneratedBg) {
                 drawZone('#ffaa00', -20, 0, 507, 736, -76, 0.36);
                 drawZone('#0015ff', 488, -5, 436, 736, -76, 0.36);
                 drawZone('#005e0e', 924, -2, 451, 736, -76, 0.36);
             }
 
-            // 4. Плашки и Цены (Картинки)
             drawLayer(globalAssets.s3PanelL, 34, 33, 417, 520, 1, 1, 'source-over');
             drawLayer(globalAssets.s3PriceL, 106, 494, 240, 85, 1, 1, 'source-over');
             
@@ -6854,24 +6780,20 @@ function drawScene() {
             
             drawLayer(globalAssets.s3PanelR, 898, 2, 360, 549, 1, 1, 'source-over');
 
-            // 5. Звезды
             if (window.layerState.starsVisible !== false) {
                 drawLayer(globalAssets.s3Stars, 0, 0, 1280, 720, 1, window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1, 'overlay');
             }
 
-            // 6. Тексты Цен
             const p = window.layerState.style3Prices || ["899", "1249", "2999"];
             drawTextObj(p[0] + ' ₽', '#ffffff', 126, 494, 202, 72, 1);
             drawTextObj(p[1] + ' ₽', '#ffffff', 567, 494, 164, 67, 1.05);
             drawTextObj(p[2] + ' ₽', '#ffffff', 988, 468, 184, 68, 1);
 
-            // 8. Финальная цветокоррекция (Filter) и перенос на видимый холст
             ctx.save();
             ctx.filter = 'saturate(135%) brightness(110%) contrast(105%)';
             ctx.drawImage(offC, 0, 0);
             ctx.restore();
 
-            // Если нужен большой текст SNAPI по центру (как в остальных стилях)
             if (cachedTextCanvas && animText.alpha > 0.01) {
 
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
@@ -6882,7 +6804,6 @@ function drawScene() {
                 ctx.globalAlpha = animText.alpha;
                 let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
                 ctx.translate(tw2, th2);
-                // ИСПРАВЛЕНИЕ: Теперь используем переменные txtX, txtY и txtS с ползунков!
                 ctx.translate(txtX * s, txtY * s); 
                 ctx.scale(txtS * animText.scale, txtS * animText.scale); 
                 ctx.translate(-W/2, -H/2);
@@ -6890,10 +6811,8 @@ function drawScene() {
                 ctx.restore();
             } 
             
-            // ИСПРАВЛЕНИЕ: Вынесли return за скобку, чтобы всё работало даже при скрытом тексте
             return; 
         }
-        // --- СТИЛЬ 1 ---
         else {
             if (window.layerState.luchVisible && globalAssets.luchImg) {
                 persistentCtx.save();
@@ -6922,7 +6841,6 @@ function drawScene() {
                 persistentCtx.drawImage(window.bpForegroundImage, 0, 0, w, h);
             }
 
-            // --- ОТРИСОВКА ПЕРСОНАЖЕЙ ДЛЯ 1 СТИЛЯ ---
             let currentSeason = window.layerState.bpSeason || 50;
             let seasonConf = BP_SEASON_CONFIG[currentSeason];
             let s1Config = (seasonConf && seasonConf.style1Brawlers) ? seasonConf.style1Brawlers : BP_SEASON_CONFIG[50].style1Brawlers;
@@ -6943,25 +6861,21 @@ function drawScene() {
                 let bh = h * scale;
                 let bw = bh * (img.width / img.height);
                 
-                // Адаптируем координаты под текущий экран
                 let sx = x * (w / 1200); 
                 let sy = y * (h / 675);
                 
                 persistentCtx.translate(sx, sy);
                 if (flip) persistentCtx.scale(-1, 1);
                 
-                // Рисуем обводку
                 persistentCtx.shadowColor = '#000';
                 persistentCtx.shadowBlur = 0;
                 
-                // ТВОЯ НАСТРОЙКА: Увеличь эту цифру, чтобы сделать обводку еще толще (было 3)
                 let strokeSize = 12; 
-                let diag = strokeSize * 0.75; // Высчитываем диагонали, чтобы обводка была круглой, а не квадратной
+                let diag = strokeSize * 0.75; 
                 
-                // Используем 8 направлений, чтобы толстая обводка была плотной и без дырок по углам
                 const offsets = [
-                    [strokeSize, 0], [-strokeSize, 0], [0, strokeSize], [0, -strokeSize], // Крест
-                    [diag, diag], [-diag, -diag], [diag, -diag], [-diag, diag]            // Диагонали
+                    [strokeSize, 0], [-strokeSize, 0], [0, strokeSize], [0, -strokeSize], 
+                    [diag, diag], [-diag, -diag], [diag, -diag], [-diag, diag]            
                 ];
                 
                 offsets.forEach(([dx, dy]) => {
@@ -6977,7 +6891,6 @@ function drawScene() {
 
             drawBrawlerS1(globalAssets[`brawler_${currentSeason}_2`], b2x, b2y, b2s, b2f);
             drawBrawlerS1(globalAssets[`brawler_${currentSeason}_1`], b1x, b1y, b1s, b1f);
-            // --- КОНЕЦ ОТРИСОВКИ ---
 
             let priceW = w * 0.24;
             let marginX = w * 0.02;
@@ -7014,9 +6927,6 @@ function drawScene() {
         return;
     }
 
-    // ==========================================
-    // ЛОГИКА ДЛЯ ОБЫЧНЫХ АКЦИЙ
-    // ==========================================
     if (window.layerState.isGeneratedBg && window.layerState.pointsVisible && globalAssets.pointsImg) {
         persistentCtx.save();
         persistentCtx.globalCompositeOperation = "source-over";
@@ -7113,12 +7023,10 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
     ctx.fillStyle = "#ffffff";
     ctx.textBaseline = "middle";
     
-    // Подхватываем наши кастомные водяные знаки, которые мы настроили в панельке
     let wmArray = window.layerState.customWatermarks;
     
-    // Запасной план: если массив вдруг пустой, загружаем стандартный шаблон
     if (!wmArray || wmArray.length === 0) {
-        if (!window.layerState.isBrawlPassMode) { // Для акций
+        if (!window.layerState.isBrawlPassMode) {
             wmArray = [
                 { x: 49, y: 79, scale: 0.35, skewX: -10, align: "center" },
                 { x: 58, y: 233, scale: 0.54, skewX: -10, align: "center" },
@@ -7133,7 +7041,7 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
                 { x: 1230, y: 512, scale: 0.61, skewX: -10, align: "center" },
                 { x: 1071, y: 675, scale: 0.79, skewX: -10, align: "center" }
             ];
-            } else if (window.layerState.bpStyleIndex === 3) { // Для 3 стиля Brawl Pass
+            } else if (window.layerState.bpStyleIndex === 3) { 
                 wmArray = [
                     {x: 1019, y: 601, scale: 0.3, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
                     {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: -114, y: 687, scale: 0.93, skewX: -12},
@@ -7141,7 +7049,7 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
                     {x: -158, y: 125, scale: 0.54, skewX: -12}, {x: 332, y: -27, scale: 0.72, skewX: -12},
                     {x: 887, y: 7, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.21, skewX: -12}
                 ];
-            } else { // Для 1 и 2 стиля Brawl Pass // Для 1 и 2 стиля Brawl Pass
+            } else { 
                 wmArray = [
                     { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
                     { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
@@ -7156,7 +7064,6 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
             window.layerState.customWatermarks = wmArray;
         }
 
-    // Рассчитываем динамический масштаб
     let s = w / 1280;
 
     wmArray.forEach(wm => {
@@ -7177,11 +7084,9 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
 
 function drawStars(ctx, starImg, w, h, opacity = 1.0, forExport = false) {
     ctx.save(); 
-    // Включаем режим наложения "Перекрытие" (для скачивания слоев оставляем source-over)
     ctx.globalCompositeOperation = forExport ? "source-over" : "overlay"; 
     ctx.globalAlpha = opacity;
     
-    // Просто рисуем готовую картинку с эффектами на весь размер холста
     ctx.drawImage(starImg, 0, 0, w, h); 
     
     ctx.restore();
@@ -7293,29 +7198,24 @@ function drawBeautifulNick(ctx, text, w, h) {
   const wizardNickCounter = document.getElementById('wizard-nick-counter');
   let lastNickLeft = 16;
 
-// Логика тряски при достижении лимита
   wizardNickInput.addEventListener('keydown', (e) => {
-      // Проверяем, что введено >= 16 символов, нет выделения текста и нажимается буква/цифра
       if (wizardNickInput.value.length >= 16 && 
           wizardNickInput.selectionStart === wizardNickInput.selectionEnd && 
           e.key.length === 1 && 
           !e.ctrlKey && !e.metaKey && !e.altKey) {
           
-          // Вызываем Haptic
           if (window.triggerHaptic) window.triggerHaptic();
           
           wizardInputWrap.classList.remove('shake-anim');
-          void wizardInputWrap.offsetWidth; // перезапуск CSS анимации
+          void wizardInputWrap.offsetWidth; 
           wizardInputWrap.classList.add('shake-anim');
           
-          // УДАЛЯЕМ КЛАСС ПОСЛЕ ЗАВЕРШЕНИЯ АНИМАЦИИ (чтобы не тряслось при повторном открытии)
           setTimeout(() => {
               wizardInputWrap.classList.remove('shake-anim');
           }, 300);
       }
   });
 
-  // Функция обновления самого счетчика с блюром
   function updateNickCounter() {
       let left = 16 - wizardNickInput.value.length;
       if (left === 0 || left === 16) {
@@ -7353,7 +7253,7 @@ function drawBeautifulNick(ctx, text, w, h) {
       wizardNickInput.value = '';
       wizardNextBtn2.classList.remove('show');
       document.getElementById('wizard-caps-btn').classList.remove('visible');
-      if (typeof updateNickCounter === 'function') updateNickCounter(); // <--- ВОТ СЮДА
+      if (typeof updateNickCounter === 'function') updateNickCounter(); 
       
       stagedFiles = [];
       updateDropzoneUI();
@@ -7365,15 +7265,12 @@ function drawBeautifulNick(ctx, text, w, h) {
       let bpNextBtn3 = document.getElementById('wizard-next-btn3-bp');
       if(bpNextBtn3) bpNextBtn3.classList.remove('show');
 
-      // ДОБАВИТЬ ВОТ ЭТО ДЛЯ ОЧИСТКИ:
       ['ws3-p0', 'ws3-p1', 'ws3-p2'].forEach(id => {
           let el = document.getElementById(id);
           if (el) el.value = '';
       });
 
-      // === ДОБАВЬ ЭТОТ БЛОК ДЛЯ ПОЛНОЙ ОЧИСТКИ КЭША СЛОЕВ И КООРДИНАТ ===
       window.layerState.offers = [];
-      // Жесткая очистка кэша координат персонажей и стилей
       window.layerState.isBrawlPassMode = false;
       window.layerState.bpStyleIndex = null;
       
@@ -7437,7 +7334,6 @@ function drawBeautifulNick(ctx, text, w, h) {
   const fankitGrid = document.getElementById('fankit-grid');
 
 if (fankitGrid && fankitGrid.children.length === 0) {
-    // 1. Создаем блок рекомендуемых фонов
     const recWrapper = document.createElement('div');
     recWrapper.className = 'fankit-recommended-wrapper';
     recWrapper.innerHTML = `
@@ -7477,7 +7373,6 @@ if (fankitGrid && fankitGrid.children.length === 0) {
                         generateBrawlPassTest(); 
                     }
                 } else {
-                    // Для обычных акций пересчитываем макет и перерисовываем
                     calculateLayoutTarget(); 
                     if (typeof startAnimation === 'function') startAnimation();
                 }
@@ -7510,48 +7405,43 @@ if (fankitGrid && fankitGrid.children.length === 0) {
         setTimeout(() => window.closeFankitGlobal(), 200);
     };
 
-    // --- ЛЕНИВАЯ ЗАГРУЗКА И АСИНХРОННЫЙ РЕНДЕР ---
     const imageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 let item = entry.target;
-                let imgSrc = item.getAttribute('data-src'); // Берем путь, который спрятали
+                let imgSrc = item.getAttribute('data-src'); 
 
                 let img = new Image();
                 img.crossOrigin = "anonymous";
                 img.src = imgSrc;
 
-                // Метод decode() расшифровывает тяжелые PNG без фризов интерфейса
                 img.decode().then(() => {
                     item.classList.remove('loading');
                     item.style.backgroundImage = `url('${imgSrc}')`;
                 }).catch(() => {
-                    // Фоллбэк, если decode() не сработал (редко, но бывает)
                     img.onload = () => {
                         item.classList.remove('loading');
                         item.style.backgroundImage = `url('${imgSrc}')`;
                     };
                 });
 
-                observer.unobserve(item); // Картинка пошла качаться, больше за ней не следим
+                observer.unobserve(item); 
             }
         });
-    }, { rootMargin: '250px' }); // Начинаем качать за 250px до того, как юзер доскроллит
+    }, { rootMargin: '250px' }); 
 
-    // 2. Заполняем раздел "Рекомендуем"
     recBackgrounds.forEach((bg) => {
         let item = document.createElement('div');
         item.className = 'fankit-rec-item loading';
         item.innerHTML = `<div class="fankit-rec-badge">${bg.text}</div>`;
         recGrid.appendChild(item);
 
-        item.setAttribute('data-src', bg.src); // Прячем путь в атрибут
+        item.setAttribute('data-src', bg.src); 
         item.onclick = () => handleFankitSelection(item, bg.src);
 
-        imageObserver.observe(item); // Отдаем обсерверу
+        imageObserver.observe(item); 
     });
 
-    // 3. Заполняем остальные фоны (1-17 и 21)
     const standardBackgrounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21];
     
     standardBackgrounds.forEach((num) => {
@@ -7561,10 +7451,10 @@ if (fankitGrid && fankitGrid.children.length === 0) {
 
         let originalSrc = `bg/bg${num}.png`;
         
-        item.setAttribute('data-src', originalSrc); // Прячем путь в атрибут
+        item.setAttribute('data-src', originalSrc); 
         item.onclick = () => handleFankitSelection(item, originalSrc);
 
-        imageObserver.observe(item); // Отдаем обсерверу
+        imageObserver.observe(item); 
     });
 }
 
@@ -7691,7 +7581,6 @@ wizardNextBtn1.onclick = async () => {
     window.triggerHaptic();
 
     if (uploadMode === 'ready_bg' && wizardMode === 'action') {
-        // Пропускаем Шаг 2 ТОЛЬКО ДЛЯ АКЦИЙ
         window.layerState.isReadyBg = true;
         window.layerState.isGeneratedBg = false;
         rawBgImage = uploadedReadyBaseImg;
@@ -7712,7 +7601,6 @@ wizardNextBtn1.onclick = async () => {
             document.getElementById('prog-step3').classList.add('active');
         }, 300);
     } else {
-        // Для BP (оба стиля) или при загрузке обычного фона/цвета — идем на Шаг 2
         transitionStep(step1, step2, document.getElementById('prog-step1'), document.getElementById('prog-step2'), document.getElementById('prog-line1'));
     }
 };
@@ -7746,7 +7634,7 @@ wizardNextBtn1.onclick = async () => {
   wizardNickInput.addEventListener('input', () => {
     checkStep2Ready();
     updateCapsBtnState();
-    updateNickCounter(); // <--- ВОТ СЮДА
+    updateNickCounter(); 
   });
 
   wizardInsertBtn.onclick = () => {
@@ -7760,7 +7648,7 @@ wizardNextBtn1.onclick = async () => {
         wizardNickInput.value = savedNick;
         checkStep2Ready();
         updateCapsBtnState();
-        updateNickCounter(); // <--- ВОТ СЮДА
+        updateNickCounter();
     }, 200); 
   };
 
@@ -7775,7 +7663,7 @@ wizardNextBtn1.onclick = async () => {
     }
     checkStep2Ready();
     updateCapsBtnState();
-    updateNickCounter(); // <--- ВОТ СЮДА
+    updateNickCounter(); 
   };
 
 
@@ -7790,7 +7678,6 @@ wizardNextBtn2.onclick = async () => {
     }
     wizardNickInput.blur(); 
 
-    // ЕСЛИ ЭТО 2 СТИЛЬ BP — ИДЕМ НА 3 ШАГ (ЦЕНЫ)
     if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 2) {
         window.layerState.textValue = currentNick || "SNAPI";
         let targetStep3Style2 = document.getElementById('wizard-step3-bp-style2');
@@ -7798,7 +7685,6 @@ wizardNextBtn2.onclick = async () => {
         return;
     }
 
-        // ЕСЛИ ЭТО 3 СТИЛЬ BP — ИДЕМ НА ШАГ 3 (ЦЕНЫ 3 СТИЛЯ)
     if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 3) {
         window.layerState.textValue = currentNick || "SNAPI";
         let targetStep3Style3 = document.getElementById('wizard-step3-bp-style3');
@@ -7857,14 +7743,12 @@ wizardNextBtn2.onclick = async () => {
 document.getElementById('wizard-next-btn3-bp-style2').onclick = async () => {
     window.triggerHaptic();
     
-    // Считываем все 11 значений из инпутов
     window.layerState.style2Prices = [];
     for (let i = 0; i <= 10; i++) {
         let input = document.getElementById('ws2-p' + i);
         window.layerState.style2Prices[i] = input ? (input.value || "0") : "0";
     }
 
-    // Переходим на 4-й шаг (Выбор сезона)
     let targetStep4 = document.getElementById('wizard-step4-bp');
     transitionStep(document.getElementById('wizard-step3-bp-style2'), targetStep4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
 };
@@ -7962,7 +7846,6 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     
     document.getElementById('wizard-overlay').style.display = 'none';
 
-        // Если это 2-й стиль, подгружаем фон перед созданием
         if (window.layerState.bpStyleIndex === 2) {
             if (selectedColor) {
                 window.layerState.isReadyBg = false;
@@ -7972,7 +7855,7 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
                 window.layerState.isReadyBg = true;
                 window.layerState.isGeneratedBg = false;
                 rawBgImage = uploadedReadyBaseImg;
-                window.layerState.textVisible = true; // Текст никнейма оставляем видимым
+                window.layerState.textVisible = true; 
             } else {
                 window.layerState.isReadyBg = false;
                 window.layerState.isGeneratedBg = false;
@@ -7981,7 +7864,6 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
             }
             if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
             } else if (window.layerState.bpStyleIndex === 3) {
-            // Инициализация фонов перед вызовом редактора 3 стиля
             if (selectedColor) {
                 window.layerState.isReadyBg = false;
                 window.layerState.isGeneratedBg = true;
@@ -7999,7 +7881,6 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
             }
             if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
         } else {
-        // Для 1-го стиля
         generateBrawlPassTest();
     }
 };
@@ -8351,11 +8232,9 @@ async function generateBrawlPassTest() {
         loadImg('BP/Luch.png'), loadImg('BP/bp_starsEff.png'), loadImg('BP/bp_pointEff.png'), loadImg('BP/bp_star.png'),
         loadImg(`BP/brawler_s${season}_2.png`), loadImg(`BP/brawler_s${season}_1.png`), 
         
-        // Динамический файл только для левой панели
         loadImg(`BP/bp_panel_left${season}.png`), 
         loadImg('BP/bp_price_bg_left.png'),
         
-        // Правая панель остается статичной
         loadImg('BP/bp_panel_right.png'), 
         loadImg('BP/bp_price_bg_right.png')
     ]);
@@ -8479,11 +8358,9 @@ async function generateBrawlPassTest() {
 
     drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
     drawShadow(cxR, starY - 10 + 12.5);
-    // Персонажа 2 убрали отсюда, он теперь рисуется "вживую"
 
     drawLargeGlow(cxL + 20, starY - HEIGHT * 0.2, 180); 
     drawShadow(cxL, starY - 10 + 12.5);
-    // Персонажа 1 убрали отсюда, он теперь рисуется "вживую"
 
     window.bpForegroundImage = new Image();
     window.bpForegroundImage.onload = () => {
@@ -8672,7 +8549,6 @@ window.openBPTestEditor = function() {
         let season = window.layerState.bpSeason || 50;
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
         
-        // Загружаем все элементы именно для второго стиля
         if (!globalAssets.style2Gems) globalAssets.style2Gems = await load('BP/bp_gems.png');
         if (!globalAssets.style2Points) globalAssets.style2Points = await load('BP/bp_style2_points.png');
         if (!globalAssets.style2Stars) globalAssets.style2Stars = await load('BP/bp_stars_style2.png');
@@ -8712,14 +8588,12 @@ window.openBPStyle3Editor = function() {
     setTimeout(async () => {
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
         
-        // Загрузка ассетов 3-го стиля
         let season = window.layerState.bpSeason || 50;
         
         if (!globalAssets.s3Rays) globalAssets.s3Rays = await load('BP/bp_luch_3style.png');
         if (!globalAssets.s3Dots) globalAssets.s3Dots = await load('BP/bp_points_3style.png');
         if (!globalAssets.s3Details) globalAssets.s3Details = await load('BP/bp_details_3style.png');
         
-        // Динамическая загрузка панели в зависимости от сезона
         if (!globalAssets[`s3PanelL_${season}`]) {
             globalAssets[`s3PanelL_${season}`] = await load(`BP/bp_panel_left${season}.png`);
         }
@@ -8741,13 +8615,12 @@ window.openBPStyle3Editor = function() {
 window.updateS3PriceLayer = (idx, inputEl) => {
     let val = inputEl.value.replace(/[^0-9]/g, '');
     if (val && parseInt(val) > 99999) val = "99999";
-    inputEl.value = val; // Стираем буквы
+    inputEl.value = val; 
     if (!window.layerState.style3Prices) window.layerState.style3Prices = ["899", "1249", "2999"];
     window.layerState.style3Prices[idx] = val;
     window.requestRender();
 };
 
-// --- ГЕНЕРАТОР ИСКР ВОКРУГ КНОПКИ СОЗДАТЬ ---
 function initSparks() {
     const container = document.getElementById('sparks-container');
     const btn = document.getElementById('ios-btn-create');
@@ -8756,12 +8629,9 @@ function initSparks() {
     container.innerHTML = ''; 
     const numSparks = 25; 
     
-    // Получаем реальные размеры кнопки для вычисления ее контура
     const btnW = btn.offsetWidth || 336;
     const btnH = btn.offsetHeight || 54;
     
-    // Радиусы (ширина и высота пополам). 
-    // Отнимаем немного пикселей, чтобы искры вылетали из-под самого края, а не появлялись в воздухе
     const rx = (btnW / 2) - 15; 
     const ry = (btnH / 2) - 5;
     
@@ -8771,20 +8641,16 @@ function initSparks() {
         
         let angle;
         if (Math.random() > 0.5) {
-            // Правая сторона: от -55° до +15°
             angle = (Math.random() * 70 - 55) * (Math.PI / 180);
         } else {
-            // Левая сторона: от 165° до 235°
             angle = (Math.random() * 70 + 165) * (Math.PI / 180);
         }
         
-        // Вычисляем точку старта прямо на контуре кнопки (формула эллипса)
         const radiusAtAngle = (rx * ry) / Math.sqrt(Math.pow(ry * Math.cos(angle), 2) + Math.pow(rx * Math.sin(angle), 2));
         
         const startX = Math.cos(angle) * radiusAtAngle;
         const startY = Math.sin(angle) * radiusAtAngle;
         
-        // Дистанция полета УЖЕ ЗА пределами кнопки
         const travelDist = 40 + Math.random() * 60; 
         
         const endX = startX + Math.cos(angle) * travelDist;
@@ -8792,7 +8658,6 @@ function initSparks() {
         
         const rotation = (Math.random() - 0.5) * 720; 
         
-        // Передаем точные координаты в CSS
         spark.style.setProperty('--startX', `${startX}px`);
         spark.style.setProperty('--startY', `${startY}px`);
         spark.style.setProperty('--endX', `${endX}px`);
@@ -8812,10 +8677,8 @@ function initSparks() {
     }
 }
 
-// Запускаем генератор при загрузке и при изменении размеров окна
 document.addEventListener('DOMContentLoaded', initSparks);
 window.addEventListener('resize', () => {
-    // Пересобираем искры, если пользователь перевернул телефон (изменилась ширина кнопки)
     clearTimeout(window.sparkResizeTimer);
     window.sparkResizeTimer = setTimeout(initSparks, 200);
 });
@@ -8852,11 +8715,9 @@ window.updatePromoStarUI = function() {
     const select = document.getElementById('promo-star-select');
     if (!select) return;
     
-    // Обновляем выпадающий список
     select.innerHTML = window.promoBgStars.map((_, i) => `<option value="${i}">Звезда #${i + 1}</option>`).join('');
     select.value = window.activePromoBgStarIndex;
     
-    // Подтягиваем значения в ползунки
     const activeStar = window.promoBgStars[window.activePromoBgStarIndex];
     if (activeStar) {
         document.getElementById('n-ps-x').value = activeStar.x; document.getElementById('r-ps-x').value = activeStar.x;
@@ -8891,15 +8752,11 @@ window.updateActivePromoStar = function(param, value) {
     window.renderPromoBgStars();
 };
 
-// Вызываем один раз при загрузке страницы, чтобы отрисовать начальную звезду
 setTimeout(() => { window.renderPromoBgStars(); }, 150);
 
 
-// ==========================================
-// НАСТРОЙКА ТАЙМЕРА
-// Формат: ГГГГ-ММ-ДДTЧЧ:ММ:СС+03:00 (где +03:00 это часовой пояс Москвы)
-const TARGET_DATE_STRING = "2026-05-01T14:06:00+03:00"; // Поставил на пару дней вперед для теста
-// ==========================================
+const TARGET_DATE_STRING = "2026-05-06T11:00:00+03:00"; 
+
 
 window.initPromoTimer = function() {
     const timerEl = document.getElementById('promo-timer');
@@ -8949,9 +8806,7 @@ window.initPromoTimer = function() {
         }
     };
 
-    // --- НОВЫЙ АЛГОРИТМ УМНОЙ ЗАМЕНЫ ТЕКСТА ---
     const swapTextWithFlip = (el, oldText, newText, newClassName) => {
-        // Разбиваем старый и новый текст на слова
         const oldWords = oldText.trim().split(/\s+/);
         const newWords = newText.trim().split(/\s+/);
         const maxLen = Math.max(oldWords.length, newWords.length);
@@ -8962,13 +8817,10 @@ window.initPromoTimer = function() {
             let nw = newWords[i] || '';
             
             if (ow === nw) {
-                // Если слово не изменилось (например, "Новый сезон") — оставляем как есть
                 html += `${nw} `;
             } else {
-                // Если изменилось — запускаем анимацию флипа
                 html += `<span class="flip-wrapper">`;
                 if (ow) {
-                    // Если это таймер, мы временно сохраняем "золотой" стиль прямо на цифрах, чтобы они красиво улетели
                     let extraStyle = newClassName ? `font-family: ui-rounded, 'SF Pro Rounded', 'ArialRoundedOld', 'Arial Rounded MT Bold', sans-serif; font-weight: 800; font-size: 28px; background: linear-gradient(180deg, #ffef9e 0%, #ffb82c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap;` : `white-space: nowrap;`;
                     html += `<span class="flip-old" style="${extraStyle}">${ow}</span>`;
                 }
@@ -8994,12 +8846,10 @@ window.initPromoTimer = function() {
             const contentContainer = timerEl.closest('.promo-content');
             const subtitleEl = contentContainer.querySelector('.promo-subtitle');
             
-            // Анимируем подзаголовок (слова "скоро выйдет" улетят, а "уже вышел" прилетят)
             if (subtitleEl) {
                 swapTextWithFlip(subtitleEl, subtitleEl.innerText, "Новый сезон уже вышел!");
             }
             
-            // Анимируем сам таймер (золотые цифры улетят, а новый белый текст встанет на их место)
             const oldTimerText = timerEl.innerText;
             swapTextWithFlip(timerEl, oldTimerText, "На выбор - стили работ, текста и многое другое", "promo-desc");
 
@@ -9021,13 +8871,10 @@ window.initPromoTimer = function() {
         isFirstRender = false; 
     };
 
-// ... остальной код функции updateTimer() ...
 
     updateTimer(); 
     setInterval(updateTimer, 1000);
 
-    // === 1. АСИНХРОННАЯ ЗАГРУЗКА ВРЕМЕНИ ПО API ===
-    // Она работает на фоне и поправит таймер, как только придет ответ
     fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow')
         .then(res => {
             if (!res.ok) throw new Error('worldtimeapi error');
@@ -9037,10 +8884,9 @@ window.initPromoTimer = function() {
             const serverTime = new Date(data.datetime).getTime();
             const localTime = new Date().getTime();
             offset = serverTime - localTime; 
-            updateTimer(); // Пересчитываем с учетом реального времени!
+            updateTimer(); 
         })
         .catch(() => {
-            // Резервный API на случай, если worldtimeapi "лежит" или тормозит
             fetch('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Moscow')
                 .then(res => res.json())
                 .then(data => {
@@ -9052,7 +8898,6 @@ window.initPromoTimer = function() {
                 .catch(() => console.warn('Оба API времени недоступны. Работаем по системному.'));
         });
 
-    // === 2. БЫСТРЫЙ ЗАГРУЗЧИК ПЛАШКИ (ТОЛЬКО КАРТИНКИ) ===
     const banner = document.getElementById('main-promo');
     if (banner) {
         const images = Array.from(banner.querySelectorAll('img'));
@@ -9072,37 +8917,31 @@ window.initPromoTimer = function() {
             banner.classList.add('banner-ready');
         });
     }
-}; // Конец функции window.initPromoTimer
+}; 
 
-// Инициализация
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     window.initPromoTimer();
 } else {
     document.addEventListener('DOMContentLoaded', window.initPromoTimer);
 }
 
-// Быстрый переход к созданию Brawl Pass при клике на промо-плашку
 window.openBPFromPromo = function() {
     if (window.triggerHaptic) window.triggerHaptic();
     if (window.resetWizardState) window.resetWizardState();
 
     isCurrentProjectSaved = false; 
     
-    // Скрываем главный экран и лишние элементы
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'none';
     let btnWrap = document.getElementById('download-btn-wrap');
     if (btnWrap) btnWrap.style.display = 'none';
 
-    // Устанавливаем нужные режимы
     wizardMode = 'bp';
     selectedCategory = 'bp';
 
-    // Включаем 4-й шаг прогресс-бара, так как это Brawl Pass
     document.getElementById('prog-line3').style.display = 'block';
     document.getElementById('prog-step4').style.display = 'flex';
 
-    // Сбрасываем выбранный стиль, чтобы начать заново
     selectedBPStyle = null;
     for (let i = 1; i <= 3; i++) {
         let radio = document.getElementById(`bp-radio-${i}`);
@@ -9111,7 +8950,6 @@ window.openBPFromPromo = function() {
     let nextBtn = document.getElementById('bp-style-btn-next');
     if (nextBtn) nextBtn.classList.remove('show');
 
-    // Показываем окно выбора стиля BP
     document.getElementById('bp-style-overlay').style.display = 'flex';
     window.scrollTo(0,0);
     
