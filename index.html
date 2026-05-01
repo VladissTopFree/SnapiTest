@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(18)";
+  const APP_VERSION = "v2.5.1(19)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
   const SHOW_PROMO_BANNER = true; 
@@ -2602,6 +2602,60 @@ body.os-non-apple .promo-banner {
   </div>
 </div>
 
+<!-- НОВЫЙ ЭКРАН: ВАРИАНТЫ ДОПОЛНИТЕЛЬНОГО BP -->
+<div id="bp-variant-overlay" style="display: none; width: 100%; height: var(--tg-viewport-stable-height, 100vh); overflow: hidden; background: var(--tg-theme-secondary-bg-color, #F2F2F7); flex-direction: column; box-sizing: border-box; position: relative;">
+  <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); position: relative; height: 100%; display: flex; flex-direction: column;">
+    <div class="cat-title-main">Выберите вариант BP</div>
+    
+    <div style="padding: 0; flex-grow: 1; overflow-y: auto;">
+        
+        <div class="cat-card" onclick="selectBPVariant(1)">
+            <div class="cat-radio" id="bp-variant-radio-1" style="margin-top: 13px;">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px;">
+                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+            </div>
+            <div class="cat-info" style="justify-content: center; min-height: 56px;">
+                <div class="cat-name" style="font-size: 16px;">Brawl Pass</div>
+                <div class="cat-desc" style="font-size: 12px;">Классический Brawl Pass<br>для дополнительной работы.</div>
+            </div>
+        </div>
+        
+        <div class="cat-card" onclick="selectBPVariant(2)">
+            <div class="cat-radio" id="bp-variant-radio-2" style="margin-top: 13px;">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px;">
+                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+            </div>
+            <div class="cat-info" style="justify-content: center; min-height: 56px;">
+                <div class="cat-name" style="font-size: 16px;">Brawl Pass (скидка)</div>
+                <div class="cat-desc" style="font-size: 12px;">Brawl Pass со скидкой<br>для дополнительной работы.</div>
+            </div>
+        </div>
+
+        <div class="cat-card" onclick="selectBPVariant(3)" style="border-bottom: none;">
+            <div class="cat-radio" id="bp-variant-radio-3" style="margin-top: 13px;">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px;">
+                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+            </div>
+            <div class="cat-info" style="justify-content: center; min-height: 56px;">
+                <div class="cat-name" style="font-size: 16px;">Brawl Pass +</div>
+                <div class="cat-desc" style="font-size: 12px;">Brawl Pass Plus<br>для дополнительной работы.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-fade-container">
+        <button id="bp-variant-btn-next" class="ios-action-btn">Далее</button>
+    </div>
+  </div>
+</div>
+
 <div id="wizard-overlay">
 
   <div class="ios-progress" id="shared-progress">
@@ -3273,7 +3327,7 @@ function handleBackButtonClick() {
             'wizard-overlay', 'result-box', 'download-overlay', 
             'saved-projects-overlay', 'settings-overlay', 
             'subscription-overlay', 'bp-overlay', 
-            'category-overlay', 'bp-style-overlay'
+            'category-overlay', 'bp-style-overlay', 'bp-variant-overlay'
         ];
         
         overlays.forEach(id => {
@@ -3795,6 +3849,27 @@ window.selectCategory = function(cat) {
     }
 };
 
+let selectedBPVariant = null; // Новая переменная для хранения выбранного варианта
+
+// Новая функция для выбора варианта BP (Обычный, Скидка, Plus)
+window.selectBPVariant = function(variantId) {
+    if (selectedBPVariant === variantId) return;
+    selectedBPVariant = variantId;
+    if (window.triggerHaptic) window.triggerHaptic();
+
+    // Снимаем галочки со всех вариантов
+    for (let i = 1; i <= 3; i++) {
+        let radio = document.getElementById(`bp-variant-radio-${i}`);
+        if (radio) radio.classList.remove('checked');
+    }
+    
+    // Ставим галочку на выбранный
+    document.getElementById(`bp-variant-radio-${variantId}`).classList.add('checked');
+    
+    // Показываем кнопку "Далее"
+    document.getElementById('bp-variant-btn-next').classList.add('show');
+};
+
 window.selectBPStyle = function(styleId) {
     if (selectedBPStyle === styleId) return;
     selectedBPStyle = styleId;
@@ -3846,11 +3921,25 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         return;
     }
 
-    // --- НОВАЯ ЛОГИКА ДЛЯ ПОДМЕНЮ BRAWL PASS ---
+// --- ОБНОВЛЕННАЯ ЛОГИКА ДЛЯ ПОДМЕНЮ BRAWL PASS ---
     if (selectedCategory === 'bp') {
         if (selectedBPSub === 'additional') {
-            alert("Этот раздел пока находится в разработке!");
-            return; // Прерываем выполнение, дальше не идем
+            // Прячем текущий экран
+            document.getElementById('category-overlay').style.display = 'none';
+            
+            // Сбрасываем старый выбор вариантов (если был)
+            selectedBPVariant = null;
+            for (let i = 1; i <= 3; i++) {
+                let radio = document.getElementById(`bp-variant-radio-${i}`);
+                if (radio) radio.classList.remove('checked');
+            }
+            let nextVarBtn = document.getElementById('bp-variant-btn-next');
+            if (nextVarBtn) nextVarBtn.classList.remove('show');
+
+            // Показываем новый экран
+            document.getElementById('bp-variant-overlay').style.display = 'flex';
+            window.scrollTo(0,0);
+            return; // Прерываем функцию, чтобы не грузился обычный BP
         } else if (selectedBPSub !== 'normal') {
             alert("Пожалуйста, выберите тип Brawl Pass.");
             return;
@@ -3910,6 +3999,18 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
         document.getElementById('bp-style-overlay').style.display = 'flex';
         window.scrollTo(0,0);
     }
+});
+
+document.getElementById('bp-variant-btn-next').addEventListener('click', function() {
+    if (window.triggerHaptic) window.triggerHaptic();
+    
+    if (!selectedBPVariant) {
+        alert("Пожалуйста, выберите вариант.");
+        return;
+    }
+
+    // Выводим уведомление, так как функционал в разработке
+    alert("Этот раздел пока находится в разработке!");
 });
 
 document.getElementById('bp-style-btn-next').addEventListener('click', function() {
