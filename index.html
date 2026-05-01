@@ -6,9 +6,10 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(20)";
+  const APP_VERSION = "v2.5.1(21)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
+
   const SHOW_PROMO_BANNER = true; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
@@ -7474,6 +7475,25 @@ function drawBeautifulNick(ctx, text, w, h) {
   }
 
   window.resetWizardState = () => {
+
+      selectedCategory = null;
+      selectedBPSub = null;
+      selectedBPVariant = null;
+
+      let radioNormal = document.getElementById('bp-sub-radio-normal');
+      if (radioNormal) radioNormal.classList.remove('checked');
+      
+      let radioAdd = document.getElementById('bp-sub-radio-additional');
+      if (radioAdd) radioAdd.classList.remove('checked');
+
+      for (let i = 1; i <= 4; i++) {
+          let radio = document.getElementById(`bp-variant-radio-${i}`);
+          if (radio) radio.classList.remove('checked');
+      }
+
+      let varBtnNext = document.getElementById('bp-variant-btn-next');
+      if (varBtnNext) varBtnNext.classList.remove('show');
+
       uploadMode = null;
       selectedColor = null;
       uploadedBaseImg.removeAttribute('src');
