@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(17)";
+  const APP_VERSION = "v2.5.1(18)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
   const SHOW_PROMO_BANNER = true; 
@@ -431,8 +431,8 @@
   }
 
   .ios-pill-btn {
-    background: var(--tg-theme-accent-text-color);
-    color: #fff;
+    background: #01a2ff1f;
+    color: #01a2ff;
     border-radius: 12px;
     padding: 0 12px;
     height: 28px;
@@ -443,6 +443,7 @@
     transition: transform 0.1s, opacity 0.2s;
     flex-shrink: 0;
   }
+  
   .ios-pill-btn:active { transform: scale(0.95); opacity: 0.8; }
 
   .ios-icon-btn {
@@ -2494,6 +2495,38 @@ body.os-non-apple .promo-banner {
             </div>
         </div>
 
+                <!-- Вставить СРАЗУ ПОСЛЕ карточки "Создание Brawl Pass" -->
+        <div id="bp-sub-options" style="display: none; flex-direction: column; padding-left: 48px; margin-top: 4px;">
+            
+            <!-- Подпункт "Обычный" -->
+            <div class="cat-card" onclick="selectBPSub('normal')" style="padding: 12px 0;">
+                <div class="cat-radio" id="bp-sub-radio-normal" style="margin-top: 10px;">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="cat-img-wrapper" style="width: 86px; height: 48px; border-radius: 6px; margin-right: 14px;">
+                    <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+                </div>
+                <div class="cat-info" style="justify-content: center; min-height: 48px;">
+                    <div class="cat-name" style="font-size: 16px;">Обычный</div>
+                    <div class="cat-desc" style="font-size: 12px;">Классическая работа для Brawl Pass.</div>
+                </div>
+            </div>
+
+            <!-- Подпункт "Дополнительный" -->
+            <div class="cat-card" onclick="selectBPSub('additional')" style="padding: 12px 0; border-bottom: none;">
+                <div class="cat-radio" id="bp-sub-radio-additional" style="margin-top: 10px;">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="cat-img-wrapper" style="width: 86px; height: 48px; border-radius: 6px; margin-right: 14px;">
+                    <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+                </div>
+                <div class="cat-info" style="justify-content: center; min-height: 48px;">
+                    <div class="cat-name" style="font-size: 16px;">Дополнительный</div>
+                    <div class="cat-desc" style="font-size: 12px;">Дополнительная работа для Brawl Pass.</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="bottom-fade-container">
@@ -2930,8 +2963,8 @@ body.os-non-apple .promo-banner {
      <div class="ios-layer-group" id="sp-list" style="padding: 0 20px; overflow: hidden;">
      </div>
      <div class="sp-info-text">
-        Это все Ваши сохранённые проекты.<br>
-        Вы можете нажать на любой из них, чтобы вернуться к редактированию, внести изменения или дополнения. При этом Вы можете сохранить текущий шаблон или удалить проект, нажав на соответствующую кнопку.
+            Список Ваших сохранённых проектов.<br>
+            Выбирайте любой для редактирования или удаления.
      </div>
   </div>
 </div>
@@ -3689,25 +3722,59 @@ window.loadProject = async (id) => {
 
 let selectedCategory = null; 
 let selectedBPStyle = null;
+let selectedBPSub = null; // Новая переменная для подменю Обычный/Доп
 let wizardMode = 'action'; 
 
+// Новая функция для выбора подкатегории Brawl Pass
+window.selectBPSub = function(subType) {
+    selectedBPSub = subType;
+    if (window.triggerHaptic) window.triggerHaptic();
+
+    // Сбрасываем чекбоксы
+    document.getElementById('bp-sub-radio-normal').classList.remove('checked');
+    document.getElementById('bp-sub-radio-additional').classList.remove('checked');
+
+    // Ставим галочку на выбранный
+    document.getElementById(`bp-sub-radio-${subType}`).classList.add('checked');
+
+    // Показываем кнопку Далее
+    document.getElementById('cat-btn-next').classList.add('show');
+};
+
+// Обновленная функция выбора основной категории
 window.selectCategory = function(cat) {
     if (selectedCategory === cat) return;
     selectedCategory = cat;
-    window.triggerHaptic();
+    if (window.triggerHaptic) window.triggerHaptic();
     
     const wrapAction = document.getElementById('cat-badge-wrap-action');
     const wrapBP = document.getElementById('cat-badge-wrap-bp');
     const nextBtn = document.getElementById('cat-btn-next'); 
+    const bpSubOptions = document.getElementById('bp-sub-options');
     
-    nextBtn.classList.add('show'); 
-
     if (cat === 'action') {
         wrapAction.classList.add('show');
         wrapBP.classList.remove('show');
+        if (bpSubOptions) bpSubOptions.style.display = 'none';
+        
+        // Для "Акции" сразу показываем кнопку Далее
+        nextBtn.classList.add('show'); 
     } else {
         wrapBP.classList.add('show');
         wrapAction.classList.remove('show');
+        
+        // Показываем подменю с выбором типа Brawl Pass
+        if (bpSubOptions) {
+            bpSubOptions.style.display = 'flex';
+            bpSubOptions.classList.add('fade-in-anim'); 
+        }
+        
+        // Скрываем кнопку "Далее", пока пользователь не выберет подкатегорию (Обычный/Доп)
+        if (!selectedBPSub) {
+            nextBtn.classList.remove('show');
+        } else {
+            nextBtn.classList.add('show');
+        }
     }
 };
 
@@ -3747,10 +3814,24 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
 
 document.getElementById('cat-btn-next').addEventListener('click', function() {
     window.triggerHaptic();
+    
+    // Проверка, выбрана ли основная категория
     if (!selectedCategory) {
         alert("Пожалуйста, выберите раздел.");
         return;
     }
+
+    // --- НОВАЯ ЛОГИКА ДЛЯ ПОДМЕНЮ BRAWL PASS ---
+    if (selectedCategory === 'bp') {
+        if (selectedBPSub === 'additional') {
+            alert("Этот раздел пока находится в разработке!");
+            return; // Прерываем выполнение, дальше не идем
+        } else if (selectedBPSub !== 'normal') {
+            alert("Пожалуйста, выберите тип Brawl Pass.");
+            return;
+        }
+    }
+    // -------------------------------------------
 
     document.getElementById('result-box').style.display = 'none';
     let btnWrap = document.getElementById('download-btn-wrap');
