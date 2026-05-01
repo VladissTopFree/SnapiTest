@@ -6,9 +6,10 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(14)";
+  const APP_VERSION = "v2.5.1(15)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
+  const SHOW_PROMO_BANNER = true; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -1997,33 +1998,36 @@
       top: -1px; 
   }
 
-/* --- СТИЛИ ДЛЯ ГОЛУБОЙ ПЛАЖКИ --- */
-/* --- СТИЛИ ДЛЯ ГОЛУБОЙ ПЛАЖКИ --- */
 .promo-banner {
     position: relative;
-    width: 100%; 
-    height: 116px; 
+    width: 100%;       /* Вернули как просили */
+    height: 116px;     /* Жесткая высота */
     min-height: 116px; 
     flex-shrink: 0;    
-background: linear-gradient(to right, #70b0ff 0%, #3991ff 100%);    border-radius: 24px;
+    background: linear-gradient(to right, #70b0ff 0%, #3991ff 100%);    
+    border-radius: 24px;
     margin: 0 auto 24px auto; 
     
-    /* Добавляем умную обрезку: сверху/сбоку не режем, а снизу режем строго по линии и закругляем нижние углы на 24px */
     -webkit-clip-path: inset(-500px -200px 0 -200px round 0 0 24px 24px);
     clip-path: inset(-500px -200px 0 -200px round 0 0 24px 24px);
     
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding-left: 20px;
+    
+    /* ЭТО СВОЙСТВО АВТОМАТИЧЕСКИ ЦЕНТРИРУЕТ ТЕКСТ ПО ВЕРТИКАЛИ (ДЕЛИТ ОТСТУПЫ ПОРОВНУ СВЕРХУ И СНИЗУ) */
+    justify-content: center; 
+    
+    padding: 0 20px; /* Отступы только по бокам, верх и низ высчитывает justify-content */
+    box-sizing: border-box;
+    
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     
     /* Твои идеальные координаты */
-    --b2-x: -63px; --b2-y: -26px; --b2-s: 1.15; /* Левый персонаж */
-    --b1-x: -18px; --b1-y: -4px;  --b1-s: 0.86;  /* Правый персонаж */
-    --star-x: -11px; --star-y: -1px; --star-s: 0.73; /* Бейджик "Звезда" */
-    --txt-x: 0px; --txt-y: 0px; /* Текст */
+    --b2-x: -68px; --b2-y: -26px; --b2-s: 1.15; 
+    --b1-x: -7px; --b1-y: -4px;  --b1-s: 0.86;  
+    --star-x: -14px; --star-y: -1px; --star-s: 0.73; 
+    --txt-x: 0px; --txt-y: 0px; 
   }
   
   .promo-banner:active {
@@ -2102,19 +2106,23 @@ body.os-non-apple .promo-banner {
     margin-top: -2px;
   }
   
-  .promo-content {
+.promo-content {
     position: relative;
     z-index: 4;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    transform: translate(var(--txt-x), var(--txt-y));
+    gap: 0px;
+    max-width: 180px; 
+    margin: 0; /* Обязательно убираем внешние отступы! */
   }
   
-  .promo-subtitle {
-    color: rgba(255, 255, 255, 0.95);
+.promo-subtitle {
+    color: rgb(255, 255, 255);
     font-size: 12px;
     font-weight: 500;
+    line-height: 1.2;
+    white-space: normal;
+    word-wrap: break-word; /* Жесткий перенос слов, если не влезают */
   }
   
 .promo-title {
@@ -2130,6 +2138,8 @@ body.os-non-apple .promo-banner {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     line-height: 1.1;
+
+    margin: 6px 0;
   }
 
   body.os-non-apple .promo-title {
@@ -2147,15 +2157,29 @@ body.os-non-apple .promo-banner {
     gap: 4px;
   }
   
-  .promo-action svg {
-    width: 6px;
-    height: 10px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+.promo-action svg {
+  width: 6px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  
+  /* --- НОВЫЕ СТРОКИ --- */
+  margin-top: 2px; /* Опускаем стрелочку чуть ниже (можно сделать 1px или 3px для идеала) */
+  animation: arrowBounce 1.2s ease-in-out infinite; /* Запускаем бесконечную анимацию */
+}
+
+/* Добавляем саму анимацию движения */
+@keyframes arrowBounce {
+  0%, 100% {
+    transform: translateX(0);
   }
+  50% {
+    transform: translateX(4px); /* Сдвигаем вправо на 4px (можно увеличить, если нужно сильнее) */
+  }
+}
 
   .promo-badge-glow {
     position: absolute;
@@ -2255,15 +2279,76 @@ body.os-non-apple .promo-banner {
 
   /* Стиль для нового абзаца (который встанет вместо таймера) */
 /* Стиль для нового абзаца (который встанет вместо таймера) */
-  .promo-desc {
+.promo-desc {
     color: #ffe47a; 
     font-size: 12px; 
     font-weight: 500;
     line-height: 1.35; 
-    max-width: 170px; 
-    margin: 0; 
+    margin: 8px 0 10px 0; 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    /* Убираем жесткие 170px, теперь он сам подстроится под 55% родителя */
+    max-width: 100%; 
   }
+
+/* Класс для быстрого скрытия плажки */
+  .promo-hidden {
+    display: none !important;
+  }
+
+  /* --- 4. ДОБАВИТЬ ЭТО В КОНЕЦ <style> (Адаптация под очень маленькие экраны) --- */
+  @media (max-width: 380px) {
+    .promo-content {
+      max-width: 160px; /* На узких телефонах фиксируем ширину */
+    }
+    .promo-subtitle {
+      font-size: 11px; /* Чуть уменьшаем шрифты */
+    }
+    .promo-desc {
+      font-size: 11px;
+    }
+    .promo-action {
+      font-size: 12px;
+    }
+  }
+
+.promo-text-glow {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 3;
+  pointer-events: none;
+  /* Убрали overflow: hidden и маски, выпускаем свет на свободу! */
+}
+
+.promo-text-glow::before {
+  content: "";
+  position: absolute;
+  /* Отступаем от краев, чтобы размытие плавно уходило в ноль */
+  top: 25px;      
+  bottom: 25px;   
+  left: 30px; 
+  width: 256px; 
+  background: #70b0ffc9; 
+  filter: blur(26px); 
+  opacity: 0.76;
+  border-radius: 50%; /* Превращаем квадрат в овал для идеального градиента */
+}
+
+/* Универсальные классы для покадровой анимации слов */
+.flip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.flip-old {
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: digitOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.flip-new {
+  display: inline-block;
+  animation: digitIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -2290,6 +2375,9 @@ body.os-non-apple .promo-banner {
       
       <!-- ИДЕАЛЬНАЯ ЗВЕЗДА ИЗ SVG -->
 <!-- ИДЕАЛЬНАЯ ЗВЕЗДА ИЗ SVG -->
+
+    <div class="promo-text-glow"></div>
+
       <div class="promo-badge">
         <div class="promo-badge-glow"></div>
         
@@ -2320,7 +2408,7 @@ body.os-non-apple .promo-banner {
       <!-- Текст -->
       <div class="promo-content">
         <div class="promo-subtitle">Новый сезон скоро выйдет!</div>
-        <div class="promo-title" id="promo-timer">Загрузка...</div>
+        <div class="promo-title" id="promo-timer"></div>        
         <div class="promo-action">
           Пора оформить 
           <svg viewBox="0 0 8 14"><path d="M1 1l6 6-6 6"></path></svg>
@@ -8712,13 +8800,9 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 }
 
 window.promoBgStars = [
-    { x: 53, y: 85, s: 0.1, o: 1 },
-    { x: 47, y: 51, s: 0.2, o: 1 },
-    { x: 55, y: 22, s: 0.15, o: 1 },
-    { x: 76, y: 93, s: 0.06, o: 1 },
     { x: 81, y: 10, s: 0.1, o: 1 },
+    { x: 96, y: 10, s: 0.05, o: 1 },
     { x: 89, y: 0, s: 0.2, o: 1 },
-     // Одна стартовая звезда для примера (координаты в процентах)
 ];
 window.activePromoBgStarIndex = 0;
 
@@ -8789,16 +8873,13 @@ setTimeout(() => { window.renderPromoBgStars(); }, 150);
 // ==========================================
 // НАСТРОЙКА ТАЙМЕРА
 // Формат: ГГГГ-ММ-ДДTЧЧ:ММ:СС+03:00 (где +03:00 это часовой пояс Москвы)
-const TARGET_DATE_STRING = "2026-05-01T02:03:00+03:00"; // Поставил на пару дней вперед для теста
+const TARGET_DATE_STRING = "2026-05-01T13:12:00+03:00"; // Поставил на пару дней вперед для теста
 // ==========================================
 
 window.initPromoTimer = function() {
     const timerEl = document.getElementById('promo-timer');
     if (!timerEl) return;
 
-    // Размечаем таймер на 3 гибкие группы. 
-    // Внутрь них скрипт сам добавит нужное количество цифр!
-// Выстраиваем всё в одну линию без пробелов и переносов
     timerEl.innerHTML = `<span id="promo-h" style="display:inline-flex;"></span><span class="timer-colon">:</span><span id="promo-m" style="display:inline-flex;"></span><span class="timer-colon">:</span><span id="promo-s" style="display:inline-flex;"></span>`;
 
     const elH = document.getElementById('promo-h');
@@ -8807,14 +8888,16 @@ window.initPromoTimer = function() {
 
     let offset = 0; 
     let targetTime = new Date(TARGET_DATE_STRING).getTime();
-
-    // Память для хранения предыдущих значений (теперь любой длины)
     let prevH = "", prevM = "", prevS = "";
+    let isFirstRender = true; 
 
-    // Отрисовка анимации для ОДНОГО символа
     const animateDigit = (elId, oldChar, newChar) => {
         const el = document.getElementById(elId);
         if (!el) return;
+        if (isFirstRender) {
+            el.innerHTML = `<span style="display:inline-block; background: #ffef9e; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${newChar}</span>`;
+            return;
+        }
         if (!oldChar) {
             el.innerHTML = `<span class="digit-new">${newChar}</span>`;
         } else {
@@ -8822,10 +8905,7 @@ window.initPromoTimer = function() {
         }
     };
 
-    // Умная функция обновления целой группы (часов, минут или секунд)
     const updateGroup = (groupEl, oldStr, newStr) => {
-        // Если длина изменилась (например, со 100 часов до 99), 
-        // перерисовываем все ячейки в этой группе заново
         if (!oldStr || oldStr.length !== newStr.length) {
             groupEl.innerHTML = '';
             for (let i = 0; i < newStr.length; i++) {
@@ -8836,7 +8916,6 @@ window.initPromoTimer = function() {
                 animateDigit(span.id, "", newStr[i]);
             }
         } else {
-            // Если длина та же, анимируем ТОЛЬКО те цифры, которые поменялись!
             for (let i = 0; i < newStr.length; i++) {
                 if (oldStr[i] !== newStr[i]) {
                     animateDigit(`${groupEl.id}-${i}`, oldStr[i], newStr[i]);
@@ -8845,57 +8924,81 @@ window.initPromoTimer = function() {
         }
     };
 
+    // --- НОВЫЙ АЛГОРИТМ УМНОЙ ЗАМЕНЫ ТЕКСТА ---
+    const swapTextWithFlip = (el, oldText, newText, newClassName) => {
+        // Разбиваем старый и новый текст на слова
+        const oldWords = oldText.trim().split(/\s+/);
+        const newWords = newText.trim().split(/\s+/);
+        const maxLen = Math.max(oldWords.length, newWords.length);
+        
+        let html = '';
+        for (let i = 0; i < maxLen; i++) {
+            let ow = oldWords[i] || '';
+            let nw = newWords[i] || '';
+            
+            if (ow === nw) {
+                // Если слово не изменилось (например, "Новый сезон") — оставляем как есть
+                html += `${nw} `;
+            } else {
+                // Если изменилось — запускаем анимацию флипа
+                html += `<span class="flip-wrapper">`;
+                if (ow) {
+                    // Если это таймер, мы временно сохраняем "золотой" стиль прямо на цифрах, чтобы они красиво улетели
+                    let extraStyle = newClassName ? `font-family: ui-rounded, 'SF Pro Rounded', 'ArialRoundedOld', 'Arial Rounded MT Bold', sans-serif; font-weight: 800; font-size: 28px; background: linear-gradient(180deg, #ffef9e 0%, #ffb82c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap;` : `white-space: nowrap;`;
+                    html += `<span class="flip-old" style="${extraStyle}">${ow}</span>`;
+                }
+                if (nw) {
+                    html += `<span class="flip-new">${nw}</span>`;
+                }
+                html += `</span> `;
+            }
+        }
+        
+        if (newClassName) el.className = newClassName;
+        el.innerHTML = html.trim();
+    };
+
     const updateTimer = () => {
         const currentTime = new Date().getTime() + offset;
         const diff = targetTime - currentTime;
 
-        // Если время вышло
         if (diff <= 0) {
-            // Флаг, чтобы анимация сработала ровно один раз
             if (timerEl.dataset.swapped === "true") return;
             timerEl.dataset.swapped = "true";
 
-            // Находим весь контейнер с текстом
             const contentContainer = timerEl.closest('.promo-content');
             const subtitleEl = contentContainer.querySelector('.promo-subtitle');
             
-            // Запускаем эффект размытия и исчезновения
-            contentContainer.classList.add('swapping');
+            // Анимируем подзаголовок (слова "скоро выйдет" улетят, а "уже вышел" прилетят)
+            if (subtitleEl) {
+                swapTextWithFlip(subtitleEl, subtitleEl.innerText, "Новый сезон уже вышел!");
+            }
             
-            // Магия: ждем 400мс (ровно половину анимации, когда контент полностью прозрачен),
-            // и в этот момент "под капотом" подменяем весь текст и классы!
-            setTimeout(() => {
-                if (subtitleEl) subtitleEl.innerText = "Новый сезон уже вышел!";
-                
-                // Меняем класс, чтобы убрать гигантский золотой шрифт и применить наш новый .promo-desc
-                timerEl.className = "promo-desc";
-                timerEl.innerHTML = "На выбор - стили работ, текста и многое другое";
-            }, 400);
+            // Анимируем сам таймер (золотые цифры улетят, а новый белый текст встанет на их место)
+            const oldTimerText = timerEl.innerText;
+            swapTextWithFlip(timerEl, oldTimerText, "На выбор - стили работ, текста и многое другое", "promo-desc");
 
             return;
         }
 
-        // Вычисляем ЧАСЫ без ограничения (будет и 48, и 120, и 999)
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        // padStart гарантирует минимум 2 символа, но не обрезает, если их больше
         const h = String(hours).padStart(2, '0'); 
         const m = String(minutes).padStart(2, '0');
         const s = String(seconds).padStart(2, '0');
 
-        // Отправляем на проверку и анимацию
         if (h !== prevH) { updateGroup(elH, prevH, h); prevH = h; }
         if (m !== prevM) { updateGroup(elM, prevM, m); prevM = m; }
         if (s !== prevS) { updateGroup(elS, prevS, s); prevS = s; }
+        
+        isFirstRender = false; 
     };
 
-    // 1. ЗАПУСКАЕМ МОМЕНТАЛЬНО
     updateTimer(); 
     setInterval(updateTimer, 1000);
 
-    // 2. АСИНХРОННО В ФОНЕ проверяем точное МСК время
     fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow')
         .then(res => res.json())
         .then(data => {
