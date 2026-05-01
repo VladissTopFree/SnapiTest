@@ -2329,6 +2329,24 @@ body.os-non-apple .promo-banner {
   animation: bannerFadeIn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
+/* Анимация для выпадающего списка Brawl Pass */
+  .sub-options-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.35s ease;
+    margin-top: 0;
+    padding-left: 56px; /* Отступ, чтобы выровнять с текстом */
+  }
+  .sub-options-wrap.show {
+    grid-template-rows: 1fr;
+    margin-top: 4px;
+  }
+  .sub-options-inner {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -2487,42 +2505,38 @@ body.os-non-apple .promo-banner {
             <div class="cat-info">
                 <div class="cat-name">Создание Brawl Pass</div>
                 <div class="cat-desc">На основе Ваших пожеланий, фона, деталей, ника, сезона, генерируется готовая работа Brawl Pass.</div>
-                <div id="cat-badge-wrap-bp" class="cat-badge-wrap">
-                    <div class="cat-badge-inner">
-                        <div class="cat-badge">выбрано</div>
-                    </div>
-                </div>
             </div>
         </div>
 
-                <!-- Вставить СРАЗУ ПОСЛЕ карточки "Создание Brawl Pass" -->
-        <div id="bp-sub-options" style="display: none; flex-direction: column; padding-left: 48px; margin-top: 4px;">
-            
-            <!-- Подпункт "Обычный" -->
-            <div class="cat-card" onclick="selectBPSub('normal')" style="padding: 12px 0;">
-                <div class="cat-radio" id="bp-sub-radio-normal" style="margin-top: 10px;">
-                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <!-- Контейнер с анимацией -->
+        <div id="bp-sub-options-wrap" class="sub-options-wrap">
+            <div class="sub-options-inner">
+                <!-- Подпункт "Обычный" -->
+                <div class="cat-card" onclick="selectBPSub('normal')" style="padding: 12px 0;">
+                    <div class="cat-radio" id="bp-sub-radio-normal" style="margin-top: 10px;">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="cat-img-wrapper" style="width: 86px; height: 48px; border-radius: 6px; margin-right: 14px;">
+                        <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+                    </div>
+                    <div class="cat-info" style="justify-content: center; min-height: 48px;">
+                        <div class="cat-name" style="font-size: 16px;">Обычный</div>
+                        <div class="cat-desc" style="font-size: 12px;">Классическая работа для Brawl Pass.</div>
+                    </div>
                 </div>
-                <div class="cat-img-wrapper" style="width: 86px; height: 48px; border-radius: 6px; margin-right: 14px;">
-                    <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
-                </div>
-                <div class="cat-info" style="justify-content: center; min-height: 48px;">
-                    <div class="cat-name" style="font-size: 16px;">Обычный</div>
-                    <div class="cat-desc" style="font-size: 12px;">Классическая работа для Brawl Pass.</div>
-                </div>
-            </div>
 
-            <!-- Подпункт "Дополнительный" -->
-            <div class="cat-card" onclick="selectBPSub('additional')" style="padding: 12px 0; border-bottom: none;">
-                <div class="cat-radio" id="bp-sub-radio-additional" style="margin-top: 10px;">
-                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="cat-img-wrapper" style="width: 86px; height: 48px; border-radius: 6px; margin-right: 14px;">
-                    <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
-                </div>
-                <div class="cat-info" style="justify-content: center; min-height: 48px;">
-                    <div class="cat-name" style="font-size: 16px;">Дополнительный</div>
-                    <div class="cat-desc" style="font-size: 12px;">Дополнительная работа для Brawl Pass.</div>
+                <!-- Подпункт "Дополнительный" -->
+                <div class="cat-card" onclick="selectBPSub('additional')" style="padding: 12px 0; border-bottom: none;">
+                    <div class="cat-radio" id="bp-sub-radio-additional" style="margin-top: 10px;">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="cat-img-wrapper" style="width: 86px; height: 48px; border-radius: 6px; margin-right: 14px;">
+                        <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+                    </div>
+                    <div class="cat-info" style="justify-content: center; min-height: 48px;">
+                        <div class="cat-name" style="font-size: 16px;">Дополнительный</div>
+                        <div class="cat-desc" style="font-size: 12px;">Дополнительная работа для Brawl Pass.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3741,32 +3755,35 @@ window.selectBPSub = function(subType) {
     document.getElementById('cat-btn-next').classList.add('show');
 };
 
-// Обновленная функция выбора основной категории
 window.selectCategory = function(cat) {
-    if (selectedCategory === cat) return;
+    const bpSubWrap = document.getElementById('bp-sub-options-wrap');
+    
+    // Если категория BP уже выбрана и мы кликаем по ней снова — сворачиваем/разворачиваем меню
+    if (selectedCategory === cat && cat === 'bp') {
+        if (bpSubWrap) {
+            bpSubWrap.classList.toggle('show');
+        }
+        if (window.triggerHaptic) window.triggerHaptic();
+        return;
+    }
+
     selectedCategory = cat;
     if (window.triggerHaptic) window.triggerHaptic();
     
     const wrapAction = document.getElementById('cat-badge-wrap-action');
-    const wrapBP = document.getElementById('cat-badge-wrap-bp');
     const nextBtn = document.getElementById('cat-btn-next'); 
-    const bpSubOptions = document.getElementById('bp-sub-options');
     
     if (cat === 'action') {
-        wrapAction.classList.add('show');
-        wrapBP.classList.remove('show');
-        if (bpSubOptions) bpSubOptions.style.display = 'none';
+        if (wrapAction) wrapAction.classList.add('show');
+        if (bpSubWrap) bpSubWrap.classList.remove('show'); // Плавно скрываем подменю
         
         // Для "Акции" сразу показываем кнопку Далее
         nextBtn.classList.add('show'); 
-    } else {
-        wrapBP.classList.add('show');
-        wrapAction.classList.remove('show');
+    } else if (cat === 'bp') {
+        if (wrapAction) wrapAction.classList.remove('show');
         
-        // Показываем подменю с выбором типа Brawl Pass
-        if (bpSubOptions) {
-            bpSubOptions.style.display = 'flex';
-            bpSubOptions.classList.add('fade-in-anim'); 
+        if (bpSubWrap) {
+            bpSubWrap.classList.add('show'); // Плавно показываем подменю
         }
         
         // Скрываем кнопку "Далее", пока пользователь не выберет подкатегорию (Обычный/Доп)
@@ -3803,9 +3820,17 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
     if (btnWrap) btnWrap.style.display = 'none';
 
     selectedCategory = null; 
-    document.getElementById('cat-badge-wrap-action').classList.remove('show');
-    document.getElementById('cat-badge-wrap-bp').classList.remove('show');
-    document.getElementById('cat-btn-next').classList.remove('show');
+    selectedBPSub = null; // Сбрасываем подкатегорию тоже
+
+    // Скрываем бейдж "Акции"
+    let wrapAction = document.getElementById('cat-badge-wrap-action');
+    if (wrapAction) wrapAction.classList.remove('show');
+
+    // Скрываем выпадающий список Brawl Pass вместо старого бейджа
+    let bpSubWrap = document.getElementById('bp-sub-options-wrap');
+    if (bpSubWrap) bpSubWrap.classList.remove('show');
+
+    document.getElementById('cat-btn-next').classList.remove('show');
 
     document.getElementById('category-overlay').style.display = 'flex';
     window.scrollTo(0,0);
