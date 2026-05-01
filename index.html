@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(19)";
+  const APP_VERSION = "v2.5.1(20)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
   const SHOW_PROMO_BANNER = true; 
@@ -2498,8 +2498,7 @@ body.os-non-apple .promo-banner {
             </div>
         </div>
         
-        <div class="cat-card" onclick="selectCategory('bp')">
-            <div class="cat-img-wrapper">
+        <div class="cat-card" id="bp-main-card" onclick="selectCategory('bp')" style="border-bottom-color: transparent; transition: border-bottom-color 0.3s ease;">            <div class="cat-img-wrapper">
                 <img src="miniprewiev.png" class="cat-img" onload="this.classList.add('loaded')" onerror="this.style.opacity='0'; this.parentElement.style.animation='none'; this.parentElement.style.background='#ddd';">
             </div>
             <div class="cat-info">
@@ -2635,7 +2634,8 @@ body.os-non-apple .promo-banner {
             </div>
         </div>
 
-        <div class="cat-card" onclick="selectBPVariant(3)" style="border-bottom: none;">
+        <!-- 3 вариант (теперь с линией) -->
+        <div class="cat-card" onclick="selectBPVariant(3)">
             <div class="cat-radio" id="bp-variant-radio-3" style="margin-top: 13px;">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
@@ -2645,6 +2645,20 @@ body.os-non-apple .promo-banner {
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name" style="font-size: 16px;">Brawl Pass +</div>
                 <div class="cat-desc" style="font-size: 12px;">Brawl Pass Plus<br>для дополнительной работы.</div>
+            </div>
+        </div>
+
+        <!-- 4 вариант (НОВЫЙ, без линии внизу) -->
+        <div class="cat-card" onclick="selectBPVariant(4)" style="border-bottom: none;">
+            <div class="cat-radio" id="bp-variant-radio-4" style="margin-top: 13px;">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px;">
+                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+            </div>
+            <div class="cat-info" style="justify-content: center; min-height: 56px;">
+                <div class="cat-name" style="font-size: 16px;">Brawl Pass + (улучшение)</div>
+                <div class="cat-desc" style="font-size: 12px;">Brawl Pass Plus с улучшением<br>для дополнительной работы.</div>
             </div>
         </div>
 
@@ -3811,11 +3825,19 @@ window.selectBPSub = function(subType) {
 
 window.selectCategory = function(cat) {
     const bpSubWrap = document.getElementById('bp-sub-options-wrap');
+    const bpMainCard = document.getElementById('bp-main-card');
     
     // Если категория BP уже выбрана и мы кликаем по ней снова — сворачиваем/разворачиваем меню
     if (selectedCategory === cat && cat === 'bp') {
         if (bpSubWrap) {
             bpSubWrap.classList.toggle('show');
+            if (bpSubWrap.classList.contains('show')) {
+                // Раскрывается: показываем линию с задержкой (после выезда меню)
+                setTimeout(() => { if (bpMainCard) bpMainCard.style.borderBottomColor = ''; }, 350);
+            } else {
+                // Сворачивается: убираем линию мгновенно
+                if (bpMainCard) bpMainCard.style.borderBottomColor = 'transparent';
+            }
         }
         if (window.triggerHaptic) window.triggerHaptic();
         return;
@@ -3829,18 +3851,21 @@ window.selectCategory = function(cat) {
     
     if (cat === 'action') {
         if (wrapAction) wrapAction.classList.add('show');
-        if (bpSubWrap) bpSubWrap.classList.remove('show'); // Плавно скрываем подменю
+        if (bpSubWrap) {
+            bpSubWrap.classList.remove('show');
+            if (bpMainCard) bpMainCard.style.borderBottomColor = 'transparent';
+        }
         
-        // Для "Акции" сразу показываем кнопку Далее
         nextBtn.classList.add('show'); 
     } else if (cat === 'bp') {
         if (wrapAction) wrapAction.classList.remove('show');
         
         if (bpSubWrap) {
-            bpSubWrap.classList.add('show'); // Плавно показываем подменю
+            bpSubWrap.classList.add('show'); 
+            // Показываем линию после выезда
+            setTimeout(() => { if (bpMainCard) bpMainCard.style.borderBottomColor = ''; }, 350);
         }
         
-        // Скрываем кнопку "Далее", пока пользователь не выберет подкатегорию (Обычный/Доп)
         if (!selectedBPSub) {
             nextBtn.classList.remove('show');
         } else {
@@ -3851,14 +3876,13 @@ window.selectCategory = function(cat) {
 
 let selectedBPVariant = null; // Новая переменная для хранения выбранного варианта
 
-// Новая функция для выбора варианта BP (Обычный, Скидка, Plus)
 window.selectBPVariant = function(variantId) {
     if (selectedBPVariant === variantId) return;
     selectedBPVariant = variantId;
     if (window.triggerHaptic) window.triggerHaptic();
 
-    // Снимаем галочки со всех вариантов
-    for (let i = 1; i <= 3; i++) {
+    // Снимаем галочки со всех 4 вариантов
+    for (let i = 1; i <= 4; i++) {
         let radio = document.getElementById(`bp-variant-radio-${i}`);
         if (radio) radio.classList.remove('checked');
     }
@@ -3895,17 +3919,22 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
     if (btnWrap) btnWrap.style.display = 'none';
 
     selectedCategory = null; 
-    selectedBPSub = null; // Сбрасываем подкатегорию тоже
+    selectedBPSub = null; // Сбрасываем подкатегорию тоже
 
-    // Скрываем бейдж "Акции"
-    let wrapAction = document.getElementById('cat-badge-wrap-action');
-    if (wrapAction) wrapAction.classList.remove('show');
+    // Скрываем бейдж "Акции"
+    let wrapAction = document.getElementById('cat-badge-wrap-action');
+    if (wrapAction) wrapAction.classList.remove('show');
 
-    // Скрываем выпадающий список Brawl Pass вместо старого бейджа
-    let bpSubWrap = document.getElementById('bp-sub-options-wrap');
-    if (bpSubWrap) bpSubWrap.classList.remove('show');
+    // Скрываем выпадающий список Brawl Pass
+    let bpSubWrap = document.getElementById('bp-sub-options-wrap');
+    if (bpSubWrap) bpSubWrap.classList.remove('show');
 
-    document.getElementById('cat-btn-next').classList.remove('show');
+    // --- ТОТ САМЫЙ ШАГ 5: Скрываем нижнюю линию главной карточки BP ---
+    let bpMainCard = document.getElementById('bp-main-card');
+    if (bpMainCard) bpMainCard.style.borderBottomColor = 'transparent';
+    // ------------------------------------------------------------------
+
+    document.getElementById('cat-btn-next').classList.remove('show');
 
     document.getElementById('category-overlay').style.display = 'flex';
     window.scrollTo(0,0);
