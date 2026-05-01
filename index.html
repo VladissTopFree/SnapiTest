@@ -2365,6 +2365,15 @@ body.os-non-apple .promo-banner {
   opacity: 0 !important;
 }
 
+@keyframes bannerFadeIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    filter: blur(0px); }
+}
+
+.promo-banner.banner-ready {
+  animation: bannerFadeIn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -9047,17 +9056,20 @@ window.initPromoTimer = function() {
     const banner = document.getElementById('main-promo');
     if (banner) {
         const images = Array.from(banner.querySelectorAll('img'));
-        const imagePromises = images.map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => { img.onload = img.onerror = resolve; });
+        
+        const allLoaded = images.map(img => {
+            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload  = resolve;
+                img.onerror = resolve;
+            });
         });
 
-        // Снимаем класс is-loading как только скачались картинки, но не дольше чем через 800мс
-        Promise.race([
-            Promise.all(imagePromises),
-            new Promise(resolve => setTimeout(resolve, 800))
-        ]).then(() => {
+        const timeout = new Promise(resolve => setTimeout(resolve, 1200));
+
+        Promise.all([Promise.all(allLoaded), timeout]).then(() => {
             banner.classList.remove('is-loading');
+            banner.classList.add('banner-ready');
         });
     }
 }; // Конец функции window.initPromoTimer
