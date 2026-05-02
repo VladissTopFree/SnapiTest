@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(30)";
+  const APP_VERSION = "v2.4.0(31)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -30,50 +30,53 @@
   }
 
   const BP_SEASON_CONFIG = {
-      50: {
-          lineColor: '#b2beff', 
-          gradientLeft: ['#90c4c486', '#90c4c486'], 
-          gradientRight: ['#7084f4', '#7084f4'],
-          style2Brawlers: { // yes
-              brawler2: { x: 990, y: 12, scale: 0.3, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
-              brawler1: { x: 971, y: 386, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
-        
+      50: {
+          lineColor: '#b2beff', 
+          gradientLeft: ['#90c4c486', '#90c4c486'], 
+          gradientRight: ['#7084f4', '#7084f4'],
+          style2Brawlers: { // yes
+              brawler2: { x: 990, y: 12, scale: 0.3, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
+              brawler1: { x: 971, y: 386, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
+        
 
-          },
-          style1Brawlers: { // yes
-              brawler1: { x: 469, y: 512, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler2: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
-          },
-          dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }
-      },
-      49: {
-          lineColor: '#ffa800', 
-          gradientLeft: ['#ff5e00', '#ff5e00'], 
-          gradientRight: ['#7b00d9', '#7b00d9'],
-          style2Brawlers: { // yes
-              brawler1: { x: 1011, y: 381, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
-              brawler2: { x: 968, y: 22, scale: 0.23, scaleX: 1, scaleY: 1, rot: 0 } 
-          },
-          style1Brawlers: { // yes
-              brawler1: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler2: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
-          },
-          dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 }
-      },
-      48: {
-          lineColor: '#b32700', 
-          gradientLeft: ['#5c1e0dda', '#5c1e0dda'], 
-          gradientRight: ['#006effcc', '#006effcc'],
-          style2Brawlers: { // yes
-              brawler1: { x: 1005, y: 276, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
-              brawler2: { x: 1057, y: -24, scale: 0.26, scaleX: 1, scaleY: 1, rot: 0 } 
-          },
-          style1Brawlers: { // yes
-              brawler1: { x: 688, y: 511, scale: 0.53, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler2: { x: 485, y: 511, scale: 0.64, flipH: true }  // Верхний (x: 1200*0.58-30)
-          },
-          dopBrawler: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 }
-      }
+          },
+          style1Brawlers: { // yes
+              brawler1: { x: 469, y: 512, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
+              brawler2: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
+          },
+          dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+          dopText: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 }
+      },
+      49: {
+          lineColor: '#ffa800', 
+          gradientLeft: ['#ff5e00', '#ff5e00'], 
+          gradientRight: ['#7b00d9', '#7b00d9'],
+          style2Brawlers: { // yes
+              brawler1: { x: 1011, y: 381, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
+              brawler2: { x: 968, y: 22, scale: 0.23, scaleX: 1, scaleY: 1, rot: 0 } 
+          },
+          style1Brawlers: { // yes
+              brawler1: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
+              brawler2: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
+          },
+          dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
+          dopText: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 }
+      },
+      48: {
+          lineColor: '#b32700', 
+          gradientLeft: ['#5c1e0dda', '#5c1e0dda'], 
+          gradientRight: ['#006effcc', '#006effcc'],
+          style2Brawlers: { // yes
+              brawler1: { x: 1005, y: 276, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
+              brawler2: { x: 1057, y: -24, scale: 0.26, scaleX: 1, scaleY: 1, rot: 0 } 
+          },
+          style1Brawlers: { // yes
+              brawler1: { x: 688, y: 511, scale: 0.53, flipH: false }, // Нижний (x: 1200*0.42-30)
+              brawler2: { x: 485, y: 511, scale: 0.64, flipH: true }  // Верхний (x: 1200*0.58-30)
+          },
+          dopBrawler: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 },
+          dopText: { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 }
+      }
   };
 
 </script>
@@ -1451,11 +1454,11 @@
   }
 
   .fankit-drag-pill {
-    width: 60px; 
-    height: 5px;
+    width: 46px; 
+    height: 6px;
     background: var(--tg-theme-subtitle-text-color);
-    border-radius: 3px;
-    margin: 0 auto 20px auto;
+    border-radius: 6px;
+    margin: 12px auto 20px auto;
   }
 
   .fankit-title {
@@ -2987,19 +2990,19 @@ body.os-non-apple .promo-banner {
 </div>
 
 <div id="wizard-step3-bp-dop" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
-    <div class="ios-wizard-title">Создание Brawl Pass</div>
-    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цена. Укажите цену для работы.</div>
+    <div class="ios-wizard-title">Создание Brawl Pass</div>
+    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цена. Укажите цену для работы.</div>
 
-    <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
-        <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
-            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
-                <input type="text" inputmode="numeric" maxlength="5" id="ws-dop-p0" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPDopReady();">
-            </div>
-        </div>
-    </div>
-    
-    <button id="wizard-next-btn3-bp-dop" class="ios-action-btn ios-btn-next">Далее</button>
+    <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div id="dop-step3-label" style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws-dop-p0" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPDopReady();">
+            </div>
+        </div>
+    </div>
+    
+    <button id="wizard-next-btn3-bp-dop" class="ios-action-btn ios-btn-next">Далее</button>
 </div>
 
 </div> <div id="result-box">
@@ -4052,23 +4055,32 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
     }
 });
 
+// СТАЛО
 document.getElementById('bp-variant-btn-next').addEventListener('click', function() {
-    if (window.triggerHaptic) window.triggerHaptic();
-    
-    if (!selectedBPVariant) {
-        alert("Пожалуйста, выберите вариант.");
-        return;
-    }
+    if (window.triggerHaptic) window.triggerHaptic();
+    
+    if (!selectedBPVariant) {
+        alert("Пожалуйста, выберите вариант.");
+        return;
+    }
 
-    document.getElementById('bp-variant-overlay').style.display = 'none';
-    
-    // ВАЖНО: Принудительно включаем режим Brawl Pass
-    wizardMode = 'bp'; 
-    
-    window.layerState.bpStyleIndex = 'dop';
-    window.layerState.bpVariantIndex = selectedBPVariant;
+    document.getElementById('bp-variant-overlay').style.display = 'none';
+    
+    // ВАЖНО: Принудительно включаем режим Brawl Pass
+    wizardMode = 'bp'; 
+    
+    window.layerState.bpStyleIndex = 'dop';
+    window.layerState.bpVariantIndex = selectedBPVariant;
 
-    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">dop</span></span>`;
+    let labelEl = document.getElementById('dop-step3-label');
+    if (labelEl) {
+        if (selectedBPVariant === 4) labelEl.innerText = "Brawl Pass Plus (улучшение)";
+        else if (selectedBPVariant === 3) labelEl.innerText = "Brawl Pass +";
+        else if (selectedBPVariant === 2) labelEl.innerText = "Brawl Pass (скидка)";
+        else labelEl.innerText = "Brawl Pass";
+    }
+
+    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">dop</span></span>`;
 
     document.getElementById('wizard-title-step1').innerHTML = bpTitleHtml;
     document.getElementById('wizard-title-step2').innerHTML = bpTitleHtml;
@@ -4997,11 +5009,47 @@ if (window.layerState.isBrawlPassMode) {
                     <div id="v-dop-sy" style="margin-right:10px; color:#8E8E93;">${b2sy}</div>
                     <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${b2sy}" oninput="document.getElementById('v-dop-sy').innerText=this.value; updateBrawlerParams('brawler2ScaleY', this.value)">
                 </div>
-                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
-                    <div id="v-dop-rot" style="margin-right:10px; color:#8E8E93;">${b2rot}</div>
-                    <input type="range" class="ios-slider" min="-180" max="180" step="1" value="${b2rot}" oninput="document.getElementById('v-dop-rot').innerText=this.value; updateBrawlerParams('brawler2Rot', this.value)">
-                </div>`;
-            }
+
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
+                    <div id="v-dop-rot" style="margin-right:10px; color:#8E8E93;">${b2rot}</div>
+                    <input type="range" class="ios-slider" min="-180" max="180" step="1" value="${b2rot}" oninput="document.getElementById('v-dop-rot').innerText=this.value; updateBrawlerParams('brawler2Rot', this.value)">
+                </div>`;
+
+                let dopTextConf = seasonConf.dopText || { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 };
+                let tx = window.layerState.dopTextX !== undefined ? window.layerState.dopTextX : dopTextConf.x;
+                let ty = window.layerState.dopTextY !== undefined ? window.layerState.dopTextY : dopTextConf.y;
+                let ts = window.layerState.dopTextScale !== undefined ? window.layerState.dopTextScale : dopTextConf.scale;
+                let tsx = window.layerState.dopTextScaleX !== undefined ? window.layerState.dopTextScaleX : (dopTextConf.scaleX || 1);
+                let tsy = window.layerState.dopTextScaleY !== undefined ? window.layerState.dopTextScaleY : (dopTextConf.scaleY || 1);
+                let trot = window.layerState.dopTextRot !== undefined ? window.layerState.dopTextRot : (dopTextConf.rot || 0);
+
+                html += `
+                <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ТЕКСТА (DOP)</div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Размер (Scale)</div>
+                    <div id="v-dop-tx-s" style="margin-right:10px; color:#8E8E93;">${ts}</div>
+                    <input type="range" class="ios-slider" min="0.01" max="2.5" step="0.01" value="${ts}" oninput="document.getElementById('v-dop-tx-s').innerText=this.value; updateBrawlerParams('dopTextScale', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Позиция X</div>
+                    <div id="v-dop-tx-x" style="margin-right:10px; color:#8E8E93;">${tx}</div>
+                    <input type="range" class="ios-slider" min="-500" max="1500" step="1" value="${tx}" oninput="document.getElementById('v-dop-tx-x').innerText=this.value; updateBrawlerParams('dopTextX', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Позиция Y</div>
+                    <div id="v-dop-tx-y" style="margin-right:10px; color:#8E8E93;">${ty}</div>
+                    <input type="range" class="ios-slider" min="-500" max="1000" step="1" value="${ty}" oninput="document.getElementById('v-dop-tx-y').innerText=this.value; updateBrawlerParams('dopTextY', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Растянуть X</div>
+                    <div id="v-dop-tx-sx" style="margin-right:10px; color:#8E8E93;">${tsx}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${tsx}" oninput="document.getElementById('v-dop-tx-sx').innerText=this.value; updateBrawlerParams('dopTextScaleX', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Растянуть Y</div>
+                    <div id="v-dop-tx-sy" style="margin-right:10px; color:#8E8E93;">${tsy}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${tsy}" oninput="document.getElementById('v-dop-tx-sy').innerText=this.value; updateBrawlerParams('dopTextScaleY', this.value)">
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
+                    <div id="v-dop-tx-rot" style="margin-right:10px; color:#8E8E93;">${trot}</div>
+                    <input type="range" class="ios-slider" min="-180" max="180" step="1" value="${trot}" oninput="document.getElementById('v-dop-tx-rot').innerText=this.value; updateBrawlerParams('dopTextRot', this.value)">
+                </div>`;
+            }
 
             if (window.ENABLE_TEMP_EDITOR) {
                 let currentSeason = window.layerState.bpSeason || 50;
@@ -7249,34 +7297,52 @@ function drawScene() {
             ctx.restore();
 
             // 7. Персонаж с тенью
-            let season = window.layerState.bpSeason || 50;
-            let brawler = globalAssets[`brawler_${season}_2`];
-            if (brawler) {
-                let seasonConf = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
-                let dopConf = seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
-                
-                let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : dopConf.scale;
-                let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : dopConf.x;
-                let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : dopConf.y;
-                let b2sx = window.layerState.brawler2ScaleX !== undefined ? window.layerState.brawler2ScaleX : (dopConf.scaleX || 1);
-                let b2sy = window.layerState.brawler2ScaleY !== undefined ? window.layerState.brawler2ScaleY : (dopConf.scaleY || 1);
-                let b2rot = window.layerState.brawler2Rot !== undefined ? window.layerState.brawler2Rot : (dopConf.rot || 0);
+            let season = window.layerState.bpSeason || 50;
+            let brawler = globalAssets[`brawler_${season}_2`];
+            let seasonConf = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
+            if (brawler) {
+                let dopConf = seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
+                
+                let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : dopConf.scale;
+                let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : dopConf.x;
+                let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : dopConf.y;
+                let b2sx = window.layerState.brawler2ScaleX !== undefined ? window.layerState.brawler2ScaleX : (dopConf.scaleX || 1);
+                let b2sy = window.layerState.brawler2ScaleY !== undefined ? window.layerState.brawler2ScaleY : (dopConf.scaleY || 1);
+                let b2rot = window.layerState.brawler2Rot !== undefined ? window.layerState.brawler2Rot : (dopConf.rot || 0);
 
-                ctx.save();
-                
-                ctx.translate(b2x * s, b2y * s); 
-                if (b2rot) ctx.rotate(b2rot * Math.PI / 180);
-                ctx.scale(b2s * b2sx, b2s * b2sy);
-                
-                ctx.shadowColor = 'rgba(255, 255, 255, 1)';
-                ctx.shadowOffsetY = -9 * s;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowBlur = 0;
-                
-                // Отрисовка базового прямоугольника, как было в твоем оригинальном коде
-                ctx.drawImage(brawler, 0, 0, 786 * s, 792 * s);
-                ctx.restore();
-            }
+                ctx.save();
+                
+                ctx.translate(b2x * s, b2y * s); 
+                if (b2rot) ctx.rotate(b2rot * Math.PI / 180);
+                ctx.scale(b2s * b2sx, b2s * b2sy);
+                
+                ctx.shadowColor = 'rgba(255, 255, 255, 1)';
+                ctx.shadowOffsetY = -9 * s;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowBlur = 0;
+                
+                // Отрисовка базового прямоугольника, как было в твоем оригинальном коде
+                ctx.drawImage(brawler, 0, 0, 786 * s, 792 * s);
+                ctx.restore();
+            }
+
+            // 7.5 Текст из стиля 2
+            if (globalAssets.style2Text) {
+                let dopTextConf = seasonConf.dopText || { x: 871, y: 291, scale: 0.15, scaleX: 1, scaleY: 1, rot: 0 };
+                let tx = window.layerState.dopTextX !== undefined ? window.layerState.dopTextX : dopTextConf.x;
+                let ty = window.layerState.dopTextY !== undefined ? window.layerState.dopTextY : dopTextConf.y;
+                let ts = window.layerState.dopTextScale !== undefined ? window.layerState.dopTextScale : dopTextConf.scale;
+                let tsx = window.layerState.dopTextScaleX !== undefined ? window.layerState.dopTextScaleX : (dopTextConf.scaleX || 1);
+                let tsy = window.layerState.dopTextScaleY !== undefined ? window.layerState.dopTextScaleY : (dopTextConf.scaleY || 1);
+                let trot = window.layerState.dopTextRot !== undefined ? window.layerState.dopTextRot : (dopTextConf.rot || 0);
+
+                ctx.save();
+                ctx.translate(tx * s, ty * s);
+                if (trot) ctx.rotate(trot * Math.PI / 180);
+                ctx.scale(ts * tsx * s, ts * tsy * s);
+                ctx.drawImage(globalAssets.style2Text, 0, 0);
+                ctx.restore();
+            }
 
             // 8. Плашка слева
             drawLayerImg(globalAssets.dopPanelL, 82, 21, 546, 649);
@@ -7783,25 +7849,32 @@ function drawBeautifulNick(ctx, text, w, h) {
       window.layerState.isBrawlPassMode = false;
       window.layerState.bpStyleIndex = null;
       
-    const keysToDelete = [
-          'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip',
-          'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip',
-          'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot', 
-          's3TextX', 's3TextY', 's3TextScale'
-      ];
-      keysToDelete.forEach(k => delete window.layerState[k]);
-      window.layerState.customWatermarks = null;
-      delete window.layerState.brawler1X;
-      delete window.layerState.brawler1Y;
-      delete window.layerState.brawler1Scale;
-      delete window.layerState.brawler1Flip;
-      delete window.layerState.brawler2X;
-      delete window.layerState.brawler2Y;
-      delete window.layerState.brawler2Scale;
-      delete window.layerState.brawler2Flip;
-      delete window.layerState.s3TextX;
-      delete window.layerState.s3TextY;
-      delete window.layerState.s3TextScale;
+    const keysToDelete = [
+          'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip',
+          'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip',
+          'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot', 
+          's3TextX', 's3TextY', 's3TextScale',
+          'dopTextX', 'dopTextY', 'dopTextScale', 'dopTextScaleX', 'dopTextScaleY', 'dopTextRot'
+      ];
+      keysToDelete.forEach(k => delete window.layerState[k]);
+      window.layerState.customWatermarks = null;
+      delete window.layerState.brawler1X;
+      delete window.layerState.brawler1Y;
+      delete window.layerState.brawler1Scale;
+      delete window.layerState.brawler1Flip;
+      delete window.layerState.brawler2X;
+      delete window.layerState.brawler2Y;
+      delete window.layerState.brawler2Scale;
+      delete window.layerState.brawler2Flip;
+      delete window.layerState.s3TextX;
+      delete window.layerState.s3TextY;
+      delete window.layerState.s3TextScale;
+      delete window.layerState.dopTextX;
+      delete window.layerState.dopTextY;
+      delete window.layerState.dopTextScale;
+      delete window.layerState.dopTextScaleX;
+      delete window.layerState.dopTextScaleY;
+      delete window.layerState.dopTextRot;
       
       if (typeof selectedBPSeason !== 'undefined') {
           selectedBPSeason = 50;
@@ -9160,8 +9233,9 @@ window.openBPDopEditor = function() {
         if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
         if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
         if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
-        if (!globalAssets.dopPanelL) globalAssets.dopPanelL = await load('BP/bp_panel_right.png'); 
+        if (!globalAssets.dopPanelL) globalAssets.dopPanelL = await load('BP/bp_panel_right.png'); 
         if (!globalAssets.dopPrice) globalAssets.dopPrice = await load('BP/bp_price_bg_right.png');
+        if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
         setupPersistentCanvas();
         renderLayerPanel(true);
