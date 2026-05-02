@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(32)";
+  const APP_VERSION = "v2.4.0(33)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -7327,7 +7327,7 @@ function drawScene() {
                 ctx.save();
                 ctx.translate(bx * s, by * s); 
                 if (brot) ctx.rotate(brot * Math.PI / 180);
-                ctx.scale(bs * bsx, bs * bsy);
+                ctx.scale(bs * bsx * s, bs * bsy * s);
                 
                 ctx.shadowColor = 'rgba(255, 255, 255, 1)';
                 ctx.shadowOffsetY = -9 * s;
@@ -8970,8 +8970,7 @@ async function generateBrawlPassTest() {
     ctx.stroke();
     ctx.restore();
 
-    rawBgImage = new Image();
-    rawBgImage.src = c.toDataURL('image/png');
+    rawBgImage = await loadImg(c.toDataURL('image/png'));
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
     let starH = HEIGHT * 0.70; 
@@ -9236,13 +9235,21 @@ window.openBPDopEditor = function() {
         
         if (!rawBgImage) rawBgImage = await load('bg/bg20_BP48.png');
 
-        if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
-        if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
-        if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
-        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
-        if (!globalAssets.dopPanelL) globalAssets.dopPanelL = await load('BP/bp_panel_right.png'); 
-        if (!globalAssets.dopPrice) globalAssets.dopPrice = await load('BP/bp_price_bg_right.png');
-        if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
+        if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
+        if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
+        if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
+
+        if (vIdx === 1) {
+            if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
+            if (!globalAssets.bpPanelL) globalAssets.bpPanelL = await load(`BP/bp_panel_left${season}.png`);
+            if (!globalAssets.bpPriceL) globalAssets.bpPriceL = await load('BP/bp_price_bg_left.png');
+        } else {
+            if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+            if (!globalAssets.bpPanelR) globalAssets.bpPanelR = await load('BP/bp_panel_right.png'); 
+            if (!globalAssets.bpPriceR) globalAssets.bpPriceR = await load('BP/bp_price_bg_right.png');
+        }
+
+        if (vIdx === 4 && !globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
         setupPersistentCanvas();
         renderLayerPanel(true);
@@ -9280,19 +9287,15 @@ window.openBPStyle3Editor = function() {
         if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
         if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
         
-        // Загружаем картинки в правильные глобальные переменные
-        if (vIdx === 1) {
-            if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
-            if (!globalAssets.bpPanelL) globalAssets.bpPanelL = await load(`BP/bp_panel_left${season}.png`);
-            if (!globalAssets.bpPriceL) globalAssets.bpPriceL = await load('BP/bp_price_bg_left.png');
-        } else {
-            if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
-            if (!globalAssets.bpPanelR) globalAssets.bpPanelR = await load('BP/bp_panel_right.png'); 
-            if (!globalAssets.bpPriceR) globalAssets.bpPriceR = await load('BP/bp_price_bg_right.png');
-        }
-        
-        // Загружаем текст для 4-го варианта (улучшение)
-        if (vIdx === 4 && !globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
+        if (!globalAssets.s3Rays) globalAssets.s3Rays = await load('BP/bp_style3_rays.png');
+        if (!globalAssets.s3Dots) globalAssets.s3Dots = await load('BP/bp_points_3style.png');
+        if (!globalAssets.s3Details) globalAssets.s3Details = await load('BP/bp_style3_details.png');
+        if (!globalAssets.s3PanelL) globalAssets.s3PanelL = await load('BP/bp_style3_panelL.png');
+        if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await load('BP/bp_style3_priceL.png');
+        if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await load('BP/bp_style3_panelM.png');
+        if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await load('BP/bp_style3_priceM.png');
+        if (!globalAssets.s3PanelR) globalAssets.s3PanelR = await load('BP/bp_style3_panelR.png');
+        if (!globalAssets.s3Stars) globalAssets.s3Stars = await load('BP/bp_stars_style2.png');
 
         setupPersistentCanvas();
         // ... (дальше идет renderLayerPanel и т.д.)
