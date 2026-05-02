@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(37)";
+  const APP_VERSION = "v2.4.0(38)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6930,16 +6930,18 @@ function drawScene() {
                 ctx.translate(obj.x*s, obj.y*s); 
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
-                ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
-                
+                ctx.scale(obj.scale * (obj.scaleX||1) * s, obj.scale * (obj.scaleY||1) * s);
+
                 if (obj.flipH) {
                     ctx.translate(img.width, 0);
                     ctx.scale(-1, 1);
                 }
-                
-                ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
+
+                ctx.shadowColor = "white"; ctx.shadowBlur = 0; 
+                ctx.shadowOffsetX = 3 / obj.scale; ctx.shadowOffsetY = -6 / obj.scale;
                 ctx.drawImage(img, 0, 0);
-                ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; ctx.drawImage(img, 0, 0);
+                ctx.shadowOffsetX = 2 / obj.scale; ctx.shadowOffsetY = -4 / obj.scale; 
+                ctx.drawImage(img, 0, 0);
                 ctx.restore();
             };
 
@@ -7223,11 +7225,11 @@ function drawScene() {
 
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
-                let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
-                ctx.translate(tw2, th2);
+                let baseY = window.layerState.textPosition === 'bottom' ? H * 0.92 : H * 0.06;
+
                 ctx.translate(txtX * s, txtY * s); 
                 ctx.scale(txtS * animText.scale, txtS * animText.scale); 
-                ctx.translate(-W/2, -H/2);
+                ctx.translate(-W/2, -baseY); 
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
             } 
@@ -7335,19 +7337,19 @@ function drawScene() {
                 
                 ctx.translate(bx * s, by * s); 
                 if (brot) ctx.rotate(brot * Math.PI / 180);
-                ctx.scale(bs * bsx, bs * bsy);
-                
+                ctx.scale(bs * bsx * s, bs * bsy * s);
+
                 if (bflip) {
-                    ctx.translate(786 * s, 0);
+                    ctx.translate(brawler.width, 0);
                     ctx.scale(-1, 1);
                 }
-                
+
                 ctx.shadowColor = 'rgba(255, 255, 255, 1)';
-                ctx.shadowOffsetY = -9 * s;
+                ctx.shadowOffsetY = -9 / bs;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowBlur = 0;
-                
-                ctx.drawImage(brawler, 0, 0, 786 * s, 792 * s);
+
+                ctx.drawImage(brawler, 0, 0); 
                 ctx.restore();
             }
 
@@ -7437,8 +7439,8 @@ function drawScene() {
                 let bh = h * scale;
                 let bw = bh * (img.width / img.height);
                 
-                let sx = x * (w / 1200); 
-                let sy = y * (h / 675);
+                let sx = x * (w / 1280);
+                let sy = y * (h / 720);
                 
                 persistentCtx.translate(sx, sy);
                 if (flip) persistentCtx.scale(-1, 1);
