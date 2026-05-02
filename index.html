@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(38)";
+  const APP_VERSION = "v2.4.0(39)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6523,13 +6523,13 @@ function setupPersistentCanvas() {
     
     let scale = getHDScale();
     
-    if (window.layerState.isBrawlPassMode) {
-        persistentCanvas.width = 1280 * scale;
-        persistentCanvas.height = 720 * scale;
-    } else {
-        persistentCanvas.width = rawBgImage.width * scale;
-        persistentCanvas.height = rawBgImage.height * scale;
-    }
+if (window.layerState.isBrawlPassMode) {
+      persistentCanvas.width = 1200 * scale; // Было 1280
+      persistentCanvas.height = 675 * scale; // Было 720
+  } else {
+      persistentCanvas.width = rawBgImage.width * scale;
+      persistentCanvas.height = rawBgImage.height * scale;
+  }
     
     window.updateCachedTextCanvas();
 }
@@ -6694,7 +6694,7 @@ function drawScene() {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
-            const s = W / 1280; 
+            const s = W / 1200; 
 
             let currentSeason = window.layerState.bpSeason || 50;
             let s2Config = (BP_SEASON_CONFIG[currentSeason] && BP_SEASON_CONFIG[currentSeason].style2Brawlers) 
@@ -7241,7 +7241,7 @@ function drawScene() {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
-            const s = W / 1280; // Масштаб для адаптивности
+            const s = W / 1200; // Масштаб для адаптивности
 
             const drawLayerImg = (img, x, y, w, h) => {
                 if (!img) return;
@@ -7258,11 +7258,11 @@ function drawScene() {
             ctx.globalCompositeOperation = 'overlay';
             if (window.layerState.pointsVisible !== false) {
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
-                drawLayerImg(globalAssets.dopPoints, 0, 0, 1280, 720);
+                drawLayerImg(globalAssets.dopPoints, 0, 0, 1200, 675);
             }
             if (window.layerState.starsVisible !== false) {
                 ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
-                drawLayerImg(globalAssets.dopStarsEff, 0, 0, 1280, 720);
+                drawLayerImg(globalAssets.dopStarsEff, 0, 0, 1200, 675);
             }
             ctx.restore();
 
@@ -7439,8 +7439,8 @@ function drawScene() {
                 let bh = h * scale;
                 let bw = bh * (img.width / img.height);
                 
-                let sx = x * (w / 1280);
-                let sy = y * (h / 720);
+                let sx = x * (w / 1200);
+                let sy = y * (h / 675);
                 
                 persistentCtx.translate(sx, sy);
                 if (flip) persistentCtx.scale(-1, 1);
