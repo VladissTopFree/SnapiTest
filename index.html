@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(35)";
+  const APP_VERSION = "v2.4.0(36)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -7320,17 +7320,20 @@ function drawScene() {
             let brawler = globalAssets[`brawler_${season}_${brawlerNum}`];
             if (brawler) {
                 let seasonConf = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
+                // Ищем настройки для 1 или 2 варианта, если их нет - берем старый dopBrawler
                 let dopConf = brawlerNum === 1 ? (seasonConf.dopBrawler1 || seasonConf.dopBrawler) : (seasonConf.dopBrawler2 || seasonConf.dopBrawler);
-                if (!dopConf) dopConf = { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
+                if (!dopConf) dopConf = { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0, flipH: false };
                 
                 let bPrefix = `brawler${brawlerNum}`;
-                let bs = window.layerState[`${bPrefix}Scale`] !== undefined ? window.layerState[`${bPrefix}Scale`] : dopConf.scale;
-                let bx = window.layerState[`${bPrefix}X`] !== undefined ? window.layerState[`${bPrefix}X`] : dopConf.x;
-                let by = window.layerState[`${bPrefix}Y`] !== undefined ? window.layerState[`${bPrefix}Y`] : dopConf.y;
-                let bsx = window.layerState[`${bPrefix}ScaleX`] !== undefined ? window.layerState[`${bPrefix}ScaleX`] : (dopConf.scaleX || 1);
-                let bsy = window.layerState[`${bPrefix}ScaleY`] !== undefined ? window.layerState[`${bPrefix}ScaleY`] : (dopConf.scaleY || 1);
-                let brot = window.layerState[`${bPrefix}Rot`] !== undefined ? window.layerState[`${bPrefix}Rot`] : (dopConf.rot || 0);
-                let bflip = window.layerState[`${bPrefix}Flip`] !== undefined ? window.layerState[`${bPrefix}Flip`] : !!dopConf.flipH;
+                
+                // Строгая проверка: берем из layerState ТОЛЬКО если включен временный редактор!
+                let bs = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Scale`] !== undefined) ? window.layerState[`${bPrefix}Scale`] : dopConf.scale;
+                let bx = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}X`] !== undefined) ? window.layerState[`${bPrefix}X`] : dopConf.x;
+                let by = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Y`] !== undefined) ? window.layerState[`${bPrefix}Y`] : dopConf.y;
+                let bsx = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}ScaleX`] !== undefined) ? window.layerState[`${bPrefix}ScaleX`] : (dopConf.scaleX || 1);
+                let bsy = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}ScaleY`] !== undefined) ? window.layerState[`${bPrefix}ScaleY`] : (dopConf.scaleY || 1);
+                let brot = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Rot`] !== undefined) ? window.layerState[`${bPrefix}Rot`] : (dopConf.rot || 0);
+                let bflip = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Flip`] !== undefined) ? window.layerState[`${bPrefix}Flip`] : !!dopConf.flipH;
 
                 ctx.save();
                 
@@ -7338,6 +7341,7 @@ function drawScene() {
                 if (brot) ctx.rotate(brot * Math.PI / 180);
                 ctx.scale(bs * bsx, bs * bsy);
                 
+                // Применяем отзеркаливание
                 if (bflip) {
                     ctx.translate(786 * s, 0);
                     ctx.scale(-1, 1);
@@ -7348,7 +7352,6 @@ function drawScene() {
                 ctx.shadowOffsetX = 0;
                 ctx.shadowBlur = 0;
                 
-                // Отрисовка базового прямоугольника, как было в твоем оригинальном коде
                 ctx.drawImage(brawler, 0, 0, 786 * s, 792 * s);
                 ctx.restore();
             }
