@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(33)";
+  const APP_VERSION = "v2.4.0(34)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -44,7 +44,8 @@
               brawler1: { x: 469, y: 512, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+          dopBrawler2: { x: 441, y: 166, scale: 1.22, scaleX: 1, scaleY: 0.77, rot: 0, flipH: true }, 
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
       },
       49: {
@@ -59,7 +60,8 @@
               brawler1: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
+          dopBrawler1: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
+          dopBrawler2: { x: 545, y: 64, scale: 0.79, scaleX: 1, scaleY: 1.07, rot: 0, flipH: true }, 
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
         },
       48: {
@@ -74,7 +76,8 @@
               brawler1: { x: 688, y: 511, scale: 0.53, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 485, y: 511, scale: 0.64, flipH: true }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 },
+          dopBrawler2: { x: 545, y: -81, scale: 1.07, scaleX: 0.68, scaleY: 1, rot: 0, flipH: true }, 
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
         }
   };
@@ -4654,8 +4657,17 @@ window.toggleBrawlerFlip = (brawlerKey) => {
     let stateKey = brawlerKey + 'Flip';
     if (window.layerState[stateKey] === undefined) {
         let currentSeason = window.layerState.bpSeason || 50;
-        let s2Conf = BP_SEASON_CONFIG[currentSeason].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
-        window.layerState[stateKey] = !!s2Conf[brawlerKey].flipH;
+        let conf;
+        if (window.layerState.bpStyleIndex === 'dop') {
+            let bnum = window.layerState.bpVariantIndex === 1 ? 1 : 2;
+            let seasonConf = BP_SEASON_CONFIG[currentSeason] || BP_SEASON_CONFIG[50];
+            conf = bnum === 1 ? (seasonConf.dopBrawler1 || seasonConf.dopBrawler) : (seasonConf.dopBrawler2 || seasonConf.dopBrawler);
+        } else if (window.layerState.bpStyleIndex === 1) {
+            conf = (BP_SEASON_CONFIG[currentSeason] || BP_SEASON_CONFIG[50]).style1Brawlers[brawlerKey];
+        } else {
+            conf = (BP_SEASON_CONFIG[currentSeason] || BP_SEASON_CONFIG[50]).style2Brawlers[brawlerKey];
+        }
+        window.layerState[stateKey] = conf ? !!conf.flipH : false;
     }
     window.layerState[stateKey] = !window.layerState[stateKey];
     
@@ -5024,6 +5036,7 @@ if (window.layerState.isBrawlPassMode) {
                 let bsx = window.layerState[`${bPrefix}ScaleX`] !== undefined ? window.layerState[`${bPrefix}ScaleX`] : (dopConf.scaleX || 1);
                 let bsy = window.layerState[`${bPrefix}ScaleY`] !== undefined ? window.layerState[`${bPrefix}ScaleY`] : (dopConf.scaleY || 1);
                 let brot = window.layerState[`${bPrefix}Rot`] !== undefined ? window.layerState[`${bPrefix}Rot`] : (dopConf.rot || 0);
+                let bflip = window.layerState[`${bPrefix}Flip`] !== undefined ? window.layerState[`${bPrefix}Flip`] : !!dopConf.flipH;
 
                 html += `
                 <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖА (DOP)</div>
@@ -5047,9 +5060,12 @@ if (window.layerState.isBrawlPassMode) {
                     <div id="v-dop-sy" style="margin-right:10px; color:#8E8E93;">${bsy}</div>
                     <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${bsy}" oninput="document.getElementById('v-dop-sy').innerText=this.value; updateBrawlerParams('${bPrefix}ScaleY', this.value)">
                 </div>
-                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
                     <div id="v-dop-rot" style="margin-right:10px; color:#8E8E93;">${brot}</div>
                     <input type="range" class="ios-slider" min="-180" max="180" step="1" value="${brot}" oninput="document.getElementById('v-dop-rot').innerText=this.value; updateBrawlerParams('${bPrefix}Rot', this.value)">
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Отразить (Flip)</div>
+                    <button class="ios-pill-btn" onclick="toggleBrawlerFlip('${bPrefix}')">${bflip ? 'ДА' : 'НЕТ'}</button>
                 </div>`;
             }
 
@@ -7314,12 +7330,18 @@ function drawScene() {
                 let bsx = window.layerState[`${bPrefix}ScaleX`] !== undefined ? window.layerState[`${bPrefix}ScaleX`] : (dopConf.scaleX || 1);
                 let bsy = window.layerState[`${bPrefix}ScaleY`] !== undefined ? window.layerState[`${bPrefix}ScaleY`] : (dopConf.scaleY || 1);
                 let brot = window.layerState[`${bPrefix}Rot`] !== undefined ? window.layerState[`${bPrefix}Rot`] : (dopConf.rot || 0);
+                let bflip = window.layerState[`${bPrefix}Flip`] !== undefined ? window.layerState[`${bPrefix}Flip`] : !!dopConf.flipH;
 
                 ctx.save();
                 
                 ctx.translate(bx * s, by * s); 
                 if (brot) ctx.rotate(brot * Math.PI / 180);
                 ctx.scale(bs * bsx, bs * bsy);
+                
+                if (bflip) {
+                    ctx.translate(786 * s, 0);
+                    ctx.scale(-1, 1);
+                }
                 
                 ctx.shadowColor = 'rgba(255, 255, 255, 1)';
                 ctx.shadowOffsetY = -9 * s;
