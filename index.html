@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(31)";
+  const APP_VERSION = "v2.4.0(32)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -44,7 +44,9 @@
               brawler1: { x: 469, y: 512, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }
+          dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }, 
+          dopText: { x: 243, y: 680, scale: 0.15, rot: 0 }
       },
       49: {
           lineColor: '#ffa800', 
@@ -58,7 +60,10 @@
               brawler1: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 }
+          dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
+          dopBrawler1: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }, 
+          dopText: { x: 243, y: 680, scale: 0.15, rot: 0 }
+
       },
       48: {
           lineColor: '#b32700', 
@@ -72,7 +77,9 @@
               brawler1: { x: 688, y: 511, scale: 0.53, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 485, y: 511, scale: 0.64, flipH: true }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 }
+          dopBrawler: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }, 
+          dopText: { x: 243, y: 680, scale: 0.15, rot: 0 }
       }
   };
 
@@ -5010,41 +5017,45 @@ if (window.layerState.isBrawlPassMode) {
 
             // Добавляем временный редактор персонажа (Специально для DOP)
             if (window.ENABLE_TEMP_EDITOR) {
+                let vIdx = window.layerState.bpVariantIndex;
+                let bPrefix = vIdx === 1 ? 'brawler1' : 'brawler2';
+                let confKey = vIdx === 1 ? 'dopBrawler1' : 'dopBrawler';
+
                 let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
-                let dopConf = seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
+                let dopConf = seasonConf[confKey] || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
                 
-                let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : dopConf.scale;
-                let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : dopConf.x;
-                let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : dopConf.y;
-                let b2sx = window.layerState.brawler2ScaleX !== undefined ? window.layerState.brawler2ScaleX : (dopConf.scaleX || 1);
-                let b2sy = window.layerState.brawler2ScaleY !== undefined ? window.layerState.brawler2ScaleY : (dopConf.scaleY || 1);
-                let b2rot = window.layerState.brawler2Rot !== undefined ? window.layerState.brawler2Rot : (dopConf.rot || 0);
+                let bs = window.layerState[bPrefix + 'Scale'] !== undefined ? window.layerState[bPrefix + 'Scale'] : dopConf.scale;
+                let bx = window.layerState[bPrefix + 'X'] !== undefined ? window.layerState[bPrefix + 'X'] : dopConf.x;
+                let by = window.layerState[bPrefix + 'Y'] !== undefined ? window.layerState[bPrefix + 'Y'] : dopConf.y;
+                let bsx = window.layerState[bPrefix + 'ScaleX'] !== undefined ? window.layerState[bPrefix + 'ScaleX'] : (dopConf.scaleX || 1);
+                let bsy = window.layerState[bPrefix + 'ScaleY'] !== undefined ? window.layerState[bPrefix + 'ScaleY'] : (dopConf.scaleY || 1);
+                let brot = window.layerState[bPrefix + 'Rot'] !== undefined ? window.layerState[bPrefix + 'Rot'] : (dopConf.rot || 0);
 
                 html += `
                 <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖА (DOP)</div>
                 <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Размер (Scale)</div>
-                    <div id="v-dop-s" style="margin-right:10px; color:#8E8E93;">${b2s}</div>
-                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${b2s}" oninput="document.getElementById('v-dop-s').innerText=this.value; updateBrawlerParams('brawler2Scale', this.value)">
+                    <div id="v-dop-s" style="margin-right:10px; color:#8E8E93;">${bs}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${bs}" oninput="document.getElementById('v-dop-s').innerText=this.value; updateBrawlerParams('${bPrefix}Scale', this.value)">
                 </div>
                 <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Позиция X</div>
-                    <div id="v-dop-x" style="margin-right:10px; color:#8E8E93;">${b2x}</div>
-                    <input type="range" class="ios-slider" min="-500" max="1500" step="1" value="${b2x}" oninput="document.getElementById('v-dop-x').innerText=this.value; updateBrawlerParams('brawler2X', this.value)">
+                    <div id="v-dop-x" style="margin-right:10px; color:#8E8E93;">${bx}</div>
+                    <input type="range" class="ios-slider" min="-500" max="1500" step="1" value="${bx}" oninput="document.getElementById('v-dop-x').innerText=this.value; updateBrawlerParams('${bPrefix}X', this.value)">
                 </div>
                 <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Позиция Y</div>
-                    <div id="v-dop-y" style="margin-right:10px; color:#8E8E93;">${b2y}</div>
-                    <input type="range" class="ios-slider" min="-500" max="1000" step="1" value="${b2y}" oninput="document.getElementById('v-dop-y').innerText=this.value; updateBrawlerParams('brawler2Y', this.value)">
+                    <div id="v-dop-y" style="margin-right:10px; color:#8E8E93;">${by}</div>
+                    <input type="range" class="ios-slider" min="-500" max="1000" step="1" value="${by}" oninput="document.getElementById('v-dop-y').innerText=this.value; updateBrawlerParams('${bPrefix}Y', this.value)">
                 </div>
                 <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Растянуть по X</div>
-                    <div id="v-dop-sx" style="margin-right:10px; color:#8E8E93;">${b2sx}</div>
-                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${b2sx}" oninput="document.getElementById('v-dop-sx').innerText=this.value; updateBrawlerParams('brawler2ScaleX', this.value)">
+                    <div id="v-dop-sx" style="margin-right:10px; color:#8E8E93;">${bsx}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${bsx}" oninput="document.getElementById('v-dop-sx').innerText=this.value; updateBrawlerParams('${bPrefix}ScaleX', this.value)">
                 </div>
                 <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Растянуть по Y</div>
-                    <div id="v-dop-sy" style="margin-right:10px; color:#8E8E93;">${b2sy}</div>
-                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${b2sy}" oninput="document.getElementById('v-dop-sy').innerText=this.value; updateBrawlerParams('brawler2ScaleY', this.value)">
+                    <div id="v-dop-sy" style="margin-right:10px; color:#8E8E93;">${bsy}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${bsy}" oninput="document.getElementById('v-dop-sy').innerText=this.value; updateBrawlerParams('${bPrefix}ScaleY', this.value)">
                 </div>
                 <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
-                    <div id="v-dop-rot" style="margin-right:10px; color:#8E8E93;">${b2rot}</div>
-                    <input type="range" class="ios-slider" min="-180" max="180" step="1" value="${b2rot}" oninput="document.getElementById('v-dop-rot').innerText=this.value; updateBrawlerParams('brawler2Rot', this.value)">
+                    <div id="v-dop-rot" style="margin-right:10px; color:#8E8E93;">${brot}</div>
+                    <input type="range" class="ios-slider" min="-180" max="180" step="1" value="${brot}" oninput="document.getElementById('v-dop-rot').innerText=this.value; updateBrawlerParams('${bPrefix}Rot', this.value)">
                 </div>`;
             }
 
@@ -7293,41 +7304,47 @@ function drawScene() {
             ctx.fill();
             ctx.restore();
 
-            // 7. Персонаж с тенью
             let season = window.layerState.bpSeason || 50;
-            let brawler = globalAssets[`brawler_${season}_2`];
+            let vIdx = window.layerState.bpVariantIndex;
+
+            // 7. Персонаж с тенью
+            let brawler = vIdx === 1 ? globalAssets[`brawler_${season}_1`] : globalAssets[`brawler_${season}_2`];
             if (brawler) {
                 let seasonConf = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
-                let dopConf = seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
+                let dopConf = vIdx === 1 
+                    ? (seasonConf.dopBrawler1 || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }) 
+                    : (seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 });
                 
-                let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : dopConf.scale;
-                let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : dopConf.x;
-                let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : dopConf.y;
-                let b2sx = window.layerState.brawler2ScaleX !== undefined ? window.layerState.brawler2ScaleX : (dopConf.scaleX || 1);
-                let b2sy = window.layerState.brawler2ScaleY !== undefined ? window.layerState.brawler2ScaleY : (dopConf.scaleY || 1);
-                let b2rot = window.layerState.brawler2Rot !== undefined ? window.layerState.brawler2Rot : (dopConf.rot || 0);
+                let bPrefix = vIdx === 1 ? 'brawler1' : 'brawler2';
+
+                let bs = window.layerState[bPrefix + 'Scale'] !== undefined ? window.layerState[bPrefix + 'Scale'] : dopConf.scale;
+                let bx = window.layerState[bPrefix + 'X'] !== undefined ? window.layerState[bPrefix + 'X'] : dopConf.x;
+                let by = window.layerState[bPrefix + 'Y'] !== undefined ? window.layerState[bPrefix + 'Y'] : dopConf.y;
+                let bsx = window.layerState[bPrefix + 'ScaleX'] !== undefined ? window.layerState[bPrefix + 'ScaleX'] : (dopConf.scaleX || 1);
+                let bsy = window.layerState[bPrefix + 'ScaleY'] !== undefined ? window.layerState[bPrefix + 'ScaleY'] : (dopConf.scaleY || 1);
+                let brot = window.layerState[bPrefix + 'Rot'] !== undefined ? window.layerState[bPrefix + 'Rot'] : (dopConf.rot || 0);
 
                 ctx.save();
-                
-                ctx.translate(b2x * s, b2y * s); 
-                if (b2rot) ctx.rotate(b2rot * Math.PI / 180);
-                ctx.scale(b2s * b2sx, b2s * b2sy);
+                ctx.translate(bx * s, by * s); 
+                if (brot) ctx.rotate(brot * Math.PI / 180);
+                ctx.scale(bs * bsx, bs * bsy);
                 
                 ctx.shadowColor = 'rgba(255, 255, 255, 1)';
                 ctx.shadowOffsetY = -9 * s;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowBlur = 0;
                 
-                // Отрисовка базового прямоугольника, как было в твоем оригинальном коде
-                ctx.drawImage(brawler, 0, 0, 786 * s, 792 * s);
+                ctx.drawImage(brawler, 0, 0, brawler.width, brawler.height);
                 ctx.restore();
             }
 
-            // 8. Плашка слева
-            drawLayerImg(globalAssets.dopPanelL, 82, 21, 546, 649);
-            
-            // 9. Плашка цены
-            drawLayerImg(globalAssets.dopPrice, 158, 589, 350, 124);
+            // 8. Плашка
+            let panelImg = vIdx === 1 ? globalAssets[`dopPanelL_${season}`] : globalAssets.dopPanelR;
+            if (panelImg) drawLayerImg(panelImg, 82, 21, 546, 649);
+            
+            // 9. Плашка цены
+            let priceImg = vIdx === 1 ? globalAssets.dopPriceL : globalAssets.dopPriceR;
+            if (priceImg) drawLayerImg(priceImg, 158, 589, 350, 124);
 
             // 10. Текст цены
             let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
@@ -7846,10 +7863,9 @@ function drawBeautifulNick(ctx, text, w, h) {
       window.layerState.isBrawlPassMode = false;
       window.layerState.bpStyleIndex = null;
       
-    const keysToDelete = [
-          'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip',
-          'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip',
-          'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot',
+      const keysToDelete = [
+          'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip', 'brawler1ScaleX', 'brawler1ScaleY', 'brawler1Rot',
+          'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip', 'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot',
           'dopTextX', 'dopTextY', 'dopTextScale', 'dopTextRot', 
           's3TextX', 's3TextY', 's3TextScale'
       ];
@@ -9256,21 +9272,27 @@ window.openBPStyle3Editor = function() {
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
         
         let season = window.layerState.bpSeason || 50;
+        let vIdx = window.layerState.bpVariantIndex; // Узнаем, какая кнопка нажата
         
-        if (!globalAssets.s3Rays) globalAssets.s3Rays = await load('BP/bp_luch_3style.png');
-        if (!globalAssets.s3Dots) globalAssets.s3Dots = await load('BP/bp_points_3style.png');
-        if (!globalAssets.s3Details) globalAssets.s3Details = await load('BP/bp_details_3style.png');
+        if (!rawBgImage) rawBgImage = await load('bg/bg20_BP48.png');
+
+        if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
+        if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
+        if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
         
-        if (!globalAssets[`s3PanelL_${season}`]) {
-            globalAssets[`s3PanelL_${season}`] = await load(`BP/bp_panel_left${season}.png`);
+        // Загружаем картинки в зависимости от варианта
+        if (vIdx === 1) {
+            if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
+            if (!globalAssets[`dopPanelL_${season}`]) globalAssets[`dopPanelL_${season}`] = await load(`BP/bp_panel_left${season}.png`);
+            if (!globalAssets.dopPriceL) globalAssets.dopPriceL = await load('BP/bp_price_bg_left.png');
+        } else {
+            if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+            if (!globalAssets.dopPanelR) globalAssets.dopPanelR = await load('BP/bp_panel_right.png'); 
+            if (!globalAssets.dopPriceR) globalAssets.dopPriceR = await load('BP/bp_price_bg_right.png');
         }
-        globalAssets.s3PanelL = globalAssets[`s3PanelL_${season}`];
         
-        if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await load('BP/bp_price_bg_left.png');
-        if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await load('BP/bp_panel_right.png');
-        if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await load('BP/bp_price_bg_right.png');
-        if (!globalAssets.s3PanelR) globalAssets.s3PanelR = await load('BP/ProPass_bp.png');
-        if (!globalAssets.s3Stars) globalAssets.s3Stars = await load('BP/bp_stars_3style.png');
+        // Текст для 4-й кнопки (улучшение)
+        if (vIdx === 4 && !globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
         setupPersistentCanvas();
         renderLayerPanel(true);
