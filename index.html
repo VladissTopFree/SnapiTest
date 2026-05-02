@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(36)";
+  const APP_VERSION = "v2.4.0(37)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -29,7 +29,7 @@
       if (subProfile) subProfile.innerText = 'Бесплатный доступ';
   }
 
-  const BP_SEASON_CONFIG = {
+    const BP_SEASON_CONFIG = {
       50: {
           lineColor: '#b2beff', 
           gradientLeft: ['#90c4c486', '#90c4c486'], 
@@ -37,14 +37,12 @@
           style2Brawlers: { // yes
               brawler2: { x: 990, y: 12, scale: 0.3, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
               brawler1: { x: 971, y: 386, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
-        
-
           },
           style1Brawlers: { // yes
               brawler1: { x: 469, y: 512, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler1: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0, flipH: false },
           dopBrawler2: { x: 566, y: 182, scale: 0.75, scaleX: 1.24, scaleY: 1, rot: 0, flipH: true }, 
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
       },
@@ -60,7 +58,7 @@
               brawler1: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler1: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
+          dopBrawler1: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0, flipH: false },
           dopBrawler2: { x: 618, y: 93, scale: 0.76, scaleX: 1, scaleY: 1.07, rot: 0, flipH: true }, 
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
         },
@@ -76,7 +74,7 @@
               brawler1: { x: 688, y: 511, scale: 0.53, flipH: false }, // Нижний (x: 1200*0.42-30)
               brawler2: { x: 485, y: 511, scale: 0.64, flipH: true }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler1: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0, flipH: false },
           dopBrawler2: { x: 613, y: -40, scale: 1, scaleX: 0.72, scaleY: 1, rot: 0, flipH: true }, 
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
         }
@@ -4657,15 +4655,15 @@ window.toggleBrawlerFlip = (brawlerKey) => {
     let stateKey = brawlerKey + 'Flip';
     if (window.layerState[stateKey] === undefined) {
         let currentSeason = window.layerState.bpSeason || 50;
+        let seasonConf = BP_SEASON_CONFIG[currentSeason] || BP_SEASON_CONFIG[50];
         let conf;
         if (window.layerState.bpStyleIndex === 'dop') {
             let bnum = window.layerState.bpVariantIndex === 1 ? 1 : 2;
-            let seasonConf = BP_SEASON_CONFIG[currentSeason] || BP_SEASON_CONFIG[50];
             conf = bnum === 1 ? (seasonConf.dopBrawler1 || seasonConf.dopBrawler) : (seasonConf.dopBrawler2 || seasonConf.dopBrawler);
         } else if (window.layerState.bpStyleIndex === 1) {
-            conf = (BP_SEASON_CONFIG[currentSeason] || BP_SEASON_CONFIG[50]).style1Brawlers[brawlerKey];
+            conf = seasonConf.style1Brawlers ? seasonConf.style1Brawlers[brawlerKey] : null;
         } else {
-            conf = (BP_SEASON_CONFIG[currentSeason] || BP_SEASON_CONFIG[50]).style2Brawlers[brawlerKey];
+            conf = seasonConf.style2Brawlers ? seasonConf.style2Brawlers[brawlerKey] : null;
         }
         window.layerState[stateKey] = conf ? !!conf.flipH : false;
     }
@@ -5027,16 +5025,16 @@ if (window.layerState.isBrawlPassMode) {
                 let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
                 let brawlerNum = window.layerState.bpVariantIndex === 1 ? 1 : 2;
                 let dopConf = brawlerNum === 1 ? (seasonConf.dopBrawler1 || seasonConf.dopBrawler) : (seasonConf.dopBrawler2 || seasonConf.dopBrawler);
-                if (!dopConf) dopConf = { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
+                if (!dopConf) dopConf = { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0, flipH: false };
                 
                 let bPrefix = `brawler${brawlerNum}`;
-                let bs = window.layerState[`${bPrefix}Scale`] !== undefined ? window.layerState[`${bPrefix}Scale`] : dopConf.scale;
-                let bx = window.layerState[`${bPrefix}X`] !== undefined ? window.layerState[`${bPrefix}X`] : dopConf.x;
-                let by = window.layerState[`${bPrefix}Y`] !== undefined ? window.layerState[`${bPrefix}Y`] : dopConf.y;
-                let bsx = window.layerState[`${bPrefix}ScaleX`] !== undefined ? window.layerState[`${bPrefix}ScaleX`] : (dopConf.scaleX || 1);
-                let bsy = window.layerState[`${bPrefix}ScaleY`] !== undefined ? window.layerState[`${bPrefix}ScaleY`] : (dopConf.scaleY || 1);
-                let brot = window.layerState[`${bPrefix}Rot`] !== undefined ? window.layerState[`${bPrefix}Rot`] : (dopConf.rot || 0);
-                let bflip = window.layerState[`${bPrefix}Flip`] !== undefined ? window.layerState[`${bPrefix}Flip`] : !!dopConf.flipH;
+                let bs = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Scale`] !== undefined) ? window.layerState[`${bPrefix}Scale`] : dopConf.scale;
+                let bx = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}X`] !== undefined) ? window.layerState[`${bPrefix}X`] : dopConf.x;
+                let by = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Y`] !== undefined) ? window.layerState[`${bPrefix}Y`] : dopConf.y;
+                let bsx = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}ScaleX`] !== undefined) ? window.layerState[`${bPrefix}ScaleX`] : (dopConf.scaleX || 1);
+                let bsy = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}ScaleY`] !== undefined) ? window.layerState[`${bPrefix}ScaleY`] : (dopConf.scaleY || 1);
+                let brot = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Rot`] !== undefined) ? window.layerState[`${bPrefix}Rot`] : (dopConf.rot || 0);
+                let bflip = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Flip`] !== undefined) ? window.layerState[`${bPrefix}Flip`] : !!dopConf.flipH;
 
                 html += `
                 <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖА (DOP)</div>
@@ -7318,15 +7316,13 @@ function drawScene() {
             let season = window.layerState.bpSeason || 50;
             let brawlerNum = window.layerState.bpVariantIndex === 1 ? 1 : 2;
             let brawler = globalAssets[`brawler_${season}_${brawlerNum}`];
+            
             if (brawler) {
                 let seasonConf = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
-                // Ищем настройки для 1 или 2 варианта, если их нет - берем старый dopBrawler
                 let dopConf = brawlerNum === 1 ? (seasonConf.dopBrawler1 || seasonConf.dopBrawler) : (seasonConf.dopBrawler2 || seasonConf.dopBrawler);
                 if (!dopConf) dopConf = { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0, flipH: false };
                 
                 let bPrefix = `brawler${brawlerNum}`;
-                
-                // Строгая проверка: берем из layerState ТОЛЬКО если включен временный редактор!
                 let bs = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Scale`] !== undefined) ? window.layerState[`${bPrefix}Scale`] : dopConf.scale;
                 let bx = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}X`] !== undefined) ? window.layerState[`${bPrefix}X`] : dopConf.x;
                 let by = (window.ENABLE_TEMP_EDITOR && window.layerState[`${bPrefix}Y`] !== undefined) ? window.layerState[`${bPrefix}Y`] : dopConf.y;
@@ -7341,7 +7337,6 @@ function drawScene() {
                 if (brot) ctx.rotate(brot * Math.PI / 180);
                 ctx.scale(bs * bsx, bs * bsy);
                 
-                // Применяем отзеркаливание
                 if (bflip) {
                     ctx.translate(786 * s, 0);
                     ctx.scale(-1, 1);
@@ -9254,19 +9249,18 @@ window.openBPDopEditor = function() {
         
         if (!rawBgImage) rawBgImage = await load('bg/bg20_BP48.png');
 
-        if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
-        if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
+        if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
+        if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
         if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
         
-        let brawlerNum = window.layerState.bpVariantIndex === 1 ? 1 : 2;
-        let brawlerKey = `brawler_${season}_${brawlerNum}`;
-        if (!globalAssets[brawlerKey]) globalAssets[brawlerKey] = await load(`BP/brawler_s${season}_${brawlerNum}.png`);
-        
+        if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
+        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+
         let dopPanelSrc = window.layerState.bpVariantIndex === 1 ? `BP/bp_panel_left${season}.png` : 'BP/bp_panel_right.png';
-        globalAssets.dopPanelL = await load(dopPanelSrc);
-        
+        globalAssets.dopPanelL = await load(dopPanelSrc); 
         let dopPriceSrc = window.layerState.bpVariantIndex === 1 ? 'BP/bp_price_bg_left.png' : 'BP/bp_price_bg_right.png';
         globalAssets.dopPrice = await load(dopPriceSrc);
+
         if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
         setupPersistentCanvas();
