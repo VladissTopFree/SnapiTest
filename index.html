@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.5.1(22)";
+  const APP_VERSION = "v2.4.0(24)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -152,6 +152,7 @@
   }
   body:not(.os-desktop) #category-overlay,
   body:not(.os-desktop) #bp-style-overlay,
+  body:not(.os-desktop) #bp-variant-overlay,
   body:not(.os-desktop) #ios-dashboard,
   body:not(.os-desktop) #saved-projects-overlay,
   body:not(.os-desktop) #settings-overlay {
@@ -4032,15 +4033,15 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
 });
 
 document.getElementById('bp-variant-btn-next').addEventListener('click', function() {
-    if (window.triggerHaptic) window.triggerHaptic();
-    
-    if (!selectedBPVariant) {
-        alert("Пожалуйста, выберите вариант.");
-        return;
-    }
+    if (window.triggerHaptic) window.triggerHaptic();
+    
+    if (!selectedBPVariant) {
+        alert("Пожалуйста, выберите вариант.");
+        return;
+    }
 
-    // Выводим уведомление, так как функционал в разработке
-    alert("Этот раздел пока находится в разработке!");
+    // Пока не делаем разделение на шаги, а сразу открываем редактор "Дополнительного" BP
+    window.openBPDopEditor();
 });
 
 document.getElementById('bp-style-btn-next').addEventListener('click', function() {
@@ -7047,6 +7048,100 @@ function drawScene() {
             
             return; 
         }
+
+        else if (window.layerState.bpStyleIndex === 'dop') {
+            const ctx = persistentCtx;
+            const W = persistentCanvas.width;
+            const H = persistentCanvas.height;
+            const s = W / 1280; // Масштаб для адаптивности
+
+            const drawLayerImg = (img, x, y, w, h) => {
+                if (!img) return;
+                ctx.drawImage(img, x * s, y * s, w * s, h * s);
+            };
+
+            // 1. Фон
+            if (rawBgImage) {
+                drawLayerImg(rawBgImage, -7, 0, 1548, 761);
+            }
+
+            // 2 и 3. Точки и Звезды (Эффекты)
+            ctx.save();
+            ctx.globalCompositeOperation = 'overlay';
+            drawLayerImg(globalAssets.dopPoints, 0, 0, 1280, 720);
+            drawLayerImg(globalAssets.dopStarsEff, 0, 0, 1280, 720);
+
+            // 4. Водяные знаки (текст)
+            let wmText = window.layerState.textValue || "ARTZA DONATE";
+            let wmFont = window.layerState.watermarksFont || 'Arial Black';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.textBaseline = 'top';
+            
+            const wms = [
+                {x: 637, y: 40, h: 8}, {x: 1035, y: 13, h: 21}, {x: 889, y: 517, h: 556},
+                {x: 1114, y: 128, h: 15}, {x: 659, y: 274, h: 20}, {x: 665, y: 61, h: 18},
+                {x: 1049, y: 80, h: 9}, {x: 1115, y: 623, h: 19}, {x: 1031, y: 696, h: 32},
+                {x: 1167, y: 668, h: 8}, {x: 606, y: 627, h: 12}, {x: 638, y: 660, h: 19},
+                {x: 455, y: 699, h: 28}, {x: -155, y: 69, h: 29}, {x: 30, y: 204, h: 10},
+                {x: 5, y: 343, h: 7}, {x: 23, y: 420, h: 15}, {x: -347, y: 518, h: 48}
+            ];
+            
+            wms.forEach(wm => {
+                ctx.font = `italic 900 ${wm.h * s}px "${wmFont}", Impact, sans-serif`;
+                ctx.fillText(wmText, wm.x * s, wm.y * s);
+            });
+            ctx.restore();
+
+            // 5. Звезда фон перс
+            drawLayerImg(globalAssets.dopStar, 561, 61, 771, 675);
+
+            // 6. Белое свечение
+            ctx.save();
+            const cx = (599 + 609 / 2) * s;
+            const cy = (150 + 576 / 2) * s;
+            const r = Math.min(609, 576) / 2 * s;
+            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.7)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // 7. Персонаж с тенью
+            let season = window.layerState.bpSeason || 50;
+            let brawler = globalAssets[`brawler_${season}_2`];
+            if (brawler) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(255, 255, 255, 1)';
+                ctx.shadowOffsetY = -6 * s;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowBlur = 0;
+                ctx.drawImage(brawler, 476 * s, 16 * s, 786 * s, 792 * s);
+                ctx.restore();
+            }
+
+            // 8. Плашка слева
+            drawLayerImg(globalAssets.dopPanelL, 82, 21, 546, 649);
+            
+            // 9. Плашка цены
+            drawLayerImg(globalAssets.dopPrice, 158, 589, 350, 124);
+
+            // 10. Текст цены
+            let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
+            
+            // Используем готовую функцию отрисовки из вырезанных акций
+            drawPriceText(ctx, W, H, pText, {
+                textX: 333 * s, // Выравниваем по центру плашки (158 + 350/2)
+                textY: 651 * s, // (589 + 124/2)
+                boxHeight: 124 * s // Высота плашки для масштаба
+            });
+
+            return;
+        }
+
         else {
             if (window.layerState.luchVisible && globalAssets.luchImg) {
                 persistentCtx.save();
@@ -8819,6 +8914,46 @@ window.openBPTestEditor = function() {
         window.updateCachedTextCanvas();
         startAnimation();
     }, 100);
+};
+
+window.openBPDopEditor = function() {
+    window.triggerHaptic();
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('bp-variant-overlay').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    window.scrollTo(0,0);
+    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+
+    const cardsContainer = document.getElementById('cards-container');
+    const layerPanel = document.getElementById('layer-panel');
+    
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
+
+    window.layerState.isBrawlPassMode = true;
+    window.layerState.bpStyleIndex = 'dop'; // Специальный ID для этого стиля
+
+    setTimeout(async () => {
+        const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
+        
+        let season = window.layerState.bpSeason || 50;
+        
+        // Пока грузим заглушку фона напрямую, раз мы пропускаем шаги визарда
+        if (!rawBgImage) rawBgImage = await load('bg/bg20_BP48.png');
+
+        if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
+        if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
+        if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
+        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+        if (!globalAssets.dopPanelL) globalAssets.dopPanelL = await load('BP/bp_panel_right.png'); 
+        if (!globalAssets.dopPrice) globalAssets.dopPrice = await load('BP/bp_price_bg_right.png');
+
+        setupPersistentCanvas();
+        renderLayerPanel(true);
+        window.updateCachedTextCanvas();
+        startAnimation();
+    }, 100);
 };
 
 window.openBPStyle3Editor = function() {
