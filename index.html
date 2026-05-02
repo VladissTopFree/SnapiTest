@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(26)";
+  const APP_VERSION = "v2.4.0(27)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -7817,11 +7817,13 @@ if (fankitGrid && fankitGrid.children.length === 0) {
                 window.layerState.isReadyBg = false;
                 
                 if (window.layerState.isBrawlPassMode) {
-                    if (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3) {
+                if (window.layerState.isBrawlPassMode) {
+                    if (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3 || window.layerState.bpStyleIndex === 'dop') {
                         if (typeof startAnimation === 'function') startAnimation();
                     } else {
                         generateBrawlPassTest(); 
                     }
+                }
                 } else {
                     calculateLayoutTarget(); 
                     if (typeof startAnimation === 'function') startAnimation();
@@ -8724,13 +8726,11 @@ async function generateBrawlPassTest() {
 
     let season = window.layerState.bpSeason || 50; 
     
-    const [luch, starsEff, pointEff, star, brawler1, brawler2, panelL, priceL, panelR, priceR] = await Promise.all([
+    const [luch, starsEff, pointEff, star, brawler2, brawler1, panelL, priceL, panelR, priceR] = await Promise.all([
         loadImg('BP/Luch.png'), loadImg('BP/bp_starsEff.png'), loadImg('BP/bp_pointEff.png'), loadImg('BP/bp_star.png'),
         loadImg(`BP/brawler_s${season}_2.png`), loadImg(`BP/brawler_s${season}_1.png`), 
-        
         loadImg(`BP/bp_panel_left${season}.png`), 
         loadImg('BP/bp_price_bg_left.png'),
-        
         loadImg('BP/bp_panel_right.png'), 
         loadImg('BP/bp_price_bg_right.png')
     ]);
@@ -8743,8 +8743,8 @@ async function generateBrawlPassTest() {
     globalAssets.bpStar = star;
     globalAssets.bpPanelL = panelL;
     globalAssets.bpPanelR = panelR;
-    globalAssets[`brawler_${season}_2`] = brawler2;
-    globalAssets[`brawler_${season}_1`] = brawler1;
+    globalAssets[`brawler_${season}_2`] = brawler2; // Теперь сюда запишется правильный персонаж _2
+    globalAssets[`brawler_${season}_1`] = brawler1; // А сюда _1
 
     const drawLargeGlow = (x, y, radius) => {
         ctx.save(); 
