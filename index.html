@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(25)";
+  const APP_VERSION = "v2.4.0(26)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1429,9 +1429,9 @@
     .fankit-sheet {
     background: var(--tg-theme-secondary-bg-color, #F2F2F7);
     width: 100%;
-    max-height: 85vh;
-    border-radius: 46px 46px 0 0;
-    padding: 16px 0 40px 0; 
+    max-height: 91vh;
+    border-radius: 16px 16px 0 0;
+    padding: 0 0 40px 0; 
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -1803,11 +1803,11 @@
     transform: scale(1);
   }
 
-  #bp-style-btn-next {
+  #bp-style-btn-next, #bp-variant-btn-next {
     display: none; 
     margin: 0 auto;
   }
-  #bp-style-btn-next.show {
+  #bp-style-btn-next.show, #bp-variant-btn-next.show {
     display: flex;
     animation: slideUpFade 0.3s ease-out forwards;
   }
@@ -2982,6 +2982,22 @@ body.os-non-apple .promo-banner {
     <button id="wizard-next-btn3-bp-style3" class="ios-action-btn ios-btn-next">Далее</button>
 </div>
 
+<div id="wizard-step3-bp-dop" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
+    <div class="ios-wizard-title">Создание Brawl Pass</div>
+    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цена. Укажите цену для работы.</div>
+
+    <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws-dop-p0" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPDopReady();">
+            </div>
+        </div>
+    </div>
+    
+    <button id="wizard-next-btn3-bp-dop" class="ios-action-btn ios-btn-next">Далее</button>
+</div>
+
 </div> <div id="result-box">
   <div id="result-layout">
     <div id="cards-container"></div>
@@ -3098,7 +3114,7 @@ body.os-non-apple .promo-banner {
 <div id="fankit-overlay">
   <div class="fankit-sheet" id="fankit-sheet">
     <div class="fankit-drag-pill"></div>
-    <div class="fankit-title">Выберите фон из Fankit.</div>
+    <div class="fankit-title">Выберите фон из Fankit</div>
     <div class="fankit-grid-container">
         <div class="fankit-grid" id="fankit-grid">
             </div>
@@ -4033,15 +4049,54 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
 });
 
 document.getElementById('bp-variant-btn-next').addEventListener('click', function() {
-    if (window.triggerHaptic) window.triggerHaptic();
-    
-    if (!selectedBPVariant) {
-        alert("Пожалуйста, выберите вариант.");
-        return;
-    }
+    if (window.triggerHaptic) window.triggerHaptic();
+    
+    if (!selectedBPVariant) {
+        alert("Пожалуйста, выберите вариант.");
+        return;
+    }
 
-    // Пока не делаем разделение на шаги, а сразу открываем редактор "Дополнительного" BP
-    window.openBPDopEditor();
+    document.getElementById('bp-variant-overlay').style.display = 'none';
+    
+    // ВАЖНО: Принудительно включаем режим Brawl Pass
+    wizardMode = 'bp'; 
+    
+    window.layerState.bpStyleIndex = 'dop';
+    window.layerState.bpVariantIndex = selectedBPVariant;
+
+    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">Доп</span></span>`;
+
+    document.getElementById('wizard-title-step1').innerHTML = bpTitleHtml;
+    document.getElementById('wizard-title-step2').innerHTML = bpTitleHtml;
+    
+    let step3dop = document.querySelector('#wizard-step3-bp-dop .ios-wizard-title');
+    if(step3dop) step3dop.innerHTML = bpTitleHtml;
+    
+    let step4bp = document.querySelector('#wizard-step4-bp .ios-wizard-title');
+    if(step4bp) step4bp.innerHTML = bpTitleHtml;
+
+    document.getElementById('result-box').style.display = 'none';
+
+    document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active', 'fade-out'));
+    document.getElementById('wizard-step1').classList.add('active');
+
+    document.getElementById('prog-step1').className = 'step active';
+    document.getElementById('prog-line1').className = 'line';
+    document.getElementById('prog-step2').className = 'step small';
+    document.getElementById('prog-line2').className = 'line';
+    document.getElementById('prog-step3').className = 'step small';
+    document.getElementById('prog-line3').className = 'line';       
+    document.getElementById('prog-step4').className = 'step small'; 
+
+    document.getElementById('prog-line1').style.display = 'block';
+    document.getElementById('prog-step2').style.display = 'flex';
+    document.getElementById('prog-line2').style.display = 'block';
+    document.getElementById('prog-step3').style.display = 'flex';
+    document.getElementById('prog-line3').style.display = 'block';
+    document.getElementById('prog-step4').style.display = 'flex';
+
+    document.getElementById('wizard-overlay').style.display = 'flex';
+    window.scrollTo(0,0);
 });
 
 document.getElementById('bp-style-btn-next').addEventListener('click', function() {
@@ -5073,7 +5128,7 @@ if (window.layerState.isBrawlPassMode) {
     html += `<div class="ios-layer-group ${animCls}">`;
 
     if (!window.layerState.isReadyBg) {
-        if (window.layerState.bpStyleIndex !== 2) { 
+        if (window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 'dop') {
             let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
             html += `
                 <div class="ios-layer-row">
@@ -5141,15 +5196,17 @@ if (window.layerState.isBrawlPassMode) {
             </div>
         `;
 
-        if (window.layerState.isGeneratedBg) {
-            let pointsEyeClass = window.layerState.pointsVisible ? '' : 'hidden';
+        if (window.layerState.isGeneratedBg || window.layerState.bpStyleIndex === 'dop') {
+            let pointsEyeClass = window.layerState.pointsVisible !== false ? '' : 'hidden';
+            let currentPointsOpacity = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
             html += `
                 <div class="ios-layer-row">
                     <div class="ios-icon-btn ios-eye-icon ${pointsEyeClass}" onclick="toggleCosmeticLayer('points')">
-                        ${getEyeSVG(window.layerState.pointsVisible)}
+                        ${getEyeSVG(window.layerState.pointsVisible !== false)}
                     </div>
                     <div class="ios-layer-name">Точки</div>
-                    <div style="flex-grow:1;"></div>
+                    <div class="ios-layer-action-text">прозрачность</div>
+                    <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${currentPointsOpacity}" oninput="changeOpacity('points', this.value)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('points')">
                         ${downloadIconSVG}
                     </div>
@@ -7089,32 +7146,47 @@ function drawScene() {
                 drawLayerImg(rawBgImage, -7, 0, 1548, 761);
             }
 
-            // 2 и 3. Точки и Звезды (Эффекты)
-            ctx.save();
-            ctx.globalCompositeOperation = 'overlay';
-            drawLayerImg(globalAssets.dopPoints, 0, 0, 1280, 720);
-            drawLayerImg(globalAssets.dopStarsEff, 0, 0, 1280, 720);
+            // 2 и 3. Точки и Звезды (Эффекты)
+            ctx.save();
+            ctx.globalCompositeOperation = 'overlay';
+            if (window.layerState.pointsVisible !== false) {
+                ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
+                drawLayerImg(globalAssets.dopPoints, 0, 0, 1280, 720);
+            }
+            if (window.layerState.starsVisible !== false) {
+                ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
+                drawLayerImg(globalAssets.dopStarsEff, 0, 0, 1280, 720);
+            }
+            ctx.restore();
 
             // 4. Водяные знаки (текст)
-            let wmText = window.layerState.textValue || "SNAPI";
-            let wmFont = window.layerState.watermarksFont || 'Arial Black';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.textBaseline = 'top';
-            
-            const wms = [
-                {x: 637, y: 40, h: 8}, {x: 1035, y: 13, h: 21}, {x: 889, y: 517, h: 21},
-                {x: 1114, y: 128, h: 15}, {x: 659, y: 274, h: 20}, {x: 665, y: 61, h: 18},
-                {x: 1049, y: 80, h: 9}, {x: 1115, y: 623, h: 19}, {x: 1031, y: 696, h: 32},
-                {x: 1167, y: 668, h: 8}, {x: 606, y: 627, h: 12}, {x: 638, y: 660, h: 19},
-                {x: 455, y: 699, h: 28}, {x: -155, y: 69, h: 29}, {x: 30, y: 204, h: 10},
-                {x: 5, y: 343, h: 7}, {x: 23, y: 420, h: 15}, 
-            ];
-            
-            wms.forEach(wm => {
-                ctx.font = `italic 900 ${wm.h * s}px "${wmFont}", Impact, sans-serif`;
-                ctx.fillText(wmText, wm.x * s, wm.y * s);
-            });
-            ctx.restore();
+            if (window.layerState.watermarksVisible !== false) {
+                ctx.save();
+                
+                // Включаем режим наложения "Перекрытие"
+                ctx.globalCompositeOperation = 'overlay'; 
+                
+                let wmText = window.layerState.textValue || "SNAPI";
+                let wmFont = window.layerState.watermarksFont || 'Arial Black';
+                let wmAlpha = window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.9;
+                ctx.fillStyle = `rgba(255, 255, 255, ${wmAlpha})`;
+                ctx.textBaseline = 'top';
+                
+                const wms = [
+                    {x: 637, y: 40, h: 8}, {x: 1035, y: 13, h: 21}, {x: 889, y: 517, h: 21},
+                    {x: 1114, y: 128, h: 15}, {x: 659, y: 274, h: 20}, {x: 665, y: 61, h: 18},
+                    {x: 1049, y: 80, h: 9}, {x: 1115, y: 623, h: 19}, {x: 1031, y: 696, h: 32},
+                    {x: 1167, y: 668, h: 8}, {x: 606, y: 627, h: 12}, {x: 638, y: 660, h: 19},
+                    {x: 455, y: 699, h: 28}, {x: -155, y: 69, h: 29}, {x: 30, y: 204, h: 10},
+                    {x: 5, y: 343, h: 7}, {x: 23, y: 420, h: 15}, 
+                ];
+                
+                wms.forEach(wm => {
+                    ctx.font = `italic 900 ${wm.h * s}px "${wmFont}", Impact, sans-serif`;
+                    ctx.fillText(wmText, wm.x * s, wm.y * s);
+                });
+                ctx.restore();
+            }
 
             // 5. Звезда фон перс
             drawLayerImg(globalAssets.dopStar, 561, 61, 771, 675);
@@ -7140,7 +7212,7 @@ function drawScene() {
             if (brawler) {
                 ctx.save();
                 ctx.shadowColor = 'rgba(255, 255, 255, 1)';
-                ctx.shadowOffsetY = -6 * s;
+                ctx.shadowOffsetY = -9 * s;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowBlur = 0;
                 ctx.drawImage(brawler, 476 * s, 16 * s, 786 * s, 792 * s);
@@ -7159,7 +7231,7 @@ function drawScene() {
             // Используем готовую функцию отрисовки из вырезанных акций
             drawPriceText(ctx, W, H, pText, {
                 textX: 333 * s, // Выравниваем по центру плашки (158 + 350/2)
-                textY: 651 * s, // (589 + 124/2)
+                textY: 636 * s, // (589 + 124/2)
                 boxHeight: 124 * s // Высота плашки для масштаба
             });
 
@@ -7631,6 +7703,12 @@ function drawBeautifulNick(ctx, text, w, h) {
       updateDropzoneUI();
       
       let bpPrice = document.getElementById('wizard-bp-price');
+
+      let bpDopPrice = document.getElementById('ws-dop-p0');
+      if (bpDopPrice) bpDopPrice.value = '';
+      let bpNextBtn3Dop = document.getElementById('wizard-next-btn3-bp-dop');
+      if (bpNextBtn3Dop) bpNextBtn3Dop.classList.remove('show');
+
       let bpPlusPrice = document.getElementById('wizard-bpplus-price');
       if(bpPrice) bpPrice.value = '';
       if(bpPlusPrice) bpPlusPrice.value = '';
@@ -8064,6 +8142,13 @@ wizardNextBtn2.onclick = async () => {
         return;
     }
 
+    if (wizardMode === 'bp' && window.layerState.bpStyleIndex === 'dop') {
+        window.layerState.textValue = currentNick || "SNAPI";
+        let targetStep3Dop = document.getElementById('wizard-step3-bp-dop');
+        transitionStep(step2, targetStep3Dop, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
+        return;
+    }
+
     let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : document.getElementById('wizard-step3');
     transitionStep(step2, targetStep3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
   };
@@ -8212,6 +8297,26 @@ window.selectBPSeason = function(season) {
     document.getElementById(`season-radio-${season}`).classList.add('checked');
 };
 
+window.checkBPDopReady = function() {
+    let el = document.getElementById('ws-dop-p0');
+    if (!el) return;
+    let allFilled = el.value.trim() !== '';
+    let btn = document.getElementById('wizard-next-btn3-bp-dop');
+    if (btn) {
+        if (allFilled) btn.classList.add('show');
+        else btn.classList.remove('show');
+    }
+};
+setTimeout(window.checkBPDopReady, 50);
+
+document.getElementById('wizard-next-btn3-bp-dop').onclick = async () => {
+    window.triggerHaptic();
+    window.layerState.bpPriceLeft = document.getElementById('ws-dop-p0').value || "899";
+    
+    let targetStep4 = document.getElementById('wizard-step4-bp');
+    transitionStep(document.getElementById('wizard-step3-bp-dop'), targetStep4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
+};
+
 document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     window.triggerHaptic();
     window.layerState.bpSeason = selectedBPSeason;
@@ -8252,6 +8357,25 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
                 window.layerState.textVisible = true;
             }
             if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
+
+    } else if (window.layerState.bpStyleIndex === 'dop') {
+        if (selectedColor) {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = true;
+            rawBgImage = await createGradientBg(selectedColor);
+        } else if (uploadMode === 'ready_bg') {
+            window.layerState.isReadyBg = true;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = uploadedReadyBaseImg;
+            window.layerState.textVisible = true;
+        } else {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = uploadedBaseImg;
+            window.layerState.textVisible = true;
+        }
+        if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
+
         } else {
         generateBrawlPassTest();
     }
@@ -8956,14 +9080,20 @@ window.openBPDopEditor = function() {
     layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
 
     window.layerState.isBrawlPassMode = true;
-    window.layerState.bpStyleIndex = 'dop'; // Специальный ID для этого стиля
+    window.layerState.bpStyleIndex = 'dop'; 
+
+    window.layerState.starsVisible = true;
+    window.layerState.pointsVisible = true;
+    window.layerState.watermarksVisible = true;
+    window.layerState.starsOpacity = 1.0;
+    window.layerState.pointsOpacity = 1.0;
+    window.layerState.watermarksOpacity = 0.9;
 
     setTimeout(async () => {
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
         
         let season = window.layerState.bpSeason || 50;
         
-        // Пока грузим заглушку фона напрямую, раз мы пропускаем шаги визарда
         if (!rawBgImage) rawBgImage = await load('bg/bg20_BP48.png');
 
         if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
