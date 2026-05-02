@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(30)";
+  const APP_VERSION = "v2.4.0(31)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2993,7 +2993,7 @@ body.os-non-apple .promo-banner {
     <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
         <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
             <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
+                <div id="wizard-dop-price-label" style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
                 <input type="text" inputmode="numeric" maxlength="5" id="ws-dop-p0" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkBPDopReady();">
             </div>
         </div>
@@ -4066,9 +4066,21 @@ document.getElementById('bp-variant-btn-next').addEventListener('click', functio
     wizardMode = 'bp'; 
     
     window.layerState.bpStyleIndex = 'dop';
-    window.layerState.bpVariantIndex = selectedBPVariant;
+    window.layerState.bpVariantIndex = selectedBPVariant;
 
-    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">dop</span></span>`;
+    // Меняем бейдж сверху
+    let variantBadge = "Доп";
+    if (selectedBPVariant === 3) variantBadge = "BP+";
+    if (selectedBPVariant === 4) variantBadge = "BP+ (улучш.)";
+    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">${variantBadge}</span></span>`;
+
+    // Меняем название над полем ввода цены
+    let labelEl = document.getElementById('wizard-dop-price-label');
+    if (labelEl) {
+        if (selectedBPVariant === 4) labelEl.innerText = "Brawl Pass Plus (улучшение)";
+        else if (selectedBPVariant === 3) labelEl.innerText = "Brawl Pass +";
+        else labelEl.innerText = "Brawl Pass";
+    }
 
     document.getElementById('wizard-title-step1').innerHTML = bpTitleHtml;
     document.getElementById('wizard-title-step2').innerHTML = bpTitleHtml;
@@ -4613,7 +4625,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.requestRender = function() {
@@ -4941,9 +4953,12 @@ if (window.layerState.isBrawlPassMode) {
         }
         else {
             if (window.layerState.bpStyleIndex === 'dop') {
+                let panelLabel = "Brawl Pass";
+                if (window.layerState.bpVariantIndex === 3) panelLabel = "Brawl Pass +";
+                if (window.layerState.bpVariantIndex === 4) panelLabel = "Brawl Pass Plus (улучшение)";
                 html += `
                     <div class="ios-layer-row" style="border-bottom:none;">
-                        <div class="ios-layer-name">Brawl Pass</div>
+                        <div class="ios-layer-name">${panelLabel}</div>                        
                         <div class="ios-layer-action-text">значение</div>
                         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this)">
                     </div>
@@ -4961,6 +4976,36 @@ if (window.layerState.isBrawlPassMode) {
                         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this)">
                     </div>
                 `;
+            }
+
+            // Добавляем временный редактор текста (Только для 4 варианта)
+            if (window.ENABLE_TEMP_EDITOR && window.layerState.bpVariantIndex === 4) {
+                let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
+                let tConf = seasonConf.dopText || { x: 500, y: 100, scale: 1, rot: 0 };
+                
+                let tx = window.layerState.dopTextX !== undefined ? window.layerState.dopTextX : tConf.x;
+                let ty = window.layerState.dopTextY !== undefined ? window.layerState.dopTextY : tConf.y;
+                let ts = window.layerState.dopTextScale !== undefined ? window.layerState.dopTextScale : tConf.scale;
+                let trot = window.layerState.dopTextRot !== undefined ? window.layerState.dopTextRot : (tConf.rot || 0);
+
+                html += `
+                <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ТЕКСТА (УЛУЧШЕНИЕ)</div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Размер (Scale)</div>
+                    <div id="v-dt-s" style="margin-right:10px; color:#8E8E93;">${ts}</div>
+                    <input type="range" class="ios-slider" min="0.1" max="3" step="0.01" value="${ts}" oninput="document.getElementById('v-dt-s').innerText=this.value; updateBrawlerParams('dopTextScale', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Позиция X</div>
+                    <div id="v-dt-x" style="margin-right:10px; color:#8E8E93;">${tx}</div>
+                    <input type="range" class="ios-slider" min="-200" max="1500" step="1" value="${tx}" oninput="document.getElementById('v-dt-x').innerText=this.value; updateBrawlerParams('dopTextX', this.value)">
+                </div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Позиция Y</div>
+                    <div id="v-dt-y" style="margin-right:10px; color:#8E8E93;">${ty}</div>
+                    <input type="range" class="ios-slider" min="-200" max="1000" step="1" value="${ty}" oninput="document.getElementById('v-dt-y').innerText=this.value; updateBrawlerParams('dopTextY', this.value)">
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
+                    <div id="v-dt-r" style="margin-right:10px; color:#8E8E93;">${trot}</div>
+                    <input type="range" class="ios-slider" min="-180" max="180" step="1" value="${trot}" oninput="document.getElementById('v-dt-r').innerText=this.value; updateBrawlerParams('dopTextRot', this.value)">
+                </div>`;
             }
 
             // Добавляем временный редактор персонажа (Специально для DOP)
@@ -7290,9 +7335,27 @@ function drawScene() {
             // Используем готовую функцию отрисовки из вырезанных акций
             drawPriceText(ctx, W, H, pText, {
                 textX: 333 * s, // Выравниваем по центру плашки (158 + 350/2)
-                textY: 646 * s, // (589 + 124/2)
+                textY: 644 * s, // (589 + 124/2)
                 boxHeight: 124 * s // Высота плашки для масштаба
             });
+
+// Отрисовка текста ТОЛЬКО для 4 варианта (улучшение)
+            if (window.layerState.bpVariantIndex === 4 && globalAssets.style2Text) {
+                let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
+                let tConf = seasonConf.dopText || { x: 500, y: 100, scale: 1, rot: 0 };
+                
+                let tx = window.layerState.dopTextX !== undefined ? window.layerState.dopTextX : tConf.x;
+                let ty = window.layerState.dopTextY !== undefined ? window.layerState.dopTextY : tConf.y;
+                let ts = window.layerState.dopTextScale !== undefined ? window.layerState.dopTextScale : tConf.scale;
+                let trot = window.layerState.dopTextRot !== undefined ? window.layerState.dopTextRot : (tConf.rot || 0);
+
+                ctx.save();
+                ctx.translate(tx * s, ty * s);
+                if (trot) ctx.rotate(trot * Math.PI / 180);
+                ctx.scale(ts * s, ts * s);
+                ctx.drawImage(globalAssets.style2Text, 0, 0);
+                ctx.restore();
+            }
 
             return;
         }
@@ -7786,7 +7849,8 @@ function drawBeautifulNick(ctx, text, w, h) {
     const keysToDelete = [
           'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip',
           'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip',
-          'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot', 
+          'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot',
+          'dopTextX', 'dopTextY', 'dopTextScale', 'dopTextRot', 
           's3TextX', 's3TextY', 's3TextScale'
       ];
       keysToDelete.forEach(k => delete window.layerState[k]);
@@ -9161,7 +9225,8 @@ window.openBPDopEditor = function() {
         if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
         if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
         if (!globalAssets.dopPanelL) globalAssets.dopPanelL = await load('BP/bp_panel_right.png'); 
-        if (!globalAssets.dopPrice) globalAssets.dopPrice = await load('BP/bp_price_bg_right.png');
+        if (!globalAssets.dopPrice) globalAssets.dopPrice = await load('BP/bp_price_bg_right.png');
+        if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
         setupPersistentCanvas();
         renderLayerPanel(true);
