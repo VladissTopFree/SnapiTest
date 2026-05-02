@@ -5212,7 +5212,6 @@ if (window.layerState.isBrawlPassMode) {
                 </div>
             `;
         }
-    }
 
     window.layerState.bgVisible = true; 
     html += `
@@ -5312,8 +5311,7 @@ if (window.layerState.isBrawlPassMode) {
         }
     }, 0);
     layerPanel.style.display = 'flex';
-
-   
+}
 
 window.changeGlobalStroke = (delta) => {
     window.layerState.globalStrokeWidth = Math.max(0, window.layerState.globalStrokeWidth + delta);
