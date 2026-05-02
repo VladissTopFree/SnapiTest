@@ -7304,22 +7304,22 @@ function drawScene() {
             ctx.fill();
             ctx.restore();
 
+            // 7. Персонаж с тенью
             let season = window.layerState.bpSeason || 50;
             let vIdx = window.layerState.bpVariantIndex;
-
-            // 7. Персонаж с тенью
+            
             let brawler = vIdx === 1 ? globalAssets[`brawler_${season}_1`] : globalAssets[`brawler_${season}_2`];
             if (brawler) {
                 let seasonConf = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
                 let dopConf = vIdx === 1 
-                    ? (seasonConf.dopBrawler1 || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }) 
+                    ? (seasonConf.dopBrawler1 || { x: 150, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 }) 
                     : (seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 });
                 
                 let bPrefix = vIdx === 1 ? 'brawler1' : 'brawler2';
 
-                let bs = window.layerState[bPrefix + 'Scale'] !== undefined ? window.layerState[bPrefix + 'Scale'] : dopConf.scale;
-                let bx = window.layerState[bPrefix + 'X'] !== undefined ? window.layerState[bPrefix + 'X'] : dopConf.x;
-                let by = window.layerState[bPrefix + 'Y'] !== undefined ? window.layerState[bPrefix + 'Y'] : dopConf.y;
+                let bs = window.layerState[bPrefix + 'Scale'] !== undefined ? window.layerState[bPrefix + 'Scale'] : (dopConf.scale || 1);
+                let bx = window.layerState[bPrefix + 'X'] !== undefined ? window.layerState[bPrefix + 'X'] : (dopConf.x || 0);
+                let by = window.layerState[bPrefix + 'Y'] !== undefined ? window.layerState[bPrefix + 'Y'] : (dopConf.y || 0);
                 let bsx = window.layerState[bPrefix + 'ScaleX'] !== undefined ? window.layerState[bPrefix + 'ScaleX'] : (dopConf.scaleX || 1);
                 let bsy = window.layerState[bPrefix + 'ScaleY'] !== undefined ? window.layerState[bPrefix + 'ScaleY'] : (dopConf.scaleY || 1);
                 let brot = window.layerState[bPrefix + 'Rot'] !== undefined ? window.layerState[bPrefix + 'Rot'] : (dopConf.rot || 0);
@@ -7339,11 +7339,11 @@ function drawScene() {
             }
 
             // 8. Плашка
-            let panelImg = vIdx === 1 ? globalAssets[`dopPanelL_${season}`] : globalAssets.dopPanelR;
+            let panelImg = vIdx === 1 ? globalAssets.bpPanelL : globalAssets.bpPanelR;
             if (panelImg) drawLayerImg(panelImg, 82, 21, 546, 649);
             
             // 9. Плашка цены
-            let priceImg = vIdx === 1 ? globalAssets.dopPriceL : globalAssets.dopPriceR;
+            let priceImg = vIdx === 1 ? globalAssets.bpPriceL : globalAssets.bpPriceR;
             if (priceImg) drawLayerImg(priceImg, 158, 589, 350, 124);
 
             // 10. Текст цены
@@ -9272,7 +9272,7 @@ window.openBPStyle3Editor = function() {
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
         
         let season = window.layerState.bpSeason || 50;
-        let vIdx = window.layerState.bpVariantIndex; // Узнаем, какая кнопка нажата
+        let vIdx = window.layerState.bpVariantIndex;
         
         if (!rawBgImage) rawBgImage = await load('bg/bg20_BP48.png');
 
@@ -9280,21 +9280,22 @@ window.openBPStyle3Editor = function() {
         if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
         if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
         
-        // Загружаем картинки в зависимости от варианта
+        // Загружаем картинки в правильные глобальные переменные
         if (vIdx === 1) {
             if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
-            if (!globalAssets[`dopPanelL_${season}`]) globalAssets[`dopPanelL_${season}`] = await load(`BP/bp_panel_left${season}.png`);
-            if (!globalAssets.dopPriceL) globalAssets.dopPriceL = await load('BP/bp_price_bg_left.png');
+            if (!globalAssets.bpPanelL) globalAssets.bpPanelL = await load(`BP/bp_panel_left${season}.png`);
+            if (!globalAssets.bpPriceL) globalAssets.bpPriceL = await load('BP/bp_price_bg_left.png');
         } else {
             if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
-            if (!globalAssets.dopPanelR) globalAssets.dopPanelR = await load('BP/bp_panel_right.png'); 
-            if (!globalAssets.dopPriceR) globalAssets.dopPriceR = await load('BP/bp_price_bg_right.png');
+            if (!globalAssets.bpPanelR) globalAssets.bpPanelR = await load('BP/bp_panel_right.png'); 
+            if (!globalAssets.bpPriceR) globalAssets.bpPriceR = await load('BP/bp_price_bg_right.png');
         }
         
-        // Текст для 4-й кнопки (улучшение)
+        // Загружаем текст для 4-го варианта (улучшение)
         if (vIdx === 4 && !globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
         setupPersistentCanvas();
+        // ... (дальше идет renderLayerPanel и т.д.)
         renderLayerPanel(true);
         window.updateCachedTextCanvas();
         startAnimation();
