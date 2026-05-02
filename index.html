@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(27)";
+  const APP_VERSION = "v2.4.0(28)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4064,7 +4064,7 @@ document.getElementById('bp-variant-btn-next').addEventListener('click', functio
     window.layerState.bpStyleIndex = 'dop';
     window.layerState.bpVariantIndex = selectedBPVariant;
 
-    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">Доп</span></span>`;
+    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">dop</span></span>`;
 
     document.getElementById('wizard-title-step1').innerHTML = bpTitleHtml;
     document.getElementById('wizard-title-step2').innerHTML = bpTitleHtml;
@@ -5127,7 +5127,6 @@ if (window.layerState.isBrawlPassMode) {
 
     html += `<div class="ios-layer-group ${animCls}">`;
 
-    if (!window.layerState.isReadyBg) {
         if (window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 'dop') {
             let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
             html += `
@@ -5196,7 +5195,7 @@ if (window.layerState.isBrawlPassMode) {
             </div>
         `;
 
-        if (window.layerState.isGeneratedBg || window.layerState.bpStyleIndex === 'dop') {
+        if (window.layerState.isGeneratedBg || window.layerState.isReadyBg || window.layerState.bpStyleIndex === 'dop') {
             let pointsEyeClass = window.layerState.pointsVisible !== false ? '' : 'hidden';
             let currentPointsOpacity = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
             html += `
@@ -5313,7 +5312,7 @@ if (window.layerState.isBrawlPassMode) {
         }
     }, 0);
     layerPanel.style.display = 'flex';
-}
+
    
 
 window.changeGlobalStroke = (delta) => {
