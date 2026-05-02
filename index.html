@@ -45,7 +45,7 @@
               brawler2: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
           dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-          dopText: { x: 990, y: 12, scale: 0.3, rot: 0 }
+          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
       },
       49: {
           lineColor: '#ffa800', 
@@ -60,8 +60,8 @@
               brawler2: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
           dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
-          dopText: { x: 990, y: 12, scale: 0.3, rot: 0 }
-      },
+          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
+        },
       48: {
           lineColor: '#b32700', 
           gradientLeft: ['#5c1e0dda', '#5c1e0dda'], 
@@ -75,8 +75,8 @@
               brawler2: { x: 485, y: 511, scale: 0.64, flipH: true }  // Верхний (x: 1200*0.58-30)
           },
           dopBrawler: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 },
-          dopText: { x: 990, y: 12, scale: 0.3, rot: 0 }
-      }
+          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
+        }
   };
 
 </script>
@@ -9225,10 +9225,13 @@ window.openBPDopEditor = function() {
 
         if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
         if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
-        if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
-        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
-        if (!globalAssets.dopPanelL) globalAssets.dopPanelL = await load('BP/bp_panel_right.png'); 
-        if (!globalAssets.dopPrice) globalAssets.dopPrice = await load('BP/bp_price_bg_right.png');
+        if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
+        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+        
+        let dopPanelSrc = window.layerState.bpVariantIndex === 1 ? `BP/bp_panel_left${season}.png` : 'BP/bp_panel_right.png';
+        globalAssets.dopPanelL = await load(dopPanelSrc);
+        
+        if (!globalAssets.dopPrice) globalAssets.dopPrice = await load('BP/bp_price_bg_right.png');
         if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
         setupPersistentCanvas();
