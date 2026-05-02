@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(27)";
+  const APP_VERSION = "v2.4.0(28)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4064,7 +4064,7 @@ document.getElementById('bp-variant-btn-next').addEventListener('click', functio
     window.layerState.bpStyleIndex = 'dop';
     window.layerState.bpVariantIndex = selectedBPVariant;
 
-    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">Доп</span></span>`;
+    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">dop</span></span>`;
 
     document.getElementById('wizard-title-step1').innerHTML = bpTitleHtml;
     document.getElementById('wizard-title-step2').innerHTML = bpTitleHtml;
@@ -4219,7 +4219,7 @@ window.layerState = {
     starsVisible: true,
     starsOpacity: 1.0,
     watermarksVisible: true,
-    watermarksOpacity: 0.8,
+    watermarksOpacity: 0.4,
     watermarksFont: 'Font16103',
     pointsVisible: true,
     isGeneratedBg: false,
@@ -7231,7 +7231,7 @@ function drawScene() {
             // Используем готовую функцию отрисовки из вырезанных акций
             drawPriceText(ctx, W, H, pText, {
                 textX: 333 * s, // Выравниваем по центру плашки (158 + 350/2)
-                textY: 636 * s, // (589 + 124/2)
+                textY: 646 * s, // (589 + 124/2)
                 boxHeight: 124 * s // Высота плашки для масштаба
             });
 
