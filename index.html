@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(24)";
+  const APP_VERSION = "v2.4.0(25)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -425,7 +425,7 @@
     font-size: 14px;
     font-weight: bold;
     text-align: center;
-    width: 55px;
+    width: 83px;
     outline: none;
     font-family: -apple-system, sans-serif;
     transition: background 0.3s;
@@ -3545,7 +3545,7 @@ window.openBPOverlay = () => {
     }
 
     document.fonts.ready.then(() => {
-        drawWatermarks(wmCtx, "ARTZA DONATE", WIDTH, HEIGHT, false);
+        drawWatermarks(wmCtx, "SNAPI", WIDTH, HEIGHT, false);
         textCtx.clearRect(0, 0, WIDTH, HEIGHT);
         textCtx.save();
         
@@ -4729,42 +4729,61 @@ function renderLayerPanel(isInitialLoad = false) {
 
     html += `<div class="ios-section-title ${animCls}">СЛОИ ДЛЯ РЕДАКТИРОВАНИЯ</div>`;
 
-    if (window.layerState.isBrawlPassMode) {
+if (window.layerState.isBrawlPassMode) {
         let textEyeClass = window.layerState.textVisible ? '' : 'hidden';
         
         html += `<div class="ios-layer-group ${animCls}">`;
-        html += `
-            <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
-                <div class="ios-icon-btn ios-eye-icon ${textEyeClass}" onclick="toggleTextLayer()">
-                    ${getEyeSVG(window.layerState.textVisible)}
-                </div>
-                <div class="ios-layer-name" style="flex-grow: 0; margin-right: 12px; font-size: 15px;">Текст</div>
-                <div style="position: relative; flex-grow: 1; display: flex; align-items: center;" id="layer-nick-wrap">
-                    <input type="text" id="bp-nick-input"
-                        style="width: 100%; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 30px 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
-                        maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" 
-                        onkeydown="if(this.value.length >= 16 && this.selectionStart === this.selectionEnd && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) { let w = document.getElementById('layer-nick-wrap'); w.classList.remove('shake-anim'); void w.offsetWidth; w.classList.add('shake-anim'); if(window.triggerHaptic) window.triggerHaptic(); setTimeout(() => w.classList.remove('shake-anim'), 300); }"
-                        oninput="updateBPText(this.value); if(window.updateBPTextCounter) window.updateBPTextCounter(this);">
-                    <div class="wizard-char-counter" id="bp-nick-counter" style="right: 10px;"></div>
-                </div>
-            </div>
-        `;
-        html += `<div class="ios-font-label">Изменить шрифт</div>`;
-        html += `<div class="ios-font-grid">`;
-        FONT_OPTIONS.forEach((f) => {
-            let activeCls = window.layerState.textFont === f.family ? 'active' : '';
-            html += `<div class="ios-font-item main-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setFont('${f.family}')">${window.layerState.textValue || 'TEXT'}</div>`;
-        });
-        html += `</div>`;
 
-        html += `<div class="ios-font-label">Изменить стиль</div>`;
-        html += `<div class="ios-style-grid">`;
-        TEXT_STYLES.forEach((st, sIdx) => {
-            let activeCls = window.layerState.textStyleIndex === sIdx ? 'active' : '';
-            let previewDataUrl = createStylePreviewURL(st, window.layerState.textFont);
-            html += `<div class="ios-style-item main-style-item ${activeCls}" data-style="${sIdx}" style="background-image: url(${previewDataUrl});" onclick="setStyle(${sIdx})"></div>`;
-        });
-        html += `</div></div>`;
+        if (window.layerState.bpStyleIndex === 'dop') {
+            // Только инпут, без глазка, шрифтов и стилей
+            html += `
+                <div class="ios-layer-row" style="border-bottom:none;">
+                    <div class="ios-layer-name" style="flex-grow: 0; margin-right: 12px; font-size: 15px;">Текст</div>
+                    <div style="position: relative; flex-grow: 1; display: flex; align-items: center;" id="layer-nick-wrap">
+                        <input type="text" id="bp-nick-input"
+                            style="width: 100%; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 30px 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
+                            maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" 
+                            onkeydown="if(this.value.length >= 16 && this.selectionStart === this.selectionEnd && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) { let w = document.getElementById('layer-nick-wrap'); w.classList.remove('shake-anim'); void w.offsetWidth; w.classList.add('shake-anim'); if(window.triggerHaptic) window.triggerHaptic(); setTimeout(() => w.classList.remove('shake-anim'), 300); }"
+                            oninput="updateBPText(this.value); if(window.updateBPTextCounter) window.updateBPTextCounter(this);">
+                        <div class="wizard-char-counter" id="bp-nick-counter" style="right: 10px;"></div>
+                    </div>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+                    <div class="ios-icon-btn ios-eye-icon ${textEyeClass}" onclick="toggleTextLayer()">
+                        ${getEyeSVG(window.layerState.textVisible)}
+                    </div>
+                    <div class="ios-layer-name" style="flex-grow: 0; margin-right: 12px; font-size: 15px;">Текст</div>
+                    <div style="position: relative; flex-grow: 1; display: flex; align-items: center;" id="layer-nick-wrap">
+                        <input type="text" id="bp-nick-input"
+                            style="width: 100%; background: var(--tg-theme-secondary-bg-color, #F2F2F7); border: none; border-radius: 12px; padding: 8px 30px 8px 14px; font-size: 16px; color: var(--tg-theme-text-color, #000); outline: none; font-family: -apple-system, sans-serif;"
+                            maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue || ''}" 
+                            onkeydown="if(this.value.length >= 16 && this.selectionStart === this.selectionEnd && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) { let w = document.getElementById('layer-nick-wrap'); w.classList.remove('shake-anim'); void w.offsetWidth; w.classList.add('shake-anim'); if(window.triggerHaptic) window.triggerHaptic(); setTimeout(() => w.classList.remove('shake-anim'), 300); }"
+                            oninput="updateBPText(this.value); if(window.updateBPTextCounter) window.updateBPTextCounter(this);">
+                        <div class="wizard-char-counter" id="bp-nick-counter" style="right: 10px;"></div>
+                    </div>
+                </div>
+            `;
+            html += `<div class="ios-font-label">Изменить шрифт</div>`;
+            html += `<div class="ios-font-grid">`;
+            FONT_OPTIONS.forEach((f) => {
+                let activeCls = window.layerState.textFont === f.family ? 'active' : '';
+                html += `<div class="ios-font-item main-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="setFont('${f.family}')">${window.layerState.textValue || 'TEXT'}</div>`;
+            });
+            html += `</div>`;
+
+            html += `<div class="ios-font-label">Изменить стиль</div>`;
+            html += `<div class="ios-style-grid">`;
+            TEXT_STYLES.forEach((st, sIdx) => {
+                let activeCls = window.layerState.textStyleIndex === sIdx ? 'active' : '';
+                let previewDataUrl = createStylePreviewURL(st, window.layerState.textFont);
+                html += `<div class="ios-style-item main-style-item ${activeCls}" data-style="${sIdx}" style="background-image: url(${previewDataUrl});" onclick="setStyle(${sIdx})"></div>`;
+            });
+            html += `</div>`;
+        }
+        html += `</div>`;
 
         html += `<div class="ios-layer-group ${animCls}">`;
         
@@ -4774,9 +4793,8 @@ function renderLayerPanel(isInitialLoad = false) {
                 let val = (window.layerState.style2Prices && window.layerState.style2Prices[i]) ? window.layerState.style2Prices[i] : "";
                 html += `
                 <div class="ios-layer-row" ${i===10 && !window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
-                    <div style="width: 24px; flex-shrink: 0;"></div>
                     <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
-                    <div class="ios-layer-action-text">цена</div>
+                    <div class="ios-layer-action-text">значение</div>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS2PriceLayer(${i}, this)" style="width:65px;">
                 </div>`;
             }
@@ -4835,9 +4853,8 @@ function renderLayerPanel(isInitialLoad = false) {
                 let val = (window.layerState.style3Prices && window.layerState.style3Prices[i]) ? window.layerState.style3Prices[i] : "";
                 html += `
                 <div class="ios-layer-row" ${i===2 && !window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
-                    <div style="width: 24px; flex-shrink: 0;"></div>
                     <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
-                    <div class="ios-layer-action-text">цена</div>
+                    <div class="ios-layer-action-text">значение</div>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS3PriceLayer(${i}, this)" style="width:65px;">
                 </div>`;
             }
@@ -4864,20 +4881,28 @@ function renderLayerPanel(isInitialLoad = false) {
             }
         }
         else {
-            html += `
-                <div class="ios-layer-row">
-                    <div style="width: 24px; flex-shrink: 0;"></div>
-                    <div class="ios-layer-name">Левая цена</div>
-                    <div class="ios-layer-action-text">значение</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this)">
-                </div>
-                <div class="ios-layer-row" ${!window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
-                    <div style="width: 24px; flex-shrink: 0;"></div>
-                    <div class="ios-layer-name">Правая цена</div>
-                    <div class="ios-layer-action-text">значение</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this)">
-                </div>
-            `;
+            if (window.layerState.bpStyleIndex === 'dop') {
+                html += `
+                    <div class="ios-layer-row" style="border-bottom:none;">
+                        <div class="ios-layer-name">Brawl Pass</div>
+                        <div class="ios-layer-action-text">значение</div>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this)">
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="ios-layer-row">
+                        <div class="ios-layer-name">Brawl Pass</div>
+                        <div class="ios-layer-action-text">значение</div>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this)">
+                    </div>
+                    <div class="ios-layer-row" ${!window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
+                        <div class="ios-layer-name">Brawl Pass Plus</div>
+                        <div class="ios-layer-action-text">значение</div>
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this)">
+                    </div>
+                `;
+            }
 
             if (window.ENABLE_TEMP_EDITOR) {
                 let currentSeason = window.layerState.bpSeason || 50;
@@ -4996,8 +5021,7 @@ function renderLayerPanel(isInitialLoad = false) {
         html += `<div class="ios-layer-group ${animCls}">`;
         html += `
             <div class="ios-layer-row">
-                <div style="width: 24px; flex-shrink: 0;"></div>
-                <div class="ios-layer-name">Обводка у акций</div>
+                <div class="ios-layer-name">Обводка</div>
                 <div class="ios-layer-action-text">размер</div>
                 <div class="ios-stroke-control">
                     <button class="ios-stroke-btn" onclick="changeGlobalStroke(-1)">-</button>
@@ -5034,8 +5058,8 @@ function renderLayerPanel(isInitialLoad = false) {
                     <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" onclick="toggleOffer(${idx})">
                         ${getEyeSVG(offer.visible)}
                     </div>
-                    <div class="ios-layer-name">Акция ${idx + 1}</div>
-                    <div class="ios-layer-action-text">цена</div>
+                    <div class="ios-layer-name">Акция #${idx + 1}</div>
+                    <div class="ios-layer-action-text">значение</div>
                         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5" style="background: ${priceBg}; color: ${priceColor};" oninput="updateOfferPriceFromLayer(${idx}, this)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
                         ${downloadIconSVG}
@@ -5137,7 +5161,7 @@ function renderLayerPanel(isInitialLoad = false) {
     window.layerState.bgVisible = true; 
     html += `
         <div class="ios-layer-row" style="border-bottom:none;">
-            <div class="ios-layer-name">Фон</div>
+            <div class="ios-layer-name">Фон (все элементы)</div>
             <div style="flex-grow:1;"></div>
             <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('bg')">
                 ${downloadIconSVG}
@@ -7071,21 +7095,21 @@ function drawScene() {
             drawLayerImg(globalAssets.dopPoints, 0, 0, 1280, 720);
             drawLayerImg(globalAssets.dopStarsEff, 0, 0, 1280, 720);
 
-            // 4. Водяные знаки (текст)
-            let wmText = window.layerState.textValue || "ARTZA DONATE";
+            // 4. Водяные знаки (текст)
+            let wmText = window.layerState.textValue || "SNAPI";
             let wmFont = window.layerState.watermarksFont || 'Arial Black';
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
             ctx.textBaseline = 'top';
-            
+            
             const wms = [
-                {x: 637, y: 40, h: 8}, {x: 1035, y: 13, h: 21}, {x: 889, y: 517, h: 556},
+                {x: 637, y: 40, h: 8}, {x: 1035, y: 13, h: 21}, {x: 889, y: 517, h: 21},
                 {x: 1114, y: 128, h: 15}, {x: 659, y: 274, h: 20}, {x: 665, y: 61, h: 18},
                 {x: 1049, y: 80, h: 9}, {x: 1115, y: 623, h: 19}, {x: 1031, y: 696, h: 32},
                 {x: 1167, y: 668, h: 8}, {x: 606, y: 627, h: 12}, {x: 638, y: 660, h: 19},
                 {x: 455, y: 699, h: 28}, {x: -155, y: 69, h: 29}, {x: 30, y: 204, h: 10},
-                {x: 5, y: 343, h: 7}, {x: 23, y: 420, h: 15}, {x: -347, y: 518, h: 48}
+                {x: 5, y: 343, h: 7}, {x: 23, y: 420, h: 15}, 
             ];
-            
+            
             wms.forEach(wm => {
                 ctx.font = `italic 900 ${wm.h * s}px "${wmFont}", Impact, sans-serif`;
                 ctx.fillText(wmText, wm.x * s, wm.y * s);
