@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(39)";
+  const APP_VERSION = "v2.4.0(40)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4075,13 +4075,12 @@ document.getElementById('bp-variant-btn-next').addEventListener('click', functio
     window.layerState.bpStyleIndex = 'dop';
     window.layerState.bpVariantIndex = selectedBPVariant;
 
-    // Меняем бейдж сверху
-    let variantBadge = "Доп";
-    if (selectedBPVariant === 3) variantBadge = "BP+";
-    if (selectedBPVariant === 4) variantBadge = "BP+ (улучш.)";
+    let variantBadge = "dop #1";
+    if (selectedBPVariant === 2) variantBadge = "dop #2";
+    if (selectedBPVariant === 3) variantBadge = "dop #3";
+    if (selectedBPVariant === 4) variantBadge = "dop #4";
     let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">${variantBadge}</span></span>`;
 
-    // Меняем название над полем ввода цены
     let labelEl = document.getElementById('wizard-dop-price-label');
     if (labelEl) {
         if (selectedBPVariant === 4) labelEl.innerText = "Brawl Pass Plus (улучшение)";
@@ -7404,11 +7403,11 @@ function drawScene() {
             let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
             
             // Настраиваем позицию и размер текста
-            let textYPos = window.layerState.bpVariantIndex === 2 ? 628 : 646; // Поднимаем текст для скидки
+            let textYPos = window.layerState.bpVariantIndex === 2 ? 626 : 646; // Поднимаем текст для скидки
             let textXPos = pricePlateX + (pricePlateW / 2); // Автоматически вычисляем центр плашки
             
             // Если текст для скидки нужен меньше, уменьшаем это значение (базовое 124)
-            let textBoxHeight = window.layerState.bpVariantIndex === 2 ? 116 : 124; 
+            let textBoxHeight = window.layerState.bpVariantIndex === 2 ? 114 : 124; 
 
             // Отрисовываем текст
             drawPriceText(ctx, W, H, pText, {
