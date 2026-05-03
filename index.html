@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(32)";
+  const APP_VERSION = "v2.4.0(33)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -1454,11 +1454,11 @@
   }
 
   .fankit-drag-pill {
-    width: 60px; 
-    height: 5px;
+    width: 46px; 
+    height: 6px;
     background: var(--tg-theme-subtitle-text-color);
-    border-radius: 3px;
-    margin: 0 auto 20px auto;
+    border-radius: 6px;
+    margin: 6px auto 20px auto;
   }
 
   .fankit-title {
@@ -2801,7 +2801,7 @@ body.os-non-apple .promo-banner {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 7 мая.</div>
+                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 6 мая.</div>
             </div>
          </div>
          
@@ -4063,9 +4063,10 @@ document.getElementById('bp-variant-btn-next').addEventListener('click', functio
         return;
     }
 
+    window.clearBrawlerCache(); 
+
     document.getElementById('bp-variant-overlay').style.display = 'none';
     
-    // ВАЖНО: Принудительно включаем режим Brawl Pass
     wizardMode = 'bp'; 
     
     window.layerState.bpStyleIndex = 'dop';
@@ -4122,17 +4123,7 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     window.triggerHaptic();
     if (!selectedBPStyle) return;
 
-    delete window.layerState.brawler1X;
-    delete window.layerState.brawler1Y;
-    delete window.layerState.brawler1Scale;
-    delete window.layerState.brawler1Flip;
-    delete window.layerState.brawler2X;
-    delete window.layerState.brawler2Y;
-    delete window.layerState.brawler2Scale;
-    delete window.layerState.brawler2Flip;
-    delete window.layerState.s3TextX;
-    delete window.layerState.s3TextY;
-    delete window.layerState.s3TextScale;
+    window.clearBrawlerCache(); 
 
     document.getElementById('bp-style-overlay').style.display = 'none';
     window.layerState.bpStyleIndex = selectedBPStyle;
@@ -4650,12 +4641,43 @@ window.changeOpacity = (layerName, value) => {
 };
 
 
+window.clearBrawlerCache = function() {
+    delete window.layerState.brawler1X;
+    delete window.layerState.brawler1Y;
+    delete window.layerState.brawler1Scale;
+    delete window.layerState.brawler1Flip;
+    delete window.layerState.brawler2X;
+    delete window.layerState.brawler2Y;
+    delete window.layerState.brawler2Scale;
+    delete window.layerState.brawler2Flip;
+    delete window.layerState.brawler2ScaleX;
+    delete window.layerState.brawler2ScaleY;
+    delete window.layerState.brawler2Rot;
+    delete window.layerState.dopTextX;
+    delete window.layerState.dopTextY;
+    delete window.layerState.dopTextScale;
+    delete window.layerState.dopTextRot;
+    delete window.layerState.s3TextX;
+    delete window.layerState.s3TextY;
+    delete window.layerState.s3TextScale;
+};
+
 window.toggleBrawlerFlip = (brawlerKey) => {
     let stateKey = brawlerKey + 'Flip';
     if (window.layerState[stateKey] === undefined) {
         let currentSeason = window.layerState.bpSeason || 50;
-        let s2Conf = BP_SEASON_CONFIG[currentSeason].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
-        window.layerState[stateKey] = !!s2Conf[brawlerKey].flipH;
+        let conf;
+        
+        // Четкая проверка стиля для взятия правильного конфига
+        if (window.layerState.bpStyleIndex === 1 || window.layerState.bpStyleIndex === undefined) {
+            conf = BP_SEASON_CONFIG[currentSeason].style1Brawlers || BP_SEASON_CONFIG[50].style1Brawlers;
+        } else if (window.layerState.bpStyleIndex === 'dop') {
+            conf = { brawler2: BP_SEASON_CONFIG[currentSeason].dopBrawler || BP_SEASON_CONFIG[50].dopBrawler };
+        } else {
+            conf = BP_SEASON_CONFIG[currentSeason].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
+        }
+        
+        window.layerState[stateKey] = !!conf[brawlerKey].flipH;
     }
     window.layerState[stateKey] = !window.layerState[stateKey];
     
@@ -7849,26 +7871,8 @@ function drawBeautifulNick(ctx, text, w, h) {
       window.layerState.isBrawlPassMode = false;
       window.layerState.bpStyleIndex = null;
       
-      const keysToDelete = [
-          'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip',
-          'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip',
-          'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot',
-          'dopTextX', 'dopTextY', 'dopTextScale', 'dopTextRot', // <--- Добавь эту строчку
-          's3TextX', 's3TextY', 's3TextScale'
-      ];
-      keysToDelete.forEach(k => delete window.layerState[k]);
+      window.clearBrawlerCache();
       window.layerState.customWatermarks = null;
-      delete window.layerState.brawler1X;
-      delete window.layerState.brawler1Y;
-      delete window.layerState.brawler1Scale;
-      delete window.layerState.brawler1Flip;
-      delete window.layerState.brawler2X;
-      delete window.layerState.brawler2Y;
-      delete window.layerState.brawler2Scale;
-      delete window.layerState.brawler2Flip;
-      delete window.layerState.s3TextX;
-      delete window.layerState.s3TextY;
-      delete window.layerState.s3TextScale;
       
       if (typeof selectedBPSeason !== 'undefined') {
           selectedBPSeason = 50;
@@ -8448,6 +8452,9 @@ document.getElementById('wizard-next-btn3-bp-dop').onclick = async () => {
 
 document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     window.triggerHaptic();
+    if (window.layerState.bpSeason !== selectedBPSeason) {
+        window.clearBrawlerCache();
+    }
     window.layerState.bpSeason = selectedBPSeason;
     
     document.getElementById('wizard-overlay').style.display = 'none';
