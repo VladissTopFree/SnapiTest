@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(43)";
+  const APP_VERSION = "v2.4.0(44)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4793,36 +4793,51 @@ window.rebuildStyle1Background = () => {
     c.width = WIDTH; c.height = HEIGHT;
     const ctx = c.getContext('2d');
 
+    // Защита от падения, если картинка не была инициализирована
+    if (!window.bpForegroundImage) window.bpForegroundImage = new Image();
+
     let season = window.layerState.bpSeason || 50;
     let config = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
 
     let startX = WIDTH * 0.39 + ((WIDTH * 0.34 - WIDTH * 0.39) / (HEIGHT * 0.50)) * (-20);
     let endX = WIDTH * 0.316 + ((WIDTH * 0.316 - WIDTH * 0.37) / (HEIGHT - HEIGHT * 0.46)) * 20;
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(0, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(0, HEIGHT + 20); ctx.closePath();
-    ctx.clip();
-    let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
-    grad1.addColorStop(0, window.layerState.tempGradL0 || config.gradientLeft[0]); 
-    grad1.addColorStop(1, window.layerState.tempGradL1 || config.gradientLeft[1]);
-    ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
-    ctx.restore();
+    // ЕСЛИ ФОН ИЗ ЦВЕТОВОГО КРУГА — рисуем его сплошным и пропускаем скосы
+    if (window.layerState.isGeneratedBg && rawBgImage) {
+        ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
+    } else {
+        // ЛЕВЫЙ СКОС
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(0, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(0, HEIGHT + 20); ctx.closePath();
+        ctx.clip();
+        let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+        grad1.addColorStop(0, window.layerState.tempGradL0 || config.gradientLeft[0]); 
+        grad1.addColorStop(1, window.layerState.tempGradL1 || config.gradientLeft[1]);
+        ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+        ctx.restore();
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
-    ctx.clip();
-    let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
-    grad2.addColorStop(0, window.layerState.tempGradR0 || config.gradientRight[0]); 
-    grad2.addColorStop(1, window.layerState.tempGradR1 || config.gradientRight[1]);
-    ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
-    ctx.restore();
+        // ПРАВЫЙ СКОС
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
+        ctx.clip();
+        let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+        grad2.addColorStop(0, window.layerState.tempGradR0 || config.gradientRight[0]); 
+        grad2.addColorStop(1, window.layerState.tempGradR1 || config.gradientRight[1]);
+        ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+        ctx.restore();
+    }
 
     ctx.save();
     let currentLineColor = window.layerState.tempLineColor || config.lineColor;
+    // Подхватываем цвет линии для сплошного фона
+    if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+        const lineColors = { 'green': '#5ee568', 'blue': '#46b3ff', 'orange': '#ffcc00', 'purple': '#c861ff', 'black': '#666' };
+        currentLineColor = window.layerState.tempLineColor || lineColors[window.layerState.bgColorType] || config.lineColor;
+    }
     ctx.strokeStyle = currentLineColor;
     ctx.lineWidth = 9;
     ctx.lineJoin = 'miter';
@@ -8595,6 +8610,8 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
         window.clearBrawlerCache();
     }
     window.layerState.bpSeason = selectedBPSeason;
+    
+    window.layerState.bgColorType = selectedColor; 
     
     document.getElementById('wizard-overlay').style.display = 'none';
 
