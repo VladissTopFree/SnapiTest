@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(53)";
+  const APP_VERSION = "v2.4.0(54)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3408,70 +3408,11 @@ document.addEventListener('pointerdown', (e) => {
 });
 
 
-const localDB = {
-    db: null,
-    async init() {
-        if (this.db) return;
-        return new Promise((resolve, reject) => {
-            const req = indexedDB.open('SnapiDBTestv2_4_3', 1); 
-            req.onupgradeneeded = e => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains('projects')) db.createObjectStore('projects', { keyPath: 'id' });
-                if (!db.objectStoreNames.contains('downloads')) db.createObjectStore('downloads', { autoIncrement: true });
-            };
-            req.onsuccess = e => { this.db = e.target.result; resolve(); };
-            req.onerror = () => reject('IDB error');
-        });
-    },
-    async recordDownload() {
-        await this.init();
-        const tx = this.db.transaction('downloads', 'readwrite');
-        tx.objectStore('downloads').add({ timestamp: Date.now() });
-    },
-    async getDownloadsThisMonth() {
-        await this.init();
-        const all = await new Promise(resolve => {
-            const tx = this.db.transaction('downloads', 'readonly');
-            const req = tx.objectStore('downloads').getAll();
-            req.onsuccess = () => resolve(req.result || []);
-        });
-        
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-        
-        return all.filter(item => item.timestamp >= startOfMonth).length;
-    },
-    async getAll() {
-        await this.init();
-        return new Promise(resolve => {
-            const tx = this.db.transaction('projects', 'readonly');
-            const req = tx.objectStore('projects').getAll();
-            req.onsuccess = () => resolve(req.result || []);
-        });
-    },
-    async save(project) {
-        await this.init();
-        return new Promise((resolve, reject) => {
-            const tx = this.db.transaction('projects', 'readwrite');
-            const req = tx.objectStore('projects').put(project);
-            req.onsuccess = () => resolve();
-            req.onerror = () => reject();
-        });
-    },
-    async delete(id) {
-        await this.init();
-        return new Promise(resolve => {
-            const tx = this.db.transaction('projects', 'readwrite');
-            const req = tx.objectStore('projects').delete(id);
-            req.onsuccess = () => resolve();
-        });
-    }
-};
+
 
 window.updateSavedCount = async () => {
-    let saved = await localDB.getAll();
     let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = saved.length;
+    if (countEl) countEl.innerText = '0';
 };
 
 window.openSavedProjects = () => {
@@ -3659,57 +3600,18 @@ window.closeDownloadOverlay = () => {
 };
 
 window.deleteProject = async (id, btnEl) => {
-    if (btnEl) {
-        let row = btnEl.closest('.sp-row');
-        if (row) {
-            row.classList.add('deleting');
-            await new Promise(r => setTimeout(r, 400));
-        }
-    }
-    
-    await localDB.delete(id);
-    await window.renderSavedProjects();
-    await window.updateSavedCount();
+    console.log("Функция удаления отключена");
 };
 
 window.renderSavedProjects = async () => {
-    let saved = await localDB.getAll();
-    saved.reverse(); 
-    
     let emptyState = document.getElementById('sp-empty-state');
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
     
-    if (saved.length === 0) {
-        emptyState.style.display = 'flex';
-        emptyState.classList.add('show');
-        contentState.style.display = 'none';
-        return;
-    }
-    
-    emptyState.style.display = 'none';
-    emptyState.classList.remove('show');
-    contentState.style.display = 'block';
-    
-    let html = '';
-    saved.forEach((proj, index) => {
-        try {
-            let thumb = proj.thumb || proj.bg || ''; 
-            html += `
-                <div class="sp-row" onclick="loadProject(${proj.id})">
-                    <img src="${thumb}" class="sp-img" onerror="this.src=''">
-                    <div class="sp-title">Работа #${index + 1}</div>
-                    <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject(${proj.id}, this)">удалить</button>
-                    <div class="ios-chevron">
-                        <svg viewBox="0 0 8 14" width="8" height="14">
-                            <path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                </div>
-            `;
-        } catch(e) { console.error(e); }
-    });
-    container.innerHTML = html;
+    emptyState.style.display = 'flex';
+    emptyState.classList.add('show');
+    contentState.style.display = 'none';
+    if (container) container.innerHTML = '';
 };
 
 const loadImage = (src) => new Promise((resolve) => {
@@ -3723,202 +3625,7 @@ const loadImage = (src) => new Promise((resolve) => {
 });
 
 window.loadProject = async (id) => {
-    let saved = await localDB.getAll();
-    let projData = saved.find(p => p.id === id);
-    if (!projData) return;
-
-    isCurrentProjectSaved = true; 
-
-    document.getElementById('saved-projects-overlay').style.display = 'none';
-    document.getElementById('ios-dashboard').style.display = 'none';
-    
-    document.body.style.background = "#F2F2F7";
-    document.body.style.color = "#000";
-    resultBox.style.display = 'block';
-    window.scrollTo(0,0);
-    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
-    
-    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
-    layerPanel.style.display = 'flex';
-    layerPanel.innerHTML = `
-        <div class="skeleton-panel-wrapper fade-in-anim">
-            <div class="skeleton-box skeleton-row"></div>
-            <div class="skeleton-box skeleton-row"></div>
-            <div class="skeleton-box skeleton-row"></div>
-        </div>
-    `;
-
-    await new Promise(r => setTimeout(r, 50));
-
-    allGeneratedCards = [];
-
-    if (!globalAssets.luchImg) {
-        globalAssets.luchImg = await loadImage('Luch.png');
-        globalAssets.starImg = await loadImage('Star.png');
-        globalAssets.pointsImg = await loadImage('points.png');
-    }
-
-    if (window.layerState.isBrawlPassMode) {
-        let season = window.layerState.bpSeason || 50;
-        if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await loadImage(`BP/brawler_s${season}_1.png`);
-        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await loadImage(`BP/brawler_s${season}_2.png`);
-
-        if (window.layerState.bpStyleIndex === 2) {
-            if (!globalAssets.style2Gems) globalAssets.style2Gems = await loadImage('BP/bp_gems.png');
-            if (!globalAssets.style2Points) globalAssets.style2Points = await loadImage('BP/bp_style2_points.png');
-            if (!globalAssets.style2Stars) globalAssets.style2Stars = await loadImage('BP/bp_stars_style2.png');
-            if (!globalAssets.style2Text) globalAssets.style2Text = await loadImage('BP/bp_text_style2.png');
-            if (!globalAssets.style2ProIcon) globalAssets.style2ProIcon = await loadImage('BP/bp_icon_pro_pass_icon.png');
-            if (!globalAssets.style2BPP) globalAssets.style2BPP = await loadImage('BP/bp_icon_brawl_pass_plus.png');
-            if (!globalAssets.style2BP) globalAssets.style2BP = await loadImage('BP/bp_icon_brawl_pass.png');
-            if (!globalAssets.style2YellowPlate) globalAssets.style2YellowPlate = await loadImage('BP/bp_price_brawl_pass.png');
-            if (!globalAssets.style2BluePlate) globalAssets.style2BluePlate = await loadImage('BP/bp_price_bg_right.png');
-        } else if (window.layerState.bpStyleIndex === 3) {
-            if (!globalAssets.s3Rays) globalAssets.s3Rays = await loadImage('BP/bp_luch_3style.png');
-            if (!globalAssets.s3Dots) globalAssets.s3Dots = await loadImage('BP/bp_points_3style.png');
-            if (!globalAssets.s3Details) globalAssets.s3Details = await loadImage('BP/bp_details_3style.png');
-            if (!globalAssets[`s3PanelL_${season}`]) globalAssets[`s3PanelL_${season}`] = await loadImage(`BP/bp_panel_left${season}.png`);
-            globalAssets.s3PanelL = globalAssets[`s3PanelL_${season}`];
-            if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await loadImage('BP/bp_price_bg_left.png');
-            if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await loadImage('BP/bp_panel_right.png');
-            if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await loadImage('BP/bp_price_bg_right.png');
-            if (!globalAssets.s3PanelR) globalAssets.s3PanelR = await loadImage('BP/ProPass_bp.png');
-            if (!globalAssets.s3Stars) globalAssets.s3Stars = await loadImage('BP/bp_stars_3style.png');
-        } else if (window.layerState.bpStyleIndex === 'dop') {
-            if (!globalAssets.dopPoints) globalAssets.dopPoints = await loadImage('BP/bp_points_3style.png');
-            if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await loadImage('BP/bp_dop_starsEFF.png');
-            if (!globalAssets.dopStar) globalAssets.dopStar = await loadImage('BP/bp_star.png');
-            let panelSrc = (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) ? `BP/bp_panel_left${season}.png` : 'BP/bp_panel_right.png';
-            let priceSrc = (window.layerState.bpVariantIndex === 1) ? 'BP/bp_price_bg_left.png' : (window.layerState.bpVariantIndex === 2 ? 'BP/bp_price_brawl_pass.png' : 'BP/bp_price_bg_right.png');
-            globalAssets.dopPanelL = await loadImage(panelSrc);
-            globalAssets.dopPrice = await loadImage(priceSrc);
-            if (!globalAssets.style2Text) globalAssets.style2Text = await loadImage('BP/bp_text_style2.png');
-        } else {
-            if (!globalAssets.starsEff) globalAssets.starsEff = await loadImage('BP/bp_starsEff.png');
-            if (!globalAssets.bpPointsImg) globalAssets.bpPointsImg = await loadImage('BP/bp_pointEff.png');
-            if (!globalAssets.bpStar) globalAssets.bpStar = await loadImage('BP/bp_star.png');
-            if (!globalAssets.bpPanelL) globalAssets.bpPanelL = await loadImage(`BP/bp_panel_left${season}.png`);
-            if (!globalAssets.bpPriceL) globalAssets.bpPriceL = await loadImage('BP/bp_price_bg_left.png');
-            if (!globalAssets.bpPanelR) globalAssets.bpPanelR = await loadImage('BP/bp_panel_right.png');
-            if (!globalAssets.bpPriceR) globalAssets.bpPriceR = await loadImage('BP/bp_price_bg_right.png');
-        }
-    }
-
-    let s = projData.state;
-    if (s.isGeneratedBg && s.bgColorType) {
-        rawBgImage = await createGradientBg(s.bgColorType);
-    } else if (projData.bg) {
-        rawBgImage = await loadImage(projData.bg);
-    }
-
-    window.layerState = {
-        textVisible: s.textVisible,
-        textValue: s.textValue,
-        textPosition: s.textPosition,
-        textFont: s.textFont,
-        textStyleIndex: s.textStyleIndex,
-        globalStrokeWidth: s.globalStrokeWidth,
-        bgVisible: s.bgVisible,
-        isGeneratedBg: s.isGeneratedBg,
-        isReadyBg: s.isReadyBg || false,
-        bgColorType: s.bgColorType,
-        luchVisible: s.luchVisible,
-        luchOpacity: s.luchOpacity,
-        starsVisible: s.starsVisible,
-        starsOpacity: s.starsOpacity,
-        watermarksVisible: s.watermarksVisible,
-        watermarksOpacity: s.watermarksOpacity,
-        watermarksFont: s.watermarksFont,
-        pointsVisible: s.pointsVisible !== undefined ? s.pointsVisible : true,
-        pointsOpacity: s.pointsOpacity !== undefined ? s.pointsOpacity : 1.0, // ДОБАВЛЕНО
-        detailsVisible: s.detailsVisible !== undefined ? s.detailsVisible : true, // ДОБАВЛЕНО
-        offersPosition: s.offersPosition || 'bottom', // ДОБАВЛЕНО
-
-        isBrawlPassMode: s.isBrawlPassMode || false,
-        bpStyleIndex: s.bpStyleIndex,
-        bpVariantIndex: s.bpVariantIndex,
-        bpSeason: s.bpSeason || 50,
-        bpPriceLeft: s.bpPriceLeft,
-        bpPriceRight: s.bpPriceRight,
-        style2Prices: s.style2Prices || [],
-        style3Prices: s.style3Prices || [],
-        customWatermarks: s.customWatermarks,
-        activeWmIndex: s.activeWmIndex,
-        brawler1X: s.brawler1X,
-        brawler1Y: s.brawler1Y,
-        brawler1Scale: s.brawler1Scale,
-        brawler1Flip: s.brawler1Flip,
-        brawler2X: s.brawler2X,
-        brawler2Y: s.brawler2Y,
-        brawler2Scale: s.brawler2Scale,
-        brawler2ScaleX: s.brawler2ScaleX,
-        brawler2ScaleY: s.brawler2ScaleY,
-        brawler2Rot: s.brawler2Rot,
-        brawler2Flip: s.brawler2Flip,
-        dopTextX: s.dopTextX,
-        dopTextY: s.dopTextY,
-        dopTextScale: s.dopTextScale,
-        dopTextRot: s.dopTextRot,
-        s3TextX: s.s3TextX,
-        s3TextY: s.s3TextY,
-        s3TextScale: s.s3TextScale,
-        tempLineColor: s.tempLineColor,
-        tempGradL0: s.tempGradL0,
-        tempGradL1: s.tempGradL1,
-        tempGradR0: s.tempGradR0,
-        tempGradR1: s.tempGradR1,
-        
-        offers: []
-    };
-
-    let savedOffers = s.offers || [];
-    for (let i = 0; i < savedOffers.length; i++) {
-        let oData = savedOffers[i];
-        let img = await loadImage(oData.imgData);
-        
-        let c = document.createElement('canvas');
-        c.width = img.width; c.height = img.height;
-        let cx = c.getContext('2d', {willReadFrequently: true});
-        cx.drawImage(img, 0, 0);
-        
-        let blankedImgData = cx.getImageData(0, 0, img.width, img.height);
-
-        let drawInfo = {
-            blankedImgData: blankedImgData,
-            textX: oData.infoTextX,
-            textY: oData.infoTextY,
-            boxHeight: oData.infoBoxHeight
-        };
-
-        drawPriceText(cx, img.width, img.height, oData.price, drawInfo);
-
-        let offerObj = { canvas: c, x: 0, y: 0, info: drawInfo }; 
-
-        let stateOffer = {
-            id: oData.id,
-            visible: oData.visible,
-            hasStroke: oData.hasStroke,
-            price: oData.price,
-            ref: offerObj,
-            anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
-            target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 },
-            cache: null
-        };
-        window.layerState.offers.push(stateOffer);
-    }
-
-    await document.fonts.load(`16px '${window.layerState.textFont}'`);
-    await document.fonts.load(`16px '${window.layerState.watermarksFont}'`);
-
-    setupPersistentCanvas();
-    renderLayerPanel(true);
-    
-    if (window.layerState.isBrawlPassMode && (window.layerState.bpStyleIndex === 1 || window.layerState.bpStyleIndex === undefined)) {
-        window.rebuildStyle1Background();
-    } else {
-        calculateLayoutTarget();
-        if (typeof startAnimation === 'function') startAnimation();
-    }
+    console.log("Функция загрузки проектов отключена");
 };
 
 let selectedCategory = null; 
@@ -8685,156 +8392,17 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
     btn.classList.add('is-loading');
     btn.style.pointerEvents = 'none';
 
-    setTimeout(async () => {
-        try {
-            let currentSaved = await localDB.getAll();
-            let maxAllowed = window.hasActiveSubscription ? 12 : 3;
+    // Эмуляция сохранения для визуала (логика убрана)
+    setTimeout(() => {
+        let wrapper = document.getElementById('save-btn-wrapper');
+        wrapper.classList.add('hidden-animated');
 
-            if (currentSaved.length >= maxAllowed) {
-                if (window.hasActiveSubscription) {
-                    alert("Вы достигли максимум сохранённых работ!\n\nУдалите, что бы освободить место");
-                } else {
-                    alert("Вы достигли максимум сохранений проектов работ!\n\nОформите или продлите подписку, что бы увеличить лимит.");
-                }
-                btn.classList.remove('is-loading');
-                btn.style.pointerEvents = 'auto';
-                return;
-            }
-
-            let stateToSave = {
-                textVisible: window.layerState.textVisible,
-                textValue: window.layerState.textValue,
-                textPosition: window.layerState.textPosition,
-                textFont: window.layerState.textFont,
-                textStyleIndex: window.layerState.textStyleIndex,
-                globalStrokeWidth: window.layerState.globalStrokeWidth,
-                bgVisible: window.layerState.bgVisible,
-                isGeneratedBg: window.layerState.isGeneratedBg,
-                isReadyBg: window.layerState.isReadyBg,
-                bgColorType: window.layerState.bgColorType,
-                luchVisible: window.layerState.luchVisible,
-                luchOpacity: window.layerState.luchOpacity,
-                starsVisible: window.layerState.starsVisible,
-                starsOpacity: window.layerState.starsOpacity,
-                watermarksVisible: window.layerState.watermarksVisible,
-                watermarksOpacity: window.layerState.watermarksOpacity,
-                watermarksFont: window.layerState.watermarksFont,
-                pointsVisible: window.layerState.pointsVisible,
-                pointsOpacity: window.layerState.pointsOpacity,
-                detailsVisible: window.layerState.detailsVisible, 
-                offersPosition: window.layerState.offersPosition, 
-
-                isBrawlPassMode: window.layerState.isBrawlPassMode,
-                bpStyleIndex: window.layerState.bpStyleIndex,
-                bpVariantIndex: window.layerState.bpVariantIndex,
-                bpSeason: window.layerState.bpSeason,
-                bpPriceLeft: window.layerState.bpPriceLeft,
-                bpPriceRight: window.layerState.bpPriceRight,
-                style2Prices: window.layerState.style2Prices,
-                style3Prices: window.layerState.style3Prices,
-                customWatermarks: window.layerState.customWatermarks,
-                activeWmIndex: window.layerState.activeWmIndex,
-                brawler1X: window.layerState.brawler1X,
-                brawler1Y: window.layerState.brawler1Y,
-                brawler1Scale: window.layerState.brawler1Scale,
-                brawler1Flip: window.layerState.brawler1Flip,
-                brawler2X: window.layerState.brawler2X,
-                brawler2Y: window.layerState.brawler2Y,
-                brawler2Scale: window.layerState.brawler2Scale,
-                brawler2ScaleX: window.layerState.brawler2ScaleX,
-                brawler2ScaleY: window.layerState.brawler2ScaleY,
-                brawler2Rot: window.layerState.brawler2Rot,
-                brawler2Flip: window.layerState.brawler2Flip,
-                dopTextX: window.layerState.dopTextX,
-                dopTextY: window.layerState.dopTextY,
-                dopTextScale: window.layerState.dopTextScale,
-                dopTextRot: window.layerState.dopTextRot,
-                s3TextX: window.layerState.s3TextX,
-                s3TextY: window.layerState.s3TextY,
-                s3TextScale: window.layerState.s3TextScale,
-                tempLineColor: window.layerState.tempLineColor,
-                tempGradL0: window.layerState.tempGradL0,
-                tempGradL1: window.layerState.tempGradL1,
-                tempGradR0: window.layerState.tempGradR0,
-                tempGradR1: window.layerState.tempGradR1,
-
-                offers: (window.layerState.offers || []).map(o => {
-                    let tempC = document.createElement('canvas');
-                    if (o.ref && o.ref.canvas) {
-                        tempC.width = o.ref.canvas.width; 
-                        tempC.height = o.ref.canvas.height;
-                        if (o.ref.info && o.ref.info.blankedImgData) {
-                            tempC.getContext('2d').putImageData(o.ref.info.blankedImgData, 0, 0);
-                        }
-                    } else {
-                        tempC.width = 1; tempC.height = 1;
-                    }
-
-                    return {
-                        id: o.id,
-                        visible: o.visible,
-                        hasStroke: o.hasStroke,
-                        price: o.price,
-                        imgData: tempC.toDataURL('image/png'),
-                        infoTextX: o.ref && o.ref.info ? o.ref.info.textX : 0,
-                        infoTextY: o.ref && o.ref.info ? o.ref.info.textY : 0,
-                        infoBoxHeight: o.ref && o.ref.info ? o.ref.info.boxHeight : 0
-                    };
-                })
-            };
-
-            let bgDataUrl = null;
-            if (!window.layerState.isGeneratedBg && rawBgImage) {
-                try {
-                    let c = document.createElement('canvas');
-                    let w = rawBgImage.width;
-                    let h = rawBgImage.height;
-                    if (w > 1920) { h = Math.round((1920 / w) * h); w = 1920; }
-                    c.width = w; c.height = h;
-                    c.getContext('2d').drawImage(rawBgImage, 0, 0, w, h);
-                    bgDataUrl = c.toDataURL('image/jpeg', 0.8);
-                } catch (e) {
-                    console.warn("Фон сохранён по ссылке (защита CORS):", e);
-                    bgDataUrl = rawBgImage.src; 
-                }
-            }
-
-            let thumbCanvas = document.createElement('canvas');
-            let tW = 400;
-            let tH = Math.round((persistentCanvas.height / persistentCanvas.width) * tW);
-            thumbCanvas.width = tW; thumbCanvas.height = tH;
-            thumbCanvas.getContext('2d').drawImage(persistentCanvas, 0, 0, tW, tH);
-            let thumbUrl = thumbCanvas.toDataURL('image/jpeg', 0.6); 
-
-            let project = {
-                id: Date.now(),
-                date: new Date().toISOString(),
-                state: stateToSave,
-                bg: bgDataUrl,
-                thumb: thumbUrl
-            };
-
-            await localDB.save(project);
-            await window.updateSavedCount();
-            
-            isCurrentProjectSaved = true; 
-            
-            setTimeout(() => {
-                let wrapper = document.getElementById('save-btn-wrapper');
-                wrapper.classList.add('hidden-animated');
-
-                setTimeout(() => {
-                    wrapper.style.display = 'none';
-                }, 500); 
-            }, 1500);
-
-        } catch (err) {
-            console.error(err);
-            alert("Не удалось сохранить проект.");
+        setTimeout(() => {
+            wrapper.style.display = 'none';
             btn.classList.remove('is-loading');
             btn.style.pointerEvents = 'auto';
-        }
-    }, 500);
+        }, 500); 
+    }, 800);
 };
 
 document.getElementById('dl-btn-actual-download').onclick = (e) => {
@@ -8859,10 +8427,6 @@ document.getElementById('dl-btn-actual-download').onclick = (e) => {
             sCtx.imageSmoothingEnabled = true;
             sCtx.imageSmoothingQuality = 'high';
             sCtx.drawImage(persistentCanvas, 0, 0, smallC.width, smallC.height);
-
-            if (!window.hasActiveSubscription) {
-              await localDB.recordDownload();
-            }
 
             if (isNonApple) {
                 try {
