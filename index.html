@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(59)";
+  const APP_VERSION = "v2.4.0(60)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4092,8 +4092,11 @@ function getHDScale() {
     if (!rawBgImage) return 1;
     let isAndroid = document.body.classList.contains('os-android');
     let maxW = isAndroid ? 2048 : 3840;
-    let scale = Math.max(1, Math.ceil(maxW / rawBgImage.width));
-    if (rawBgImage.width * scale > maxW) scale = maxW / rawBgImage.width;
+    
+    let bgW = rawBgImage.originalWidth || rawBgImage.width;
+    
+    let scale = Math.max(1, Math.ceil(maxW / bgW));
+    if (bgW * scale > maxW) scale = maxW / bgW;
     return scale > 0 ? scale : 1;
 }
 
@@ -6852,16 +6855,14 @@ function drawScene() {
                 ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
                 
                 if (obj.flipH) {
-                    // Исправлено: добавлено * s
-                    ctx.translate(img.width * s, 0);
+                    ctx.translate(img.width, 0); // Убрали * s
                     ctx.scale(-1, 1);
                 }
                 
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
-                // Исправлено: ширина и высота теперь умножаются на * s
-                ctx.drawImage(img, 0, 0, img.width * s, img.height * s);
+                ctx.drawImage(img, 0, 0); // Убрали img.width * s
                 ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; 
-                ctx.drawImage(img, 0, 0, img.width * s, img.height * s);
+                ctx.drawImage(img, 0, 0); // Убрали img.width * s
                 ctx.restore();
             };
 
@@ -8471,60 +8472,6 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     }
 };
 
-document.getElementById('dl-btn-save-project').onclick = async (e) => {
-    e.preventDefault();
-    window.triggerHaptic();
-    let btn = e.currentTarget;
-    if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
-    
-    btn.classList.add('is-loading');
-    btn.style.pointerEvents = 'none';
-
-    try {
-        // Формируем объект проекта
-        let thumbSrc = document.getElementById('dl-preview-img').src;
-        let project = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
-            thumb: thumbSrc,
-            mode: wizardMode,
-            category: selectedCategory,
-            layerState: JSON.parse(JSON.stringify(window.layerState)), // Делаем копию стейта
-            bgImage: getBase64Image(rawBgImage)
-        };
-
-        // Если это создание акции со скриншотами, сохраняем их тоже
-        if (wizardMode === 'action' && stagedFiles && stagedFiles.length > 0) {
-            project.screenshots = await Promise.all(stagedFiles.map(fileToDataURL));
-        }
-
-        // Записываем в LocalStorage
-        let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-        projects.push(project);
-        localStorage.setItem('snapi_projects', JSON.stringify(projects));
-        
-        isCurrentProjectSaved = true;
-        window.updateSavedCount();
-
-        // Анимация успешного сохранения
-        setTimeout(() => {
-            let wrapper = document.getElementById('save-btn-wrapper');
-            wrapper.classList.add('hidden-animated');
-            setTimeout(() => {
-                wrapper.style.display = 'none';
-                btn.classList.remove('is-loading');
-                btn.style.pointerEvents = 'auto';
-            }, 500); 
-        }, 800);
-
-    } catch (err) {
-        console.error(err);
-        alert("Ошибка сохранения! Возможно, закончилась память устройства для LocalStorage.");
-        btn.classList.remove('is-loading');
-        btn.style.pointerEvents = 'auto';
-    }
-};
-
 document.getElementById('dl-btn-actual-download').onclick = (e) => {
     let btn = e.currentTarget;
     window.triggerHaptic();
@@ -9585,14 +9532,12 @@ const dataURLtoFile = (dataurl, filename) => {
     return new File([u8arr], filename, {type: mime});
 };
 
-// 2. Логика кнопки "Сохранить проект" с лимитом
 document.getElementById('dl-btn-save-project').onclick = async (e) => {
     e.preventDefault();
     window.triggerHaptic();
     let btn = e.currentTarget;
     if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
 
-    // Проверка лимита: максимум 12 проектов
     let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
     if (projects.length >= 12) {
         alert("Достиг лимит сохранения проектов Ваших работ!\nОчистите, что бы добавлять новые.\n\nНастройки -> удалить.");
@@ -9603,11 +9548,9 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
     btn.style.pointerEvents = 'none';
 
     try {
-        // Сжимаем превью (до 400px ширины)
         let thumbSrc = document.getElementById('dl-preview-img').src;
         let compressedThumb = await compressImage(thumbSrc, 400, 0.4);
 
-        // Сжимаем фоновое изображение (до 900px ширины)
         let compressedBg = null;
         if (rawBgImage && rawBgImage.src) {
             compressedBg = await compressImage(rawBgImage.src, 900, 0.5);
@@ -9620,22 +9563,21 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
             mode: wizardMode,
             category: selectedCategory,
             layerState: JSON.parse(JSON.stringify(window.layerState)),
-            bgImage: compressedBg
+            bgImage: compressedBg,
+            // Запоминаем изначальный размер фона!
+            bgWidth: rawBgImage ? (rawBgImage.originalWidth || rawBgImage.width) : 1920 
         };
 
-        // Сжимаем скриншоты, если это создание акции
         if (wizardMode === 'action' && stagedFiles && stagedFiles.length > 0) {
             project.screenshots = await Promise.all(stagedFiles.map(file => compressImage(file, 800, 0.5)));
         }
 
-        // Сохраняем
         projects.push(project);
         localStorage.setItem('snapi_projects', JSON.stringify(projects));
         
         isCurrentProjectSaved = true;
-        window.updateSavedCount(); // Обновляем счетчик В ГЛАВНОМ МЕНЮ СРАЗУ
+        window.updateSavedCount(); 
 
-        // Анимация скрытия кнопки
         setTimeout(() => {
             let wrapper = document.getElementById('save-btn-wrapper');
             wrapper.classList.add('hidden-animated');
@@ -9654,7 +9596,6 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
     }
 };
 
-// 3. Обновление счетчика и удаление проектов
 window.updateSavedCount = () => {
     let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
     let countEl = document.getElementById('saved-count-val');
@@ -9667,9 +9608,8 @@ window.deleteProject = async (id, btnEl) => {
     projects = projects.filter(p => p.id !== id);
     localStorage.setItem('snapi_projects', JSON.stringify(projects));
     
-    window.updateSavedCount(); // <--- Сразу обновляем счетчик при удалении!
+    window.updateSavedCount(); 
     
-    // Анимация удаления
     let row = btnEl.closest('.sp-row');
     if (row) {
         row.classList.add('deleting');
@@ -9697,7 +9637,6 @@ window.renderSavedProjects = async () => {
         emptyState.classList.remove('show');
         contentState.style.display = 'block';
         
-        // Новые проекты сверху
         projects.sort((a, b) => b.id - a.id);
 
         let html = '';
@@ -9714,7 +9653,6 @@ window.renderSavedProjects = async () => {
     }
 };
 
-// 4. Восстановление загруженного проекта
 window.loadProject = async (id) => {
     if (window.triggerHaptic) window.triggerHaptic();
     let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
@@ -9731,7 +9669,11 @@ window.loadProject = async (id) => {
     if (proj.bgImage) {
         rawBgImage = await new Promise((resolve) => {
             let img = new Image();
-            img.onload = () => resolve(img);
+            img.onload = () => {
+                // Передаем холсту оригинальную ширину, чтобы он не схлопнулся
+                img.originalWidth = proj.bgWidth || 1920;
+                resolve(img);
+            };
             img.src = proj.bgImage;
         });
     } else {
