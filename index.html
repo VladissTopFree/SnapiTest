@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(60)";
+  const APP_VERSION = "v2.4.0(61)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -797,20 +797,21 @@
     width: 100%;
     height: 54px;
     margin-bottom: 16px; 
-    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s, margin-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s, transform 0.2s ease-in, opacity 0.2s ease-in;
     opacity: 1;
     transform: scale(1);
-    transform-origin: center;
+    transform-origin: top center;
     overflow: hidden;
     display: flex;
     justify-content: center;
+    transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1), margin-bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, transform 0.4s ease;
   }
+  
   .save-btn-wrapper.hidden-animated {
-    height: 0;
-    margin-bottom: 0;
-    opacity: 0;
-    transform: scale(0.8);
-    transition: transform 0.2s ease-out, opacity 0.2s ease-out, height 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s, margin-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s;
+    height: 0px !important;
+    margin-bottom: 0px !important;
+    opacity: 0 !important;
+    transform: scale(0.9) !important;
+    pointer-events: none;
   }
 
   .btn-crossfade-wrap {
@@ -3351,6 +3352,7 @@ let globalAssets = {
     bpPriceR: null     
 };
 let isCurrentProjectSaved = false; 
+let currentLoadedProjectId = null; 
 
 function handleBackButtonClick() {
     try {
@@ -3661,57 +3663,6 @@ const loadImage = (src) => new Promise((resolve) => {
   img.src = src;
 });
 
-window.loadProject = async (id) => {
-    if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    let proj = projects.find(p => p.id === id);
-    if (!proj) return;
-
-    // Сбрасываем старый кэш
-    if (window.resetWizardState) window.resetWizardState();
-    window.clearBrawlerCache();
-
-    // 1. Восстанавливаем стейт
-    window.layerState = proj.layerState;
-    wizardMode = proj.mode;
-    selectedCategory = proj.category;
-
-    // 2. Восстанавливаем фон
-    if (proj.bgImage) {
-        rawBgImage = await new Promise((resolve) => {
-            let img = new Image();
-            img.onload = () => resolve(img);
-            img.src = proj.bgImage;
-        });
-    } else {
-        rawBgImage = null;
-    }
-
-    // 3. Закрываем окно сохраненных работ
-    document.getElementById('saved-projects-overlay').style.display = 'none';
-    isCurrentProjectSaved = true; // Чтобы кнопка сохранения временно скрылась
-
-    // 4. Распределяем логику загрузки в зависимости от типа проекта
-    if (wizardMode === 'bp') {
-        if (proj.layerState.bpStyleIndex === 2) {
-            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
-        } else if (proj.layerState.bpStyleIndex === 3) {
-            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
-        } else if (proj.layerState.bpStyleIndex === 'dop') {
-            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
-        } else {
-            generateBrawlPassTest();
-        }
-    } else if (wizardMode === 'action') {
-        // Восстанавливаем скриншоты для акции
-        if (proj.screenshots && proj.screenshots.length > 0) {
-            stagedFiles = proj.screenshots.map((dataUrl, idx) => dataURLtoFile(dataUrl, `screen_${idx}.png`));
-            processImages(stagedFiles);
-        } else {
-            processImages([]);
-        }
-    }
-};
 
 let selectedCategory = null; 
 let selectedBPStyle = null;
@@ -7756,6 +7707,8 @@ function drawBeautifulNick(ctx, text, w, h) {
 
   window.resetWizardState = () => {
 
+      currentLoadedProjectId = null; 
+
       selectedCategory = null;
       selectedBPSub = null;
       selectedBPVariant = null;
@@ -9539,7 +9492,9 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
     if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
 
     let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    if (projects.length >= 12) {
+    
+    // Проверяем лимит ТОЛЬКО если это НОВАЯ работа (если перезаписываем старую - лимит не мешает)
+    if (!currentLoadedProjectId && projects.length >= 12) {
         alert("Достиг лимит сохранения проектов Ваших работ!\nОчистите, что бы добавлять новые.\n\nНастройки -> удалить.");
         return;
     }
@@ -9556,15 +9511,17 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
             compressedBg = await compressImage(rawBgImage.src, 900, 0.5);
         }
 
+        // Если это старый проект - берем его ID, если новый - создаем новый ID
+        let projectId = currentLoadedProjectId || Date.now().toString();
+
         let project = {
-            id: Date.now().toString(),
+            id: projectId,
             date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
             thumb: compressedThumb,
             mode: wizardMode,
             category: selectedCategory,
             layerState: JSON.parse(JSON.stringify(window.layerState)),
             bgImage: compressedBg,
-            // Запоминаем изначальный размер фона!
             bgWidth: rawBgImage ? (rawBgImage.originalWidth || rawBgImage.width) : 1920 
         };
 
@@ -9572,21 +9529,30 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
             project.screenshots = await Promise.all(stagedFiles.map(file => compressImage(file, 800, 0.5)));
         }
 
-        projects.push(project);
+        // Ищем, есть ли уже проект с таким ID
+        let existingIndex = projects.findIndex(p => p.id === projectId);
+        if (existingIndex !== -1) {
+            projects[existingIndex] = project; // Перезаписываем старый
+        } else {
+            projects.push(project); // Сохраняем как новый
+        }
+
         localStorage.setItem('snapi_projects', JSON.stringify(projects));
         
-        isCurrentProjectSaved = true;
+        currentLoadedProjectId = projectId; // Делаем его текущим
+        isCurrentProjectSaved = true; // Помечаем, что всё сохранено
         window.updateSavedCount(); 
 
+        // Запускаем красивую анимацию исчезновения
+        let wrapper = document.getElementById('save-btn-wrapper');
+        wrapper.classList.add('hidden-animated');
+        
+        // Ждем 400мс (пока идет анимация схлопывания), затем полностью скрываем
         setTimeout(() => {
-            let wrapper = document.getElementById('save-btn-wrapper');
-            wrapper.classList.add('hidden-animated');
-            setTimeout(() => {
-                wrapper.style.display = 'none';
-                btn.classList.remove('is-loading');
-                btn.style.pointerEvents = 'auto';
-            }, 500); 
-        }, 800);
+            wrapper.style.display = 'none';
+            btn.classList.remove('is-loading');
+            btn.style.pointerEvents = 'auto';
+        }, 400); 
 
     } catch (err) {
         console.error(err);
@@ -9661,6 +9627,8 @@ window.loadProject = async (id) => {
 
     if (window.resetWizardState) window.resetWizardState();
     window.clearBrawlerCache();
+
+    currentLoadedProjectId = id; 
 
     window.layerState = proj.layerState;
     wizardMode = proj.mode;
