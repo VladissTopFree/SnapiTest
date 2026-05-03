@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(36)";
+  const APP_VERSION = "v2.4.0(37)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -63,7 +63,7 @@
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
         },
       48: {
-          lineColor: '#b32700', 
+          lineColor: '#ff3700', 
           gradientLeft: ['#c33b15da', '#c33b15da'], 
           gradientRight: ['#006effcc', '#006effcc'],
           style2Brawlers: { // yes
@@ -4083,6 +4083,7 @@ document.getElementById('bp-variant-btn-next').addEventListener('click', functio
     if (labelEl) {
         if (selectedBPVariant === 4) labelEl.innerText = "Brawl Pass Plus (улучшение)";
         else if (selectedBPVariant === 3) labelEl.innerText = "Brawl Pass +";
+        else if (selectedBPVariant === 2) labelEl.innerText = "Brawl Pass (скидка)";
         else labelEl.innerText = "Brawl Pass";
     }
 
@@ -4975,11 +4976,12 @@ if (window.layerState.isBrawlPassMode) {
                     <input type="range" class="ios-slider" min="-400" max="400" step="1" value="${txtY}" oninput="document.getElementById('v3-txty').innerText=this.value; updateBrawlerParams('s3TextY', this.value)">
                 </div>`;
             }
-        } else {
+            } else {
             if (window.layerState.bpStyleIndex === 'dop') {
                 let panelLabel = "Brawl Pass";
                 if (window.layerState.bpVariantIndex === 3) panelLabel = "Brawl Pass +";
                 if (window.layerState.bpVariantIndex === 4) panelLabel = "Brawl Pass Plus (улучшение)";
+                if (window.layerState.bpVariantIndex === 2) panelLabel = "Brawl Pass (скидка)";
                 html += `
                     <div class="ios-layer-row" style="border-bottom:none;">
                         <div class="ios-layer-name">Brawl Pass</div>
@@ -7350,18 +7352,38 @@ function drawScene() {
             // 8. Плашка слева
             drawLayerImg(globalAssets.dopPanelL, 82, 21, 546, 649);
             
-            // 9. Плашка цены
-            drawLayerImg(globalAssets.dopPrice, 158, 589, 350, 124);
+            // 9. Плашка цены
+            let pricePlateX = 158;
+            let pricePlateY = 589;
+            let pricePlateW = 350;
+            let pricePlateH = 124;
+
+            // Если выбран 2 вариант (скидка), меняем размеры и позицию плашки
+            if (window.layerState.bpVariantIndex === 2) {
+                pricePlateW = 380; // Делаем плашку шире (было 350)
+                pricePlateH = 136; // Делаем плашку выше (было 124)
+                pricePlateX = 143; // Сдвигаем левее, чтобы центр остался на месте (158 - половина от прибавленных 30px)
+                pricePlateY = 575; // Поднимаем плашку выше (было 589)
+            }
+
+            drawLayerImg(globalAssets.dopPrice, pricePlateX, pricePlateY, pricePlateW, pricePlateH);
 
             // 10. Текст цены
-            let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
-            
-            // Используем готовую функцию отрисовки из вырезанных акций
-            drawPriceText(ctx, W, H, pText, {
-                textX: 333 * s, // Выравниваем по центру плашки (158 + 350/2)
-                textY: 646 * s, // (589 + 124/2)
-                boxHeight: 124 * s // Высота плашки для масштаба
-            });
+            let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
+            
+            // Настраиваем позицию и размер текста
+            let textYPos = window.layerState.bpVariantIndex === 2 ? 632 : 646; // Поднимаем текст для скидки
+            let textXPos = pricePlateX + (pricePlateW / 2); // Автоматически вычисляем центр плашки
+            
+            // Если текст для скидки нужен меньше, уменьшаем это значение (базовое 124)
+            let textBoxHeight = window.layerState.bpVariantIndex === 2 ? 116 : 124; 
+
+            // Отрисовываем текст
+            drawPriceText(ctx, W, H, pText, {
+                textX: textXPos * s, 
+                textY: textYPos * s, 
+                boxHeight: textBoxHeight * s 
+            });
 
             // Отрисовка текста ТОЛЬКО для 4 варианта (улучшение)
             if (window.layerState.bpVariantIndex === 4 && globalAssets.style2Text) {
