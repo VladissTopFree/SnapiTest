@@ -3407,14 +3407,13 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
+
+
+
 window.updateSavedCount = async () => {
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
     let countEl = document.getElementById('saved-count-val');
-    try {
-        let projects = JSON.parse(localStorage.getItem('Snapi_projects') || '[]');
-        if (countEl) countEl.innerText = projects.length;
-    } catch(e) {
-        if (countEl) countEl.innerText = '0';
-    }
+    if (countEl) countEl.innerText = projects.length.toString();
 };
 
 window.openSavedProjects = () => {
@@ -3602,57 +3601,54 @@ window.closeDownloadOverlay = () => {
 };
 
 window.deleteProject = async (id, btnEl) => {
-    window.triggerHaptic();
+    if (window.triggerHaptic) window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    projects = projects.filter(p => p.id !== id);
+    localStorage.setItem('snapi_projects', JSON.stringify(projects));
+    
+    // Анимация удаления строки
     let row = btnEl.closest('.sp-row');
-    row.classList.add('deleting');
-    setTimeout(() => {
-        try {
-            let projects = JSON.parse(localStorage.getItem('Snapi_projects') || '[]');
-            projects = projects.filter(p => p.id !== id);
-            localStorage.setItem('Snapi_projects', JSON.stringify(projects));
-            window.updateSavedCount();
+    if (row) {
+        row.classList.add('deleting');
+        setTimeout(() => {
             window.renderSavedProjects();
-        } catch(e) {}
-    }, 400);
+        }, 400); // Ждем завершения CSS анимации
+    } else {
+        window.renderSavedProjects();
+    }
 };
 
 window.renderSavedProjects = async () => {
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
     let emptyState = document.getElementById('sp-empty-state');
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
-
-    let projects = [];
-    try {
-        projects = JSON.parse(localStorage.getItem('Snapi_projects') || '[]');
-    } catch(e) {}
-
+    
     if (projects.length === 0) {
         emptyState.style.display = 'flex';
         emptyState.classList.add('show');
         contentState.style.display = 'none';
         if (container) container.innerHTML = '';
-        return;
+    } else {
+        emptyState.style.display = 'none';
+        emptyState.classList.remove('show');
+        contentState.style.display = 'block';
+        
+        // Сортируем: новые проекты сверху
+        projects.sort((a, b) => b.id - a.id);
+
+        let html = '';
+        projects.forEach(p => {
+            let titleText = p.mode === 'bp' ? 'Brawl Pass' : 'Акция';
+            html += `
+            <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
+                <img src="${p.thumb}" class="sp-img">
+                <div class="sp-title">${titleText} от ${p.date}</div>
+                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
+            </div>`;
+        });
+        if (container) container.innerHTML = html;
     }
-
-    emptyState.style.display = 'none';
-    contentState.style.display = 'flex';
-    if (!container) return;
-    container.innerHTML = '';
-
-    projects.forEach((proj, idx) => {
-        let row = document.createElement('div');
-        row.className = 'sp-row';
-        row.innerHTML = `
-            <img class="sp-img" src="${proj.thumbDataURL || ''}" alt="превью" onerror="this.style.background='#ddd'">
-            <div class="sp-title">${proj.name || 'Работа ' + (idx + 1)}</div>
-            <button class="sp-del-btn" onclick="window.deleteProject(${proj.id}, this)">Удалить</button>
-        `;
-        row.onclick = (e) => {
-            if (e.target.classList.contains('sp-del-btn')) return;
-            window.loadProject(proj.id);
-        };
-        container.appendChild(row);
-    });
 };
 
 const loadImage = (src) => new Promise((resolve) => {
@@ -3666,134 +3662,54 @@ const loadImage = (src) => new Promise((resolve) => {
 });
 
 window.loadProject = async (id) => {
-    let projects = [];
-    try {
-        projects = JSON.parse(localStorage.getItem('Snapi_projects') || '[]');
-    } catch(e) { return; }
-
+    if (window.triggerHaptic) window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
     let proj = projects.find(p => p.id === id);
-    if (!proj) { alert('Проект не найден'); return; }
+    if (!proj) return;
 
-    // Восстанавливаем состояние
-    window.layerState = Object.assign(window.layerState, proj.layerState);
-    wizardMode = proj.wizardMode || 'action';
-    isCurrentProjectSaved = true;
+    // Сбрасываем старый кэш
+    if (window.resetWizardState) window.resetWizardState();
+    window.clearBrawlerCache();
 
-    // Закрываем список
-    document.getElementById('saved-projects-overlay').style.display = 'none';
+    // 1. Восстанавливаем стейт
+    window.layerState = proj.layerState;
+    wizardMode = proj.mode;
+    selectedCategory = proj.category;
 
-    // Показываем скелетон
-    document.getElementById('result-box').style.display = 'block';
-    document.getElementById('cards-container').innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
-    document.getElementById('layer-panel').style.display = 'flex';
-    document.getElementById('layer-panel').innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
-    window.scrollTo(0, 0);
-    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
-
-    // Восстанавливаем фон
-    if (proj.rawBgDataURL) {
-        rawBgImage = new Image();
-        rawBgImage.crossOrigin = 'anonymous';
-        await new Promise(resolve => {
-            rawBgImage.onload = resolve;
-            rawBgImage.onerror = resolve;
-            rawBgImage.src = proj.rawBgDataURL;
+    // 2. Восстанавливаем фон
+    if (proj.bgImage) {
+        rawBgImage = await new Promise((resolve) => {
+            let img = new Image();
+            img.onload = () => resolve(img);
+            img.src = proj.bgImage;
         });
+    } else {
+        rawBgImage = null;
     }
 
-    // Загружаем нужные ассеты в зависимости от режима
-    const load = (src) => new Promise(r => {
-        const i = new Image(); i.crossOrigin = 'anonymous';
-        i.onload = () => r(i); i.onerror = () => r(null); i.src = src;
-    });
+    // 3. Закрываем окно сохраненных работ
+    document.getElementById('saved-projects-overlay').style.display = 'none';
+    isCurrentProjectSaved = true; // Чтобы кнопка сохранения временно скрылась
 
-    let season = window.layerState.bpSeason || 50;
-
-    if (window.layerState.isBrawlPassMode) {
-        let styleIdx = window.layerState.bpStyleIndex;
-
-        if (styleIdx === 2) {
-            if (!globalAssets.style2Gems) globalAssets.style2Gems = await load('BP/bp_gems.png');
-            if (!globalAssets.style2Points) globalAssets.style2Points = await load('BP/bp_style2_points.png');
-            if (!globalAssets.style2Stars) globalAssets.style2Stars = await load('BP/bp_stars_style2.png');
-            if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
-            if (!globalAssets.style2ProIcon) globalAssets.style2ProIcon = await load('BP/bp_icon_pro_pass_icon.png');
-            if (!globalAssets.style2BPP) globalAssets.style2BPP = await load('BP/bp_icon_brawl_pass_plus.png');
-            if (!globalAssets.style2BP) globalAssets.style2BP = await load('BP/bp_icon_brawl_pass.png');
-            if (!globalAssets.style2YellowPlate) globalAssets.style2YellowPlate = await load('BP/bp_price_brawl_pass.png');
-            if (!globalAssets.style2BluePlate) globalAssets.style2BluePlate = await load('BP/bp_price_bg_right.png');
-            if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
-            if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
-
-        } else if (styleIdx === 3) {
-            if (!globalAssets.s3Rays) globalAssets.s3Rays = await load('BP/bp_luch_3style.png');
-            if (!globalAssets.s3Dots) globalAssets.s3Dots = await load('BP/bp_points_3style.png');
-            if (!globalAssets.s3Details) globalAssets.s3Details = await load('BP/bp_details_3style.png');
-            if (!globalAssets[`s3PanelL_${season}`]) globalAssets[`s3PanelL_${season}`] = await load(`BP/bp_panel_left${season}.png`);
-            globalAssets.s3PanelL = globalAssets[`s3PanelL_${season}`];
-            if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await load('BP/bp_price_bg_left.png');
-            if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await load('BP/bp_panel_right.png');
-            if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await load('BP/bp_price_bg_right.png');
-            if (!globalAssets.s3PanelR) globalAssets.s3PanelR = await load('BP/ProPass_bp.png');
-            if (!globalAssets.s3Stars) globalAssets.s3Stars = await load('BP/bp_stars_3style.png');
-
-        } else if (styleIdx === 'dop') {
-            if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
-            if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
-            if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
-            if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
-            if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
-            let varIdx = window.layerState.bpVariantIndex;
-            let panelSrc = 'BP/bp_panel_right.png';
-            let priceSrc = 'BP/bp_price_bg_right.png';
-            if (varIdx === 1) { panelSrc = `BP/bp_panel_left${season}.png`; priceSrc = 'BP/bp_price_bg_left.png'; }
-            else if (varIdx === 2) { panelSrc = `BP/bp_panel_left${season}.png`; priceSrc = 'BP/bp_price_brawl_pass.png'; }
-            globalAssets.dopPanelL = await load(panelSrc);
-            globalAssets.dopPrice = await load(priceSrc);
-            if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
-
+    // 4. Распределяем логику загрузки в зависимости от типа проекта
+    if (wizardMode === 'bp') {
+        if (proj.layerState.bpStyleIndex === 2) {
+            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
+        } else if (proj.layerState.bpStyleIndex === 3) {
+            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
+        } else if (proj.layerState.bpStyleIndex === 'dop') {
+            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
         } else {
-            // Style 1
-            const [luch, starsEff, pointEff, star, brawler2, brawler1, panelL, priceL, panelR, priceR] = await Promise.all([
-                load('BP/Luch.png'), load('BP/bp_starsEff.png'), load('BP/bp_pointEff.png'), load('BP/bp_star.png'),
-                load(`BP/brawler_s${season}_2.png`), load(`BP/brawler_s${season}_1.png`),
-                load(`BP/bp_panel_left${season}.png`), load('BP/bp_price_bg_left.png'),
-                load('BP/bp_panel_right.png'), load('BP/bp_price_bg_right.png')
-            ]);
-            globalAssets.luchImg = luch; globalAssets.starsEff = starsEff;
-            globalAssets.bpPointsImg = pointEff; globalAssets.bpPriceL = priceL;
-            globalAssets.bpPriceR = priceR; globalAssets.bpStar = star;
-            globalAssets.bpPanelL = panelL; globalAssets.bpPanelR = panelR;
-            globalAssets[`brawler_${season}_2`] = brawler2;
-            globalAssets[`brawler_${season}_1`] = brawler1;
-
-            // Нужно пересобрать bpForegroundImage
-            window.bpForegroundImage = new Image();
-            // rebuildStyle1Background обновит bpForegroundImage
+            generateBrawlPassTest();
         }
-
-    } else {
-        // Action mode
-        globalAssets.luchImg = await load('Luch.png');
-        globalAssets.starImg = await load('Star.png');
-        globalAssets.pointsImg = await load('points.png');
-    }
-
-    // Запускаем редактор
-    setupPersistentCanvas();
-    renderLayerPanel(true);
-
-    if (window.layerState.isBrawlPassMode) {
-        let styleIdx = window.layerState.bpStyleIndex;
-        if (styleIdx === 1 || (styleIdx !== 2 && styleIdx !== 3 && styleIdx !== 'dop')) {
-            window.rebuildStyle1Background();
+    } else if (wizardMode === 'action') {
+        // Восстанавливаем скриншоты для акции
+        if (proj.screenshots && proj.screenshots.length > 0) {
+            stagedFiles = proj.screenshots.map((dataUrl, idx) => dataURLtoFile(dataUrl, `screen_${idx}.png`));
+            processImages(stagedFiles);
         } else {
-            window.updateCachedTextCanvas();
-            startAnimation();
+            processImages([]);
         }
-    } else {
-        window.updateCachedTextCanvas();
-        calculateLayoutTarget();
     }
 };
 
@@ -8552,62 +8468,42 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     }
 };
 
-document.getElementById('dl-btn-save-project').onclick = (e) => {
+document.getElementById('dl-btn-save-project').onclick = async (e) => {
     e.preventDefault();
     window.triggerHaptic();
     let btn = e.currentTarget;
-    if (btn.classList.contains('is-loading')) return;
-    if (isCurrentProjectSaved) return;
-
+    if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
+    
     btn.classList.add('is-loading');
     btn.style.pointerEvents = 'none';
 
     try {
-        // Собираем снапшот состояния
-        const snapshot = {
-            id: Date.now(),
-            savedAt: new Date().toISOString(),
-            layerState: JSON.parse(JSON.stringify(window.layerState)),
-            wizardMode: wizardMode,
-            // Фон: сохраняем как base64 dataURL
-            rawBgDataURL: (rawBgImage && rawBgImage.src) ? rawBgImage.src : null,
-            // Превью (уменьшенная копия готового холста)
-            thumbDataURL: (() => {
-                try {
-                    if (!persistentCanvas || persistentCanvas.width === 0) return null;
-                    let tc = document.createElement('canvas');
-                    tc.width = 320; tc.height = Math.round(320 * persistentCanvas.height / persistentCanvas.width);
-                    let tCtx = tc.getContext('2d');
-                    tCtx.drawImage(persistentCanvas, 0, 0, tc.width, tc.height);
-                    return tc.toDataURL('image/jpeg', 0.75);
-                } catch(e) { return null; }
-            })(),
-            // Имя для отображения
-            name: (() => {
-                let nick = window.layerState.textValue || 'Работа';
-                let mode = window.layerState.isBrawlPassMode ? 'BP' : 'Акция';
-                return `${mode} · ${nick}`;
-            })()
+        // Формируем объект проекта
+        let thumbSrc = document.getElementById('dl-preview-img').src;
+        let project = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+            thumb: thumbSrc,
+            mode: wizardMode,
+            category: selectedCategory,
+            layerState: JSON.parse(JSON.stringify(window.layerState)), // Делаем копию стейта
+            bgImage: getBase64Image(rawBgImage)
         };
 
-        // Загружаем список
-        let projects = JSON.parse(localStorage.getItem('Snapi_projects') || '[]');
-
-        // Лимит 12
-        if (projects.length >= 12) {
-            btn.classList.remove('is-loading');
-            btn.style.pointerEvents = 'auto';
-            alert('Достигнут лимит 12 сохранённых работ. Удалите одну из них.');
-            return;
+        // Если это создание акции со скриншотами, сохраняем их тоже
+        if (wizardMode === 'action' && stagedFiles && stagedFiles.length > 0) {
+            project.screenshots = await Promise.all(stagedFiles.map(fileToDataURL));
         }
 
-        projects.unshift(snapshot);
-        localStorage.setItem('Snapi_projects', JSON.stringify(projects));
+        // Записываем в LocalStorage
+        let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+        projects.push(project);
+        localStorage.setItem('snapi_projects', JSON.stringify(projects));
+        
         isCurrentProjectSaved = true;
-
-        // Обновляем счётчик в меню
         window.updateSavedCount();
 
+        // Анимация успешного сохранения
         setTimeout(() => {
             let wrapper = document.getElementById('save-btn-wrapper');
             wrapper.classList.add('hidden-animated');
@@ -8615,13 +8511,14 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                 wrapper.style.display = 'none';
                 btn.classList.remove('is-loading');
                 btn.style.pointerEvents = 'auto';
-            }, 500);
-        }, 600);
+            }, 500); 
+        }, 800);
 
-    } catch(err) {
+    } catch (err) {
+        console.error(err);
+        alert("Ошибка сохранения! Возможно, закончилась память устройства для LocalStorage.");
         btn.classList.remove('is-loading');
         btn.style.pointerEvents = 'auto';
-        alert('Ошибка сохранения: ' + err.message);
     }
 };
 
@@ -9650,6 +9547,32 @@ window.openBPFromPromo = function() {
         window.Telegram.WebApp.BackButton.show();
     }
 };
+
+const fileToDataURL = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+const dataURLtoFile = (dataurl, filename) => {
+    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--) { u8arr[n] = bstr.charCodeAt(n); }
+    return new File([u8arr], filename, {type: mime});
+};
+
+function getBase64Image(img) {
+    if (!img) return null;
+    if (img.src && img.src.startsWith('data:')) return img.src;
+    let canvas = document.createElement("canvas");
+    canvas.width = img.width || 1280;
+    canvas.height = img.height || 720;
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    return canvas.toDataURL("image/jpeg", 0.7); 
+}
+
 </script>
 </body>
 </html>
