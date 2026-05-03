@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(54)";
+  const APP_VERSION = "v2.4.0(55)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3407,12 +3407,10 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-
-
-
 window.updateSavedCount = async () => {
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
     let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = '0';
+    if (countEl) countEl.innerText = projects.length.toString();
 };
 
 window.openSavedProjects = () => {
@@ -3600,18 +3598,54 @@ window.closeDownloadOverlay = () => {
 };
 
 window.deleteProject = async (id, btnEl) => {
-    console.log("Функция удаления отключена");
+    if (window.triggerHaptic) window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    projects = projects.filter(p => p.id !== id);
+    localStorage.setItem('snapi_projects', JSON.stringify(projects));
+    
+    // Анимация удаления строки
+    let row = btnEl.closest('.sp-row');
+    if (row) {
+        row.classList.add('deleting');
+        setTimeout(() => {
+            window.renderSavedProjects();
+        }, 400); // Ждем завершения CSS анимации
+    } else {
+        window.renderSavedProjects();
+    }
 };
 
 window.renderSavedProjects = async () => {
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
     let emptyState = document.getElementById('sp-empty-state');
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
     
-    emptyState.style.display = 'flex';
-    emptyState.classList.add('show');
-    contentState.style.display = 'none';
-    if (container) container.innerHTML = '';
+    if (projects.length === 0) {
+        emptyState.style.display = 'flex';
+        emptyState.classList.add('show');
+        contentState.style.display = 'none';
+        if (container) container.innerHTML = '';
+    } else {
+        emptyState.style.display = 'none';
+        emptyState.classList.remove('show');
+        contentState.style.display = 'block';
+        
+        // Сортируем: новые проекты сверху
+        projects.sort((a, b) => b.id - a.id);
+
+        let html = '';
+        projects.forEach(p => {
+            let titleText = p.mode === 'bp' ? 'Brawl Pass' : 'Акция';
+            html += `
+            <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
+                <img src="${p.thumb}" class="sp-img">
+                <div class="sp-title">${titleText} от ${p.date}</div>
+                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
+            </div>`;
+        });
+        if (container) container.innerHTML = html;
+    }
 };
 
 const loadImage = (src) => new Promise((resolve) => {
@@ -3625,7 +3659,55 @@ const loadImage = (src) => new Promise((resolve) => {
 });
 
 window.loadProject = async (id) => {
-    console.log("Функция загрузки проектов отключена");
+    if (window.triggerHaptic) window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let proj = projects.find(p => p.id === id);
+    if (!proj) return;
+
+    // Сбрасываем старый кэш
+    if (window.resetWizardState) window.resetWizardState();
+    window.clearBrawlerCache();
+
+    // 1. Восстанавливаем стейт
+    window.layerState = proj.layerState;
+    wizardMode = proj.mode;
+    selectedCategory = proj.category;
+
+    // 2. Восстанавливаем фон
+    if (proj.bgImage) {
+        rawBgImage = await new Promise((resolve) => {
+            let img = new Image();
+            img.onload = () => resolve(img);
+            img.src = proj.bgImage;
+        });
+    } else {
+        rawBgImage = null;
+    }
+
+    // 3. Закрываем окно сохраненных работ
+    document.getElementById('saved-projects-overlay').style.display = 'none';
+    isCurrentProjectSaved = true; // Чтобы кнопка сохранения временно скрылась
+
+    // 4. Распределяем логику загрузки в зависимости от типа проекта
+    if (wizardMode === 'bp') {
+        if (proj.layerState.bpStyleIndex === 2) {
+            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
+        } else if (proj.layerState.bpStyleIndex === 3) {
+            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
+        } else if (proj.layerState.bpStyleIndex === 'dop') {
+            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
+        } else {
+            generateBrawlPassTest();
+        }
+    } else if (wizardMode === 'action') {
+        // Восстанавливаем скриншоты для акции
+        if (proj.screenshots && proj.screenshots.length > 0) {
+            stagedFiles = proj.screenshots.map((dataUrl, idx) => dataURLtoFile(dataUrl, `screen_${idx}.png`));
+            processImages(stagedFiles);
+        } else {
+            processImages([]);
+        }
+    }
 };
 
 let selectedCategory = null; 
@@ -8383,26 +8465,58 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     }
 };
 
-document.getElementById('dl-btn-save-project').onclick = (e) => {
+document.getElementById('dl-btn-save-project').onclick = async (e) => {
     e.preventDefault();
     window.triggerHaptic();
     let btn = e.currentTarget;
-    if (btn.classList.contains('is-loading')) return; 
+    if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
     
     btn.classList.add('is-loading');
     btn.style.pointerEvents = 'none';
 
-    // Эмуляция сохранения для визуала (логика убрана)
-    setTimeout(() => {
-        let wrapper = document.getElementById('save-btn-wrapper');
-        wrapper.classList.add('hidden-animated');
+    try {
+        // Формируем объект проекта
+        let thumbSrc = document.getElementById('dl-preview-img').src;
+        let project = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+            thumb: thumbSrc,
+            mode: wizardMode,
+            category: selectedCategory,
+            layerState: JSON.parse(JSON.stringify(window.layerState)), // Делаем копию стейта
+            bgImage: getBase64Image(rawBgImage)
+        };
 
+        // Если это создание акции со скриншотами, сохраняем их тоже
+        if (wizardMode === 'action' && stagedFiles && stagedFiles.length > 0) {
+            project.screenshots = await Promise.all(stagedFiles.map(fileToDataURL));
+        }
+
+        // Записываем в LocalStorage
+        let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+        projects.push(project);
+        localStorage.setItem('snapi_projects', JSON.stringify(projects));
+        
+        isCurrentProjectSaved = true;
+        window.updateSavedCount();
+
+        // Анимация успешного сохранения
         setTimeout(() => {
-            wrapper.style.display = 'none';
-            btn.classList.remove('is-loading');
-            btn.style.pointerEvents = 'auto';
-        }, 500); 
-    }, 800);
+            let wrapper = document.getElementById('save-btn-wrapper');
+            wrapper.classList.add('hidden-animated');
+            setTimeout(() => {
+                wrapper.style.display = 'none';
+                btn.classList.remove('is-loading');
+                btn.style.pointerEvents = 'auto';
+            }, 500); 
+        }, 800);
+
+    } catch (err) {
+        console.error(err);
+        alert("Ошибка сохранения! Возможно, закончилась память устройства для LocalStorage.");
+        btn.classList.remove('is-loading');
+        btn.style.pointerEvents = 'auto';
+    }
 };
 
 document.getElementById('dl-btn-actual-download').onclick = (e) => {
@@ -9430,6 +9544,32 @@ window.openBPFromPromo = function() {
         window.Telegram.WebApp.BackButton.show();
     }
 };
+
+const fileToDataURL = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+const dataURLtoFile = (dataurl, filename) => {
+    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--) { u8arr[n] = bstr.charCodeAt(n); }
+    return new File([u8arr], filename, {type: mime});
+};
+
+function getBase64Image(img) {
+    if (!img) return null;
+    if (img.src && img.src.startsWith('data:')) return img.src;
+    let canvas = document.createElement("canvas");
+    canvas.width = img.width || 1280;
+    canvas.height = img.height || 720;
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    return canvas.toDataURL("image/jpeg", 0.7); 
+}
+
 </script>
 </body>
 </html>
