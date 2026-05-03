@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(37)";
+  const APP_VERSION = "v2.4.0(38)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4230,7 +4230,7 @@ window.layerState = {
     starsVisible: true,
     starsOpacity: 1.0,
     watermarksVisible: true,
-    watermarksOpacity: 0.6,
+    watermarksOpacity: 0.8,
     watermarksFont: 'Font16103',
     pointsVisible: true,
     isGeneratedBg: false,
@@ -7321,7 +7321,15 @@ function drawScene() {
 
             // 7. Персонаж с тенью
             let season = window.layerState.bpSeason || 50;
-            let brawler = globalAssets[`brawler_${season}_2`];
+            let brawler;
+
+            // Если выбран 1 (Brawl Pass) или 2 (скидка) вариант, берем картинку _1. Иначе _2
+            if (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) {
+                brawler = globalAssets[`brawler_${season}_1`];
+            } else {
+                brawler = globalAssets[`brawler_${season}_2`];
+            }
+
             if (brawler) {
                 let seasonConf = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
                 let dopConf = seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
@@ -7372,7 +7380,7 @@ function drawScene() {
             let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
             
             // Настраиваем позицию и размер текста
-            let textYPos = window.layerState.bpVariantIndex === 2 ? 632 : 646; // Поднимаем текст для скидки
+            let textYPos = window.layerState.bpVariantIndex === 2 ? 628 : 646; // Поднимаем текст для скидки
             let textXPos = pricePlateX + (pricePlateW / 2); // Автоматически вычисляем центр плашки
             
             // Если текст для скидки нужен меньше, уменьшаем это значение (базовое 124)
@@ -9255,6 +9263,9 @@ window.openBPDopEditor = function() {
         if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
         if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
         if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
+        
+        // Загружаем сразу обоих персонажей, чтобы они были готовы для разных вариантов
+        if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
         if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
         
         // --- НАЧАЛО ИЗМЕНЕНИЙ ---
