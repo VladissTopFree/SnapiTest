@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(55)";
+  const APP_VERSION = "v2.4.0(56)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3700,7 +3700,6 @@ window.loadProject = async (id) => {
             generateBrawlPassTest();
         }
     } else if (wizardMode === 'action') {
-        // Восстанавливаем скриншоты для акции
         if (proj.screenshots && proj.screenshots.length > 0) {
             stagedFiles = proj.screenshots.map((dataUrl, idx) => dataURLtoFile(dataUrl, `screen_${idx}.png`));
             processImages(stagedFiles);
@@ -3712,10 +3711,9 @@ window.loadProject = async (id) => {
 
 let selectedCategory = null; 
 let selectedBPStyle = null;
-let selectedBPSub = null; // Новая переменная для подменю Обычный/Доп
+let selectedBPSub = null; 
 let wizardMode = 'action'; 
 
-// Новая функция для выбора подкатегории Brawl Pass
 window.selectBPSub = function(subType) {
     selectedBPSub = subType;
     if (window.triggerHaptic) window.triggerHaptic();
@@ -9545,13 +9543,33 @@ window.openBPFromPromo = function() {
     }
 };
 
-const fileToDataURL = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-});
+// 1. Умное сжатие картинок, чтобы 12 проектов точно влезли в 5MB LocalStorage
+function compressImage(imgSrcOrFile, maxWidth = 900, quality = 0.5) {
+    return new Promise((resolve) => {
+        let img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+            let canvas = document.createElement("canvas");
+            let scale = maxWidth / img.width;
+            if (scale > 1) scale = 1; // Не увеличиваем маленькие картинки
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            let ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            // Сохраняем в JPEG с сильным сжатием (только для кэша, при рендере исходники другие)
+            resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = () => resolve(null); // Если ошибка, пропускаем
+        
+        if (imgSrcOrFile instanceof File || imgSrcOrFile instanceof Blob) {
+            img.src = URL.createObjectURL(imgSrcOrFile);
+        } else {
+            img.src = imgSrcOrFile;
+        }
+    });
+}
 
+// Конвертируем сжатую строку обратно в файл (нужно для раздела Акций)
 const dataURLtoFile = (dataurl, filename) => {
     let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -9559,16 +9577,184 @@ const dataURLtoFile = (dataurl, filename) => {
     return new File([u8arr], filename, {type: mime});
 };
 
-function getBase64Image(img) {
-    if (!img) return null;
-    if (img.src && img.src.startsWith('data:')) return img.src;
-    let canvas = document.createElement("canvas");
-    canvas.width = img.width || 1280;
-    canvas.height = img.height || 720;
-    let ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    return canvas.toDataURL("image/jpeg", 0.7); 
-}
+// 2. Логика кнопки "Сохранить проект" с лимитом
+document.getElementById('dl-btn-save-project').onclick = async (e) => {
+    e.preventDefault();
+    window.triggerHaptic();
+    let btn = e.currentTarget;
+    if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
+
+    // Проверка лимита: максимум 12 проектов
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    if (projects.length >= 12) {
+        alert("Достиг лимит сохранения проектов Ваших работ!\nОчистите, что бы добавлять новые.\n\nНастройки -> удалить.");
+        return;
+    }
+    
+    btn.classList.add('is-loading');
+    btn.style.pointerEvents = 'none';
+
+    try {
+        // Сжимаем превью (до 400px ширины)
+        let thumbSrc = document.getElementById('dl-preview-img').src;
+        let compressedThumb = await compressImage(thumbSrc, 400, 0.4);
+
+        // Сжимаем фоновое изображение (до 900px ширины)
+        let compressedBg = null;
+        if (rawBgImage && rawBgImage.src) {
+            compressedBg = await compressImage(rawBgImage.src, 900, 0.5);
+        }
+
+        let project = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+            thumb: compressedThumb,
+            mode: wizardMode,
+            category: selectedCategory,
+            layerState: JSON.parse(JSON.stringify(window.layerState)),
+            bgImage: compressedBg
+        };
+
+        // Сжимаем скриншоты, если это создание акции
+        if (wizardMode === 'action' && stagedFiles && stagedFiles.length > 0) {
+            project.screenshots = await Promise.all(stagedFiles.map(file => compressImage(file, 800, 0.5)));
+        }
+
+        // Сохраняем
+        projects.push(project);
+        localStorage.setItem('snapi_projects', JSON.stringify(projects));
+        
+        isCurrentProjectSaved = true;
+        window.updateSavedCount(); // Обновляем счетчик В ГЛАВНОМ МЕНЮ СРАЗУ
+
+        // Анимация скрытия кнопки
+        setTimeout(() => {
+            let wrapper = document.getElementById('save-btn-wrapper');
+            wrapper.classList.add('hidden-animated');
+            setTimeout(() => {
+                wrapper.style.display = 'none';
+                btn.classList.remove('is-loading');
+                btn.style.pointerEvents = 'auto';
+            }, 500); 
+        }, 800);
+
+    } catch (err) {
+        console.error(err);
+        alert("Критическая ошибка сохранения. Память переполнена.");
+        btn.classList.remove('is-loading');
+        btn.style.pointerEvents = 'auto';
+    }
+};
+
+// 3. Обновление счетчика и удаление проектов
+window.updateSavedCount = () => {
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let countEl = document.getElementById('saved-count-val');
+    if (countEl) countEl.innerText = projects.length.toString();
+};
+
+window.deleteProject = async (id, btnEl) => {
+    if (window.triggerHaptic) window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    projects = projects.filter(p => p.id !== id);
+    localStorage.setItem('snapi_projects', JSON.stringify(projects));
+    
+    window.updateSavedCount(); // <--- Сразу обновляем счетчик при удалении!
+    
+    // Анимация удаления
+    let row = btnEl.closest('.sp-row');
+    if (row) {
+        row.classList.add('deleting');
+        setTimeout(() => {
+            window.renderSavedProjects();
+        }, 400); 
+    } else {
+        window.renderSavedProjects();
+    }
+};
+
+window.renderSavedProjects = async () => {
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let emptyState = document.getElementById('sp-empty-state');
+    let contentState = document.getElementById('sp-content-state');
+    let container = document.getElementById('sp-list');
+    
+    if (projects.length === 0) {
+        emptyState.style.display = 'flex';
+        emptyState.classList.add('show');
+        contentState.style.display = 'none';
+        if (container) container.innerHTML = '';
+    } else {
+        emptyState.style.display = 'none';
+        emptyState.classList.remove('show');
+        contentState.style.display = 'block';
+        
+        // Новые проекты сверху
+        projects.sort((a, b) => b.id - a.id);
+
+        let html = '';
+        projects.forEach(p => {
+            let titleText = p.mode === 'bp' ? 'Brawl Pass' : 'Акция';
+            html += `
+            <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
+                <img src="${p.thumb || 'miniprewiev.png'}" class="sp-img" onerror="this.src='miniprewiev.png'">
+                <div class="sp-title">${titleText} от ${p.date}</div>
+                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
+            </div>`;
+        });
+        if (container) container.innerHTML = html;
+    }
+};
+
+// 4. Восстановление загруженного проекта
+window.loadProject = async (id) => {
+    if (window.triggerHaptic) window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let proj = projects.find(p => p.id === id);
+    if (!proj) return;
+
+    if (window.resetWizardState) window.resetWizardState();
+    window.clearBrawlerCache();
+
+    window.layerState = proj.layerState;
+    wizardMode = proj.mode;
+    selectedCategory = proj.category;
+
+    if (proj.bgImage) {
+        rawBgImage = await new Promise((resolve) => {
+            let img = new Image();
+            img.onload = () => resolve(img);
+            img.src = proj.bgImage;
+        });
+    } else {
+        rawBgImage = null;
+    }
+
+    document.getElementById('saved-projects-overlay').style.display = 'none';
+    isCurrentProjectSaved = true; 
+
+    if (wizardMode === 'bp') {
+        if (proj.layerState.bpStyleIndex === 2) {
+            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
+        } else if (proj.layerState.bpStyleIndex === 3) {
+            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
+        } else if (proj.layerState.bpStyleIndex === 'dop') {
+            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
+        } else {
+            generateBrawlPassTest();
+        }
+    } else if (wizardMode === 'action') {
+        if (proj.screenshots && proj.screenshots.length > 0) {
+            stagedFiles = proj.screenshots.map((dataUrl, idx) => dataURLtoFile(dataUrl, `screen_${idx}.jpg`));
+            processImages(stagedFiles);
+        } else {
+            processImages([]);
+        }
+    }
+};
+
+// Принудительно вызываем счётчик при загрузке приложения
+window.updateSavedCount();
 
 </script>
 </body>
