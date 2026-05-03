@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(40)";
+  const APP_VERSION = "v2.4.0(41)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2781,7 +2781,7 @@ body.os-non-apple .promo-banner {
               </div>
 
               <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                  <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">BP Plus</div>
+                  <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass Plus</div>
                   <input type="text" inputmode="numeric" maxlength="5" id="wizard-bpplus-price" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); checkStep3BPReady();">
               </div>
           </div>
@@ -7375,48 +7375,39 @@ function drawScene() {
                 ctx.shadowOffsetX = 0;
                 ctx.shadowBlur = 0;
                 
-                // Отрисовка базового прямоугольника, как было в твоем оригинальном коде
                 ctx.drawImage(brawler, 0, 0, 786 * s, 792 * s);
                 ctx.restore();
             }
 
-            // 8. Плашка слева
             drawLayerImg(globalAssets.dopPanelL, 82, 21, 546, 649);
             
-            // 9. Плашка цены
             let pricePlateX = 158;
             let pricePlateY = 589;
             let pricePlateW = 350;
             let pricePlateH = 124;
 
-            // Если выбран 2 вариант (скидка), меняем размеры и позицию плашки
             if (window.layerState.bpVariantIndex === 2) {
-                pricePlateW = 380; // Делаем плашку шире (было 350)
-                pricePlateH = 136; // Делаем плашку выше (было 124)
-                pricePlateX = 143; // Сдвигаем левее, чтобы центр остался на месте (158 - половина от прибавленных 30px)
-                pricePlateY = 575; // Поднимаем плашку выше (было 589)
+                pricePlateW = 380; 
+                pricePlateH = 136; 
+                pricePlateX = 143; 
+                pricePlateY = 575; 
             }
 
             drawLayerImg(globalAssets.dopPrice, pricePlateX, pricePlateY, pricePlateW, pricePlateH);
 
-            // 10. Текст цены
             let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
             
-            // Настраиваем позицию и размер текста
-            let textYPos = window.layerState.bpVariantIndex === 2 ? 626 : 646; // Поднимаем текст для скидки
-            let textXPos = pricePlateX + (pricePlateW / 2); // Автоматически вычисляем центр плашки
+            let textYPos = window.layerState.bpVariantIndex === 2 ? 624 : 646; 
+            let textXPos = pricePlateX + (pricePlateW / 2); 
             
-            // Если текст для скидки нужен меньше, уменьшаем это значение (базовое 124)
             let textBoxHeight = window.layerState.bpVariantIndex === 2 ? 114 : 124; 
 
-            // Отрисовываем текст
             drawPriceText(ctx, W, H, pText, {
                 textX: textXPos * s, 
                 textY: textYPos * s, 
                 boxHeight: textBoxHeight * s 
             });
 
-            // Отрисовка текста ТОЛЬКО для 4 варианта (улучшение)
             if (window.layerState.bpVariantIndex === 4 && globalAssets.style2Text) {
                 let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
                 let tConf = seasonConf.dopText || { x: 500, y: 100, scale: 1, rot: 0 };
@@ -7434,7 +7425,7 @@ function drawScene() {
                 ctx.restore();
             }
 
-            return; // Этот return уже есть у тебя в коде
+            return; 
 
         }
 
@@ -7919,6 +7910,14 @@ function drawBeautifulNick(ctx, text, w, h) {
           let el = document.getElementById(id);
           if (el) el.value = '';
       });
+
+      for (let i = 0; i <= 10; i++) {
+          let el = document.getElementById('ws2-p' + i);
+          if (el) el.value = '';
+      }
+      if (window.layerState) window.layerState.style2Prices = [];
+      let bpNextBtn3Style2 = document.getElementById('wizard-next-btn3-bp-style2');
+      if (bpNextBtn3Style2) bpNextBtn3Style2.classList.remove('show');
 
       window.layerState.offers = [];
       window.layerState.isBrawlPassMode = false;
