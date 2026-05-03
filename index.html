@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(52)";
+  const APP_VERSION = "v2.4.0(53)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3413,7 +3413,7 @@ const localDB = {
     async init() {
         if (this.db) return;
         return new Promise((resolve, reject) => {
-            const req = indexedDB.open('SnapiDBTestv2_4_0', 1); 
+            const req = indexedDB.open('SnapiDBTestv2_4_3', 1); 
             req.onupgradeneeded = e => {
                 const db = e.target.result;
                 if (!db.objectStoreNames.contains('projects')) db.createObjectStore('projects', { keyPath: 'id' });
@@ -3812,69 +3812,69 @@ window.loadProject = async (id) => {
     }
 
     window.layerState = {
-        textVisible: s.textVisible,
-        textValue: s.textValue,
-        textPosition: s.textPosition,
-        textFont: s.textFont,
-        textStyleIndex: s.textStyleIndex,
-        globalStrokeWidth: s.globalStrokeWidth,
-        bgVisible: s.bgVisible,
-        isGeneratedBg: s.isGeneratedBg,
-        isReadyBg: s.isReadyBg || false,
-        bgColorType: s.bgColorType,
-        luchVisible: s.luchVisible,
-        luchOpacity: s.luchOpacity,
-        starsVisible: s.starsVisible,
-        starsOpacity: s.starsOpacity,
-        watermarksVisible: s.watermarksVisible,
-        watermarksOpacity: s.watermarksOpacity,
-        watermarksFont: s.watermarksFont,
-        pointsVisible: s.pointsVisible,
+        textVisible: s.textVisible,
+        textValue: s.textValue,
+        textPosition: s.textPosition,
+        textFont: s.textFont,
+        textStyleIndex: s.textStyleIndex,
+        globalStrokeWidth: s.globalStrokeWidth,
+        bgVisible: s.bgVisible,
+        isGeneratedBg: s.isGeneratedBg,
+        isReadyBg: s.isReadyBg || false,
+        bgColorType: s.bgColorType,
+        luchVisible: s.luchVisible,
+        luchOpacity: s.luchOpacity,
+        starsVisible: s.starsVisible,
+        starsOpacity: s.starsOpacity,
+        watermarksVisible: s.watermarksVisible,
+        watermarksOpacity: s.watermarksOpacity,
+        watermarksFont: s.watermarksFont,
+        pointsVisible: s.pointsVisible !== undefined ? s.pointsVisible : true,
+        pointsOpacity: s.pointsOpacity !== undefined ? s.pointsOpacity : 1.0, // ДОБАВЛЕНО
+        detailsVisible: s.detailsVisible !== undefined ? s.detailsVisible : true, // ДОБАВЛЕНО
+        offersPosition: s.offersPosition || 'bottom', // ДОБАВЛЕНО
 
-        pointsOpacity: s.pointsOpacity !== undefined ? s.pointsOpacity : 1.0, 
-        detailsVisible: s.detailsVisible !== undefined ? s.detailsVisible : true, 
+        isBrawlPassMode: s.isBrawlPassMode || false,
+        bpStyleIndex: s.bpStyleIndex,
+        bpVariantIndex: s.bpVariantIndex,
+        bpSeason: s.bpSeason || 50,
+        bpPriceLeft: s.bpPriceLeft,
+        bpPriceRight: s.bpPriceRight,
+        style2Prices: s.style2Prices || [],
+        style3Prices: s.style3Prices || [],
+        customWatermarks: s.customWatermarks,
+        activeWmIndex: s.activeWmIndex,
+        brawler1X: s.brawler1X,
+        brawler1Y: s.brawler1Y,
+        brawler1Scale: s.brawler1Scale,
+        brawler1Flip: s.brawler1Flip,
+        brawler2X: s.brawler2X,
+        brawler2Y: s.brawler2Y,
+        brawler2Scale: s.brawler2Scale,
+        brawler2ScaleX: s.brawler2ScaleX,
+        brawler2ScaleY: s.brawler2ScaleY,
+        brawler2Rot: s.brawler2Rot,
+        brawler2Flip: s.brawler2Flip,
+        dopTextX: s.dopTextX,
+        dopTextY: s.dopTextY,
+        dopTextScale: s.dopTextScale,
+        dopTextRot: s.dopTextRot,
+        s3TextX: s.s3TextX,
+        s3TextY: s.s3TextY,
+        s3TextScale: s.s3TextScale,
+        tempLineColor: s.tempLineColor,
+        tempGradL0: s.tempGradL0,
+        tempGradL1: s.tempGradL1,
+        tempGradR0: s.tempGradR0,
+        tempGradR1: s.tempGradR1,
+        
+        offers: []
+    };
 
-
-        isBrawlPassMode: s.isBrawlPassMode || false,
-        bpStyleIndex: s.bpStyleIndex,
-        bpVariantIndex: s.bpVariantIndex,
-        bpSeason: s.bpSeason || 50,
-        bpPriceLeft: s.bpPriceLeft,
-        bpPriceRight: s.bpPriceRight,
-        style2Prices: s.style2Prices || [],
-        style3Prices: s.style3Prices || [],
-        customWatermarks: s.customWatermarks,
-        activeWmIndex: s.activeWmIndex,
-        brawler1X: s.brawler1X,
-        brawler1Y: s.brawler1Y,
-        brawler1Scale: s.brawler1Scale,
-        brawler1Flip: s.brawler1Flip,
-        brawler2X: s.brawler2X,
-        brawler2Y: s.brawler2Y,
-        brawler2Scale: s.brawler2Scale,
-        brawler2ScaleX: s.brawler2ScaleX,
-        brawler2ScaleY: s.brawler2ScaleY,
-        brawler2Rot: s.brawler2Rot,
-        brawler2Flip: s.brawler2Flip,
-        dopTextX: s.dopTextX,
-        dopTextY: s.dopTextY,
-        dopTextScale: s.dopTextScale,
-        dopTextRot: s.dopTextRot,
-        s3TextX: s.s3TextX,
-        s3TextY: s.s3TextY,
-        s3TextScale: s.s3TextScale,
-        tempLineColor: s.tempLineColor,
-        tempGradL0: s.tempGradL0,
-        tempGradL1: s.tempGradL1,
-        tempGradR0: s.tempGradR0,
-        tempGradR1: s.tempGradR1,
-        
-        offers: []
-    };
-
-    for (let i = 0; i < s.offers.length; i++) {
-        let oData = s.offers[i];
-        let img = await loadImage(oData.imgData); 
+    let savedOffers = s.offers || [];
+    for (let i = 0; i < savedOffers.length; i++) {
+        let oData = savedOffers[i];
+        let img = await loadImage(oData.imgData);
         
         let c = document.createElement('canvas');
         c.width = img.width; c.height = img.height;
@@ -7513,7 +7513,7 @@ function drawScene() {
                 boxHeight: textBoxHeight * s 
             });
 
-                if (window.layerState.bpVariantIndex === 4 && globalAssets.style2Text) {
+            if (window.layerState.bpVariantIndex === 4 && globalAssets.style2Text) {
                 let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
                 let tConf = seasonConf.dopText || { x: 500, y: 100, scale: 1, rot: 0 };
                 
@@ -7530,21 +7530,9 @@ function drawScene() {
                 ctx.restore();
             }
 
-            // Рендер главного ника для дополнительных BP
-            if (cachedTextCanvas && animText.alpha > 0.01) {
-                ctx.save();
-                ctx.globalAlpha = animText.alpha;
-                let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
-                ctx.translate(tw2, th2);
-                ctx.scale(animText.scale, animText.scale);
-                ctx.translate(-tw2, -th2);
-                ctx.drawImage(cachedTextCanvas, 0, 0);
-                ctx.restore();
-            }
-
             return; 
 
-        }
+        }
 
         else {
             if (window.layerState.luchVisible && globalAssets.luchImg) {
@@ -8732,9 +8720,9 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                 watermarksOpacity: window.layerState.watermarksOpacity,
                 watermarksFont: window.layerState.watermarksFont,
                 pointsVisible: window.layerState.pointsVisible,
-
-                pointsOpacity: window.layerState.pointsOpacity, 
+                pointsOpacity: window.layerState.pointsOpacity,
                 detailsVisible: window.layerState.detailsVisible, 
+                offersPosition: window.layerState.offersPosition, 
 
                 isBrawlPassMode: window.layerState.isBrawlPassMode,
                 bpStyleIndex: window.layerState.bpStyleIndex,
@@ -8770,10 +8758,17 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                 tempGradR0: window.layerState.tempGradR0,
                 tempGradR1: window.layerState.tempGradR1,
 
-                offers: window.layerState.offers.map(o => {
+                offers: (window.layerState.offers || []).map(o => {
                     let tempC = document.createElement('canvas');
-                    tempC.width = o.ref.canvas.width; tempC.height = o.ref.canvas.height;
-                    tempC.getContext('2d').putImageData(o.ref.info.blankedImgData, 0, 0);
+                    if (o.ref && o.ref.canvas) {
+                        tempC.width = o.ref.canvas.width; 
+                        tempC.height = o.ref.canvas.height;
+                        if (o.ref.info && o.ref.info.blankedImgData) {
+                            tempC.getContext('2d').putImageData(o.ref.info.blankedImgData, 0, 0);
+                        }
+                    } else {
+                        tempC.width = 1; tempC.height = 1;
+                    }
 
                     return {
                         id: o.id,
@@ -8781,22 +8776,27 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                         hasStroke: o.hasStroke,
                         price: o.price,
                         imgData: tempC.toDataURL('image/png'),
-                        infoTextX: o.ref.info.textX,
-                        infoTextY: o.ref.info.textY,
-                        infoBoxHeight: o.ref.info.boxHeight
+                        infoTextX: o.ref && o.ref.info ? o.ref.info.textX : 0,
+                        infoTextY: o.ref && o.ref.info ? o.ref.info.textY : 0,
+                        infoBoxHeight: o.ref && o.ref.info ? o.ref.info.boxHeight : 0
                     };
                 })
             };
 
             let bgDataUrl = null;
             if (!window.layerState.isGeneratedBg && rawBgImage) {
-                let c = document.createElement('canvas');
-                let w = rawBgImage.width;
-                let h = rawBgImage.height;
-                if (w > 1920) { h = Math.round((1920 / w) * h); w = 1920; }
-                c.width = w; c.height = h;
-                c.getContext('2d').drawImage(rawBgImage, 0, 0, w, h);
-                bgDataUrl = c.toDataURL('image/jpeg', 0.8);
+                try {
+                    let c = document.createElement('canvas');
+                    let w = rawBgImage.width;
+                    let h = rawBgImage.height;
+                    if (w > 1920) { h = Math.round((1920 / w) * h); w = 1920; }
+                    c.width = w; c.height = h;
+                    c.getContext('2d').drawImage(rawBgImage, 0, 0, w, h);
+                    bgDataUrl = c.toDataURL('image/jpeg', 0.8);
+                } catch (e) {
+                    console.warn("Фон сохранён по ссылке (защита CORS):", e);
+                    bgDataUrl = rawBgImage.src; 
+                }
             }
 
             let thumbCanvas = document.createElement('canvas');
@@ -9172,8 +9172,12 @@ async function generateBrawlPassTest() {
     ctx.moveTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20);
     ctx.stroke();
     ctx.restore();
-    
-    let starH = HEIGHT * 0.70;
+
+    rawBgImage = new Image();
+    rawBgImage.src = c.toDataURL('image/png');
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+    let starH = HEIGHT * 0.70; 
     let starY = HEIGHT - (HEIGHT * 0.16 + 56);
 
     if (!window.layerState.isGeneratedBg) {
