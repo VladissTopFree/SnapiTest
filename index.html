@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(58)";
+  const APP_VERSION = "v2.4.0(59)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6843,7 +6843,7 @@ function drawScene() {
                 ctx.restore();
             };
 
-              const drawBrawler = (img, obj) => {
+            const drawBrawler = (img, obj) => {
                 if (!img) return;
                 ctx.save();
                 ctx.translate(obj.x*s, obj.y*s); 
@@ -6852,13 +6852,16 @@ function drawScene() {
                 ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
                 
                 if (obj.flipH) {
-                    ctx.translate(img.width, 0);
+                    // Исправлено: добавлено * s
+                    ctx.translate(img.width * s, 0);
                     ctx.scale(-1, 1);
                 }
                 
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 3*s; ctx.shadowOffsetY = -6*s;
-                ctx.drawImage(img, 0, 0);
-                ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; ctx.drawImage(img, 0, 0);
+                // Исправлено: ширина и высота теперь умножаются на * s
+                ctx.drawImage(img, 0, 0, img.width * s, img.height * s);
+                ctx.shadowOffsetX = 2*s; ctx.shadowOffsetY = -4*s; 
+                ctx.drawImage(img, 0, 0, img.width * s, img.height * s);
                 ctx.restore();
             };
 
