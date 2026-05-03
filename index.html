@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(44)";
+  const APP_VERSION = "v2.4.0(47)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3831,6 +3831,8 @@ window.loadProject = async (id) => {
         watermarksFont: s.watermarksFont,
         pointsVisible: s.pointsVisible,
 
+        pointsOpacity: s.pointsOpacity !== undefined ? s.pointsOpacity : 1.0,
+        detailsVisible: s.detailsVisible !== undefined ? s.detailsVisible : true,
 
         isBrawlPassMode: s.isBrawlPassMode || false,
         bpStyleIndex: s.bpStyleIndex,
@@ -3910,12 +3912,17 @@ window.loadProject = async (id) => {
     setupPersistentCanvas();
     renderLayerPanel(true);
     
-    if (window.layerState.isBrawlPassMode && (window.layerState.bpStyleIndex === 1 || window.layerState.bpStyleIndex === undefined)) {
+if (window.layerState.isBrawlPassMode) {
+    if (window.layerState.bpStyleIndex === 1 || window.layerState.bpStyleIndex === undefined || window.layerState.bpStyleIndex === null) {
         window.rebuildStyle1Background();
     } else {
-        calculateLayoutTarget();
+        // для стилей 2, 3, dop — просто запускаем анимацию, ассеты уже загружены выше
         if (typeof startAnimation === 'function') startAnimation();
     }
+} else {
+    calculateLayoutTarget();
+    if (typeof startAnimation === 'function') startAnimation();
+}
 };
 
 let selectedCategory = null; 
@@ -8718,6 +8725,9 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                 watermarksFont: window.layerState.watermarksFont,
                 pointsVisible: window.layerState.pointsVisible,
 
+                pointsOpacity: window.layerState.pointsOpacity,
+                detailsVisible: window.layerState.detailsVisible,
+
                 isBrawlPassMode: window.layerState.isBrawlPassMode,
                 bpStyleIndex: window.layerState.bpStyleIndex,
                 bpVariantIndex: window.layerState.bpVariantIndex,
@@ -8752,6 +8762,10 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                 tempGradR0: window.layerState.tempGradR0,
                 tempGradR1: window.layerState.tempGradR1,
 
+                pointsOpacity: window.layerState.pointsOpacity,
+                detailsVisible: window.layerState.detailsVisible,
+                offersPosition: window.layerState.offersPosition,
+
                 offers: window.layerState.offers.map(o => {
                     let tempC = document.createElement('canvas');
                     tempC.width = o.ref.canvas.width; tempC.height = o.ref.canvas.height;
@@ -8780,6 +8794,8 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                 c.getContext('2d').drawImage(rawBgImage, 0, 0, w, h);
                 bgDataUrl = c.toDataURL('image/jpeg', 0.8);
             }
+
+            drawScene(); // принудительно перерисовываем перед снятием превью
 
             let thumbCanvas = document.createElement('canvas');
             let tW = 400;
