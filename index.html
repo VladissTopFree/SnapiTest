@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(42)";
+  const APP_VERSION = "v2.4.0(43)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3073,7 +3073,7 @@ body.os-non-apple .promo-banner {
      <div class="ios-layer-group" id="sp-list" style="padding: 0 20px; overflow: hidden;">
      </div>
      <div class="sp-info-text">
-            Список Ваших сохранённых проектов.<br>
+            Список Ваших сохранённых работ.<br>
             Выбирайте любой для редактирования или удаления.
      </div>
   </div>
@@ -3758,6 +3758,52 @@ window.loadProject = async (id) => {
         globalAssets.pointsImg = await loadImage('points.png');
     }
 
+    if (window.layerState.isBrawlPassMode) {
+        let season = window.layerState.bpSeason || 50;
+        if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await loadImage(`BP/brawler_s${season}_1.png`);
+        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await loadImage(`BP/brawler_s${season}_2.png`);
+
+        if (window.layerState.bpStyleIndex === 2) {
+            if (!globalAssets.style2Gems) globalAssets.style2Gems = await loadImage('BP/bp_gems.png');
+            if (!globalAssets.style2Points) globalAssets.style2Points = await loadImage('BP/bp_style2_points.png');
+            if (!globalAssets.style2Stars) globalAssets.style2Stars = await loadImage('BP/bp_stars_style2.png');
+            if (!globalAssets.style2Text) globalAssets.style2Text = await loadImage('BP/bp_text_style2.png');
+            if (!globalAssets.style2ProIcon) globalAssets.style2ProIcon = await loadImage('BP/bp_icon_pro_pass_icon.png');
+            if (!globalAssets.style2BPP) globalAssets.style2BPP = await loadImage('BP/bp_icon_brawl_pass_plus.png');
+            if (!globalAssets.style2BP) globalAssets.style2BP = await loadImage('BP/bp_icon_brawl_pass.png');
+            if (!globalAssets.style2YellowPlate) globalAssets.style2YellowPlate = await loadImage('BP/bp_price_brawl_pass.png');
+            if (!globalAssets.style2BluePlate) globalAssets.style2BluePlate = await loadImage('BP/bp_price_bg_right.png');
+        } else if (window.layerState.bpStyleIndex === 3) {
+            if (!globalAssets.s3Rays) globalAssets.s3Rays = await loadImage('BP/bp_luch_3style.png');
+            if (!globalAssets.s3Dots) globalAssets.s3Dots = await loadImage('BP/bp_points_3style.png');
+            if (!globalAssets.s3Details) globalAssets.s3Details = await loadImage('BP/bp_details_3style.png');
+            if (!globalAssets[`s3PanelL_${season}`]) globalAssets[`s3PanelL_${season}`] = await loadImage(`BP/bp_panel_left${season}.png`);
+            globalAssets.s3PanelL = globalAssets[`s3PanelL_${season}`];
+            if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await loadImage('BP/bp_price_bg_left.png');
+            if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await loadImage('BP/bp_panel_right.png');
+            if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await loadImage('BP/bp_price_bg_right.png');
+            if (!globalAssets.s3PanelR) globalAssets.s3PanelR = await loadImage('BP/ProPass_bp.png');
+            if (!globalAssets.s3Stars) globalAssets.s3Stars = await loadImage('BP/bp_stars_3style.png');
+        } else if (window.layerState.bpStyleIndex === 'dop') {
+            if (!globalAssets.dopPoints) globalAssets.dopPoints = await loadImage('BP/bp_points_3style.png');
+            if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await loadImage('BP/bp_dop_starsEFF.png');
+            if (!globalAssets.dopStar) globalAssets.dopStar = await loadImage('BP/bp_star.png');
+            let panelSrc = (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) ? `BP/bp_panel_left${season}.png` : 'BP/bp_panel_right.png';
+            let priceSrc = (window.layerState.bpVariantIndex === 1) ? 'BP/bp_price_bg_left.png' : (window.layerState.bpVariantIndex === 2 ? 'BP/bp_price_brawl_pass.png' : 'BP/bp_price_bg_right.png');
+            globalAssets.dopPanelL = await loadImage(panelSrc);
+            globalAssets.dopPrice = await loadImage(priceSrc);
+            if (!globalAssets.style2Text) globalAssets.style2Text = await loadImage('BP/bp_text_style2.png');
+        } else {
+            if (!globalAssets.starsEff) globalAssets.starsEff = await loadImage('BP/bp_starsEff.png');
+            if (!globalAssets.bpPointsImg) globalAssets.bpPointsImg = await loadImage('BP/bp_pointEff.png');
+            if (!globalAssets.bpStar) globalAssets.bpStar = await loadImage('BP/bp_star.png');
+            if (!globalAssets.bpPanelL) globalAssets.bpPanelL = await loadImage(`BP/bp_panel_left${season}.png`);
+            if (!globalAssets.bpPriceL) globalAssets.bpPriceL = await loadImage('BP/bp_price_bg_left.png');
+            if (!globalAssets.bpPanelR) globalAssets.bpPanelR = await loadImage('BP/bp_panel_right.png');
+            if (!globalAssets.bpPriceR) globalAssets.bpPriceR = await loadImage('BP/bp_price_bg_right.png');
+        }
+    }
+
     let s = projData.state;
     if (s.isGeneratedBg && s.bgColorType) {
         rawBgImage = await createGradientBg(s.bgColorType);
@@ -3784,6 +3830,42 @@ window.loadProject = async (id) => {
         watermarksOpacity: s.watermarksOpacity,
         watermarksFont: s.watermarksFont,
         pointsVisible: s.pointsVisible,
+
+
+        isBrawlPassMode: s.isBrawlPassMode || false,
+        bpStyleIndex: s.bpStyleIndex,
+        bpVariantIndex: s.bpVariantIndex,
+        bpSeason: s.bpSeason || 50,
+        bpPriceLeft: s.bpPriceLeft,
+        bpPriceRight: s.bpPriceRight,
+        style2Prices: s.style2Prices || [],
+        style3Prices: s.style3Prices || [],
+        customWatermarks: s.customWatermarks,
+        activeWmIndex: s.activeWmIndex,
+        brawler1X: s.brawler1X,
+        brawler1Y: s.brawler1Y,
+        brawler1Scale: s.brawler1Scale,
+        brawler1Flip: s.brawler1Flip,
+        brawler2X: s.brawler2X,
+        brawler2Y: s.brawler2Y,
+        brawler2Scale: s.brawler2Scale,
+        brawler2ScaleX: s.brawler2ScaleX,
+        brawler2ScaleY: s.brawler2ScaleY,
+        brawler2Rot: s.brawler2Rot,
+        brawler2Flip: s.brawler2Flip,
+        dopTextX: s.dopTextX,
+        dopTextY: s.dopTextY,
+        dopTextScale: s.dopTextScale,
+        dopTextRot: s.dopTextRot,
+        s3TextX: s.s3TextX,
+        s3TextY: s.s3TextY,
+        s3TextScale: s.s3TextScale,
+        tempLineColor: s.tempLineColor,
+        tempGradL0: s.tempGradL0,
+        tempGradL1: s.tempGradL1,
+        tempGradR0: s.tempGradR0,
+        tempGradR1: s.tempGradR1,
+        
         offers: []
     };
 
@@ -3827,7 +3909,13 @@ window.loadProject = async (id) => {
 
     setupPersistentCanvas();
     renderLayerPanel(true);
-    calculateLayoutTarget();
+    
+    if (window.layerState.isBrawlPassMode && (window.layerState.bpStyleIndex === 1 || window.layerState.bpStyleIndex === undefined)) {
+        window.rebuildStyle1Background();
+    } else {
+        calculateLayoutTarget();
+        if (typeof startAnimation === 'function') startAnimation();
+    }
 };
 
 let selectedCategory = null; 
@@ -8612,6 +8700,41 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
                 watermarksOpacity: window.layerState.watermarksOpacity,
                 watermarksFont: window.layerState.watermarksFont,
                 pointsVisible: window.layerState.pointsVisible,
+
+                isBrawlPassMode: window.layerState.isBrawlPassMode,
+                bpStyleIndex: window.layerState.bpStyleIndex,
+                bpVariantIndex: window.layerState.bpVariantIndex,
+                bpSeason: window.layerState.bpSeason,
+                bpPriceLeft: window.layerState.bpPriceLeft,
+                bpPriceRight: window.layerState.bpPriceRight,
+                style2Prices: window.layerState.style2Prices,
+                style3Prices: window.layerState.style3Prices,
+                customWatermarks: window.layerState.customWatermarks,
+                activeWmIndex: window.layerState.activeWmIndex,
+                brawler1X: window.layerState.brawler1X,
+                brawler1Y: window.layerState.brawler1Y,
+                brawler1Scale: window.layerState.brawler1Scale,
+                brawler1Flip: window.layerState.brawler1Flip,
+                brawler2X: window.layerState.brawler2X,
+                brawler2Y: window.layerState.brawler2Y,
+                brawler2Scale: window.layerState.brawler2Scale,
+                brawler2ScaleX: window.layerState.brawler2ScaleX,
+                brawler2ScaleY: window.layerState.brawler2ScaleY,
+                brawler2Rot: window.layerState.brawler2Rot,
+                brawler2Flip: window.layerState.brawler2Flip,
+                dopTextX: window.layerState.dopTextX,
+                dopTextY: window.layerState.dopTextY,
+                dopTextScale: window.layerState.dopTextScale,
+                dopTextRot: window.layerState.dopTextRot,
+                s3TextX: window.layerState.s3TextX,
+                s3TextY: window.layerState.s3TextY,
+                s3TextScale: window.layerState.s3TextScale,
+                tempLineColor: window.layerState.tempLineColor,
+                tempGradL0: window.layerState.tempGradL0,
+                tempGradL1: window.layerState.tempGradL1,
+                tempGradR0: window.layerState.tempGradR0,
+                tempGradR1: window.layerState.tempGradR1,
+
                 offers: window.layerState.offers.map(o => {
                     let tempC = document.createElement('canvas');
                     tempC.width = o.ref.canvas.width; tempC.height = o.ref.canvas.height;
