@@ -4625,28 +4625,6 @@ window.updateBPPrice = (side, inputEl) => {
 window.ENABLE_TEMP_EDITOR = false; 
 
 
-window.drawCoverBg = function(ctx, img, targetX, targetY, targetW, targetH) {
-    if (!img) return;
-    let imgRatio = img.width / img.height;
-    let targetRatio = targetW / targetH;
-    let drawW, drawH, offsetX, offsetY;
-
-    if (imgRatio > targetRatio) {
-        // Картинка шире, чем нужно (обрезаем по бокам)
-        drawH = targetH;
-        drawW = img.width * (targetH / img.height);
-        offsetX = targetX + (targetW - drawW) / 2;
-        offsetY = targetY;
-    } else {
-        // Картинка выше, чем нужно (обрезаем верх и низ)
-        drawW = targetW;
-        drawH = img.height * (targetW / img.width);
-        offsetX = targetX;
-        offsetY = targetY + (targetH - drawH) / 2;
-    }
-    ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
-};
-
 window.requestRender = function() {
     if (window.renderThrottle) return;
     window.renderThrottle = setTimeout(() => {
@@ -6809,7 +6787,7 @@ function drawScene() {
                 ctx.translate(C.mainBg.x * s, C.mainBg.y * s);
                 if (C.mainBg.skewX) ctx.transform(1, 0, Math.tan(C.mainBg.skewX * Math.PI / 180), 1, 0, 0);
                 ctx.scale(C.mainBg.scale, C.mainBg.scale);
-                window.drawCoverBg(ctx, rawBgImage, 0, 0, W, H);
+                ctx.drawImage(rawBgImage, 0, 0, W, H);
                 ctx.restore();
             }
 
@@ -7186,7 +7164,7 @@ function drawScene() {
                 offCtx.restore();
             };
 
-            if (rawBgImage) window.drawCoverBg(offCtx, rawBgImage, 0, 0, W, H);
+            if (rawBgImage) offCtx.drawImage(rawBgImage, 0, 0, W, H);
 
             if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
@@ -7289,10 +7267,10 @@ function drawScene() {
                 ctx.drawImage(img, x * s, y * s, w * s, h * s);
             };
 
-            // 1. Фон
-            if (rawBgImage) {
-                window.drawCoverBg(ctx, rawBgImage, -7 * s, 0, 1548 * s, 761 * s);
-            }
+            // 1. Фон
+            if (rawBgImage) {
+                drawLayerImg(rawBgImage, -7, 0, 1548, 761);
+            }
 
             // 2 и 3. Точки и Звезды (Эффекты)
             ctx.save();
@@ -7396,9 +7374,7 @@ function drawScene() {
                 ctx.shadowOffsetX = 0;
                 ctx.shadowBlur = 0;
                 
-                let drawW = 786 * s;
-                let drawH = drawW * (brawler.height / brawler.width);
-                ctx.drawImage(brawler, 0, 0, drawW, drawH);
+                ctx.drawImage(brawler, 0, 0, 786 * s, 792 * s);
                 ctx.restore();
             }
 
@@ -8013,7 +7989,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
         document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
         itemElement.classList.add('selected');
 
-    if (window.fankitContext === 'editor') {
+        if (window.fankitContext === 'editor') {
             let img = new Image();
             img.crossOrigin = "anonymous";
             img.onload = () => {
@@ -8022,24 +7998,15 @@ if (fankitGrid && fankitGrid.children.length === 0) {
                 window.layerState.bgColorType = null;
                 window.layerState.isReadyBg = false;
                 
-                // Включаем обратно все визуальные эффекты
-                window.layerState.textVisible = true;
-                window.layerState.luchVisible = true;
-                window.layerState.starsVisible = true;
-                window.layerState.pointsVisible = true;
-                window.layerState.watermarksVisible = true;
-                
+                if (window.layerState.isBrawlPassMode) {
                 if (window.layerState.isBrawlPassMode) {
                     if (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3 || window.layerState.bpStyleIndex === 'dop') {
-                        setupPersistentCanvas(); 
-                        renderLayerPanel(false); 
                         if (typeof startAnimation === 'function') startAnimation();
                     } else {
                         generateBrawlPassTest(); 
                     }
+                }
                 } else {
-                    setupPersistentCanvas();
-                    renderLayerPanel(false);
                     calculateLayoutTarget(); 
                     if (typeof startAnimation === 'function') startAnimation();
                 }
@@ -8543,47 +8510,60 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     
     document.getElementById('wizard-overlay').style.display = 'none';
 
-    // Объединяем логику для стилей 2, 3 и dop, чтобы фон и слои обновлялись одинаково
-    if (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3 || window.layerState.bpStyleIndex === 'dop') {
-        
+        if (window.layerState.bpStyleIndex === 2) {
+            if (selectedColor) {
+                window.layerState.isReadyBg = false;
+                window.layerState.isGeneratedBg = true;
+                rawBgImage = await createGradientBg(selectedColor);
+            } else if (uploadMode === 'ready_bg') {
+                window.layerState.isReadyBg = true;
+                window.layerState.isGeneratedBg = false;
+                rawBgImage = uploadedReadyBaseImg;
+                window.layerState.textVisible = true; 
+            } else {
+                window.layerState.isReadyBg = false;
+                window.layerState.isGeneratedBg = false;
+                rawBgImage = uploadedBaseImg;
+                window.layerState.textVisible = true;
+            }
+            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
+            } else if (window.layerState.bpStyleIndex === 3) {
+            if (selectedColor) {
+                window.layerState.isReadyBg = false;
+                window.layerState.isGeneratedBg = true;
+                rawBgImage = await createGradientBg(selectedColor);
+            } else if (uploadMode === 'ready_bg') {
+                window.layerState.isReadyBg = true;
+                window.layerState.isGeneratedBg = false;
+                rawBgImage = uploadedReadyBaseImg;
+                window.layerState.textVisible = true;
+            } else {
+                window.layerState.isReadyBg = false;
+                window.layerState.isGeneratedBg = false;
+                rawBgImage = uploadedBaseImg;
+                window.layerState.textVisible = true;
+            }
+            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
+
+    } else if (window.layerState.bpStyleIndex === 'dop') {
         if (selectedColor) {
             window.layerState.isReadyBg = false;
             window.layerState.isGeneratedBg = true;
             rawBgImage = await createGradientBg(selectedColor);
-            window.layerState.textVisible = true;
-            window.layerState.luchVisible = true;
-            window.layerState.starsVisible = true;
-            window.layerState.pointsVisible = true;
-            window.layerState.watermarksVisible = true;
         } else if (uploadMode === 'ready_bg') {
             window.layerState.isReadyBg = true;
             window.layerState.isGeneratedBg = false;
             rawBgImage = uploadedReadyBaseImg;
-            window.layerState.textVisible = true; 
-            window.layerState.luchVisible = false;
-            window.layerState.starsVisible = false;
-            window.layerState.pointsVisible = false;
-            window.layerState.watermarksVisible = false;
+            window.layerState.textVisible = true;
         } else {
             window.layerState.isReadyBg = false;
             window.layerState.isGeneratedBg = false;
             rawBgImage = uploadedBaseImg;
             window.layerState.textVisible = true;
-            window.layerState.luchVisible = true;
-            window.layerState.starsVisible = true;
-            window.layerState.pointsVisible = true;
-            window.layerState.watermarksVisible = true;
         }
+        if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
 
-        if (window.layerState.bpStyleIndex === 2) {
-            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
-        } else if (window.layerState.bpStyleIndex === 3) {
-            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
-        } else if (window.layerState.bpStyleIndex === 'dop') {
-            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
-        }
-        
-    } else {
+        } else {
         generateBrawlPassTest();
     }
 };
