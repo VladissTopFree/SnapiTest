@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(50)";
+  const APP_VERSION = "v2.4.0(51)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3431,7 +3431,7 @@ const localDB = {
     async init() {
         if (this.db) return;
         return new Promise((resolve, reject) => {
-            const req = indexedDB.open('SnapiDBTestv2_4_1', 1); 
+            const req = indexedDB.open('SnapiDBTestv2_4_2', 1); 
             req.onupgradeneeded = e => {
                 const db = e.target.result;
                 if (!db.objectStoreNames.contains('projects')) db.createObjectStore('projects', { keyPath: 'id' });
@@ -4881,7 +4881,6 @@ window.rebuildStyle1Background = () => {
 
     // ЕСЛИ ФОН ИЗ ЦВЕТОВОГО КРУГА — рисуем его сплошным и пропускаем скосы
     if (window.layerState.isGeneratedBg && rawBgImage) {
-        ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
     } else {
         // ЛЕВЫЙ СКОС
         ctx.save();
@@ -5164,7 +5163,7 @@ if (window.layerState.isBrawlPassMode) {
             } else {
             if (window.layerState.bpStyleIndex === 'dop') {
                 let panelLabel = "Brawl Pass";
-                if (window.layerState.bpVariantIndex === 3) panelLabel = "Brawl Pass +";
+                if (window.layerState.bpVariantIndex === 3) panelLabel = "Brawl Pass Plus";
                 if (window.layerState.bpVariantIndex === 4) panelLabel = "Brawl Pass Plus (улучшение)";
                 if (window.layerState.bpVariantIndex === 2) panelLabel = "Brawl Pass (скидка)";
                 html += `
@@ -7665,9 +7664,9 @@ function drawScene() {
                 persistentCtx.shadowColor = '#000';
                 persistentCtx.shadowBlur = 0;
                 
-                let strokeSize = 12; 
-                let diag = strokeSize * 0.75; 
-                
+                let strokeSize = 3; 
+                let diag = 2; 
+
                 const offsets = [
                     [strokeSize, 0], [-strokeSize, 0], [0, strokeSize], [0, -strokeSize], 
                     [diag, diag], [-diag, -diag], [diag, -diag], [-diag, diag]            
@@ -9193,7 +9192,6 @@ async function generateBrawlPassTest() {
     let endX = WIDTH * 0.316 + ((WIDTH * 0.316 - WIDTH * 0.37) / (HEIGHT - HEIGHT * 0.46)) * 20;
 
     if (window.layerState.isGeneratedBg && rawBgImage) {
-        ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
     } else {
         let season = window.layerState.bpSeason || 50;
         let config = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
