@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(48)";
+  const APP_VERSION = "v2.4.0(49)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3870,13 +3870,9 @@ window.loadProject = async (id) => {
         }
     }
 
-    let s = projData.state;
-    if (s.isGeneratedBg && s.bgColorType) {
-        rawBgImage = await createGradientBg(s.bgColorType);
-    } else if (projData.bg) {
-        rawBgImage = await loadImage(projData.bg);
-    }
+let s = projData.state;
 
+    // Сначала восстанавливаем layerState
     window.layerState = {
         textVisible: s.textVisible,
         textValue: s.textValue,
@@ -3896,10 +3892,8 @@ window.loadProject = async (id) => {
         watermarksOpacity: s.watermarksOpacity,
         watermarksFont: s.watermarksFont,
         pointsVisible: s.pointsVisible,
-
         pointsOpacity: s.pointsOpacity !== undefined ? s.pointsOpacity : 1.0,
         detailsVisible: s.detailsVisible !== undefined ? s.detailsVisible : true,
-
         isBrawlPassMode: s.isBrawlPassMode || false,
         bpStyleIndex: s.bpStyleIndex,
         bpVariantIndex: s.bpVariantIndex,
@@ -3933,9 +3927,15 @@ window.loadProject = async (id) => {
         tempGradL1: s.tempGradL1,
         tempGradR0: s.tempGradR0,
         tempGradR1: s.tempGradR1,
-        
         offers: []
     };
+
+    // Теперь восстанавливаем фон с учётом layerState
+    if (s.isGeneratedBg && s.bgColorType) {
+        rawBgImage = await createGradientBg(s.bgColorType);
+    } else if (projData.bg) {
+        rawBgImage = await loadImage(projData.bg);
+    }
 
     for (let i = 0; i < s.offers.length; i++) {
         let oData = s.offers[i];
@@ -3978,21 +3978,21 @@ window.loadProject = async (id) => {
     setupPersistentCanvas();
     renderLayerPanel(true);
     
-if (window.layerState.isBrawlPassMode) {
-    if (window.layerState.bpStyleIndex === 1 || 
-        window.layerState.bpStyleIndex === undefined || 
-        window.layerState.bpStyleIndex === null) {
-        window.rebuildStyle1Background();
+    if (window.layerState.isBrawlPassMode) {
+        if (window.layerState.bpStyleIndex === 1 || 
+            window.layerState.bpStyleIndex === undefined || 
+            window.layerState.bpStyleIndex === null) {
+            window.rebuildStyle1Background();
+        } else {
+            setupPersistentCanvas();
+            renderLayerPanel(true);
+            window.updateCachedTextCanvas();
+            startAnimation();
+        }
     } else {
-        setupPersistentCanvas();
-        renderLayerPanel(true);
-        window.updateCachedTextCanvas();
-        startAnimation();
+        calculateLayoutTarget();
+        if (typeof startAnimation === 'function') startAnimation();
     }
-} else {
-    calculateLayoutTarget();
-    if (typeof startAnimation === 'function') startAnimation();
-}
 };
 
 let selectedCategory = null; 
@@ -4249,7 +4249,7 @@ document.getElementById('bp-variant-btn-next').addEventListener('click', functio
     let labelEl = document.getElementById('wizard-dop-price-label');
     if (labelEl) {
         if (selectedBPVariant === 4) labelEl.innerText = "Brawl Pass Plus (улучшение)";
-        else if (selectedBPVariant === 3) labelEl.innerText = "Brawl Pass +";
+        else if (selectedBPVariant === 3) labelEl.innerText = "Brawl Pass Plus";
         else if (selectedBPVariant === 2) labelEl.innerText = "Brawl Pass (скидка)";
         else labelEl.innerText = "Brawl Pass";
     }
