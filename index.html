@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(38)";
+  const APP_VERSION = "v2.4.0(39)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -45,6 +45,7 @@
               brawler1: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
           dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 566, y: 182, scale: 0.75, scaleX: 1.24, scaleY: 1, rot: 0, flipH: true },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
       },
       49: {
@@ -60,6 +61,7 @@
               brawler1: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
           dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
+          dopBrawler1: { x: 618, y: 93, scale: 0.76, scaleX: 1, scaleY: 1.07, rot: 0, flipH: true },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
         },
       48: {
@@ -75,6 +77,7 @@
               brawler1: { x: 485, y: 511, scale: 0.64, flipH: true }  // Верхний (x: 1200*0.58-30)
           },
           dopBrawler: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 613, y: -40, scale: 1, scaleX: 0.72, scaleY: 1, rot: 0, flipH: true },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
         }
   };
@@ -4672,9 +4675,12 @@ window.toggleBrawlerFlip = (brawlerKey) => {
         // Четкая проверка стиля для взятия правильного конфига
         if (window.layerState.bpStyleIndex === 1 || window.layerState.bpStyleIndex === undefined) {
             conf = BP_SEASON_CONFIG[currentSeason].style1Brawlers || BP_SEASON_CONFIG[50].style1Brawlers;
-        } else if (window.layerState.bpStyleIndex === 'dop') {
-            conf = { brawler2: BP_SEASON_CONFIG[currentSeason].dopBrawler || BP_SEASON_CONFIG[50].dopBrawler };
-        } else {
+            } else if (window.layerState.bpStyleIndex === 'dop') {
+                let currentDopConf = (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2)
+                    ? (BP_SEASON_CONFIG[currentSeason].dopBrawler1 || BP_SEASON_CONFIG[50].dopBrawler1)
+                    : (BP_SEASON_CONFIG[currentSeason].dopBrawler || BP_SEASON_CONFIG[50].dopBrawler);
+                conf = { brawler2: currentDopConf };
+            } else {
             conf = BP_SEASON_CONFIG[currentSeason].style2Brawlers || BP_SEASON_CONFIG[50].style2Brawlers;
         }
         
@@ -5037,7 +5043,13 @@ if (window.layerState.isBrawlPassMode) {
             // Добавляем временный редактор персонажа (Специально для DOP)
             if (window.ENABLE_TEMP_EDITOR) {
                 let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
-                let dopConf = seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
+                let dopConf;
+                
+                if (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) {
+                    dopConf = seasonConf.dopBrawler1 || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
+                } else {
+                    dopConf = seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
+                }
                 
                 let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : dopConf.scale;
                 let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : dopConf.x;
@@ -5045,6 +5057,7 @@ if (window.layerState.isBrawlPassMode) {
                 let b2sx = window.layerState.brawler2ScaleX !== undefined ? window.layerState.brawler2ScaleX : (dopConf.scaleX || 1);
                 let b2sy = window.layerState.brawler2ScaleY !== undefined ? window.layerState.brawler2ScaleY : (dopConf.scaleY || 1);
                 let b2rot = window.layerState.brawler2Rot !== undefined ? window.layerState.brawler2Rot : (dopConf.rot || 0);
+                let b2flip = window.layerState.brawler2Flip !== undefined ? window.layerState.brawler2Flip : !!dopConf.flipH; // <--- ДОБАВИЛИ
 
                 html += `
                 <div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР ПЕРСОНАЖА (DOP)</div>
@@ -5068,9 +5081,12 @@ if (window.layerState.isBrawlPassMode) {
                     <div id="v-dop-sy" style="margin-right:10px; color:#8E8E93;">${b2sy}</div>
                     <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${b2sy}" oninput="document.getElementById('v-dop-sy').innerText=this.value; updateBrawlerParams('brawler2ScaleY', this.value)">
                 </div>
-                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
+                <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Поворот (Rot)</div>
                     <div id="v-dop-rot" style="margin-right:10px; color:#8E8E93;">${b2rot}</div>
                     <input type="range" class="ios-slider" min="-180" max="180" step="1" value="${b2rot}" oninput="document.getElementById('v-dop-rot').innerText=this.value; updateBrawlerParams('brawler2Rot', this.value)">
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Отразить по горизонтали</div>
+                    <button class="ios-pill-btn" onclick="toggleBrawlerFlip('brawler2')">${b2flip ? 'ДА' : 'НЕТ'}</button>
                 </div>`;
             }
 
@@ -7322,30 +7338,38 @@ function drawScene() {
             // 7. Персонаж с тенью
             let season = window.layerState.bpSeason || 50;
             let brawler;
+            let dopConf;
 
-            // Если выбран 1 (Brawl Pass) или 2 (скидка) вариант, берем картинку _1. Иначе _2
+            // Если выбран 1 (Brawl Pass) или 2 (скидка) вариант, берем картинку _1 и конфиг dopBrawler1
             if (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) {
                 brawler = globalAssets[`brawler_${season}_1`];
+                dopConf = (BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50]).dopBrawler1 || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
             } else {
                 brawler = globalAssets[`brawler_${season}_2`];
+                dopConf = (BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50]).dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
             }
 
             if (brawler) {
-                let seasonConf = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
-                let dopConf = seasonConf.dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
-                
                 let b2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : dopConf.scale;
                 let b2x = window.layerState.brawler2X !== undefined ? window.layerState.brawler2X : dopConf.x;
                 let b2y = window.layerState.brawler2Y !== undefined ? window.layerState.brawler2Y : dopConf.y;
                 let b2sx = window.layerState.brawler2ScaleX !== undefined ? window.layerState.brawler2ScaleX : (dopConf.scaleX || 1);
                 let b2sy = window.layerState.brawler2ScaleY !== undefined ? window.layerState.brawler2ScaleY : (dopConf.scaleY || 1);
                 let b2rot = window.layerState.brawler2Rot !== undefined ? window.layerState.brawler2Rot : (dopConf.rot || 0);
+                let b2flip = window.layerState.brawler2Flip !== undefined ? window.layerState.brawler2Flip : !!dopConf.flipH; // <--- ЧИТАЕМ ПАРАМЕТР
 
                 ctx.save();
                 
                 ctx.translate(b2x * s, b2y * s); 
                 if (b2rot) ctx.rotate(b2rot * Math.PI / 180);
                 ctx.scale(b2s * b2sx, b2s * b2sy);
+                
+                // --- ОТРАЖЕНИЕ ПО ГОРИЗОНТАЛИ ---
+                if (b2flip) {
+                    ctx.translate(786 * s, 0); // Сдвигаем на ширину отрисовываемой картинки
+                    ctx.scale(-1, 1); // Отражаем
+                }
+                // --------------------------------
                 
                 ctx.shadowColor = 'rgba(255, 255, 255, 1)';
                 ctx.shadowOffsetY = -9 * s;
