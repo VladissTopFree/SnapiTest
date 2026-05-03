@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(39)";
+  const APP_VERSION = "v2.4.0(40)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -7877,26 +7877,20 @@ function drawBeautifulNick(ctx, text, w, h) {
       window.layerState.isBrawlPassMode = false;
       window.layerState.bpStyleIndex = null;
       
-      const keysToDelete = [
-          'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip',
-          'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip',
-          'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot',
-          'dopTextX', 'dopTextY', 'dopTextScale', 'dopTextRot', // <--- Добавь эту строчку
-          's3TextX', 's3TextY', 's3TextScale'
-      ];
-      keysToDelete.forEach(k => delete window.layerState[k]);
-      window.layerState.customWatermarks = null;
-      delete window.layerState.brawler1X;
-      delete window.layerState.brawler1Y;
-      delete window.layerState.brawler1Scale;
-      delete window.layerState.brawler1Flip;
-      delete window.layerState.brawler2X;
-      delete window.layerState.brawler2Y;
-      delete window.layerState.brawler2Scale;
-      delete window.layerState.brawler2Flip;
-      delete window.layerState.s3TextX;
-      delete window.layerState.s3TextY;
-      delete window.layerState.s3TextScale;
+        const keysToDelete = [
+            'brawler1X', 'brawler1Y', 'brawler1Scale', 'brawler1Flip',
+            'brawler1ScaleX', 'brawler1ScaleY', 'brawler1Rot',
+            'brawler2X', 'brawler2Y', 'brawler2Scale', 'brawler2Flip',
+            'brawler2ScaleX', 'brawler2ScaleY', 'brawler2Rot',
+            'dopTextX', 'dopTextY', 'dopTextScale', 'dopTextRot',
+            's3TextX', 's3TextY', 's3TextScale'
+        ];
+        keysToDelete.forEach(k => delete window.layerState[k]);
+        window.layerState.customWatermarks = null;
+        window.layerState.bpSeason = null;
+        window.layerState.bpVariantIndex = null;
+        window.layerState.style2Prices = null;
+        window.layerState.style3Prices = null;
       
       if (typeof selectedBPSeason !== 'undefined') {
           selectedBPSeason = 50;
@@ -8853,6 +8847,11 @@ function androidFallback2(blob) {
 
 async function generateBrawlPassTest() {
     if (window.triggerHaptic) window.triggerHaptic();
+
+    ['brawler1X','brawler1Y','brawler1Scale','brawler1Flip','brawler1ScaleX','brawler1ScaleY','brawler1Rot',
+     'brawler2X','brawler2Y','brawler2Scale','brawler2Flip','brawler2ScaleX','brawler2ScaleY','brawler2Rot',
+     'dopTextX','dopTextY','dopTextScale','dopTextRot','s3TextX','s3TextY','s3TextScale'
+    ].forEach(k => delete window.layerState[k]);
     
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
@@ -9181,6 +9180,12 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
 window.openBPTestEditor = function() {
     window.triggerHaptic();
+
+    ['brawler1X','brawler1Y','brawler1Scale','brawler1Flip','brawler1ScaleX','brawler1ScaleY','brawler1Rot',
+     'brawler2X','brawler2Y','brawler2Scale','brawler2Flip','brawler2ScaleX','brawler2ScaleY','brawler2Rot',
+     'dopTextX','dopTextY','dopTextScale','dopTextRot','s3TextX','s3TextY','s3TextScale'
+    ].forEach(k => delete window.layerState[k]);
+
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
@@ -9220,8 +9225,14 @@ window.openBPTestEditor = function() {
 };
 
 window.openBPDopEditor = function() {
-    window.triggerHaptic();
-    document.getElementById('ios-dashboard').style.display = 'none';
+    window.triggerHaptic();
+
+    ['brawler1X','brawler1Y','brawler1Scale','brawler1Flip','brawler1ScaleX','brawler1ScaleY','brawler1Rot',
+     'brawler2X','brawler2Y','brawler2Scale','brawler2Flip','brawler2ScaleX','brawler2ScaleY','brawler2Rot',
+     'dopTextX','dopTextY','dopTextScale','dopTextRot','s3TextX','s3TextY','s3TextScale'
+    ].forEach(k => delete window.layerState[k]);
+
+    document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('bp-variant-overlay').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
@@ -9274,6 +9285,12 @@ window.openBPDopEditor = function() {
 
 window.openBPStyle3Editor = function() {
     window.triggerHaptic();
+
+    ['brawler1X','brawler1Y','brawler1Scale','brawler1Flip','brawler1ScaleX','brawler1ScaleY','brawler1Rot',
+     'brawler2X','brawler2Y','brawler2Scale','brawler2Flip','brawler2ScaleX','brawler2ScaleY','brawler2Rot',
+     'dopTextX','dopTextY','dopTextScale','dopTextRot','s3TextX','s3TextY','s3TextScale'
+    ].forEach(k => delete window.layerState[k]);
+
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
