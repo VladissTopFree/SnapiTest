@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(62)";
+  const APP_VERSION = "v2.4.0(63)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -7808,6 +7808,7 @@ function drawBeautifulNick(ctx, text, w, h) {
 
   wizardColorWraps.forEach(wrap => {
      wrap.onclick = () => {
+         isCurrentProjectSaved = false; 
          wizardColorWraps.forEach(w => w.classList.remove('selected'));
          wrap.classList.add('selected');
 
@@ -7855,6 +7856,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
             let img = new Image();
             img.crossOrigin = "anonymous";
             img.onload = () => {
+                isCurrentProjectSaved = false;
                 rawBgImage = img; 
                 window.layerState.isGeneratedBg = false;
                 window.layerState.bgColorType = null;
@@ -8022,6 +8024,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
 
   wizardBgInput.onchange = (e) => {
     if (e.target.files && e.target.files[0]) {
+      isCurrentProjectSaved = false; 
       selectedColor = null;
       uploadMode = 'normal_bg';
       wizardColorWraps.forEach(w => w.classList.remove('selected'));
@@ -8041,6 +8044,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
 
   wizardReadyBgInput.onchange = (e) => {
     if (e.target.files && e.target.files[0]) {
+      isCurrentProjectSaved = false; 
       selectedColor = null;
       uploadMode = 'ready_bg';
       wizardColorWraps.forEach(w => w.classList.remove('selected'));
