@@ -6,13 +6,13 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(68)";
+  const APP_VERSION = "v2.4.0(69)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
 
-  const DB_PREFIX = "SnapiTEST_v2_4_0(68)";
+  const DB_PREFIX = "SnapiTEST_v2_4_0(69)";
 
   window.isNewUser = localStorage.getItem(`${DB_PREFIX}_visited`) === null;
   if (window.isNewUser) {
@@ -9566,7 +9566,7 @@ window.renderSavedProjects = async () => {
         // Сортируем: новые проекты сверху
         projects.sort((a, b) => b.id - a.id);
 
-        // Считаем общее количество акций, чтобы самая новая имела высший номер (например, #3), а старая снизу — #1
+        // Считаем общее количество акций для правильной нумерации
         let actionCount = projects.filter(p => p.mode === 'action').length;
 
         let html = '';
@@ -9574,10 +9574,8 @@ window.renderSavedProjects = async () => {
             let titleHtml = '';
             
             if (p.mode === 'action') {
-                // Если акция — ставим номер и уменьшаем счётчик для следующей (нижней)
                 titleHtml = `<span style="font-weight: 600;">Акция #${actionCount--}</span>`;
             } else if (p.mode === 'bp') {
-                // Если Brawl Pass — достаем стили из памяти
                 let styleIdx = p.layerState ? p.layerState.bpStyleIndex : 1;
                 
                 if (styleIdx === 'dop') {
@@ -9588,7 +9586,6 @@ window.renderSavedProjects = async () => {
                 }
             }
 
-            // Добавили gap: 8px для текста, строчные буквы для 'удалить' и стрелочку в конце
             html += `
             <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
                 <img src="${p.thumb || 'miniprewiev.png'}" class="sp-img" onerror="this.src='miniprewiev.png'">
