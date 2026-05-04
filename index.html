@@ -6,13 +6,13 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(63)";
+  const APP_VERSION = "v2.4.0(64)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
 
-  const DB_PREFIX = "Snapi_v2_4_2";
+  const DB_PREFIX = "Snapi_v2_4_3";
 
   window.isNewUser = localStorage.getItem(`${DB_PREFIX}_visited`) === null;
   if (window.isNewUser) {
@@ -9525,12 +9525,19 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
         }
 
         let project = {
-            id: window.currentLoadedProjectId || Date.now().toString(), // Берем текущий ID или создаем новый
+            id: window.currentLoadedProjectId || Date.now().toString(), 
             date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
             thumb: compressedThumb,
             mode: wizardMode,
             category: selectedCategory,
-            layerState: JSON.parse(JSON.stringify(window.layerState)),
+            
+            layerState: JSON.parse(JSON.stringify(window.layerState, (key, value) => {
+                if (key === 'ref' || key === 'cache' || key === 'blankedImgData') {
+                    return undefined; 
+                }
+                return value;
+            })),
+
             bgImage: compressedBg,
             bgWidth: rawBgImage ? (rawBgImage.originalWidth || rawBgImage.width) : 1920 
         };
@@ -9539,11 +9546,10 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
             project.screenshots = await Promise.all(stagedFiles.map(file => compressImage(file, 800, 0.5)));
         }
 
-        // Логика перезаписи или добавления
         if (window.currentLoadedProjectId) {
             let idx = projects.findIndex(p => p.id === window.currentLoadedProjectId);
             if (idx !== -1) {
-                projects[idx] = project; // Перезаписываем
+                projects[idx] = project; 
             } else {
                 projects.push(project);
             }
