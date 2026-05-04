@@ -6,13 +6,13 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(67)";
+  const APP_VERSION = "v2.4.0(68)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
 
-  const DB_PREFIX = "SnapiTEST_v2_4_0(67)";
+  const DB_PREFIX = "SnapiTEST_v2_4_0(68)";
 
   window.isNewUser = localStorage.getItem(`${DB_PREFIX}_visited`) === null;
   if (window.isNewUser) {
@@ -3407,15 +3407,6 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-
-
-
-window.updateSavedCount = async () => {
-    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
-    let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = projects.length.toString();
-};
-
 window.openSavedProjects = () => {
     document.getElementById('ios-dashboard').style.display = 'none';
     window.renderSavedProjects();
@@ -3600,56 +3591,7 @@ window.closeDownloadOverlay = () => {
     window.scrollTo(0,0);
 };
 
-window.deleteProject = async (id, btnEl) => {
-    if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
-    projects = projects.filter(p => p.id !== id);
-    localStorage.setItem(`${DB_PREFIX}_projects`, JSON.stringify(projects));
-    
-    // Анимация удаления строки
-    let row = btnEl.closest('.sp-row');
-    if (row) {
-        row.classList.add('deleting');
-        setTimeout(() => {
-            window.renderSavedProjects();
-        }, 400); // Ждем завершения CSS анимации
-    } else {
-        window.renderSavedProjects();
-    }
-};
 
-window.renderSavedProjects = async () => {
-    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
-    let emptyState = document.getElementById('sp-empty-state');
-    let contentState = document.getElementById('sp-content-state');
-    let container = document.getElementById('sp-list');
-    
-    if (projects.length === 0) {
-        emptyState.style.display = 'flex';
-        emptyState.classList.add('show');
-        contentState.style.display = 'none';
-        if (container) container.innerHTML = '';
-    } else {
-        emptyState.style.display = 'none';
-        emptyState.classList.remove('show');
-        contentState.style.display = 'block';
-        
-        // Сортируем: новые проекты сверху
-        projects.sort((a, b) => b.id - a.id);
-
-        let html = '';
-        projects.forEach(p => {
-            let titleText = p.mode === 'bp' ? 'Brawl Pass' : 'Акция';
-            html += `
-            <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
-                <img src="${p.thumb}" class="sp-img">
-                <div class="sp-title">${titleText} от ${p.date}</div>
-                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
-            </div>`;
-        });
-        if (container) container.innerHTML = html;
-    }
-};
 
 const loadImage = (src) => new Promise((resolve) => {
   const img = new Image(); 
@@ -9621,16 +9563,38 @@ window.renderSavedProjects = async () => {
         emptyState.classList.remove('show');
         contentState.style.display = 'block';
         
+        // Сортируем: новые проекты сверху
         projects.sort((a, b) => b.id - a.id);
+
+        // Считаем общее количество акций, чтобы самая новая имела высший номер (например, #3), а старая снизу — #1
+        let actionCount = projects.filter(p => p.mode === 'action').length;
 
         let html = '';
         projects.forEach(p => {
-            let titleText = p.mode === 'bp' ? 'Brawl Pass' : 'Акция';
+            let titleHtml = '';
+            
+            if (p.mode === 'action') {
+                // Если акция — ставим номер и уменьшаем счётчик для следующей (нижней)
+                titleHtml = `<span style="font-weight: 600;">Акция #${actionCount--}</span>`;
+            } else if (p.mode === 'bp') {
+                // Если Brawl Pass — достаем стили из памяти
+                let styleIdx = p.layerState ? p.layerState.bpStyleIndex : 1;
+                
+                if (styleIdx === 'dop') {
+                    let varIdx = p.layerState ? (p.layerState.bpVariantIndex || 1) : 1;
+                    titleHtml = `<span style="font-weight: 600;">BP</span> <span class="bp-style-badge" style="font-size: 13px; height: 22px; padding: 0 8px; top: -1px;">dop #${varIdx}</span>`;
+                } else {
+                    titleHtml = `<span style="font-weight: 600;">BP</span> <span class="bp-style-badge" style="font-size: 13px; height: 22px; padding: 0 8px; top: -1px;">#${styleIdx}</span>`;
+                }
+            }
+
+            // Добавили gap: 8px для текста, строчные буквы для 'удалить' и стрелочку в конце
             html += `
             <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
                 <img src="${p.thumb || 'miniprewiev.png'}" class="sp-img" onerror="this.src='miniprewiev.png'">
-                <div class="sp-title">${titleText} от ${p.date}</div>
-                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
+                <div class="sp-title" style="display: flex; align-items: center; gap: 8px;">${titleHtml}</div>
+                <button class="sp-del-btn" style="text-transform: lowercase; font-size: 13px; padding: 4px 12px;" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">удалить</button>
+                <svg viewBox="0 0 8 14" width="8" height="14" style="opacity: 0.3; margin-left: 4px; flex-shrink: 0;"><path d="M1 1l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
             </div>`;
         });
         if (container) container.innerHTML = html;
