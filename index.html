@@ -6,13 +6,13 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(65)";
+  const APP_VERSION = "v2.4.0(66)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
 
-  const DB_PREFIX = "SnapiTEST_v2_4_0(65)";
+  const DB_PREFIX = "SnapiTEST_v2_4_0(66)";
 
   window.isNewUser = localStorage.getItem(`${DB_PREFIX}_visited`) === null;
   if (window.isNewUser) {
@@ -9542,7 +9542,7 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
         };
 
         if (wizardMode === 'action' && stagedFiles && stagedFiles.length > 0) {
-            project.screenshots = await Promise.all(stagedFiles.map(file => compressImage(file, 800, 0.5)));
+            project.screenshots = await Promise.all(stagedFiles.map(file => compressImage(file, 800, 0.9)));
         }
 
         if (window.currentLoadedProjectId) {
@@ -9656,7 +9656,6 @@ window.loadProject = async (id) => {
         rawBgImage = await new Promise((resolve) => {
             let img = new Image();
             img.onload = () => {
-                // Передаем холсту оригинальную ширину, чтобы он не схлопнулся
                 img.originalWidth = proj.bgWidth || 1920;
                 resolve(img);
             };
