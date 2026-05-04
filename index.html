@@ -6,16 +6,17 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(60)";
+  const APP_VERSION = "v2.4.0(61)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
 
-  window.isNewUser = localStorage.getItem('Snapi_visited') === null;
+  const DB_PREFIX = "Snapi_v2_4";
 
+  window.isNewUser = localStorage.getItem(`${DB_PREFIX}_visited`) === null;
   if (window.isNewUser) {
-      localStorage.setItem('Snapi_visited', 'true');
+      localStorage.setItem(`${DB_PREFIX}_visited`, 'true');
       console.log('New user');
   } else {
       console.log('Not a new user');
@@ -2804,7 +2805,7 @@ body.os-non-apple .promo-banner {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 7 мая.</div>
+                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 6 мая.</div>
             </div>
          </div>
          
@@ -3411,7 +3412,7 @@ document.addEventListener('pointerdown', (e) => {
 
 
 window.updateSavedCount = async () => {
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     let countEl = document.getElementById('saved-count-val');
     if (countEl) countEl.innerText = projects.length.toString();
 };
@@ -3602,9 +3603,9 @@ window.closeDownloadOverlay = () => {
 
 window.deleteProject = async (id, btnEl) => {
     if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     projects = projects.filter(p => p.id !== id);
-    localStorage.setItem('snapi_projects', JSON.stringify(projects));
+    localStorage.setItem(`${DB_PREFIX}_projects`, JSON.stringify(projects));
     
     // Анимация удаления строки
     let row = btnEl.closest('.sp-row');
@@ -3619,7 +3620,7 @@ window.deleteProject = async (id, btnEl) => {
 };
 
 window.renderSavedProjects = async () => {
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     let emptyState = document.getElementById('sp-empty-state');
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
@@ -3663,7 +3664,7 @@ const loadImage = (src) => new Promise((resolve) => {
 
 window.loadProject = async (id) => {
     if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     let proj = projects.find(p => p.id === id);
     if (!proj) return;
 
@@ -7709,7 +7710,7 @@ function drawBeautifulNick(ctx, text, w, h) {
   let uploadedReadyBaseImg = new Image();
   uploadedReadyBaseImg.crossOrigin = "anonymous"; 
   let selectedColor = null;
-  let savedNick = localStorage.getItem('Snapi_last_nick');
+  let savedNick = localStorage.getItem(`${DB_PREFIX}_last_nick`);
 
   const wizardInputWrap = document.getElementById('wizard-input-wrap');
   const wizardNickCounter = document.getElementById('wizard-nick-counter');
@@ -8207,7 +8208,7 @@ wizardNextBtn2.onclick = async () => {
     window.triggerHaptic();
     let currentNick = wizardNickInput.value.trim();
     if (currentNick) {
-        localStorage.setItem('Snapi_last_nick', currentNick);
+        localStorage.setItem(`${DB_PREFIX}_last_nick`, currentNick);
         savedNick = currentNick;
         wizardInsertText.innerText = savedNick;
         wizardInsertBtn.style.display = 'flex';
@@ -9538,7 +9539,7 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
     let btn = e.currentTarget;
     if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
 
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     if (projects.length >= 12) {
         alert("Достиг лимит сохранения проектов Ваших работ!\nОчистите, что бы добавлять новые.\n\nНастройки -> удалить.");
         return;
@@ -9573,7 +9574,7 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
         }
 
         projects.push(project);
-        localStorage.setItem('snapi_projects', JSON.stringify(projects));
+        localStorage.setItem(`${DB_PREFIX}_projects`, JSON.stringify(projects));
         
         isCurrentProjectSaved = true;
         window.updateSavedCount(); 
@@ -9597,16 +9598,16 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
 };
 
 window.updateSavedCount = () => {
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     let countEl = document.getElementById('saved-count-val');
     if (countEl) countEl.innerText = projects.length.toString();
 };
 
 window.deleteProject = async (id, btnEl) => {
     if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     projects = projects.filter(p => p.id !== id);
-    localStorage.setItem('snapi_projects', JSON.stringify(projects));
+    localStorage.setItem(`${DB_PREFIX}_projects`, JSON.stringify(projects));
     
     window.updateSavedCount(); 
     
@@ -9622,7 +9623,7 @@ window.deleteProject = async (id, btnEl) => {
 };
 
 window.renderSavedProjects = async () => {
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     let emptyState = document.getElementById('sp-empty-state');
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
@@ -9655,7 +9656,7 @@ window.renderSavedProjects = async () => {
 
 window.loadProject = async (id) => {
     if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     let proj = projects.find(p => p.id === id);
     if (!proj) return;
 
