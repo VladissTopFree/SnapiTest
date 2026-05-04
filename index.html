@@ -6,13 +6,13 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(64)";
+  const APP_VERSION = "v2.4.0(65)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
 
-  const DB_PREFIX = "Snapi_v2_4_3";
+  const DB_PREFIX = "SnapiTEST_v2_4_0(65)";
 
   window.isNewUser = localStorage.getItem(`${DB_PREFIX}_visited`) === null;
   if (window.isNewUser) {
@@ -2352,7 +2352,6 @@ body.os-non-apple .promo-banner {
   }
   .sub-options-wrap.show {
     grid-template-rows: 1fr;
-    margin-top: 4px;
   }
   .sub-options-inner {
     overflow: hidden;
@@ -4286,6 +4285,8 @@ function processImages(filesParam) {
       }
       files = files.slice(0, maxLimit); 
   }
+
+  stagedFiles = files;
 
   document.body.style.background = "#F2F2F7";
   document.body.style.color = "#000";
@@ -9501,12 +9502,10 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
     window.triggerHaptic();
     let btn = e.currentTarget;
     
-    // Если кнопка грузится или изменений нет — ничего не делаем
     if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
 
     let projects = JSON.parse(localStorage.getItem(`${DB_PREFIX}_projects`) || '[]');
     
-    // Убираем жесткий лимит на 12 проектов, если мы просто ПЕРЕЗАПИСЫВАЕМ старый
     if (!window.currentLoadedProjectId && projects.length >= 12) {
         alert("Достиг лимит сохранения проектов Ваших работ!\nОчистите, что бы добавлять новые.\n\nНастройки -> удалить.");
         return;
