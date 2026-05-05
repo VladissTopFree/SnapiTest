@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(72)";
+  const APP_VERSION = "v2.4.0(73)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3407,15 +3407,6 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-
-
-
-window.updateSavedCount = async () => {
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = projects.length.toString();
-};
-
 window.openSavedProjects = () => {
     document.getElementById('ios-dashboard').style.display = 'none';
     window.renderSavedProjects();
@@ -3600,57 +3591,6 @@ window.closeDownloadOverlay = () => {
     window.scrollTo(0,0);
 };
 
-window.deleteProject = async (id, btnEl) => {
-    if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    projects = projects.filter(p => p.id !== id);
-    localStorage.setItem('snapi_projects', JSON.stringify(projects));
-    
-    // Анимация удаления строки
-    let row = btnEl.closest('.sp-row');
-    if (row) {
-        row.classList.add('deleting');
-        setTimeout(() => {
-            window.renderSavedProjects();
-        }, 400); // Ждем завершения CSS анимации
-    } else {
-        window.renderSavedProjects();
-    }
-};
-
-window.renderSavedProjects = async () => {
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    let emptyState = document.getElementById('sp-empty-state');
-    let contentState = document.getElementById('sp-content-state');
-    let container = document.getElementById('sp-list');
-    
-    if (projects.length === 0) {
-        emptyState.style.display = 'flex';
-        emptyState.classList.add('show');
-        contentState.style.display = 'none';
-        if (container) container.innerHTML = '';
-    } else {
-        emptyState.style.display = 'none';
-        emptyState.classList.remove('show');
-        contentState.style.display = 'block';
-        
-        // Сортируем: новые проекты сверху
-        projects.sort((a, b) => b.id - a.id);
-
-        let html = '';
-        projects.forEach(p => {
-            let titleText = p.mode === 'bp' ? 'Brawl Pass' : 'Акция';
-            html += `
-            <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
-                <img src="${p.thumb}" class="sp-img">
-                <div class="sp-title">${titleText} от ${p.date}</div>
-                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
-            </div>`;
-        });
-        if (container) container.innerHTML = html;
-    }
-};
-
 const loadImage = (src) => new Promise((resolve) => {
   const img = new Image(); 
   if (src && !src.startsWith('data:') && !src.startsWith('blob:')) {
@@ -3660,58 +3600,6 @@ const loadImage = (src) => new Promise((resolve) => {
   img.onerror = () => resolve(null); 
   img.src = src;
 });
-
-window.loadProject = async (id) => {
-    if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    let proj = projects.find(p => p.id === id);
-    if (!proj) return;
-
-    // Сбрасываем старый кэш
-    if (window.resetWizardState) window.resetWizardState();
-    window.clearBrawlerCache();
-
-    // 1. Восстанавливаем стейт
-    window.layerState = proj.layerState;
-    wizardMode = proj.mode;
-    selectedCategory = proj.category;
-
-    // 2. Восстанавливаем фон
-    if (proj.bgImage) {
-        rawBgImage = await new Promise((resolve) => {
-            let img = new Image();
-            img.onload = () => resolve(img);
-            img.src = proj.bgImage;
-        });
-    } else {
-        rawBgImage = null;
-    }
-
-    // 3. Закрываем окно сохраненных работ
-    document.getElementById('saved-projects-overlay').style.display = 'none';
-    isCurrentProjectSaved = true; // Чтобы кнопка сохранения временно скрылась
-
-    // 4. Распределяем логику загрузки в зависимости от типа проекта
-    if (wizardMode === 'bp') {
-        if (proj.layerState.bpStyleIndex === 2) {
-            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
-        } else if (proj.layerState.bpStyleIndex === 3) {
-            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
-        } else if (proj.layerState.bpStyleIndex === 'dop') {
-            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
-        } else {
-            generateBrawlPassTest();
-        }
-    } else if (wizardMode === 'action') {
-        // Восстанавливаем скриншоты для акции
-        if (proj.screenshots && proj.screenshots.length > 0) {
-            stagedFiles = proj.screenshots.map((dataUrl, idx) => dataURLtoFile(dataUrl, `screen_${idx}.png`));
-            processImages(stagedFiles);
-        } else {
-            processImages([]);
-        }
-    }
-};
 
 let selectedCategory = null; 
 let selectedBPStyle = null;
@@ -9295,7 +9183,7 @@ window.updateActivePromoStar = function(param, value) {
 setTimeout(() => { window.renderPromoBgStars(); }, 150);
 
 
-const TARGET_DATE_STRING = "2026-05-06T11:00:00+03:00"; 
+const TARGET_DATE_STRING = "2026-05-07T11:00:00+03:00"; 
 
 
 window.initPromoTimer = function() {
@@ -9532,13 +9420,127 @@ const dataURLtoFile = (dataurl, filename) => {
     return new File([u8arr], filename, {type: mime});
 };
 
+// === НАСТРОЙКИ БАЗЫ ДАННЫХ ПРОЕКТОВ ===
+const PROJECTS_DB_KEY = 'Snapi_v2_0_projects(73)';
+
+window.updateSavedCount = async () => {
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
+    let countEl = document.getElementById('saved-count-val');
+    if (countEl) countEl.innerText = projects.length.toString();
+};
+
+window.deleteProject = async (id, btnEl) => {
+    if (window.triggerHaptic) window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
+    projects = projects.filter(p => p.id !== id);
+    localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
+    
+    window.updateSavedCount(); 
+    
+    // Анимация удаления строки
+    let row = btnEl.closest('.sp-row');
+    if (row) {
+        row.classList.add('deleting');
+        setTimeout(() => {
+            window.renderSavedProjects();
+        }, 400); 
+    } else {
+        window.renderSavedProjects();
+    }
+};
+
+window.renderSavedProjects = async () => {
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
+    let emptyState = document.getElementById('sp-empty-state');
+    let contentState = document.getElementById('sp-content-state');
+    let container = document.getElementById('sp-list');
+    
+    if (projects.length === 0) {
+        emptyState.style.display = 'flex';
+        emptyState.classList.add('show');
+        contentState.style.display = 'none';
+        if (container) container.innerHTML = '';
+    } else {
+        emptyState.style.display = 'none';
+        emptyState.classList.remove('show');
+        contentState.style.display = 'block';
+        
+        // Сортируем: новые проекты сверху
+        projects.sort((a, b) => b.id - a.id);
+
+        let html = '';
+        projects.forEach(p => {
+            let titleText = p.mode === 'bp' ? 'Brawl Pass' : 'Акция';
+            html += `
+            <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
+                <img src="${p.thumb || 'miniprewiev.png'}" class="sp-img" onerror="this.src='miniprewiev.png'">
+                <div class="sp-title">${titleText} от ${p.date}</div>
+                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
+            </div>`;
+        });
+        if (container) container.innerHTML = html;
+    }
+};
+
+window.loadProject = async (id) => {
+    if (window.triggerHaptic) window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
+    let proj = projects.find(p => p.id === id);
+    if (!proj) return;
+
+    // Сбрасываем старый кэш
+    if (window.resetWizardState) window.resetWizardState();
+    window.clearBrawlerCache();
+
+    // 1. Восстанавливаем стейт
+    window.layerState = proj.layerState;
+    wizardMode = proj.mode;
+    selectedCategory = proj.category;
+
+    // 2. Восстанавливаем фон
+    if (proj.bgImage) {
+        rawBgImage = await new Promise((resolve) => {
+            let img = new Image();
+            img.onload = () => resolve(img);
+            img.src = proj.bgImage;
+        });
+    } else {
+        rawBgImage = null;
+    }
+
+    // 3. Закрываем окно сохраненных работ
+    document.getElementById('saved-projects-overlay').style.display = 'none';
+    isCurrentProjectSaved = true;
+
+    // 4. Распределяем логику загрузки в зависимости от типа проекта
+    if (wizardMode === 'bp') {
+        if (proj.layerState.bpStyleIndex === 2) {
+            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
+        } else if (proj.layerState.bpStyleIndex === 3) {
+            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
+        } else if (proj.layerState.bpStyleIndex === 'dop') {
+            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
+        } else {
+            generateBrawlPassTest();
+        }
+    } else if (wizardMode === 'action') {
+        if (proj.screenshots && proj.screenshots.length > 0) {
+            stagedFiles = proj.screenshots.map((dataUrl, idx) => dataURLtoFile(dataUrl, `screen_${idx}.png`));
+            processImages(stagedFiles);
+        } else {
+            processImages([]);
+        }
+    }
+};
+
 document.getElementById('dl-btn-save-project').onclick = async (e) => {
     e.preventDefault();
     window.triggerHaptic();
     let btn = e.currentTarget;
     if (btn.classList.contains('is-loading') || isCurrentProjectSaved) return; 
 
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
+    // Ограничение ровно в 12 проектов
     if (projects.length >= 12) {
         alert("Достиг лимит сохранения проектов Ваших работ!\nОчистите, что бы добавлять новые.\n\nНастройки -> удалить.");
         return;
@@ -9564,7 +9566,6 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
             category: selectedCategory,
             layerState: JSON.parse(JSON.stringify(window.layerState)),
             bgImage: compressedBg,
-            // Запоминаем изначальный размер фона!
             bgWidth: rawBgImage ? (rawBgImage.originalWidth || rawBgImage.width) : 1920 
         };
 
@@ -9573,7 +9574,7 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
         }
 
         projects.push(project);
-        localStorage.setItem('snapi_projects', JSON.stringify(projects));
+        localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
         
         isCurrentProjectSaved = true;
         window.updateSavedCount(); 
@@ -9593,113 +9594,6 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
         alert("Критическая ошибка сохранения. Память переполнена.");
         btn.classList.remove('is-loading');
         btn.style.pointerEvents = 'auto';
-    }
-};
-
-window.updateSavedCount = () => {
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = projects.length.toString();
-};
-
-window.deleteProject = async (id, btnEl) => {
-    if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    projects = projects.filter(p => p.id !== id);
-    localStorage.setItem('snapi_projects', JSON.stringify(projects));
-    
-    window.updateSavedCount(); 
-    
-    let row = btnEl.closest('.sp-row');
-    if (row) {
-        row.classList.add('deleting');
-        setTimeout(() => {
-            window.renderSavedProjects();
-        }, 400); 
-    } else {
-        window.renderSavedProjects();
-    }
-};
-
-window.renderSavedProjects = async () => {
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    let emptyState = document.getElementById('sp-empty-state');
-    let contentState = document.getElementById('sp-content-state');
-    let container = document.getElementById('sp-list');
-    
-    if (projects.length === 0) {
-        emptyState.style.display = 'flex';
-        emptyState.classList.add('show');
-        contentState.style.display = 'none';
-        if (container) container.innerHTML = '';
-    } else {
-        emptyState.style.display = 'none';
-        emptyState.classList.remove('show');
-        contentState.style.display = 'block';
-        
-        projects.sort((a, b) => b.id - a.id);
-
-        let html = '';
-        projects.forEach(p => {
-            let titleText = p.mode === 'bp' ? 'Brawl Pass' : 'Акция';
-            html += `
-            <div class="sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
-                <img src="${p.thumb || 'miniprewiev.png'}" class="sp-img" onerror="this.src='miniprewiev.png'">
-                <div class="sp-title">${titleText} от ${p.date}</div>
-                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
-            </div>`;
-        });
-        if (container) container.innerHTML = html;
-    }
-};
-
-window.loadProject = async (id) => {
-    if (window.triggerHaptic) window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem('snapi_projects') || '[]');
-    let proj = projects.find(p => p.id === id);
-    if (!proj) return;
-
-    if (window.resetWizardState) window.resetWizardState();
-    window.clearBrawlerCache();
-
-    window.layerState = proj.layerState;
-    wizardMode = proj.mode;
-    selectedCategory = proj.category;
-
-    if (proj.bgImage) {
-        rawBgImage = await new Promise((resolve) => {
-            let img = new Image();
-            img.onload = () => {
-                // Передаем холсту оригинальную ширину, чтобы он не схлопнулся
-                img.originalWidth = proj.bgWidth || 1920;
-                resolve(img);
-            };
-            img.src = proj.bgImage;
-        });
-    } else {
-        rawBgImage = null;
-    }
-
-    document.getElementById('saved-projects-overlay').style.display = 'none';
-    isCurrentProjectSaved = true; 
-
-    if (wizardMode === 'bp') {
-        if (proj.layerState.bpStyleIndex === 2) {
-            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
-        } else if (proj.layerState.bpStyleIndex === 3) {
-            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
-        } else if (proj.layerState.bpStyleIndex === 'dop') {
-            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
-        } else {
-            generateBrawlPassTest();
-        }
-    } else if (wizardMode === 'action') {
-        if (proj.screenshots && proj.screenshots.length > 0) {
-            stagedFiles = proj.screenshots.map((dataUrl, idx) => dataURLtoFile(dataUrl, `screen_${idx}.jpg`));
-            processImages(stagedFiles);
-        } else {
-            processImages([]);
-        }
     }
 };
 
