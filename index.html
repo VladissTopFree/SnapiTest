@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(77)";
+  const APP_VERSION = "v2.4.0(78)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2804,7 +2804,7 @@ body.os-non-apple .promo-banner {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 6 мая.</div>
+                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 7 мая.</div>
             </div>
          </div>
          
@@ -3352,10 +3352,9 @@ let globalAssets = {
 };
 let isCurrentProjectSaved = false; 
 
-const DB_NAME = "Snapi_v2_4_0(77)Test";
+const DB_NAME = "Snapi_v2_4_0(78)Test";
 const STORE_NAME = "projects";
 
-// Инициализация базы данных
 function initDB() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, 1);
@@ -3718,35 +3717,92 @@ window.loadProject = async (id) => {
             const p = req.result;
             if (!p) return;
 
+            // --- ВОССТАНОВЛЕНИЕ КАРТИНОК ИЗ BASE64 ---
+            const loadImgAsync = (src) => new Promise(resolve => {
+                if (!src) return resolve(null);
+                let img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+                img.src = src;
+            });
+
+            if (p.layerState && p.layerState.offers) {
+                for (let o of p.layerState.offers) {
+                    if (o.ref && o.ref.canvasData) {
+                        let img = await loadImgAsync(o.ref.canvasData);
+                        if (img) {
+                            let c = document.createElement('canvas');
+                            c.width = img.width; c.height = img.height;
+                            c.getContext('2d').drawImage(img, 0, 0);
+                            o.ref.canvas = c;
+                        }
+                        delete o.ref.canvasData;
+                    }
+                    if (o.ref && o.ref.info && o.ref.info.blankedImgDataUrl) {
+                        let img = await loadImgAsync(o.ref.info.blankedImgDataUrl);
+                        if (img) {
+                            let c = document.createElement('canvas');
+                            c.width = img.width; c.height = img.height;
+                            let ctx = c.getContext('2d');
+                            ctx.drawImage(img, 0, 0);
+                            o.ref.info.blankedImgData = ctx.getImageData(0, 0, c.width, c.height);
+                        }
+                        delete o.ref.info.blankedImgDataUrl;
+                    }
+                }
+            }
+
             // Восстанавливаем состояние слоев
             window.layerState = p.layerState;
             wizardMode = p.wizardMode;
 
-            // Жестко привязываем координаты к конфигу, если ручной редактор не активен
+            // Жестко привязываем ВСЕ координаты и трансформации к конфигу
             if (!window.ENABLE_TEMP_EDITOR && window.layerState.isBrawlPassMode) {
                 let season = window.layerState.bpSeason || 50;
                 let config = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
 
                 if (window.layerState.bpStyleIndex === 'dop') {
-                    let currentDopConf = (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2)
+                    let variant = parseInt(window.layerState.bpVariantIndex) || 1;
+                    let currentDopConf = (variant === 1 || variant === 2)
                         ? (config.dopBrawler1 || BP_SEASON_CONFIG[50].dopBrawler1)
                         : (config.dopBrawler || BP_SEASON_CONFIG[50].dopBrawler);
 
                     window.layerState.brawler2X = currentDopConf.x;
                     window.layerState.brawler2Y = currentDopConf.y;
                     window.layerState.brawler2Scale = currentDopConf.scale;
+                    window.layerState.brawler2ScaleX = currentDopConf.scaleX || 1;
+                    window.layerState.brawler2ScaleY = currentDopConf.scaleY || 1;
+                    window.layerState.brawler2Rot = currentDopConf.rot || 0;
                     window.layerState.brawler2Flip = !!currentDopConf.flipH;
+                    
+                    let tConf = config.dopText || BP_SEASON_CONFIG[50].dopText;
+                    if (tConf) {
+                        window.layerState.dopTextX = tConf.x;
+                        window.layerState.dopTextY = tConf.y;
+                        window.layerState.dopTextScale = tConf.scale;
+                        window.layerState.dopTextRot = tConf.rot || 0;
+                    }
                 } else {
-                    let sConf = (window.layerState.bpStyleIndex === 1) ? config.style1Brawlers : config.style2Brawlers;
-                    if (sConf) {
+                    // ИСПРАВЛЕНИЕ: приводим bpStyleIndex к числу (parseInt)
+                    let styleIdx = parseInt(window.layerState.bpStyleIndex);
+                    let sConf = (styleIdx === 1) ? config.style1Brawlers : config.style2Brawlers;
+                    
+                    if (sConf && sConf.brawler1) {
                         window.layerState.brawler1X = sConf.brawler1.x;
                         window.layerState.brawler1Y = sConf.brawler1.y;
                         window.layerState.brawler1Scale = sConf.brawler1.scale;
+                        window.layerState.brawler1ScaleX = sConf.brawler1.scaleX || 1;
+                        window.layerState.brawler1ScaleY = sConf.brawler1.scaleY || 1;
+                        window.layerState.brawler1Rot = sConf.brawler1.rot || 0;
                         window.layerState.brawler1Flip = !!sConf.brawler1.flipH;
-
+                    }
+                    if (sConf && sConf.brawler2) {
                         window.layerState.brawler2X = sConf.brawler2.x;
                         window.layerState.brawler2Y = sConf.brawler2.y;
                         window.layerState.brawler2Scale = sConf.brawler2.scale;
+                        window.layerState.brawler2ScaleX = sConf.brawler2.scaleX || 1;
+                        window.layerState.brawler2ScaleY = sConf.brawler2.scaleY || 1;
+                        window.layerState.brawler2Rot = sConf.brawler2.rot || 0;
                         window.layerState.brawler2Flip = !!sConf.brawler2.flipH;
                     }
                 }
@@ -3767,11 +3823,13 @@ window.loadProject = async (id) => {
 
             // Направляем в нужный рендер в зависимости от стиля
             if (wizardMode === 'bp') {
-                if (window.layerState.bpStyleIndex === 2) {
+                // И здесь приводим к числу на всякий случай
+                let styleIdxStr = String(window.layerState.bpStyleIndex);
+                if (styleIdxStr === '2') {
                     window.openBPTestEditor();
-                } else if (window.layerState.bpStyleIndex === 3) {
+                } else if (styleIdxStr === '3') {
                     window.openBPStyle3Editor();
-                } else if (window.layerState.bpStyleIndex === 'dop') {
+                } else if (styleIdxStr === 'dop') {
                     window.openBPDopEditor();
                 } else {
                     generateBrawlPassTest();
@@ -3782,7 +3840,7 @@ window.loadProject = async (id) => {
                 calculateLayoutTarget();
             }
             
-            isCurrentProjectSaved = true; // Помечаем, что текущая работа уже сохранена
+            isCurrentProjectSaved = true;
         };
     } catch(err) {
         console.error("Ошибка загрузки проекта:", err);
@@ -3791,22 +3849,18 @@ window.loadProject = async (id) => {
 
 let selectedCategory = null; 
 let selectedBPStyle = null;
-let selectedBPSub = null; // Новая переменная для подменю Обычный/Доп
+let selectedBPSub = null; 
 let wizardMode = 'action'; 
 
-// Новая функция для выбора подкатегории Brawl Pass
 window.selectBPSub = function(subType) {
     selectedBPSub = subType;
     if (window.triggerHaptic) window.triggerHaptic();
 
-    // Сбрасываем чекбоксы
     document.getElementById('bp-sub-radio-normal').classList.remove('checked');
     document.getElementById('bp-sub-radio-additional').classList.remove('checked');
 
-    // Ставим галочку на выбранный
     document.getElementById(`bp-sub-radio-${subType}`).classList.add('checked');
 
-    // Показываем кнопку Далее
     document.getElementById('cat-btn-next').classList.add('show');
 };
 
@@ -8566,14 +8620,44 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
                 return;
             }
 
-            // Собираем все данные текущей работы
+            // --- БЕЗОПАСНОЕ КОПИРОВАНИЕ СОСТОЯНИЯ ---
+            // Очищаем кэш и DOM-элементы, чтобы JSON не сломался
+            let stateToSave = JSON.parse(JSON.stringify(window.layerState, (key, value) => {
+                if (key === 'canvas' || key === 'blankedImgData' || key === 'cache') return undefined;
+                return value;
+            }));
+
+            // Вручную конвертируем холсты акций в Base64
+            if (window.layerState.offers && stateToSave.offers) {
+                stateToSave.offers.forEach((newO, i) => {
+                    let oldO = window.layerState.offers[i];
+                    
+                    if (!newO.ref) newO.ref = {};
+                    if (!newO.ref.info) newO.ref.info = { ...oldO.ref.info };
+
+                    // Сохраняем вырезанную акцию
+                    if (oldO.ref && oldO.ref.canvas) {
+                        newO.ref.canvasData = oldO.ref.canvas.toDataURL('image/png');
+                    }
+                    
+                    // Сохраняем фон акции без ценника
+                    if (oldO.ref && oldO.ref.info && oldO.ref.info.blankedImgData) {
+                        let tempC = document.createElement('canvas');
+                        tempC.width = oldO.ref.info.blankedImgData.width;
+                        tempC.height = oldO.ref.info.blankedImgData.height;
+                        tempC.getContext('2d').putImageData(oldO.ref.info.blankedImgData, 0, 0);
+                        newO.ref.info.blankedImgDataUrl = tempC.toDataURL('image/png');
+                    }
+                });
+            }
+
             const projectData = {
                 id: Date.now(),
                 date: new Date().toLocaleDateString('ru-RU') + ' ' + new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'}),
-                layerState: JSON.parse(JSON.stringify(window.layerState)),
+                layerState: stateToSave,
                 wizardMode: wizardMode,
                 bgBase64: rawBgImage ? getBase64Image(rawBgImage) : null,
-                previewBase64: document.getElementById('dl-preview-img').src // Берём уже сгенерированное превью
+                previewBase64: document.getElementById('dl-preview-img').src
             };
 
             const txSave = db.transaction(STORE_NAME, "readwrite");
