@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(78)";
+  const APP_VERSION = "v2.4.0(80)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3352,35 +3352,6 @@ let globalAssets = {
 };
 let isCurrentProjectSaved = false; 
 
-const DB_NAME = "Snapi_v2_4_0(78)Test";
-const STORE_NAME = "projects";
-
-function initDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-        request.onupgradeneeded = (e) => {
-            let db = e.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: "id" });
-            }
-        };
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-}
-
-// Функция для сжатия фона перед сохранением, чтобы не забивать память
-function getBase64Image(img) {
-    let canvas = document.createElement("canvas");
-    let MAX_WIDTH = 1280;
-    let scale = Math.min(MAX_WIDTH / img.width, 1);
-    canvas.width = img.width * scale;
-    canvas.height = img.height * scale;
-    let ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/jpeg", 0.7);
-}
-
 function handleBackButtonClick() {
     try {
         let fankitOverlay = document.getElementById('fankit-overlay');
@@ -3436,17 +3407,58 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
+// === НАСТРОЙКИ БАЗЫ ДАННЫХ ПРОЕКТОВ ===
+const DB_NAME = 'Snapi_v3_0_db';
+const STORE_NAME = 'projects';
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = (e) => {
+            let db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function getAllProjects() {
+    let db = await openDB();
+    return new Promise((resolve) => {
+        let tx = db.transaction(STORE_NAME, 'readonly');
+        let store = tx.objectStore(STORE_NAME);
+        let req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+    });
+}
+
+async function saveProjectToDB(project) {
+    let db = await openDB();
+    return new Promise((resolve) => {
+        let tx = db.transaction(STORE_NAME, 'readwrite');
+        let store = tx.objectStore(STORE_NAME);
+        store.put(project);
+        tx.oncomplete = () => resolve();
+    });
+}
+
+async function deleteProjectFromDB(id) {
+    let db = await openDB();
+    return new Promise((resolve) => {
+        let tx = db.transaction(STORE_NAME, 'readwrite');
+        let store = tx.objectStore(STORE_NAME);
+        store.delete(id);
+        tx.oncomplete = () => resolve();
+    });
+}
+
 window.updateSavedCount = async () => {
+    let projects = await getAllProjects();
     let countEl = document.getElementById('saved-count-val');
-    if (!countEl) return;
-    try {
-        const db = await initDB();
-        const tx = db.transaction(STORE_NAME, "readonly");
-        const req = tx.objectStore(STORE_NAME).count();
-        req.onsuccess = () => countEl.innerText = req.result;
-    } catch (err) {
-        countEl.innerText = '0';
-    }
+    if (countEl) countEl.innerText = projects.length.toString();
 };
 
 window.openSavedProjects = () => {
@@ -3635,30 +3647,14 @@ window.closeDownloadOverlay = () => {
 
 window.deleteProject = async (id, btnEl) => {
     window.triggerHaptic();
-    try {
-        const db = await initDB();
-        const tx = db.transaction(STORE_NAME, "readwrite");
-        tx.objectStore(STORE_NAME).delete(id);
-        
-        tx.oncomplete = () => {
-            let row = document.getElementById(`proj-${id}`);
-            if (row) {
-                row.classList.add('deleting');
-                setTimeout(() => row.remove(), 400);
-            }
-            window.updateSavedCount();
-
-            setTimeout(() => {
-                let container = document.getElementById('sp-list');
-                if (container && container.children.length === 0) {
-                    document.getElementById('sp-empty-state').style.display = 'flex';
-                    document.getElementById('sp-content-state').style.display = 'none';
-                }
-            }, 410);
-        };
-    } catch(err) {
-        console.error("Ошибка удаления:", err);
-    }
+    let row = btnEl.closest('.sp-row');
+    if (row) row.classList.add('deleting');
+    
+    setTimeout(async () => {
+        await deleteProjectFromDB(id);
+        await window.updateSavedCount();
+        window.renderSavedProjects();
+    }, 400); 
 };
 
 window.renderSavedProjects = async () => {
@@ -3666,201 +3662,198 @@ window.renderSavedProjects = async () => {
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
     
-    try {
-        const db = await initDB();
-        const tx = db.transaction(STORE_NAME, "readonly");
-        const req = tx.objectStore(STORE_NAME).getAll();
+    let projects = await getAllProjects();
+    projects.sort((a, b) => b.timestamp - a.timestamp); // Свежие всегда наверху
 
-        req.onsuccess = () => {
-            const projects = req.result;
-            if (projects.length === 0) {
-                emptyState.style.display = 'flex';
-                emptyState.classList.add('show');
-                contentState.style.display = 'none';
-                if (container) container.innerHTML = '';
-            } else {
-                emptyState.style.display = 'none';
-                contentState.style.display = 'block';
-                // Сортируем от новых к старым и генерируем HTML
-                container.innerHTML = projects.reverse().map(p => `
-                    <div class="sp-row" id="proj-${p.id}" onclick="loadProject(${p.id})">
-                        <img src="${p.previewBase64}" class="sp-img">
-                        <div class="sp-title">${p.wizardMode === 'bp' ? 'Brawl Pass' : 'Акция'} <br><span style="font-size: 13px; color: #8E8E93;">${p.date}</span></div>
-                        <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject(${p.id}, this)">Удалить</button>
-                    </div>
-                `).join('');
-            }
-        };
-    } catch (err) {
-        console.error("Ошибка рендера проектов:", err);
+    if (projects.length === 0) {
+        emptyState.style.display = 'flex';
+        emptyState.classList.add('show');
+        contentState.style.display = 'none';
+        if (container) container.innerHTML = '';
+    } else {
+        emptyState.style.display = 'none';
+        emptyState.classList.remove('show');
+        contentState.style.display = 'block';
+        
+        let html = '';
+        projects.forEach(p => {
+            let date = new Date(p.timestamp).toLocaleString('ru-RU', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
+            html += `
+            <div class="sp-row" onclick="loadProject('${p.id}')">
+                <img src="${p.thumb}" class="sp-img" alt="">
+                <div class="sp-info" style="display:flex; flex-direction:column; justify-content:center;">
+                    <div class="sp-title">${p.title}</div>
+                    <div class="sp-desc" style="font-size: 13px; color: var(--tg-theme-subtitle-text-color);">${date}</div>
+                </div>
+                <div style="flex-grow: 1;"></div>
+                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
+            </div>
+            `;
+        });
+        if (container) container.innerHTML = html;
     }
 };
 
 const loadImage = (src) => new Promise((resolve) => {
-  const img = new Image(); 
-  if (src && !src.startsWith('data:') && !src.startsWith('blob:')) {
-      img.crossOrigin = "anonymous"; 
-  }
-  img.onload = () => resolve(img); 
-  img.onerror = () => resolve(null); 
-  img.src = src;
+  const img = new Image(); 
+  if (src && !src.startsWith('data:') && !src.startsWith('blob:')) {
+      img.crossOrigin = "anonymous"; 
+  }
+  img.onload = () => resolve(img); 
+  img.onerror = () => resolve(null); 
+  img.src = src;
 });
 
 window.loadProject = async (id) => {
     window.triggerHaptic();
-    try {
-        const db = await initDB();
-        const tx = db.transaction(STORE_NAME, "readonly");
-        const req = tx.objectStore(STORE_NAME).get(id);
+    let projects = await getAllProjects();
+    let project = projects.find(p => p.id === id);
+    if (!project) return;
 
-        req.onsuccess = async () => {
-            const p = req.result;
-            if (!p) return;
+    wizardMode = project.wizardMode;
+    selectedCategory = project.selectedCategory;
+    selectedBPStyle = project.selectedBPStyle;
+    selectedBPVariant = project.selectedBPVariant;
+    selectedBPSeason = project.selectedBPSeason || 50;
+    selectedColor = project.selectedColor;
+    uploadMode = project.uploadMode;
+    
+    window.layerState = project.layerState;
+    window.layerState.bpSeason = selectedBPSeason; 
+    window.isCurrentProjectSaved = true;
 
-            // --- ВОССТАНОВЛЕНИЕ КАРТИНОК ИЗ BASE64 ---
-            const loadImgAsync = (src) => new Promise(resolve => {
-                if (!src) return resolve(null);
-                let img = new Image();
-                img.onload = () => resolve(img);
-                img.onerror = () => resolve(null);
-                img.src = src;
-            });
+    document.getElementById('saved-projects-overlay').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    window.scrollTo(0,0);
+    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
 
-            if (p.layerState && p.layerState.offers) {
-                for (let o of p.layerState.offers) {
-                    if (o.ref && o.ref.canvasData) {
-                        let img = await loadImgAsync(o.ref.canvasData);
-                        if (img) {
-                            let c = document.createElement('canvas');
-                            c.width = img.width; c.height = img.height;
-                            c.getContext('2d').drawImage(img, 0, 0);
-                            o.ref.canvas = c;
-                        }
-                        delete o.ref.canvasData;
-                    }
-                    if (o.ref && o.ref.info && o.ref.info.blankedImgDataUrl) {
-                        let img = await loadImgAsync(o.ref.info.blankedImgDataUrl);
-                        if (img) {
-                            let c = document.createElement('canvas');
-                            c.width = img.width; c.height = img.height;
-                            let ctx = c.getContext('2d');
-                            ctx.drawImage(img, 0, 0);
-                            o.ref.info.blankedImgData = ctx.getImageData(0, 0, c.width, c.height);
-                        }
-                        delete o.ref.info.blankedImgDataUrl;
-                    }
-                }
-            }
+    const cardsContainer = document.getElementById('cards-container');
+    const layerPanel = document.getElementById('layer-panel');
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
 
-            // Восстанавливаем состояние слоев
-            window.layerState = p.layerState;
-            wizardMode = p.wizardMode;
+    rawBgImage = null;
+    if (project.bgBase64) {
+        rawBgImage = await loadImage(project.bgBase64);
+    }
 
-            // Жестко привязываем ВСЕ координаты и трансформации к конфигу
-            if (!window.ENABLE_TEMP_EDITOR && window.layerState.isBrawlPassMode) {
-                let season = window.layerState.bpSeason || 50;
-                let config = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
-
-                if (window.layerState.bpStyleIndex === 'dop') {
-                    let variant = parseInt(window.layerState.bpVariantIndex) || 1;
-                    let currentDopConf = (variant === 1 || variant === 2)
-                        ? (config.dopBrawler1 || BP_SEASON_CONFIG[50].dopBrawler1)
-                        : (config.dopBrawler || BP_SEASON_CONFIG[50].dopBrawler);
-
-                    window.layerState.brawler2X = currentDopConf.x;
-                    window.layerState.brawler2Y = currentDopConf.y;
-                    window.layerState.brawler2Scale = currentDopConf.scale;
-                    window.layerState.brawler2ScaleX = currentDopConf.scaleX || 1;
-                    window.layerState.brawler2ScaleY = currentDopConf.scaleY || 1;
-                    window.layerState.brawler2Rot = currentDopConf.rot || 0;
-                    window.layerState.brawler2Flip = !!currentDopConf.flipH;
-                    
-                    let tConf = config.dopText || BP_SEASON_CONFIG[50].dopText;
-                    if (tConf) {
-                        window.layerState.dopTextX = tConf.x;
-                        window.layerState.dopTextY = tConf.y;
-                        window.layerState.dopTextScale = tConf.scale;
-                        window.layerState.dopTextRot = tConf.rot || 0;
-                    }
-                } else {
-                    // ИСПРАВЛЕНИЕ: приводим bpStyleIndex к числу (parseInt)
-                    let styleIdx = parseInt(window.layerState.bpStyleIndex);
-                    let sConf = (styleIdx === 1) ? config.style1Brawlers : config.style2Brawlers;
-                    
-                    if (sConf && sConf.brawler1) {
-                        window.layerState.brawler1X = sConf.brawler1.x;
-                        window.layerState.brawler1Y = sConf.brawler1.y;
-                        window.layerState.brawler1Scale = sConf.brawler1.scale;
-                        window.layerState.brawler1ScaleX = sConf.brawler1.scaleX || 1;
-                        window.layerState.brawler1ScaleY = sConf.brawler1.scaleY || 1;
-                        window.layerState.brawler1Rot = sConf.brawler1.rot || 0;
-                        window.layerState.brawler1Flip = !!sConf.brawler1.flipH;
-                    }
-                    if (sConf && sConf.brawler2) {
-                        window.layerState.brawler2X = sConf.brawler2.x;
-                        window.layerState.brawler2Y = sConf.brawler2.y;
-                        window.layerState.brawler2Scale = sConf.brawler2.scale;
-                        window.layerState.brawler2ScaleX = sConf.brawler2.scaleX || 1;
-                        window.layerState.brawler2ScaleY = sConf.brawler2.scaleY || 1;
-                        window.layerState.brawler2Rot = sConf.brawler2.rot || 0;
-                        window.layerState.brawler2Flip = !!sConf.brawler2.flipH;
-                    }
-                }
-            }
-
-            // Восстанавливаем фон
-            if (p.bgBase64) {
-                rawBgImage = new Image();
-                rawBgImage.src = p.bgBase64;
-                await new Promise(r => rawBgImage.onload = r);
-            } else {
-                rawBgImage = null;
-            }
-
-            // Переключаем UI
-            document.getElementById('saved-projects-overlay').style.display = 'none';
-            document.getElementById('result-box').style.display = 'block';
-
-            // Направляем в нужный рендер в зависимости от стиля
-            if (wizardMode === 'bp') {
-                // И здесь приводим к числу на всякий случай
-                let styleIdxStr = String(window.layerState.bpStyleIndex);
-                if (styleIdxStr === '2') {
-                    window.openBPTestEditor();
-                } else if (styleIdxStr === '3') {
-                    window.openBPStyle3Editor();
-                } else if (styleIdxStr === 'dop') {
-                    window.openBPDopEditor();
-                } else {
-                    generateBrawlPassTest();
-                }
-            } else {
-                setupPersistentCanvas();
-                renderLayerPanel(true);
-                calculateLayoutTarget();
-            }
+    if (window.layerState.isBrawlPassMode) {
+        const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
+        
+        if (window.layerState.bpStyleIndex === 2) {
+            if (!globalAssets.style2Gems) globalAssets.style2Gems = await load('BP/bp_gems.png');
+            if (!globalAssets.style2Points) globalAssets.style2Points = await load('BP/bp_style2_points.png');
+            if (!globalAssets.style2Stars) globalAssets.style2Stars = await load('BP/bp_stars_style2.png');
+            if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
+            if (!globalAssets.style2ProIcon) globalAssets.style2ProIcon = await load('BP/bp_icon_pro_pass_icon.png');
+            if (!globalAssets.style2BPP) globalAssets.style2BPP = await load('BP/bp_icon_brawl_pass_plus.png');
+            if (!globalAssets.style2BP) globalAssets.style2BP = await load('BP/bp_icon_brawl_pass.png');
+            if (!globalAssets.style2YellowPlate) globalAssets.style2YellowPlate = await load('BP/bp_price_brawl_pass.png');
+            if (!globalAssets.style2BluePlate) globalAssets.style2BluePlate = await load('BP/bp_price_bg_right.png');
+        } else if (window.layerState.bpStyleIndex === 3) {
+            if (!globalAssets.s3Rays) globalAssets.s3Rays = await load('BP/bp_luch_3style.png');
+            if (!globalAssets.s3Dots) globalAssets.s3Dots = await load('BP/bp_points_3style.png');
+            if (!globalAssets.s3Details) globalAssets.s3Details = await load('BP/bp_details_3style.png');
+            if (!globalAssets[`s3PanelL_${selectedBPSeason}`]) globalAssets[`s3PanelL_${selectedBPSeason}`] = await load(`BP/bp_panel_left${selectedBPSeason}.png`);
+            globalAssets.s3PanelL = globalAssets[`s3PanelL_${selectedBPSeason}`];
+            if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await load('BP/bp_price_bg_left.png');
+            if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await load('BP/bp_panel_right.png');
+            if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await load('BP/bp_price_bg_right.png');
+            if (!globalAssets.s3PanelR) globalAssets.s3PanelR = await load('BP/ProPass_bp.png');
+            if (!globalAssets.s3Stars) globalAssets.s3Stars = await load('BP/bp_stars_3style.png');
+        } else if (window.layerState.bpStyleIndex === 'dop') {
+            if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
+            if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
+            if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
             
-            isCurrentProjectSaved = true;
-        };
-    } catch(err) {
-        console.error("Ошибка загрузки проекта:", err);
+            let panelSrc = 'BP/bp_panel_right.png';
+            let priceSrc = 'BP/bp_price_bg_right.png';
+            if (selectedBPVariant === 1) { panelSrc = `BP/bp_panel_left${selectedBPSeason}.png`; priceSrc = 'BP/bp_price_bg_left.png'; } 
+            else if (selectedBPVariant === 2) { panelSrc = `BP/bp_panel_left${selectedBPSeason}.png`; priceSrc = 'BP/bp_price_brawl_pass.png'; }
+            
+            globalAssets.dopPanelL = await load(panelSrc); 
+            globalAssets.dopPrice = await load(priceSrc);
+            if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
+        } else {
+            if (!globalAssets.luchImg) globalAssets.luchImg = await load('BP/Luch.png');
+            if (!globalAssets.starsEff) globalAssets.starsEff = await load('BP/bp_starsEff.png');
+            if (!globalAssets.bpPointsImg) globalAssets.bpPointsImg = await load('BP/bp_pointEff.png');
+            if (!globalAssets.bpPriceL) globalAssets.bpPriceL = await load('BP/bp_price_bg_left.png');
+            if (!globalAssets.bpPriceR) globalAssets.bpPriceR = await load('BP/bp_price_bg_right.png');
+            if (!globalAssets.bpStar) globalAssets.bpStar = await load('BP/bp_star.png');
+            if (!globalAssets.bpPanelL) globalAssets.bpPanelL = await load(`BP/bp_panel_left${selectedBPSeason}.png`);
+            if (!globalAssets.bpPanelR) globalAssets.bpPanelR = await load('BP/bp_panel_right.png');
+        }
+        
+        if (!globalAssets[`brawler_${selectedBPSeason}_1`]) globalAssets[`brawler_${selectedBPSeason}_1`] = await load(`BP/brawler_s${selectedBPSeason}_1.png`);
+        if (!globalAssets[`brawler_${selectedBPSeason}_2`]) globalAssets[`brawler_${selectedBPSeason}_2`] = await load(`BP/brawler_s${selectedBPSeason}_2.png`);
+
+        setupPersistentCanvas();
+        renderLayerPanel(true);
+        window.updateCachedTextCanvas();
+        
+        if (window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 3 && window.layerState.bpStyleIndex !== 'dop') {
+            generateBrawlPassTest(); 
+        } else {
+            startAnimation();
+        }
+
+    } else {
+        if (!globalAssets.luchImg) globalAssets.luchImg = await loadImage('Luch.png');
+        if (!globalAssets.starImg) globalAssets.starImg = await loadImage('Star.png');
+        if (!globalAssets.pointsImg) globalAssets.pointsImg = await loadImage('points.png');
+        
+        if (window.layerState.offers && window.layerState.offers.length > 0) {
+            for (let i = 0; i < window.layerState.offers.length; i++) {
+                let o = window.layerState.offers[i];
+                if (o.blankedBase64) {
+                    let img = await loadImage(o.blankedBase64);
+                    let canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    let ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    o.ref = {
+                        canvas: canvas,
+                        x: o.x,
+                        y: o.y,
+                        info: {
+                            ...o.info,
+                            blankedImgData: ctx.getImageData(0, 0, img.width, img.height)
+                        }
+                    };
+                    generateOfferCache(o, o.target.w, o.target.h);
+                }
+            }
+        }
+
+        setupPersistentCanvas();
+        renderLayerPanel(true);
+        window.updateCachedTextCanvas();
+        startAnimation();
     }
 };
 
 let selectedCategory = null; 
 let selectedBPStyle = null;
-let selectedBPSub = null; 
+let selectedBPSub = null; // Новая переменная для подменю Обычный/Доп
 let wizardMode = 'action'; 
 
+// Новая функция для выбора подкатегории Brawl Pass
 window.selectBPSub = function(subType) {
     selectedBPSub = subType;
     if (window.triggerHaptic) window.triggerHaptic();
 
+    // Сбрасываем чекбоксы
     document.getElementById('bp-sub-radio-normal').classList.remove('checked');
     document.getElementById('bp-sub-radio-additional').classList.remove('checked');
 
+    // Ставим галочку на выбранный
     document.getElementById(`bp-sub-radio-${subType}`).classList.add('checked');
 
+    // Показываем кнопку Далее
     document.getElementById('cat-btn-next').classList.add('show');
 };
 
@@ -8599,85 +8592,91 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
 };
 
 document.getElementById('dl-btn-save-project').onclick = async (e) => {
-    e.preventDefault();
-    window.triggerHaptic();
-    let btn = e.currentTarget;
-    if (btn.classList.contains('is-loading')) return; 
-    
-    btn.classList.add('is-loading');
-    btn.style.pointerEvents = 'none';
+    e.preventDefault();
+    window.triggerHaptic();
+    let btn = e.currentTarget;
+    if (btn.classList.contains('is-loading')) return; 
+    
+    let existingProjects = await getAllProjects();
+    if (existingProjects.length >= 12) {
+        alert('Достигнут лимит сохранённых работ (максимум 12). Удалите старые работы для сохранения новых.');
+        return;
+    }
+
+    btn.classList.add('is-loading');
+    btn.style.pointerEvents = 'none';
 
     try {
-        const db = await initDB();
-        const txCount = db.transaction(STORE_NAME, "readonly");
-        const countReq = txCount.objectStore(STORE_NAME).count();
-
-        countReq.onsuccess = async () => {
-            if (countReq.result >= 12) {
-                alert("Достигнут лимит сохранённых проектов (максимум 12). Пожалуйста, удалите старые работы для сохранения новых.");
-                btn.classList.remove('is-loading');
-                btn.style.pointerEvents = 'auto';
-                return;
+        let bgBase64 = null;
+        if (rawBgImage && rawBgImage.src) {
+            if (rawBgImage.src.startsWith('data:')) {
+                bgBase64 = rawBgImage.src;
+            } else {
+                let c = document.createElement('canvas');
+                c.width = rawBgImage.width || 1280;
+                c.height = rawBgImage.height || 720;
+                c.getContext('2d').drawImage(rawBgImage, 0, 0);
+                bgBase64 = c.toDataURL('image/jpeg', 0.85);
             }
+        }
 
-            // --- БЕЗОПАСНОЕ КОПИРОВАНИЕ СОСТОЯНИЯ ---
-            // Очищаем кэш и DOM-элементы, чтобы JSON не сломался
-            let stateToSave = JSON.parse(JSON.stringify(window.layerState, (key, value) => {
-                if (key === 'canvas' || key === 'blankedImgData' || key === 'cache') return undefined;
-                return value;
-            }));
+        let offersToSave = [];
+        if (window.layerState.offers && window.layerState.offers.length > 0) {
+            offersToSave = window.layerState.offers.map(o => {
+                let blankedBase64 = null;
+                if (o.ref && o.ref.info && o.ref.info.blankedImgData) {
+                    let c = document.createElement('canvas');
+                    c.width = o.ref.info.blankedImgData.width;
+                    c.height = o.ref.info.blankedImgData.height;
+                    c.getContext('2d').putImageData(o.ref.info.blankedImgData, 0, 0);
+                    blankedBase64 = c.toDataURL('image/png');
+                }
+                return {
+                    id: o.id,
+                    visible: o.visible,
+                    hasStroke: o.hasStroke,
+                    price: o.price,
+                    anim: o.anim,
+                    target: o.target,
+                    blankedBase64: blankedBase64,
+                    info: o.ref ? o.ref.info : null,
+                    x: o.ref ? o.ref.x : 0,
+                    y: o.ref ? o.ref.y : 0
+                };
+            });
+        }
 
-            // Вручную конвертируем холсты акций в Base64
-            if (window.layerState.offers && stateToSave.offers) {
-                stateToSave.offers.forEach((newO, i) => {
-                    let oldO = window.layerState.offers[i];
-                    
-                    if (!newO.ref) newO.ref = {};
-                    if (!newO.ref.info) newO.ref.info = { ...oldO.ref.info };
-
-                    // Сохраняем вырезанную акцию
-                    if (oldO.ref && oldO.ref.canvas) {
-                        newO.ref.canvasData = oldO.ref.canvas.toDataURL('image/png');
-                    }
-                    
-                    // Сохраняем фон акции без ценника
-                    if (oldO.ref && oldO.ref.info && oldO.ref.info.blankedImgData) {
-                        let tempC = document.createElement('canvas');
-                        tempC.width = oldO.ref.info.blankedImgData.width;
-                        tempC.height = oldO.ref.info.blankedImgData.height;
-                        tempC.getContext('2d').putImageData(oldO.ref.info.blankedImgData, 0, 0);
-                        newO.ref.info.blankedImgDataUrl = tempC.toDataURL('image/png');
-                    }
-                });
-            }
-
-            const projectData = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('ru-RU') + ' ' + new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'}),
-                layerState: stateToSave,
-                wizardMode: wizardMode,
-                bgBase64: rawBgImage ? getBase64Image(rawBgImage) : null,
-                previewBase64: document.getElementById('dl-preview-img').src
-            };
-
-            const txSave = db.transaction(STORE_NAME, "readwrite");
-            txSave.objectStore(STORE_NAME).add(projectData);
-            
-            txSave.oncomplete = () => {
-                let wrapper = document.getElementById('save-btn-wrapper');
-                wrapper.classList.add('hidden-animated');
-
-                setTimeout(() => {
-                    wrapper.style.display = 'none';
-                    btn.classList.remove('is-loading');
-                    btn.style.pointerEvents = 'auto';
-                    window.updateSavedCount();
-                    isCurrentProjectSaved = true;
-                }, 500); 
-            };
+        let project = {
+            id: Date.now().toString(),
+            timestamp: Date.now(),
+            title: window.layerState.isBrawlPassMode ? 'Brawl Pass' : 'Акция',
+            thumb: document.getElementById('dl-preview-img').src,
+            wizardMode: wizardMode,
+            selectedCategory: selectedCategory,
+            selectedBPStyle: selectedBPStyle,
+            selectedBPVariant: selectedBPVariant,
+            selectedBPSeason: window.layerState.bpSeason || 50,
+            selectedColor: selectedColor,
+            uploadMode: uploadMode,
+            bgBase64: bgBase64,
+            layerState: { ...window.layerState, offers: offersToSave }
         };
+
+        await saveProjectToDB(project);
+        window.isCurrentProjectSaved = true;
+        await window.updateSavedCount();
+
+        let wrapper = document.getElementById('save-btn-wrapper');
+        wrapper.classList.add('hidden-animated');
+
+        setTimeout(() => {
+            wrapper.style.display = 'none';
+            btn.classList.remove('is-loading');
+            btn.style.pointerEvents = 'auto';
+        }, 500);
     } catch (err) {
-        console.error("Ошибка сохранения:", err);
+        console.error(err);
+        alert("Ошибка сохранения: " + err.message);
         btn.classList.remove('is-loading');
         btn.style.pointerEvents = 'auto';
     }
@@ -9506,7 +9505,7 @@ window.updateActivePromoStar = function(param, value) {
 setTimeout(() => { window.renderPromoBgStars(); }, 150);
 
 
-const TARGET_DATE_STRING = "2026-05-07T11:00:00+03:00"; 
+const TARGET_DATE_STRING = "2026-05-06T11:00:00+03:00"; 
 
 
 window.initPromoTimer = function() {
