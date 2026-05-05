@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(75)";
+  const APP_VERSION = "v2.4.0(76)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3407,11 +3407,6 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-window.updateSavedCount = async () => {
-    let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = '0';
-};
-
 window.openSavedProjects = () => {
     document.getElementById('ios-dashboard').style.display = 'none';
     window.renderSavedProjects();
@@ -3596,21 +3591,6 @@ window.closeDownloadOverlay = () => {
     window.scrollTo(0,0);
 };
 
-window.deleteProject = async (id, btnEl) => {
-    console.log("Функция удаления отключена");
-};
-
-window.renderSavedProjects = async () => {
-    let emptyState = document.getElementById('sp-empty-state');
-    let contentState = document.getElementById('sp-content-state');
-    let container = document.getElementById('sp-list');
-    
-    emptyState.style.display = 'flex';
-    emptyState.classList.add('show');
-    contentState.style.display = 'none';
-    if (container) container.innerHTML = '';
-};
-
 const loadImage = (src) => new Promise((resolve) => {
   const img = new Image(); 
   if (src && !src.startsWith('data:') && !src.startsWith('blob:')) {
@@ -3620,10 +3600,6 @@ const loadImage = (src) => new Promise((resolve) => {
   img.onerror = () => resolve(null); 
   img.src = src;
 });
-
-window.loadProject = async (id) => {
-    console.log("Функция загрузки проектов отключена");
-};
 
 let selectedCategory = null; 
 let selectedBPStyle = null;
@@ -9427,6 +9403,447 @@ window.openBPFromPromo = function() {
         window.Telegram.WebApp.BackButton.show();
     }
 };
+
+// --- Инициализация локальной базы данных ---
+const DB_NAME = 'Snapi_v2_4_0(76)Test';
+const STORE_NAME = 'projects';
+const MAX_PROJECTS = 12; // Лимит проектов для экономии памяти устройства
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = (e) => {
+            let db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+        };
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject(e.target.error);
+    });
+}
+
+// --- Сохранение проекта ---
+document.getElementById('dl-btn-save-project').onclick = async (e) => {
+    e.preventDefault();
+    window.triggerHaptic();
+    let btn = e.currentTarget;
+    if (btn.classList.contains('is-loading')) return;
+
+    btn.classList.add('is-loading');
+    btn.style.pointerEvents = 'none';
+
+    try {
+        let db = await openDB();
+        
+        // Проверка лимита сохраненных работ
+        let count = await new Promise((resolve) => {
+            let req = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).count();
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(0);
+        });
+
+        if (count >= MAX_PROJECTS) {
+            alert('Достигнут лимит: можно сохранить максимум 12 работ. Пожалуйста, удалите старые проекты, чтобы сохранить новые.');
+            btn.classList.remove('is-loading');
+            btn.style.pointerEvents = 'auto';
+            return;
+        }
+
+        let previewSrc = document.getElementById('dl-preview-img').src;
+        let project = {
+            id: Date.now(),
+            title: window.layerState.isBrawlPassMode ? 'Brawl Pass' : 'Акция SNAPI',
+            date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+            preview: previewSrc,
+            wizardMode,
+            layerState: JSON.parse(JSON.stringify(window.layerState)),
+            bgSrc: rawBgImage ? rawBgImage.src : null,
+            selectedCategory,
+            selectedBPStyle,
+            selectedBPSub,
+            selectedBPVariant,
+            selectedBPSeason
+        };
+
+        // Удаляем несериализуемые элементы (canvases) из копии слоя
+        project.layerState.offers = undefined;
+
+        // Если это акция, конвертируем вырезанные акции в base64 для сохранения
+        if (!window.layerState.isBrawlPassMode && window.layerState.offers) {
+            project.offersData = window.layerState.offers.map(o => ({
+                price: o.price,
+                visible: o.visible,
+                src: o.ref.canvas.toDataURL('image/png'),
+                info: o.ref.info
+            }));
+        }
+
+        // Сохраняем в IndexedDB
+        await new Promise((resolve, reject) => {
+            let tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).put(project);
+            tx.oncomplete = resolve;
+            tx.onerror = reject;
+        });
+
+        let wrapper = document.getElementById('save-btn-wrapper');
+        wrapper.classList.add('hidden-animated');
+        
+        setTimeout(() => {
+            wrapper.style.display = 'none';
+            btn.classList.remove('is-loading');
+            btn.style.pointerEvents = 'auto';
+            isCurrentProjectSaved = true;
+            window.updateSavedCount();
+        }, 500);
+
+    } catch (err) {
+        console.error(err);
+        btn.classList.remove('is-loading');
+        btn.style.pointerEvents = 'auto';
+        alert('Ошибка при сохранении проекта. Убедитесь, что хватает памяти.');
+    }
+};
+
+// --- Подсчёт количества сохраненных проектов ---
+window.updateSavedCount = async () => {
+    try {
+        let db = await openDB();
+        let count = await new Promise((resolve) => {
+            let req = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).count();
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(0);
+        });
+        let countEl = document.getElementById('saved-count-val');
+        if (countEl) countEl.innerText = count;
+    } catch (e) {
+        console.error("DB error", e);
+    }
+};
+
+// --- Отрисовка списка работ в меню ---
+window.renderSavedProjects = async () => {
+    let emptyState = document.getElementById('sp-empty-state');
+    let contentState = document.getElementById('sp-content-state');
+    let container = document.getElementById('sp-list');
+    
+    try {
+        let db = await openDB();
+        let projects = await new Promise((resolve) => {
+            let req = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).getAll();
+            req.onsuccess = () => resolve(req.result || []);
+            req.onerror = () => resolve([]);
+        });
+
+        if (projects.length === 0) {
+            emptyState.style.display = 'flex';
+            emptyState.classList.add('show');
+            contentState.style.display = 'none';
+        } else {
+            emptyState.style.display = 'none';
+            emptyState.classList.remove('show');
+            contentState.style.display = 'flex';
+            container.innerHTML = '';
+
+            // Отображаем от новых к старым
+            projects.reverse().forEach(p => {
+                let row = document.createElement('div');
+                row.className = 'sp-row';
+                row.onclick = () => window.loadProject(p.id);
+
+                row.innerHTML = `
+                    <img src="${p.preview}" class="sp-img">
+                    <div class="sp-title">
+                        ${p.title}<br>
+                        <span style="font-size:13px; color:#8E8E93;">${p.date}</span>
+                    </div>
+                    <button class="sp-del-btn" onclick="event.stopPropagation(); window.deleteProject(${p.id}, this)">Удалить</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+    } catch(e) {
+        console.error("Error loading projects list", e);
+    }
+};
+
+// --- Удаление проекта ---
+window.deleteProject = async (id, btnEl) => {
+    if (window.triggerHaptic) window.triggerHaptic();
+    let row = btnEl.closest('.sp-row');
+    if (row) row.classList.add('deleting');
+
+    setTimeout(async () => {
+        let db = await openDB();
+        await new Promise((resolve) => {
+            let req = db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).delete(id);
+            req.onsuccess = resolve;
+        });
+        await window.updateSavedCount();
+        window.renderSavedProjects();
+    }, 400); // Ожидаем завершения анимации исчезновения
+};
+
+// --- Загрузка проекта в редактор ---
+window.loadProject = async (id) => {
+    let db = await openDB();
+    let project = await new Promise(r => {
+        let req = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get(id);
+        req.onsuccess = () => r(req.result);
+        req.onerror = () => r(null);
+    });
+
+    if (!project) return;
+    if (window.triggerHaptic) window.triggerHaptic();
+
+    document.getElementById('saved-projects-overlay').style.display = 'none';
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+
+    const cardsContainer = document.getElementById('cards-container');
+    const layerPanel = document.getElementById('layer-panel');
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
+
+    // Восстанавливаем сохраненные настройки
+    wizardMode = project.wizardMode;
+    selectedCategory = project.selectedCategory;
+    selectedBPStyle = project.selectedBPStyle;
+    selectedBPSub = project.selectedBPSub;
+    selectedBPVariant = project.selectedBPVariant;
+    selectedBPSeason = project.selectedBPSeason;
+    window.layerState = project.layerState;
+
+    if (project.bgSrc) {
+        let img = new Image();
+        img.crossOrigin = "anonymous";
+        await new Promise(r => { img.onload = r; img.onerror = r; img.src = project.bgSrc; });
+        rawBgImage = img;
+    } else {
+        rawBgImage = null;
+    }
+
+    isCurrentProjectSaved = true;
+
+    // Распределяем логику загрузки в зависимости от типа проекта
+    if (window.layerState.isBrawlPassMode) {
+        let season = window.layerState.bpSeason || 50;
+        const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
+
+        if (project.selectedBPStyle === 2) {
+            if (!globalAssets.style2Gems) globalAssets.style2Gems = await load('BP/bp_gems.png');
+            if (!globalAssets.style2Points) globalAssets.style2Points = await load('BP/bp_style2_points.png');
+            if (!globalAssets.style2Stars) globalAssets.style2Stars = await load('BP/bp_stars_style2.png');
+            if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
+            if (!globalAssets.style2ProIcon) globalAssets.style2ProIcon = await load('BP/bp_icon_pro_pass_icon.png');
+            if (!globalAssets.style2BPP) globalAssets.style2BPP = await load('BP/bp_icon_brawl_pass_plus.png');
+            if (!globalAssets.style2BP) globalAssets.style2BP = await load('BP/bp_icon_brawl_pass.png');
+            if (!globalAssets.style2YellowPlate) globalAssets.style2YellowPlate = await load('BP/bp_price_brawl_pass.png');
+            if (!globalAssets.style2BluePlate) globalAssets.style2BluePlate = await load('BP/bp_price_bg_right.png');
+            if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
+            if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+
+            setupPersistentCanvas();
+            renderLayerPanel(true);
+            window.updateCachedTextCanvas();
+            startAnimation();
+        } else if (project.selectedBPStyle === 3) {
+            if (!globalAssets.s3Rays) globalAssets.s3Rays = await load('BP/bp_luch_3style.png');
+            if (!globalAssets.s3Dots) globalAssets.s3Dots = await load('BP/bp_points_3style.png');
+            if (!globalAssets.s3Details) globalAssets.s3Details = await load('BP/bp_details_3style.png');
+            if (!globalAssets[`s3PanelL_${season}`]) globalAssets[`s3PanelL_${season}`] = await load(`BP/bp_panel_left${season}.png`);
+            globalAssets.s3PanelL = globalAssets[`s3PanelL_${season}`];
+            if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await load('BP/bp_price_bg_left.png');
+            if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await load('BP/bp_panel_right.png');
+            if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await load('BP/bp_price_bg_right.png');
+            if (!globalAssets.s3PanelR) globalAssets.s3PanelR = await load('BP/ProPass_bp.png');
+            if (!globalAssets.s3Stars) globalAssets.s3Stars = await load('BP/bp_stars_3style.png');
+
+            setupPersistentCanvas();
+            renderLayerPanel(true);
+            window.updateCachedTextCanvas();
+            startAnimation();
+        } else if (project.selectedBPStyle === 'dop') {
+            if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
+            if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
+            if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
+            if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
+            if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+
+            let panelSrc = 'BP/bp_panel_right.png';
+            let priceSrc = 'BP/bp_price_bg_right.png';
+            if (window.layerState.bpVariantIndex === 1) {
+                panelSrc = `BP/bp_panel_left${season}.png`;
+                priceSrc = 'BP/bp_price_bg_left.png';
+            } else if (window.layerState.bpVariantIndex === 2) {
+                panelSrc = `BP/bp_panel_left${season}.png`;
+                priceSrc = 'BP/bp_price_brawl_pass.png';
+            }
+            globalAssets.dopPanelL = await load(panelSrc);
+            globalAssets.dopPrice = await load(priceSrc);
+            if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
+
+            setupPersistentCanvas();
+            renderLayerPanel(true);
+            window.updateCachedTextCanvas();
+            startAnimation();
+        } else {
+            // Восстановление 1-го классического стиля
+            const [luch, starsEff, pointEff, star, brawler2, brawler1, panelL, priceL, panelR, priceR] = await Promise.all([
+                load('BP/Luch.png'), load('BP/bp_starsEff.png'), load('BP/bp_pointEff.png'), load('BP/bp_star.png'),
+                load(`BP/brawler_s${season}_2.png`), load(`BP/brawler_s${season}_1.png`),
+                load(`BP/bp_panel_left${season}.png`), load('BP/bp_price_bg_left.png'),
+                load('BP/bp_panel_right.png'), load('BP/bp_price_bg_right.png')
+            ]);
+
+            globalAssets.luchImg = luch;
+            globalAssets.starsEff = starsEff;
+            globalAssets.bpPointsImg = pointEff;
+            globalAssets.bpPriceL = priceL;
+            globalAssets.bpPriceR = priceR;
+            globalAssets.bpStar = star;
+            globalAssets.bpPanelL = panelL;
+            globalAssets.bpPanelR = panelR;
+            globalAssets[`brawler_${season}_2`] = brawler2;
+            globalAssets[`brawler_${season}_1`] = brawler1;
+
+            const WIDTH = 1200;
+            const HEIGHT = 675;
+            const c = document.createElement('canvas');
+            c.width = WIDTH; c.height = HEIGHT;
+            const ctx = c.getContext('2d');
+
+            let startX = WIDTH * 0.39 + ((WIDTH * 0.34 - WIDTH * 0.39) / (HEIGHT * 0.50)) * (-20);
+            let endX = WIDTH * 0.316 + ((WIDTH * 0.316 - WIDTH * 0.37) / (HEIGHT - HEIGHT * 0.46)) * 20;
+            let config = BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50];
+
+            if (window.layerState.isGeneratedBg && rawBgImage) {
+                ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT);
+            } else {
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(0, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(0, HEIGHT + 20); ctx.closePath();
+                ctx.clip();
+                let grad1 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+                grad1.addColorStop(0, window.layerState.tempGradL0 || config.gradientLeft[0]);
+                grad1.addColorStop(1, window.layerState.tempGradL1 || config.gradientLeft[1]);
+                ctx.fillStyle = grad1; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+                if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+                ctx.restore();
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
+                ctx.clip();
+                let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
+                grad2.addColorStop(0, window.layerState.tempGradR0 || config.gradientRight[0]);
+                grad2.addColorStop(1, window.layerState.tempGradR1 || config.gradientRight[1]);
+                ctx.fillStyle = grad2; ctx.fillRect(0, 0, WIDTH, HEIGHT);
+                if (rawBgImage) { ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(rawBgImage, 0, 0, WIDTH, HEIGHT); }
+                ctx.restore();
+            }
+
+            ctx.save();
+            let currentLineColor = window.layerState.tempLineColor || config.lineColor;
+            if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+                const lineColors = { 'green': '#5ee568', 'blue': '#46b3ff', 'orange': '#ffcc00', 'purple': '#c861ff', 'black': '#666' };
+                currentLineColor = window.layerState.tempLineColor || lineColors[window.layerState.bgColorType] || config.lineColor;
+            }
+            ctx.strokeStyle = currentLineColor;
+            ctx.lineWidth = 9;
+            ctx.lineJoin = 'miter';
+            ctx.beginPath();
+            ctx.moveTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20);
+            ctx.stroke();
+            ctx.restore();
+
+            let starH = HEIGHT * 0.70;
+            let starY = HEIGHT - (HEIGHT * 0.16 + 56);
+
+            const drawLargeGlow = (x, y, radius) => {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                let rg = ctx.createRadialGradient(x, y, 0, x, y, radius);
+                rg.addColorStop(0, 'rgba(255,255,255,0.8)');
+                rg.addColorStop(0.4, 'rgba(255,255,255,0.2)');
+                rg.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = rg;
+                ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+                ctx.restore();
+            };
+
+            if (!window.layerState.isGeneratedBg) {
+                drawLargeGlow(WIDTH / 2, starY - (starH / 2), 320);
+            }
+
+            if (star) {
+                let sw = starH * (star.width / star.height);
+                ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
+            }
+
+            if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
+            if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
+
+            let cxL = (WIDTH * 0.39) - 16;
+            let cxR = (WIDTH * 0.589) - 16;
+
+            drawLargeGlow(cxR - 40, starY - HEIGHT * 0.2, 280);
+            const drawShadow = (x, y) => {
+                ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y, WIDTH * 0.18 / 2, 12.5, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+            };
+            drawShadow(cxR, starY - 10 + 12.5);
+
+            drawLargeGlow(cxL + 20, starY - HEIGHT * 0.2, 180);
+            drawShadow(cxL, starY - 10 + 12.5);
+
+            window.bpForegroundImage = new Image();
+            window.bpForegroundImage.onload = () => {
+                setupPersistentCanvas();
+                renderLayerPanel(true);
+                calculateLayoutTarget();
+            };
+            window.bpForegroundImage.src = c.toDataURL('image/png');
+        }
+    } else {
+        // Восстановление проекта режима «Акция»
+        if (project.offersData) {
+            window.layerState.offers = [];
+            for (let i = 0; i < project.offersData.length; i++) {
+                let oData = project.offersData[i];
+                let img = new Image();
+                await new Promise(r => { img.onload = r; img.src = oData.src; });
+
+                let c = document.createElement('canvas');
+                c.width = img.width; c.height = img.height;
+                c.getContext('2d').drawImage(img, 0, 0);
+
+                window.layerState.offers.push({
+                    id: i,
+                    visible: oData.visible,
+                    hasStroke: true,
+                    price: oData.price,
+                    ref: { canvas: c, info: oData.info },
+                    anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
+                    target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 },
+                    cache: null
+                });
+            }
+        }
+
+        const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
+        if (!globalAssets.luchImg) globalAssets.luchImg = await load('Luch.png');
+        if (!globalAssets.starImg) globalAssets.starImg = await load('Star.png');
+        if (!globalAssets.pointsImg) globalAssets.pointsImg = await load('points.png');
+
+        setupPersistentCanvas();
+        renderLayerPanel(true);
+        calculateLayoutTarget();
+    }
+};
+
 </script>
 </body>
 </html>
