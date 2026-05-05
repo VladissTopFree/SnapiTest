@@ -6,13 +6,13 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(70)";
+  const APP_VERSION = "v2.4.0(71)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
 
-  const DB_PREFIX = "Snapi_v2_4_0(70)";
+  const DB_PREFIX = "Snapi_v2_4_0(71)";
 
   window.isNewUser = localStorage.getItem(`${DB_PREFIX}_visited`) === null;
   if (window.isNewUser) {
@@ -9520,7 +9520,7 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
 
         let compressedBg = null;
         if (rawBgImage && rawBgImage.src) {
-            compressedBg = await compressImage(rawBgImage.src, 900, 0.5);
+            compressedBg = await compressImage(rawBgImage.src, 600, 0.4);        
         }
 
         let project = {
