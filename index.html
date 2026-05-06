@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(97)";
+  const APP_VERSION = "v2.4.0(98)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6781,32 +6781,32 @@ function drawScene() {
             const drawBrawler = (img, obj) => {
                 if (!img) return;
                 ctx.save();
-                ctx.translate(obj.x*s, obj.y*s);
+                ctx.translate(obj.x*s, obj.y*s); 
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
-
-                // Фиксируем исходный размер, чтобы он не зависел от реального разрешения скачанного файла
-                let fixedNativeW = 2500;
-                let fixedNativeH = fixedNativeW * (img.height / img.width);
-
-                // Прямая привязка к s (W/3840 это s/3). Оставляем /3 для совместимости старых конфигов
-                let baseScale = s / 3;
+                
+                let baseScale = W / 3840;
                 ctx.scale(obj.scale * (obj.scaleX||1) * baseScale, obj.scale * (obj.scaleY||1) * baseScale);
-
+                
+                // НОРМАЛИЗАЦИЯ: приводим высоту ВСЕХ картинок к единому эталону 3200px.
+                // Теперь scale: 0.3 в конфиге будет работать одинаково для любой картинки!
+                let targetH = 3200;
+                let targetW = targetH * (img.width / img.height);
+                
                 if (obj.flipH) {
-                    ctx.translate(fixedNativeW, 0);
+                    ctx.translate(targetW, 0);
                     ctx.scale(-1, 1);
                 }
-
-                ctx.shadowColor = "white"; ctx.shadowBlur = 0;
-                ctx.shadowOffsetX = 3 * s / baseScale;
+                
+                ctx.shadowColor = "white"; ctx.shadowBlur = 0; 
+                ctx.shadowOffsetX = 3 * s / baseScale; 
                 ctx.shadowOffsetY = -6 * s / baseScale;
-                ctx.drawImage(img, 0, 0, fixedNativeW, fixedNativeH);
-
-                ctx.shadowOffsetX = 2 * s / baseScale;
-                ctx.shadowOffsetY = -4 * s / baseScale;
-                ctx.drawImage(img, 0, 0, fixedNativeW, fixedNativeH);
-
+                ctx.drawImage(img, 0, 0, targetW, targetH);
+                
+                ctx.shadowOffsetX = 2 * s / baseScale; 
+                ctx.shadowOffsetY = -4 * s / baseScale; 
+                ctx.drawImage(img, 0, 0, targetW, targetH);
+                
                 ctx.restore();
             };
 
