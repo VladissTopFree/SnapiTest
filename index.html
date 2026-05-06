@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(101)";
+  const APP_VERSION = "v2.4.0(102)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -4283,12 +4283,22 @@ function processImages(filesParam) {
   
   filesToProcess = files.length;
 
-  setTimeout(() => {
+setTimeout(async () => {
       for(let i = 0; i < files.length; i++) {
-        const img = new Image();
-        img.onload = () => runMagicLogic(img);
-        img.onerror = () => checkBatchCompletion(); 
-        img.src = URL.createObjectURL(files[i]);
+          await new Promise((resolve) => {
+              const img = new Image();
+              img.onload = () => {
+                  setTimeout(() => {
+                      runMagicLogic(img);
+                      resolve();
+                  }, 100);
+              };
+              img.onerror = () => {
+                  checkBatchCompletion(); 
+                  resolve();
+              };
+              img.src = URL.createObjectURL(files[i]);
+          });
       }
   }, 50);
 }
@@ -5851,13 +5861,22 @@ function drawPriceText(ctx, w, h, textStr, info) {
 }
 
 function runMagicLogic(img) {
-    const w = img.width; 
-    const h = img.height;
+    let w = img.width; 
+    let h = img.height;
+    
+    const MAX_WIDTH = 1200;
+    if (w > MAX_WIDTH) {
+        h = Math.round(h * (MAX_WIDTH / w));
+        w = MAX_WIDTH;
+    }
+
     const tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = w; 
     tmpCanvas.height = h;
     const tCtx = tmpCanvas.getContext('2d', { willReadFrequently: true });
-    tCtx.drawImage(img, 0, 0);
+    tCtx.imageSmoothingEnabled = true;
+    tCtx.imageSmoothingQuality = 'high';
+    tCtx.drawImage(img, 0, 0, w, h);
     
     const imgData = tCtx.getImageData(0, 0, w, h);
     const data = imgData.data;
