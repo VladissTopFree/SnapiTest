@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(83)";
+  const APP_VERSION = "v2.4.0(84)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3407,15 +3407,15 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-const PROJECTS_DB_KEY = 'Snapi_v2_0_projects83';
+const PROJECTS_DB_KEY = 'Snapi_v2_0_projects84';
 
-Object.keys(localStorage).forEach(key => {
-    if ((key.includes('snapi') || key.includes('Snapi')) && key !== PROJECTS_DB_KEY && key !== 'Snapi_visited' && key !== 'Snapi_last_nick') {
-        localStorage.removeItem(key);
-    }
-});
+window.updateSavedCount = async () => {
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
+    let countEl = document.getElementById('saved-count-val');
+    if (countEl) countEl.innerText = projects.length.toString();
+};
 
-window.updateSavedCount = () => {
+window.openSavedProjects = () => {
     document.getElementById('ios-dashboard').style.display = 'none';
     window.renderSavedProjects();
     document.getElementById('saved-projects-overlay').style.display = 'flex';
@@ -3600,17 +3600,22 @@ window.closeDownloadOverlay = () => {
 };
 
 window.deleteProject = async (id, btnEl) => {
-    window.triggerHaptic();
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
+    projects = projects.filter(p => p.id !== id);
+    localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
+    
     let row = btnEl.closest('.sp-row');
     if (row) {
         row.classList.add('deleting');
         setTimeout(() => {
-            let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-            projects = projects.filter(p => p.id !== id);
-            localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
-            window.renderSavedProjects();
+            row.remove();
             window.updateSavedCount();
-        }, 400); 
+            if (projects.length === 0) {
+                document.getElementById('sp-empty-state').style.display = 'flex';
+                document.getElementById('sp-empty-state').classList.add('show');
+                document.getElementById('sp-content-state').style.display = 'none';
+            }
+        }, 400);
     }
 };
 
@@ -3618,8 +3623,9 @@ window.renderSavedProjects = async () => {
     let emptyState = document.getElementById('sp-empty-state');
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
+    
     let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-
+    
     if (projects.length === 0) {
         emptyState.style.display = 'flex';
         emptyState.classList.add('show');
@@ -3629,20 +3635,24 @@ window.renderSavedProjects = async () => {
         emptyState.style.display = 'none';
         emptyState.classList.remove('show');
         contentState.style.display = 'block';
-
-        let html = '';
-        projects.slice().reverse().forEach(p => {
-            html += `
-            <div class="sp-row" id="proj-${p.id}" onclick="window.loadProject('${p.id}')">
-                <img src="${p.thumb || ''}" class="sp-img" onerror="this.style.display='none'">
-                <div style="flex-grow: 1; overflow: hidden;">
-                    <div class="sp-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title}</div>
-                    <div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-top: 2px;">${p.date}</div>
-                </div>
-                <button class="sp-del-btn" onclick="event.stopPropagation(); window.deleteProject('${p.id}', this)">Удалить</button>
-            </div>`;
-        });
-        if (container) container.innerHTML = html;
+        
+        if (container) {
+            container.innerHTML = '';
+            projects.forEach(p => {
+                let title = p.wizardMode === 'bp' ? 'Brawl Pass' : 'Акция';
+                if (p.layerState.bpStyleIndex && p.layerState.bpStyleIndex !== 'dop') title += ` (Стиль #${p.layerState.bpStyleIndex})`;
+                if (p.layerState.bpStyleIndex === 'dop') title += ` (Доп. стиль)`;
+                
+                let html = `
+                    <div class="sp-row">
+                        <img src="${p.previewData}" class="sp-img" onclick="loadProject(${p.id})">
+                        <div class="sp-title" onclick="loadProject(${p.id})">${title}<br><span style="font-size:12px; color:#8E8E93;">${p.date}</span></div>
+                        <button class="sp-del-btn" onclick="deleteProject(${p.id}, this)">Удалить</button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
     }
 };
 
@@ -3657,61 +3667,51 @@ const loadImage = (src) => new Promise((resolve) => {
 });
 
 window.loadProject = async (id) => {
-    window.triggerHaptic();
     let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    let p = projects.find(x => x.id === id);
-    if (!p) return;
+    let proj = projects.find(p => p.id === id);
+    if (!proj) return;
 
+    window.layerState = proj.layerState;
+    wizardMode = proj.wizardMode;
+    selectedCategory = proj.selectedCategory;
+    selectedBPStyle = proj.selectedBPStyle;
+    selectedBPVariant = proj.selectedBPVariant;
+    selectedBPSub = proj.selectedBPSub;
+    selectedColor = proj.selectedColor;
+    
     document.getElementById('saved-projects-overlay').style.display = 'none';
-    document.getElementById('result-box').style.display = 'block';
-    
-    document.getElementById('cards-container').innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
-    let layerPanel = document.getElementById('layer-panel');
-    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div></div>';
-    layerPanel.style.display = 'flex';
-    
-    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
-
-    selectedCategory = p.category;
-    wizardMode = p.wizardMode;
-
-    try {
-        window.layerState = JSON.parse(p.state);
-    } catch(e) {
-        console.error("Ошибка парсинга layerState", e);
-    }
-
-    if (p.bgSrc) {
-        let img = new Image();
-        img.crossOrigin = "anonymous";
-        await new Promise((resolve) => {
-            img.onload = resolve;
-            img.onerror = resolve;
-            img.src = p.bgSrc;
-        });
-        rawBgImage = img;
-    } else if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
-        rawBgImage = await createGradientBg(window.layerState.bgColorType);
-    } else {
-        rawBgImage = null;
-    }
-
     isCurrentProjectSaved = true;
 
-    if (selectedCategory === 'bp') {
-        if (window.layerState.bpStyleIndex === 2) {
-            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
-        } else if (window.layerState.bpStyleIndex === 3) {
-            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
-        } else if (window.layerState.bpStyleIndex === 'dop') {
-            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
+    const resumeApp = () => {
+        if (wizardMode === 'bp') {
+            if (window.layerState.bpStyleIndex === 2) {
+                if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
+            } else if (window.layerState.bpStyleIndex === 3) {
+                if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
+            } else if (window.layerState.bpStyleIndex === 'dop') {
+                if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
+            } else {
+                generateBrawlPassTest();
+            }
         } else {
-            generateBrawlPassTest();
+            // Для обычных акций
+            setupPersistentCanvas();
+            renderLayerPanel(true);
+            calculateLayoutTarget();
+            document.getElementById('result-box').style.display = 'block';
         }
+    };
+
+    if (proj.bgDataUrl) {
+        let img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+            rawBgImage = img;
+            resumeApp();
+        };
+        img.src = proj.bgDataUrl;
     } else {
-        setupPersistentCanvas();
-        renderLayerPanel(true);
-        calculateLayoutTarget();
+        resumeApp();
     }
 };
 
@@ -8474,106 +8474,70 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
     e.preventDefault();
     window.triggerHaptic();
     let btn = e.currentTarget;
-    if (btn.classList.contains('is-loading')) return;
-    
+    if (btn.classList.contains('is-loading')) return; 
+
+    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
+    if (projects.length >= 12) {
+        alert("Достигнут лимит в 12 сохранённых проектов. Пожалуйста, очистите данные через настройки приложения или удалите старые работы из списка.");
+        return;
+    }
+
     btn.classList.add('is-loading');
     btn.style.pointerEvents = 'none';
 
-    try {
-        let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-        
-        if (projects.length >= 12) {
-            alert("Достигнут лимит в 12 сохраненных работ. Пожалуйста, удалите старые проекты или очистите данные приложения через Настройки.");
+    // Сжатие фона, чтобы не превысить лимит localStorage
+    let bgDataUrl = null;
+    if (rawBgImage) {
+        let c = document.createElement('canvas');
+        let maxW = 1200;
+        let scale = Math.min(1, maxW / rawBgImage.width);
+        c.width = rawBgImage.width * scale;
+        c.height = rawBgImage.height * scale;
+        let ctx = c.getContext('2d');
+        ctx.drawImage(rawBgImage, 0, 0, c.width, c.height);
+        bgDataUrl = c.toDataURL('image/jpeg', 0.6);
+    }
+
+    let pData = document.getElementById('dl-preview-img').src;
+    
+    // Очистка тяжелых холстов из кэша перед сохранением json
+    let cleanLayerState = JSON.parse(JSON.stringify(window.layerState));
+    if (cleanLayerState.offers) {
+        cleanLayerState.offers.forEach(o => {
+            delete o.ref;
+            delete o.cache;
+        });
+    }
+
+    let newProject = {
+        id: Date.now(),
+        date: new Date().toLocaleString('ru-RU', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'}),
+        wizardMode,
+        selectedCategory,
+        selectedBPStyle,
+        selectedBPVariant,
+        selectedBPSub,
+        selectedColor,
+        layerState: cleanLayerState,
+        previewData: pData,
+        bgDataUrl: bgDataUrl
+    };
+
+    projects.push(newProject);
+    localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
+    window.updateSavedCount();
+    isCurrentProjectSaved = true;
+
+    setTimeout(() => {
+        let wrapper = document.getElementById('save-btn-wrapper');
+        wrapper.classList.add('hidden-animated');
+
+        setTimeout(() => {
+            wrapper.style.display = 'none';
             btn.classList.remove('is-loading');
             btn.style.pointerEvents = 'auto';
-            return; 
-        }
-
-        // 1. Создаем миниатюру проекта
-        let thumbData = "";
-        if (persistentCanvas && persistentCanvas.width > 0) {
-            let thumbC = document.createElement('canvas');
-            let tW = 200;
-            let tH = Math.round((persistentCanvas.height / persistentCanvas.width) * tW);
-            thumbC.width = tW; 
-            thumbC.height = tH;
-            let tCtx = thumbC.getContext('2d');
-            tCtx.imageSmoothingEnabled = true;
-            tCtx.imageSmoothingQuality = 'high';
-            tCtx.drawImage(persistentCanvas, 0, 0, tW, tH);
-            thumbData = thumbC.toDataURL('image/jpeg', 0.6);
-        }
-
-        // 2. ОПТИМИЗАЦИЯ ФОНА (ГЛАВНАЯ ПРИЧИНА ПЕРЕПОЛНЕНИЯ)
-        let finalBgSrc = null;
-        if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
-            // Если фон это сгенерированный градиент, НЕ сохраняем саму картинку. 
-            // Она весит 2мб, мы её просто перерисуем при загрузке.
-            finalBgSrc = null;
-        } else if (rawBgImage && rawBgImage.src) {
-            if (rawBgImage.src.length < 500 && !rawBgImage.src.startsWith('blob:') && !rawBgImage.src.startsWith('data:')) {
-                finalBgSrc = rawBgImage.src;
-            } else {
-                let bgC = document.createElement('canvas');
-                let scale = Math.min(1024 / rawBgImage.width, 576 / rawBgImage.height, 1);
-                bgC.width = rawBgImage.width * scale;
-                bgC.height = rawBgImage.height * scale;
-                let bgCtx = bgC.getContext('2d');
-                bgCtx.imageSmoothingEnabled = true;
-                bgCtx.imageSmoothingQuality = 'high';
-                bgCtx.drawImage(rawBgImage, 0, 0, bgC.width, bgC.height);
-                finalBgSrc = bgC.toDataURL('image/jpeg', 0.5); 
-            }
-        }
-
-        // 3. Очищаем лишние данные из стейта
-        let safeState = JSON.stringify(window.layerState, (key, value) => {
-            if (key === 'ref' || key === 'cache' || key === 'target' || key === 'anim') return undefined;
-            return value;
-        });
-
-        // 4. Формируем объект
-        let project = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleString('ru-RU', {day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit'}),
-            title: (window.layerState.textValue || 'Без названия').substring(0, 16),
-            category: selectedCategory,
-            wizardMode: wizardMode,
-            thumb: thumbData,
-            state: safeState,
-            bgSrc: finalBgSrc 
-        };
-
-        // 5. Сохраняем в БД
-        projects.push(project);
-        localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
-        
-        isCurrentProjectSaved = true;
-        window.updateSavedCount();
-
-        // 6. Запускаем анимацию успешного сохранения
-        setTimeout(() => {
-            let wrapper = document.getElementById('save-btn-wrapper');
-            wrapper.classList.add('hidden-animated');
-
-            setTimeout(() => {
-                wrapper.style.display = 'none';
-                btn.classList.remove('is-loading');
-                btn.style.pointerEvents = 'auto';
-            }, 500); 
-        }, 800);
-
-    } catch (err) {
-        console.error(err);
-        // Отлавливаем ошибку переполнения памяти
-        if (err.name === 'QuotaExceededError' || err.message.includes('Quota')) {
-            alert("Ошибка сохранения: недостаточно памяти в браузере. Удалите пару старых работ.");
-        } else {
-            alert("Произошла непредвиденная ошибка при сохранении проекта.");
-        }
-        btn.classList.remove('is-loading');
-        btn.style.pointerEvents = 'auto';
-    }
+        }, 500); 
+    }, 800);
 };
 
 document.getElementById('dl-btn-actual-download').onclick = (e) => {
