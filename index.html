@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(81)";
+  const APP_VERSION = "v2.4.0(82)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3407,7 +3407,7 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-const PROJECTS_DB_KEY = 'Snapi_v2_0_projects';
+const PROJECTS_DB_KEY = 'Snapi_v2_0_projects82';
 
 window.updateSavedCount = () => {
     let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
@@ -8480,14 +8480,14 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
     try {
         let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
         
-        // Проверка лимита на 12 проектов
         if (projects.length >= 12) {
-            alert("Достигнут лимит в 12 сохраненных работ. Пожалуйста, удалите старые проекты по одному или полностью очистите данные приложения через Настройки.");
+            alert("Достигнут лимит в 12 сохраненных работ. Пожалуйста, удалите старые проекты или очистите данные приложения через Настройки.");
             btn.classList.remove('is-loading');
             btn.style.pointerEvents = 'auto';
-            return; // Прерываем сохранение
+            return; 
         }
 
+        // 1. Создаем миниатюру проекта
         let thumbData = "";
         if (persistentCanvas && persistentCanvas.width > 0) {
             let thumbC = document.createElement('canvas');
@@ -8502,11 +8502,35 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
             thumbData = thumbC.toDataURL('image/jpeg', 0.6);
         }
 
+        // 2. СЖАТИЕ ФОНА ДЛЯ ОБХОДА ЛИМИТОВ ПАМЯТИ
+        let finalBgSrc = null;
+        if (rawBgImage && rawBgImage.src) {
+            // Если это короткий путь (например, bg/bg1.png), оставляем как есть
+            if (rawBgImage.src.length < 500 && !rawBgImage.src.startsWith('blob:')) {
+                finalBgSrc = rawBgImage.src;
+            } else {
+                // Если это тяжелый Blob или сгенерированный Base64 градиент, сжимаем его
+                let bgC = document.createElement('canvas');
+                // Ограничиваем максимальное разрешение фона до 1280x720 для экономии
+                let scale = Math.min(1280 / rawBgImage.width, 720 / rawBgImage.height, 1);
+                bgC.width = rawBgImage.width * scale;
+                bgC.height = rawBgImage.height * scale;
+                let bgCtx = bgC.getContext('2d');
+                bgCtx.imageSmoothingEnabled = true;
+                bgCtx.imageSmoothingQuality = 'high';
+                bgCtx.drawImage(rawBgImage, 0, 0, bgC.width, bgC.height);
+                // Переводим в JPEG с качеством 50%
+                finalBgSrc = bgC.toDataURL('image/jpeg', 0.5); 
+            }
+        }
+
+        // 3. Очищаем лишние данные из стейта
         let safeState = JSON.stringify(window.layerState, (key, value) => {
             if (key === 'ref' || key === 'cache' || key === 'target' || key === 'anim') return undefined;
             return value;
         });
 
+        // 4. Формируем объект
         let project = {
             id: Date.now().toString(),
             date: new Date().toLocaleString('ru-RU', {day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit'}),
@@ -8515,15 +8539,17 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
             wizardMode: wizardMode,
             thumb: thumbData,
             state: safeState,
-            bgSrc: rawBgImage ? rawBgImage.src : null
+            bgSrc: finalBgSrc 
         };
 
+        // 5. Сохраняем в БД
         projects.push(project);
         localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
         
         isCurrentProjectSaved = true;
         window.updateSavedCount();
 
+        // 6. Запускаем анимацию успешного сохранения
         setTimeout(() => {
             let wrapper = document.getElementById('save-btn-wrapper');
             wrapper.classList.add('hidden-animated');
@@ -8537,7 +8563,12 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
 
     } catch (err) {
         console.error(err);
-        alert("Произошла ошибка при сохранении проекта.");
+        // Отлавливаем ошибку переполнения памяти
+        if (err.name === 'QuotaExceededError' || err.message.includes('Quota')) {
+            alert("Ошибка сохранения: недостаточно памяти в браузере. Удалите пару старых работ.");
+        } else {
+            alert("Произошла непредвиденная ошибка при сохранении проекта.");
+        }
         btn.classList.remove('is-loading');
         btn.style.pointerEvents = 'auto';
     }
