@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(82)";
+  const APP_VERSION = "v2.4.0(83)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3407,15 +3407,15 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-const PROJECTS_DB_KEY = 'Snapi_v2_0_projects82';
+const PROJECTS_DB_KEY = 'Snapi_v2_0_projects83';
+
+Object.keys(localStorage).forEach(key => {
+    if ((key.includes('snapi') || key.includes('Snapi')) && key !== PROJECTS_DB_KEY && key !== 'Snapi_visited' && key !== 'Snapi_last_nick') {
+        localStorage.removeItem(key);
+    }
+});
 
 window.updateSavedCount = () => {
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = projects.length.toString();
-};
-
-window.openSavedProjects = () => {
     document.getElementById('ios-dashboard').style.display = 'none';
     window.renderSavedProjects();
     document.getElementById('saved-projects-overlay').style.display = 'flex';
@@ -3690,6 +3690,8 @@ window.loadProject = async (id) => {
             img.src = p.bgSrc;
         });
         rawBgImage = img;
+    } else if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+        rawBgImage = await createGradientBg(window.layerState.bgColorType);
     } else {
         rawBgImage = null;
     }
@@ -8502,24 +8504,24 @@ document.getElementById('dl-btn-save-project').onclick = (e) => {
             thumbData = thumbC.toDataURL('image/jpeg', 0.6);
         }
 
-        // 2. СЖАТИЕ ФОНА ДЛЯ ОБХОДА ЛИМИТОВ ПАМЯТИ
+        // 2. ОПТИМИЗАЦИЯ ФОНА (ГЛАВНАЯ ПРИЧИНА ПЕРЕПОЛНЕНИЯ)
         let finalBgSrc = null;
-        if (rawBgImage && rawBgImage.src) {
-            // Если это короткий путь (например, bg/bg1.png), оставляем как есть
-            if (rawBgImage.src.length < 500 && !rawBgImage.src.startsWith('blob:')) {
+        if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
+            // Если фон это сгенерированный градиент, НЕ сохраняем саму картинку. 
+            // Она весит 2мб, мы её просто перерисуем при загрузке.
+            finalBgSrc = null;
+        } else if (rawBgImage && rawBgImage.src) {
+            if (rawBgImage.src.length < 500 && !rawBgImage.src.startsWith('blob:') && !rawBgImage.src.startsWith('data:')) {
                 finalBgSrc = rawBgImage.src;
             } else {
-                // Если это тяжелый Blob или сгенерированный Base64 градиент, сжимаем его
                 let bgC = document.createElement('canvas');
-                // Ограничиваем максимальное разрешение фона до 1280x720 для экономии
-                let scale = Math.min(1280 / rawBgImage.width, 720 / rawBgImage.height, 1);
+                let scale = Math.min(1024 / rawBgImage.width, 576 / rawBgImage.height, 1);
                 bgC.width = rawBgImage.width * scale;
                 bgC.height = rawBgImage.height * scale;
                 let bgCtx = bgC.getContext('2d');
                 bgCtx.imageSmoothingEnabled = true;
                 bgCtx.imageSmoothingQuality = 'high';
                 bgCtx.drawImage(rawBgImage, 0, 0, bgC.width, bgC.height);
-                // Переводим в JPEG с качеством 50%
                 finalBgSrc = bgC.toDataURL('image/jpeg', 0.5); 
             }
         }
