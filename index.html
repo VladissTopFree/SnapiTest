@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(84)";
+  const APP_VERSION = "v2.4.0(85)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -3407,12 +3407,15 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-const PROJECTS_DB_KEY = 'Snapi_v2_0_projects84';
-
 window.updateSavedCount = async () => {
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
     let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = projects.length.toString();
+    if (!countEl) return;
+    try {
+        let keys = Object.keys(localStorage).filter(k => k.startsWith('Snapi_project_'));
+        countEl.innerText = keys.length;
+    } catch(e) {
+        countEl.innerText = '0';
+    }
 };
 
 window.openSavedProjects = () => {
@@ -3600,22 +3603,25 @@ window.closeDownloadOverlay = () => {
 };
 
 window.deleteProject = async (id, btnEl) => {
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    projects = projects.filter(p => p.id !== id);
-    localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
-    
-    let row = btnEl.closest('.sp-row');
-    if (row) {
-        row.classList.add('deleting');
-        setTimeout(() => {
-            row.remove();
-            window.updateSavedCount();
-            if (projects.length === 0) {
-                document.getElementById('sp-empty-state').style.display = 'flex';
-                document.getElementById('sp-empty-state').classList.add('show');
-                document.getElementById('sp-content-state').style.display = 'none';
-            }
-        }, 400);
+    try {
+        localStorage.removeItem('Snapi_project_' + id);
+        let row = btnEl ? btnEl.closest('.sp-row') : null;
+        if (row) {
+            row.classList.add('deleting');
+            setTimeout(() => {
+                row.remove();
+                let list = document.getElementById('sp-list');
+                if (list && list.children.length === 0) {
+                    document.getElementById('sp-content-state').style.display = 'none';
+                    let emptyState = document.getElementById('sp-empty-state');
+                    emptyState.style.display = 'flex';
+                    emptyState.classList.add('show');
+                }
+                window.updateSavedCount();
+            }, 400);
+        }
+    } catch(e) {
+        console.error('Ошибка удаления проекта:', e);
     }
 };
 
@@ -3623,36 +3629,86 @@ window.renderSavedProjects = async () => {
     let emptyState = document.getElementById('sp-empty-state');
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
-    
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    
-    if (projects.length === 0) {
+
+    try {
+        let keys = Object.keys(localStorage)
+            .filter(k => k.startsWith('Snapi_project_'))
+            .sort((a, b) => {
+                let pa = JSON.parse(localStorage.getItem(a) || '{}');
+                let pb = JSON.parse(localStorage.getItem(b) || '{}');
+                return (pb.savedAt || 0) - (pa.savedAt || 0);
+            });
+
+        if (keys.length === 0) {
+            emptyState.style.display = 'flex';
+            emptyState.classList.add('show');
+            contentState.style.display = 'none';
+            if (container) container.innerHTML = '';
+            return;
+        }
+
+        emptyState.style.display = 'none';
+        contentState.style.display = 'flex';
+        if (container) container.innerHTML = '';
+
+        keys.forEach(key => {
+            try {
+                let proj = JSON.parse(localStorage.getItem(key) || '{}');
+                let id = key.replace('Snapi_project_', '');
+
+                let row = document.createElement('div');
+                row.className = 'sp-row';
+
+                let img = document.createElement('img');
+                img.className = 'sp-img';
+                img.src = proj.thumb || '';
+                img.alt = '';
+
+                let title = document.createElement('div');
+                title.className = 'sp-title';
+
+                // Формируем название проекта
+                let categoryName = 'Работа';
+                if (proj.mode === 'bp') {
+                    let styleLabel = proj.bpStyleIndex === 'dop' ? `Доп. BP #${proj.bpVariantIndex || 1}` : `BP Стиль #${proj.bpStyleIndex}`;
+                    categoryName = `${styleLabel} · ${proj.nick || 'без ника'}`;
+                } else {
+                    categoryName = `Акция · ${proj.nick || 'без ника'}`;
+                }
+
+                let dateStr = '';
+                if (proj.savedAt) {
+                    let d = new Date(proj.savedAt);
+                    dateStr = ` · ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+                }
+                title.innerText = categoryName + dateStr;
+
+                let delBtn = document.createElement('button');
+                delBtn.className = 'sp-del-btn';
+                delBtn.innerText = 'Удалить';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    window.deleteProject(id, delBtn);
+                };
+
+                row.appendChild(img);
+                row.appendChild(title);
+                row.appendChild(delBtn);
+
+                row.onclick = () => {
+                    window.loadProject(id);
+                };
+
+                if (container) container.appendChild(row);
+            } catch(e) {
+                console.error('Ошибка рендера проекта:', e);
+            }
+        });
+
+    } catch(e) {
         emptyState.style.display = 'flex';
         emptyState.classList.add('show');
         contentState.style.display = 'none';
-        if (container) container.innerHTML = '';
-    } else {
-        emptyState.style.display = 'none';
-        emptyState.classList.remove('show');
-        contentState.style.display = 'block';
-        
-        if (container) {
-            container.innerHTML = '';
-            projects.forEach(p => {
-                let title = p.wizardMode === 'bp' ? 'Brawl Pass' : 'Акция';
-                if (p.layerState.bpStyleIndex && p.layerState.bpStyleIndex !== 'dop') title += ` (Стиль #${p.layerState.bpStyleIndex})`;
-                if (p.layerState.bpStyleIndex === 'dop') title += ` (Доп. стиль)`;
-                
-                let html = `
-                    <div class="sp-row">
-                        <img src="${p.previewData}" class="sp-img" onclick="loadProject(${p.id})">
-                        <div class="sp-title" onclick="loadProject(${p.id})">${title}<br><span style="font-size:12px; color:#8E8E93;">${p.date}</span></div>
-                        <button class="sp-del-btn" onclick="deleteProject(${p.id}, this)">Удалить</button>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', html);
-            });
-        }
     }
 };
 
@@ -3667,51 +3723,212 @@ const loadImage = (src) => new Promise((resolve) => {
 });
 
 window.loadProject = async (id) => {
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    let proj = projects.find(p => p.id === id);
-    if (!proj) return;
+    try {
+        let proj = JSON.parse(localStorage.getItem('Snapi_project_' + id) || 'null');
+        if (!proj) { alert('Проект не найден'); return; }
 
-    window.layerState = proj.layerState;
-    wizardMode = proj.wizardMode;
-    selectedCategory = proj.selectedCategory;
-    selectedBPStyle = proj.selectedBPStyle;
-    selectedBPVariant = proj.selectedBPVariant;
-    selectedBPSub = proj.selectedBPSub;
-    selectedColor = proj.selectedColor;
-    
-    document.getElementById('saved-projects-overlay').style.display = 'none';
-    isCurrentProjectSaved = true;
+        document.getElementById('saved-projects-overlay').style.display = 'none';
 
-    const resumeApp = () => {
-        if (wizardMode === 'bp') {
-            if (window.layerState.bpStyleIndex === 2) {
-                if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
-            } else if (window.layerState.bpStyleIndex === 3) {
-                if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
-            } else if (window.layerState.bpStyleIndex === 'dop') {
-                if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
-            } else {
-                generateBrawlPassTest();
-            }
+        // Восстанавливаем layerState
+        window.layerState = Object.assign({
+            isBrawlPassMode: false, bpPriceLeft: "999", bpPriceRight: "9999",
+            pointsOpacity: 1.0, textVisible: true, textValue: "SNAPI",
+            textPosition: "top", textFont: 'Font16103', textStyleIndex: 0,
+            globalStrokeWidth: 2, offers: [], bgVisible: true,
+            luchVisible: true, luchOpacity: 1.0, starsVisible: true,
+            starsOpacity: 1.0, watermarksVisible: true, watermarksOpacity: 0.8,
+            watermarksFont: 'Font16103', pointsVisible: true,
+            isGeneratedBg: false, isReadyBg: false
+        }, proj.layerState || {});
+
+        window.layerState.offers = [];
+        window.layerState.customWatermarks = proj.layerState ? proj.layerState.customWatermarks : null;
+
+        isCurrentProjectSaved = true;
+        wizardMode = proj.mode || 'action';
+
+        // Восстанавливаем фон
+        if (proj.bgDataUrl) {
+            rawBgImage = await new Promise(resolve => {
+                let img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+                img.src = proj.bgDataUrl;
+            });
         } else {
-            // Для обычных акций
+            rawBgImage = null;
+        }
+
+        if (proj.mode === 'bp') {
+            window.layerState.isBrawlPassMode = true;
+            window.layerState.bpStyleIndex = proj.bpStyleIndex;
+            window.layerState.bpVariantIndex = proj.bpVariantIndex;
+            window.layerState.bpSeason = proj.bpSeason || 50;
+
+            document.getElementById('result-box').style.display = 'block';
+            window.scrollTo(0, 0);
+            if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+
+            const load = (src) => new Promise(r => {
+                const i = new Image(); i.crossOrigin = "anonymous";
+                i.onload = () => r(i); i.onerror = () => r(null); i.src = src;
+            });
+
+            let season = window.layerState.bpSeason;
+
+            if (proj.bpStyleIndex === 2) {
+                if (!globalAssets.style2Gems) globalAssets.style2Gems = await load('BP/bp_gems.png');
+                if (!globalAssets.style2Points) globalAssets.style2Points = await load('BP/bp_style2_points.png');
+                if (!globalAssets.style2Stars) globalAssets.style2Stars = await load('BP/bp_stars_style2.png');
+                if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
+                if (!globalAssets.style2ProIcon) globalAssets.style2ProIcon = await load('BP/bp_icon_pro_pass_icon.png');
+                if (!globalAssets.style2BPP) globalAssets.style2BPP = await load('BP/bp_icon_brawl_pass_plus.png');
+                if (!globalAssets.style2BP) globalAssets.style2BP = await load('BP/bp_icon_brawl_pass.png');
+                if (!globalAssets.style2YellowPlate) globalAssets.style2YellowPlate = await load('BP/bp_price_brawl_pass.png');
+                if (!globalAssets.style2BluePlate) globalAssets.style2BluePlate = await load('BP/bp_price_bg_right.png');
+                if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
+                if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+            } else if (proj.bpStyleIndex === 3) {
+                if (!globalAssets.s3Rays) globalAssets.s3Rays = await load('BP/bp_luch_3style.png');
+                if (!globalAssets.s3Dots) globalAssets.s3Dots = await load('BP/bp_points_3style.png');
+                if (!globalAssets.s3Details) globalAssets.s3Details = await load('BP/bp_details_3style.png');
+                if (!globalAssets[`s3PanelL_${season}`]) globalAssets[`s3PanelL_${season}`] = await load(`BP/bp_panel_left${season}.png`);
+                globalAssets.s3PanelL = globalAssets[`s3PanelL_${season}`];
+                if (!globalAssets.s3PriceL) globalAssets.s3PriceL = await load('BP/bp_price_bg_left.png');
+                if (!globalAssets.s3PanelM) globalAssets.s3PanelM = await load('BP/bp_panel_right.png');
+                if (!globalAssets.s3PriceM) globalAssets.s3PriceM = await load('BP/bp_price_bg_right.png');
+                if (!globalAssets.s3PanelR) globalAssets.s3PanelR = await load('BP/ProPass_bp.png');
+                if (!globalAssets.s3Stars) globalAssets.s3Stars = await load('BP/bp_stars_3style.png');
+            } else if (proj.bpStyleIndex === 'dop') {
+                if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
+                if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
+                if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
+                if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
+                if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
+
+                let variantIndex = proj.bpVariantIndex || 3;
+                let panelSrc = 'BP/bp_panel_right.png';
+                let priceSrc = 'BP/bp_price_bg_right.png';
+                if (variantIndex === 1) { panelSrc = `BP/bp_panel_left${season}.png`; priceSrc = 'BP/bp_price_bg_left.png'; }
+                else if (variantIndex === 2) { panelSrc = `BP/bp_panel_left${season}.png`; priceSrc = 'BP/bp_price_brawl_pass.png'; }
+                globalAssets.dopPanelL = await load(panelSrc);
+                globalAssets.dopPrice = await load(priceSrc);
+                if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
+            } else {
+                // Стиль 1
+                let [luch, starsEff, pointEff, star, brawler2, brawler1, panelL, priceL, panelR, priceR] = await Promise.all([
+                    load('BP/Luch.png'), load('BP/bp_starsEff.png'), load('BP/bp_pointEff.png'), load('BP/bp_star.png'),
+                    load(`BP/brawler_s${season}_2.png`), load(`BP/brawler_s${season}_1.png`),
+                    load(`BP/bp_panel_left${season}.png`), load('BP/bp_price_bg_left.png'),
+                    load('BP/bp_panel_right.png'), load('BP/bp_price_bg_right.png')
+                ]);
+                globalAssets.luchImg = luch; globalAssets.starsEff = starsEff;
+                globalAssets.bpPointsImg = pointEff; globalAssets.bpPriceL = priceL;
+                globalAssets.bpPriceR = priceR; globalAssets.bpStar = star;
+                globalAssets.bpPanelL = panelL; globalAssets.bpPanelR = panelR;
+                globalAssets[`brawler_${season}_2`] = brawler2;
+                globalAssets[`brawler_${season}_1`] = brawler1;
+                window.bpForegroundImage = new Image();
+                window.bpForegroundImage.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+                window.rebuildStyle1Background();
+            }
+
             setupPersistentCanvas();
             renderLayerPanel(true);
-            calculateLayoutTarget();
-            document.getElementById('result-box').style.display = 'block';
-        }
-    };
+            window.updateCachedTextCanvas();
+            startAnimation();
 
-    if (proj.bgDataUrl) {
-        let img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-            rawBgImage = img;
-            resumeApp();
-        };
-        img.src = proj.bgDataUrl;
-    } else {
-        resumeApp();
+        } else {
+            // Режим акции — восстанавливаем offers из сохранённых данных
+            window.layerState.isBrawlPassMode = false;
+            window.layerState.offers = [];
+
+            if (proj.offers && proj.offers.length > 0 && rawBgImage) {
+                let scale = getHDScale();
+                for (let i = 0; i < proj.offers.length; i++) {
+                    let saved = proj.offers[i];
+                    if (!saved.canvasDataUrl) continue;
+
+                    let offerImg = await new Promise(resolve => {
+                        let img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = () => resolve(null);
+                        img.src = saved.canvasDataUrl;
+                    });
+                    if (!offerImg) continue;
+
+                    let c = document.createElement('canvas');
+                    c.width = offerImg.width; c.height = offerImg.height;
+                    let cx = c.getContext('2d', { willReadFrequently: true });
+                    cx.drawImage(offerImg, 0, 0);
+
+                    let blankedImg = await new Promise(resolve => {
+                        let img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = () => resolve(null);
+                        img.src = saved.blankedDataUrl || saved.canvasDataUrl;
+                    });
+
+                    let blankedData = null;
+                    if (blankedImg) {
+                        let bc = document.createElement('canvas');
+                        bc.width = blankedImg.width; bc.height = blankedImg.height;
+                        let bctx = bc.getContext('2d', { willReadFrequently: true });
+                        bctx.drawImage(blankedImg, 0, 0);
+                        blankedData = bctx.getImageData(0, 0, bc.width, bc.height);
+                    }
+
+                    let offerObj = {
+                        canvas: c,
+                        x: saved.x || 0, y: saved.y || 0,
+                        info: {
+                            blankedImgData: blankedData,
+                            textX: saved.textX || c.width / 2,
+                            textY: saved.textY || c.height * 0.9,
+                            boxHeight: saved.boxHeight || c.height * 0.15
+                        }
+                    };
+
+                    let stateOffer = {
+                        id: i, visible: saved.visible !== false,
+                        hasStroke: true, price: saved.price || "FREE",
+                        ref: offerObj,
+                        anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
+                        target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 },
+                        cache: null
+                    };
+                    window.layerState.offers.push(stateOffer);
+                }
+            }
+
+            globalAssets.luchImg = await new Promise(r => {
+                const i = new Image(); i.crossOrigin = "anonymous";
+                i.onload = () => r(i); i.onerror = () => r(null); i.src = 'Luch.png';
+            });
+            globalAssets.starImg = await new Promise(r => {
+                const i = new Image(); i.crossOrigin = "anonymous";
+                i.onload = () => r(i); i.onerror = () => r(null); i.src = 'Star.png';
+            });
+            globalAssets.pointsImg = await new Promise(r => {
+                const i = new Image(); i.crossOrigin = "anonymous";
+                i.onload = () => r(i); i.onerror = () => r(null); i.src = 'points.png';
+            });
+
+            document.getElementById('result-box').style.display = 'block';
+            window.scrollTo(0, 0);
+            if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+
+            setupPersistentCanvas();
+            renderLayerPanel(true);
+            window.updateCachedTextCanvas();
+            calculateLayoutTarget();
+        }
+
+        window.updateSavedCount();
+
+    } catch(e) {
+        console.error('Ошибка загрузки проекта:', e);
+        alert('Не удалось загрузить проект: ' + e.message);
     }
 };
 
@@ -8470,74 +8687,126 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     }
 };
 
-document.getElementById('dl-btn-save-project').onclick = (e) => {
+document.getElementById('dl-btn-save-project').onclick = async (e) => {
     e.preventDefault();
     window.triggerHaptic();
     let btn = e.currentTarget;
-    if (btn.classList.contains('is-loading')) return; 
-
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    if (projects.length >= 12) {
-        alert("Достигнут лимит в 12 сохранённых проектов. Пожалуйста, очистите данные через настройки приложения или удалите старые работы из списка.");
-        return;
-    }
+    if (btn.classList.contains('is-loading')) return;
 
     btn.classList.add('is-loading');
     btn.style.pointerEvents = 'none';
 
-    // Сжатие фона, чтобы не превысить лимит localStorage
-    let bgDataUrl = null;
-    if (rawBgImage) {
-        let c = document.createElement('canvas');
-        let maxW = 1200;
-        let scale = Math.min(1, maxW / rawBgImage.width);
-        c.width = rawBgImage.width * scale;
-        c.height = rawBgImage.height * scale;
-        let ctx = c.getContext('2d');
-        ctx.drawImage(rawBgImage, 0, 0, c.width, c.height);
-        bgDataUrl = c.toDataURL('image/jpeg', 0.6);
-    }
-
-    let pData = document.getElementById('dl-preview-img').src;
-    
-    // Очистка тяжелых холстов из кэша перед сохранением json
-    let cleanLayerState = JSON.parse(JSON.stringify(window.layerState));
-    if (cleanLayerState.offers) {
-        cleanLayerState.offers.forEach(o => {
-            delete o.ref;
-            delete o.cache;
-        });
-    }
-
-    let newProject = {
-        id: Date.now(),
-        date: new Date().toLocaleString('ru-RU', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'}),
-        wizardMode,
-        selectedCategory,
-        selectedBPStyle,
-        selectedBPVariant,
-        selectedBPSub,
-        selectedColor,
-        layerState: cleanLayerState,
-        previewData: pData,
-        bgDataUrl: bgDataUrl
-    };
-
-    projects.push(newProject);
-    localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
-    window.updateSavedCount();
-    isCurrentProjectSaved = true;
-
-    setTimeout(() => {
-        let wrapper = document.getElementById('save-btn-wrapper');
-        wrapper.classList.add('hidden-animated');
-
-        setTimeout(() => {
-            wrapper.style.display = 'none';
+    try {
+        // Проверяем лимит — 12 проектов
+        let existingKeys = Object.keys(localStorage).filter(k => k.startsWith('Snapi_project_'));
+        if (existingKeys.length >= 12) {
             btn.classList.remove('is-loading');
             btn.style.pointerEvents = 'auto';
-        }, 500); 
-    }, 800);
+            alert('Достигнут лимит в 12 сохранённых работ. Удалите старые проекты в «Сохранённые работы».');
+            return;
+        }
+
+        // Создаём превью (маленькое)
+        let thumbDataUrl = '';
+        if (persistentCanvas && persistentCanvas.width > 0) {
+            let thumbC = document.createElement('canvas');
+            let ratio = persistentCanvas.height / persistentCanvas.width;
+            thumbC.width = 240;
+            thumbC.height = Math.round(240 * ratio);
+            let tCtx = thumbC.getContext('2d');
+            tCtx.imageSmoothingEnabled = true;
+            tCtx.imageSmoothingQuality = 'high';
+            tCtx.drawImage(persistentCanvas, 0, 0, thumbC.width, thumbC.height);
+            thumbDataUrl = thumbC.toDataURL('image/jpeg', 0.6);
+        }
+
+        // Сохраняем фон (уменьшенный)
+        let bgDataUrl = '';
+        if (rawBgImage) {
+            let bgC = document.createElement('canvas');
+            let maxBgW = 1200;
+            let bgRatio = rawBgImage.height / rawBgImage.width;
+            bgC.width = Math.min(rawBgImage.width, maxBgW);
+            bgC.height = Math.round(bgC.width * bgRatio);
+            let bgCtx = bgC.getContext('2d');
+            bgCtx.imageSmoothingEnabled = true;
+            bgCtx.imageSmoothingQuality = 'high';
+            bgCtx.drawImage(rawBgImage, 0, 0, bgC.width, bgC.height);
+            bgDataUrl = bgC.toDataURL('image/jpeg', 0.75);
+        }
+
+        // Сохраняем offers (для режима акции)
+        let savedOffers = [];
+        if (!window.layerState.isBrawlPassMode && window.layerState.offers.length > 0) {
+            for (let offer of window.layerState.offers) {
+                let canvasDataUrl = offer.ref.canvas.toDataURL('image/png');
+
+                let blankedDataUrl = '';
+                if (offer.ref.info && offer.ref.info.blankedImgData) {
+                    let bc = document.createElement('canvas');
+                    bc.width = offer.ref.canvas.width;
+                    bc.height = offer.ref.canvas.height;
+                    bc.getContext('2d').putImageData(offer.ref.info.blankedImgData, 0, 0);
+                    blankedDataUrl = bc.toDataURL('image/png');
+                }
+
+                savedOffers.push({
+                    canvasDataUrl,
+                    blankedDataUrl,
+                    price: offer.price,
+                    visible: offer.visible,
+                    x: offer.ref.x || 0,
+                    y: offer.ref.y || 0,
+                    textX: offer.ref.info ? offer.ref.info.textX : 0,
+                    textY: offer.ref.info ? offer.ref.info.textY : 0,
+                    boxHeight: offer.ref.info ? offer.ref.info.boxHeight : 0
+                });
+            }
+        }
+
+        // Копируем layerState без лишнего
+        let layerStateCopy = Object.assign({}, window.layerState);
+        delete layerStateCopy.offers; // offers храним отдельно
+
+        let projectData = {
+            savedAt: Date.now(),
+            mode: wizardMode,
+            nick: window.layerState.textValue || '',
+            bpStyleIndex: window.layerState.bpStyleIndex,
+            bpVariantIndex: window.layerState.bpVariantIndex,
+            bpSeason: window.layerState.bpSeason || 50,
+            layerState: layerStateCopy,
+            thumb: thumbDataUrl,
+            bgDataUrl: bgDataUrl,
+            offers: savedOffers
+        };
+
+        let projectId = Date.now().toString();
+        localStorage.setItem('Snapi_project_' + projectId, JSON.stringify(projectData));
+
+        isCurrentProjectSaved = true;
+        window.updateSavedCount();
+
+        // Анимация кнопки
+        setTimeout(() => {
+            let wrapper = document.getElementById('save-btn-wrapper');
+            wrapper.classList.add('hidden-animated');
+            setTimeout(() => {
+                wrapper.style.display = 'none';
+                btn.classList.remove('is-loading');
+                btn.style.pointerEvents = 'auto';
+            }, 500);
+        }, 600);
+
+    } catch(err) {
+        btn.classList.remove('is-loading');
+        btn.style.pointerEvents = 'auto';
+        if (err.name === 'QuotaExceededError' || (err.message && err.message.includes('quota'))) {
+            alert('Недостаточно памяти устройства. Удалите старые проекты и попробуйте снова.');
+        } else {
+            alert('Ошибка сохранения: ' + err.message);
+        }
+    }
 };
 
 document.getElementById('dl-btn-actual-download').onclick = (e) => {
