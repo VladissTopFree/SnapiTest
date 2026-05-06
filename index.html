@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(89)";
+  const APP_VERSION = "v2.4.0(90)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2505,7 +2505,7 @@ body.os-non-apple .promo-banner {
     <div style="padding: 0; flex-grow: 1; overflow-y: auto;">
         
         <div class="cat-card" onclick="selectCategory('action')">
-            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_akc1_1.png", "demo_png/demo_png_akc1_2.png", "demo_png/demo_png_akc1_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_akc1_1.png", "demo_png/demo_png_akc1_2.png", "demo_png/demo_png_akc1_3.png"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_akc1_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
@@ -2521,7 +2521,7 @@ body.os-non-apple .promo-banner {
         </div>
         
         <div class="cat-card" id="bp-main-card" onclick="selectCategory('bp')" style="border-bottom-color: transparent; transition: border-bottom-color 0.3s ease;">            
-            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_bp2_1.png", "demo_png/demo_png_bp2_2.png", "demo_png/demo_png_bp2_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_bp2_1.png", "demo_png/demo_png_bp2_2.png", "demo_png/demo_png_bp2_3.png"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_bp2_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
@@ -3430,11 +3430,7 @@ window.updateSavedCount = async () => {
 };
 
 window.openSavedProjects = () => {
-    document.getElementById('ios-dashboard').style.display = 'none';
-    window.renderSavedProjects();
-    document.getElementById('saved-projects-overlay').style.display = 'flex';
-    window.scrollTo(0,0);
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+    alert("Данная функция пока недоступна!");
 };
 
 window.openSettings = () => {
@@ -9475,81 +9471,15 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentIndex = 0;
 
         setInterval(() => {
-            const w = canvas.width = imgEl.offsetWidth;
-            const h = canvas.height = imgEl.offsetHeight;
-            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Копируем текущую (старую) картинку на скрытый холст
-            const offCanvas = document.createElement('canvas');
-            offCanvas.width = w; offCanvas.height = h;
-            const offCtx = offCanvas.getContext('2d');
-            drawCover(offCtx, imgEl, w, h);
-
-            // 2. Меняем источник картинки на новый и запускаем CSS-блюр
             currentIndex = (currentIndex + 1) % images.length;
             imgEl.src = images[currentIndex];
             imgEl.classList.remove('blur-fade-in');
-            void imgEl.offsetWidth; // Сбрасываем CSS анимацию
+            void imgEl.offsetWidth; 
             imgEl.classList.add('blur-fade-in');
-
-            // 3. Создаем частицы для эффекта "взрыва" (как в Telegram)
-            const cols = 12, rows = 8; // Сетка разбиения на осколки
-            const pw = w / cols, ph = h / rows;
-            const particles = [];
-
-            for (let i = 0; i < cols; i++) {
-                for (let j = 0; j < rows; j++) {
-                    let cx = (i + 0.5) * pw, cy = (j + 0.5) * ph;
-                    // Вычисляем вектор разлёта от центра картинки
-                    let dx = cx - w / 2, dy = cy - h / 2;
-                    let dist = Math.sqrt(dx * dx + dy * dy) || 1;
-
-                    particles.push({
-                        sx: i * pw, sy: j * ph, w: pw, h: ph,
-                        x: i * pw, y: j * ph,
-                        vx: (dx / dist) * (Math.random() * 5 + 3), // Скорость разлёта в стороны
-                        vy: (dy / dist) * (Math.random() * 5 + 3) - 4, // Подброс вверх
-                        rot: 0, vRot: (Math.random() - 0.5) * 0.4, // Вращение осколков
-                        alpha: 1, scale: 1
-                    });
-                }
-            }
-
-            // 4. Запускаем цикл отрисовки частиц
-            let raf;
-            function renderParticles() {
-                ctx.clearRect(0, 0, w, h);
-                let active = false;
-                
-                particles.forEach(p => {
-                    if (p.alpha <= 0.01) return;
-                    active = true;
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.4; // Гравитация (осколки падают вниз)
-                    p.rot += p.vRot;
-                    p.alpha -= 0.02 + Math.random() * 0.02; // Растворение
-                    p.scale -= 0.01; // Уменьшение размера
-
-                    ctx.save();
-                    ctx.globalAlpha = Math.max(0, p.alpha);
-                    ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
-                    ctx.rotate(p.rot);
-                    if (p.scale > 0) {
-                        ctx.scale(p.scale, p.scale);
-                        ctx.drawImage(offCanvas, p.sx, p.sy, p.w, p.h, -p.w / 2, -p.h / 2, p.w, p.h);
-                    }
-                    ctx.restore();
-                });
-
-                if (active) {
-                    raf = requestAnimationFrame(renderParticles);
-                } else {
-                    ctx.clearRect(0, 0, w, h);
-                }
-            }
-            renderParticles();
-        }, 1500); 
+        }, 1500);
     });
 });
 
