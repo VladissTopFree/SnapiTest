@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(100)";
+  const APP_VERSION = "v2.4.0(101)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -53,8 +53,8 @@
           gradientLeft: ['#ff5e00', '#ff5e00'], 
           gradientRight: ['#7b00d9', '#7b00d9'],
           style2Brawlers: { // yes
-              brawler1: { x: 1011, y: 381, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
-              brawler2: { x: 950, y: 4, scale: 0.23, scaleX: 1, scaleY: 1, rot: 0 } 
+              brawler1: { x: 1017, y: 381, scale: 0.27, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
+              brawler2: { x: 950, y: 4, scale: 0.31, scaleX: 1, scaleY: 1, rot: 0 } 
           },
           style1Brawlers: { // yes
               brawler2: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
@@ -69,8 +69,8 @@
           gradientLeft: ['#c33b15da', '#c33b15da'], 
           gradientRight: ['#006effcc', '#006effcc'],
           style2Brawlers: { // yes
-              brawler1: { x: 1013, y: 276, scale: 0.25, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
-              brawler2: { x: 1057, y: -24, scale: 0.26, scaleX: 1, scaleY: 1, rot: 0 } 
+              brawler1: { x: 1013, y: 276, scale: 0.39, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
+              brawler2: { x: 1057, y: -24, scale: 0.32, scaleX: 1, scaleY: 1, rot: 0 } 
           },
           style1Brawlers: { // yes
               brawler2: { x: 688, y: 511, scale: 0.53, flipH: false }, // Нижний (x: 1200*0.42-30)
@@ -4432,7 +4432,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.requestRender = function() {
