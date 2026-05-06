@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(91)";
+  const APP_VERSION = "v2.4.0(92)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6767,13 +6767,13 @@ function drawScene() {
                 ctx.restore();
             };
 
-              const drawBrawler = (img, obj) => {
+            const drawBrawler = (img, obj) => {
                 if (!img) return;
                 ctx.save();
                 ctx.translate(obj.x*s, obj.y*s); 
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
-                ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
+                ctx.scale(obj.scale * (obj.scaleX||1) * s, obj.scale * (obj.scaleY||1) * s);
                 
                 if (obj.flipH) {
                     ctx.translate(img.width, 0);
@@ -7182,7 +7182,7 @@ function drawScene() {
                 
                 ctx.translate(b2x * s, b2y * s); 
                 if (b2rot) ctx.rotate(b2rot * Math.PI / 180);
-                ctx.scale(b2s * b2sx, b2s * b2sy);
+                ctx.scale(b2s * b2sx * s, b2s * b2sy * s);
                 
                 // --- ОТРАЖЕНИЕ ПО ГОРИЗОНТАЛИ ---
                 if (b2flip) {
@@ -7307,8 +7307,9 @@ function drawScene() {
                 persistentCtx.shadowColor = '#000';
                 persistentCtx.shadowBlur = 0;
                 
-                let strokeSize = 12; 
-                let diag = strokeSize * 0.75; 
+                // Умножаем на коэффициент ширины холста (w / 1200)
+                let strokeSize = 12 * (w / 1200); 
+                let diag = strokeSize * 0.75;
                 
                 const offsets = [
                     [strokeSize, 0], [-strokeSize, 0], [0, strokeSize], [0, -strokeSize], 
