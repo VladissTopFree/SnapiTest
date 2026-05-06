@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(86)";
+  const APP_VERSION = "v2.4.0(87)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2351,13 +2351,22 @@ body.os-non-apple .promo-banner {
   }
   .sub-options-wrap.show {
     grid-template-rows: 1fr;
-    margin-top: 4px;
   }
   .sub-options-inner {
     overflow: hidden;
     display: flex;
     flex-direction: column;
   }
+
+  /* Анимация плавного появления новой картинки с блюром */
+@keyframes blurFadeInSlider {
+    0% { filter: blur(10px); opacity: 0; transform: scale(0.95); }
+    100% { filter: blur(0px); opacity: 1; transform: scale(1); }
+}
+
+.blur-fade-in {
+    animation: blurFadeInSlider 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
 
 </style>
 </head>
@@ -2624,8 +2633,9 @@ body.os-non-apple .promo-banner {
             <div class="cat-radio" id="bp-variant-radio-1" style="margin-top: 13px;">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px;">
-                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP1_1.png", "demo_png/demo_png_osnBP1_2.png", "demo_png/demo_png_osnBP1_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_osnBP1_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name" style="font-size: 16px;">Brawl Pass</div>
@@ -2800,7 +2810,7 @@ body.os-non-apple .promo-banner {
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
-                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+                <img src="demo_png50s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
@@ -2813,7 +2823,7 @@ body.os-non-apple .promo-banner {
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
-                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+                <img src="demo_png49s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">49 сезон</div>
@@ -2826,7 +2836,7 @@ body.os-non-apple .promo-banner {
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
-                <img src="miniprewiev.png" class="cat-img loaded" style="object-fit: cover;">
+                <img src="demo_png48s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">48 сезон</div>
@@ -2911,7 +2921,7 @@ body.os-non-apple .promo-banner {
             </div>
 
             <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">BP</div>
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
                 <input type="text" inputmode="numeric" maxlength="5" id="ws2-p9" placeholder="Введите цену..." 
                        style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" 
                        oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkBPStyle2Ready();">
@@ -3407,12 +3417,9 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
-const PROJECTS_DB_KEY = 'Snapi_v2_6_projects';
-
 window.updateSavedCount = async () => {
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
     let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = projects.length.toString();
+    if (countEl) countEl.innerText = '0';
 };
 
 window.openSavedProjects = () => {
@@ -3600,21 +3607,7 @@ window.closeDownloadOverlay = () => {
 };
 
 window.deleteProject = async (id, btnEl) => {
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    projects = projects.filter(p => p.id !== id);
-    localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
-    
-    let row = document.getElementById('proj-' + id);
-    if (row) {
-        row.classList.add('deleting');
-        setTimeout(() => {
-            window.renderSavedProjects();
-            window.updateSavedCount();
-        }, 400);
-    } else {
-        window.renderSavedProjects();
-        window.updateSavedCount();
-    }
+    console.log("Функция удаления отключена");
 };
 
 window.renderSavedProjects = async () => {
@@ -3622,34 +3615,10 @@ window.renderSavedProjects = async () => {
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
     
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    
-    if (projects.length === 0) {
-        emptyState.style.display = 'flex';
-        emptyState.classList.add('show');
-        contentState.style.display = 'none';
-        if (container) container.innerHTML = '';
-    } else {
-        emptyState.style.display = 'none';
-        emptyState.classList.remove('show');
-        contentState.style.display = 'flex';
-        
-        let html = '';
-        projects.slice().reverse().forEach(p => {
-            let catName = p.layerState.isBrawlPassMode ? "Brawl Pass" : "Создание акции";
-            html += `
-            <div class="ios-layer-row sp-row" id="proj-${p.id}" onclick="loadProject('${p.id}')">
-                <img src="${p.preview}" class="sp-img">
-                <div class="sp-title">
-                    <div>${catName}</div>
-                    <div style="font-size:12px; color:var(--tg-theme-subtitle-text-color); margin-top:2px;">${p.date}</div>
-                </div>
-                <button class="sp-del-btn" onclick="event.stopPropagation(); deleteProject('${p.id}', this)">Удалить</button>
-            </div>
-            `;
-        });
-        if (container) container.innerHTML = html;
-    }
+    emptyState.style.display = 'flex';
+    emptyState.classList.add('show');
+    contentState.style.display = 'none';
+    if (container) container.innerHTML = '';
 };
 
 const loadImage = (src) => new Promise((resolve) => {
@@ -3663,72 +3632,7 @@ const loadImage = (src) => new Promise((resolve) => {
 });
 
 window.loadProject = async (id) => {
-    window.triggerHaptic();
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    let proj = projects.find(p => p.id === id);
-    if (!proj) return;
-
-    window.layerState = proj.layerState;
-
-    // Восстанавливаем Canvas-кэш для акций
-    if (window.layerState.offers && window.layerState.offers.length > 0) {
-        for (let o of window.layerState.offers) {
-            if (o.savedCanvasData) {
-                let img = await loadImage(o.savedCanvasData);
-                let c = document.createElement('canvas');
-                c.width = img.width; c.height = img.height;
-                let ctx = c.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-                o.ref = {
-                    canvas: c,
-                    x: o.refX,
-                    y: o.refY,
-                    info: o.refInfo
-                };
-                if (o.refInfo && o.refInfo.blankedImgData) {
-                    try {
-                        o.ref.info.blankedImgData = ctx.getImageData(0, 0, c.width, c.height);
-                    } catch(e) {}
-                }
-            }
-        }
-    }
-
-    if (proj.bgData) {
-        rawBgImage = await loadImage(proj.bgData);
-    } else {
-        rawBgImage = null;
-    }
-
-    document.getElementById('saved-projects-overlay').style.display = 'none';
-    document.getElementById('ios-dashboard').style.display = 'none';
-    document.getElementById('result-box').style.display = 'block';
-    
-    let btnWrap = document.getElementById('download-btn-wrap');
-    if (btnWrap) btnWrap.style.display = 'flex';
-
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
-        window.Telegram.WebApp.BackButton.show();
-    }
-
-    // Триггерим правильный рендер в зависимости от режима сохраненного проекта
-    if (window.layerState.isBrawlPassMode) {
-        if (window.layerState.bpStyleIndex === 2) {
-            if (typeof window.openBPTestEditor === 'function') window.openBPTestEditor();
-        } else if (window.layerState.bpStyleIndex === 3) {
-            if (typeof window.openBPStyle3Editor === 'function') window.openBPStyle3Editor();
-        } else if (window.layerState.bpStyleIndex === 'dop') {
-            if (typeof window.openBPDopEditor === 'function') window.openBPDopEditor();
-        } else {
-            generateBrawlPassTest();
-        }
-    } else {
-        setupPersistentCanvas();
-        renderLayerPanel(true);
-        calculateLayoutTarget();
-    }
-    
-    isCurrentProjectSaved = true;
+    console.log("Функция загрузки проектов отключена");
 };
 
 let selectedCategory = null; 
@@ -8486,63 +8390,16 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     }
 };
 
-function getBase64Image(img) {
-    if (!img) return null;
-    if (img.src && img.src.startsWith('data:')) return img.src;
-    let canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
-    let ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    return canvas.toDataURL("image/png");
-}
-
 document.getElementById('dl-btn-save-project').onclick = (e) => {
     e.preventDefault();
     window.triggerHaptic();
     let btn = e.currentTarget;
-    if (btn.classList.contains('is-loading')) return;
+    if (btn.classList.contains('is-loading')) return; 
     
-    let projects = JSON.parse(localStorage.getItem(PROJECTS_DB_KEY) || '[]');
-    if (projects.length >= 12) {
-        alert("Лимит сохраненных работ исчерпан. Пожалуйста, перейдите в Настройки и очистите данные для сохранения новых работ.");
-        return;
-    }
-
     btn.classList.add('is-loading');
     btn.style.pointerEvents = 'none';
 
-    let previewSrc = document.getElementById('dl-preview-img').src;
-    let bgData = rawBgImage ? getBase64Image(rawBgImage) : null; 
-
-    // Безопасная сериализация слоев без DOM-объектов (Canvas)
-    let cleanLayerState = JSON.parse(JSON.stringify(window.layerState, (k, v) => (k === 'cache' || k === 'ref') ? null : v));
-    if (window.layerState.offers && window.layerState.offers.length > 0) {
-        cleanLayerState.offers = window.layerState.offers.map((o, i) => {
-            let oc = cleanLayerState.offers[i];
-            if (o.ref && o.ref.canvas) {
-                oc.savedCanvasData = o.ref.canvas.toDataURL("image/png");
-                oc.refX = o.ref.x;
-                oc.refY = o.ref.y;
-                oc.refInfo = o.ref.info;
-            }
-            return oc;
-        });
-    }
-
-    let newProject = {
-        id: Date.now().toString(),
-        date: new Date().toLocaleString('ru-RU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }),
-        layerState: cleanLayerState,
-        preview: previewSrc,
-        bgData: bgData
-    };
-
-    projects.push(newProject);
-    localStorage.setItem(PROJECTS_DB_KEY, JSON.stringify(projects));
-    window.updateSavedCount();
-    isCurrentProjectSaved = true;
-
+    // Эмуляция сохранения для визуала (логика убрана)
     setTimeout(() => {
         let wrapper = document.getElementById('save-btn-wrapper');
         wrapper.classList.add('hidden-animated');
@@ -9580,6 +9437,115 @@ window.openBPFromPromo = function() {
         window.Telegram.WebApp.BackButton.show();
     }
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+    function drawCover(ctx, img, w, h) {
+        if (!img.naturalWidth || !img.naturalHeight) return;
+        const r = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+        const nw = img.naturalWidth * r, nh = img.naturalHeight * r;
+        const nx = (w - nw) / 2, ny = (h - nh) / 2;
+        ctx.drawImage(img, nx, ny, nw, nh);
+    }
+
+    document.querySelectorAll('.slider-wrapper').forEach(wrapper => {
+        const imgEl = wrapper.querySelector('.slider-img');
+        const canvas = wrapper.querySelector('.slider-canvas');
+        if (!imgEl || !canvas) return;
+
+        let images = [];
+        try {
+            images = JSON.parse(wrapper.getAttribute('data-images'));
+        } catch (e) { return; }
+
+        if (images.length < 2) return;
+
+        // Предзагрузка картинок, чтобы не было мерцаний
+        images.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+
+        let currentIndex = 0;
+
+        setInterval(() => {
+            const w = canvas.width = imgEl.offsetWidth;
+            const h = canvas.height = imgEl.offsetHeight;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            // 1. Копируем текущую (старую) картинку на скрытый холст
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = w; offCanvas.height = h;
+            const offCtx = offCanvas.getContext('2d');
+            drawCover(offCtx, imgEl, w, h);
+
+            // 2. Меняем источник картинки на новый и запускаем CSS-блюр
+            currentIndex = (currentIndex + 1) % images.length;
+            imgEl.src = images[currentIndex];
+            imgEl.classList.remove('blur-fade-in');
+            void imgEl.offsetWidth; // Сбрасываем CSS анимацию
+            imgEl.classList.add('blur-fade-in');
+
+            // 3. Создаем частицы для эффекта "взрыва" (как в Telegram)
+            const cols = 12, rows = 8; // Сетка разбиения на осколки
+            const pw = w / cols, ph = h / rows;
+            const particles = [];
+
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    let cx = (i + 0.5) * pw, cy = (j + 0.5) * ph;
+                    // Вычисляем вектор разлёта от центра картинки
+                    let dx = cx - w / 2, dy = cy - h / 2;
+                    let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+
+                    particles.push({
+                        sx: i * pw, sy: j * ph, w: pw, h: ph,
+                        x: i * pw, y: j * ph,
+                        vx: (dx / dist) * (Math.random() * 5 + 3), // Скорость разлёта в стороны
+                        vy: (dy / dist) * (Math.random() * 5 + 3) - 4, // Подброс вверх
+                        rot: 0, vRot: (Math.random() - 0.5) * 0.4, // Вращение осколков
+                        alpha: 1, scale: 1
+                    });
+                }
+            }
+
+            // 4. Запускаем цикл отрисовки частиц
+            let raf;
+            function renderParticles() {
+                ctx.clearRect(0, 0, w, h);
+                let active = false;
+                
+                particles.forEach(p => {
+                    if (p.alpha <= 0.01) return;
+                    active = true;
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.4; // Гравитация (осколки падают вниз)
+                    p.rot += p.vRot;
+                    p.alpha -= 0.02 + Math.random() * 0.02; // Растворение
+                    p.scale -= 0.01; // Уменьшение размера
+
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+                    ctx.rotate(p.rot);
+                    if (p.scale > 0) {
+                        ctx.scale(p.scale, p.scale);
+                        ctx.drawImage(offCanvas, p.sx, p.sy, p.w, p.h, -p.w / 2, -p.h / 2, p.w, p.h);
+                    }
+                    ctx.restore();
+                });
+
+                if (active) {
+                    raf = requestAnimationFrame(renderParticles);
+                } else {
+                    ctx.clearRect(0, 0, w, h);
+                }
+            }
+            renderParticles();
+        }, 3000); // Таймер смены - каждые 3 секунды
+    });
+});
+
 </script>
 </body>
 </html>
