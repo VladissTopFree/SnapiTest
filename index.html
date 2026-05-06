@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(94)";
+  const APP_VERSION = "v2.4.0(95)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6777,29 +6777,22 @@ function drawScene() {
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
                 
-                // Оставляем оригинальный скейл из конфига
-                ctx.scale(obj.scale * (obj.scaleX||1), obj.scale * (obj.scaleY||1));
-                
-                // Волшебный множитель: привязываем размер картинки к холсту 3840px, 
-                // на котором ты изначально настраивал размеры 0.3 и 0.34
-                let iphoneScale = W / 3840;
-                let drawW = img.width * iphoneScale;
-                let drawH = img.height * iphoneScale;
+                let baseScale = W / 1920;
+                ctx.scale(obj.scale * (obj.scaleX||1) * baseScale, obj.scale * (obj.scaleY||1) * baseScale);
                 
                 if (obj.flipH) {
-                    ctx.translate(drawW, 0);
+                    ctx.translate(img.width, 0);
                     ctx.scale(-1, 1);
                 }
                 
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; 
-                ctx.shadowOffsetX = 3 * s; 
-                ctx.shadowOffsetY = -6 * s;
+                ctx.shadowOffsetX = 3 * s / baseScale; 
+                ctx.shadowOffsetY = -6 * s / baseScale;
+                ctx.drawImage(img, 0, 0);
                 
-                ctx.drawImage(img, 0, 0, drawW, drawH);
-                
-                ctx.shadowOffsetX = 2 * s; 
-                ctx.shadowOffsetY = -4 * s; 
-                ctx.drawImage(img, 0, 0, drawW, drawH);
+                ctx.shadowOffsetX = 2 * s / baseScale; 
+                ctx.shadowOffsetY = -4 * s / baseScale; 
+                ctx.drawImage(img, 0, 0);
                 
                 ctx.restore();
             };
