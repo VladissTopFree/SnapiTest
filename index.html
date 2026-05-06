@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(95)";
+  const APP_VERSION = "v2.4.0(96)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -6777,7 +6777,7 @@ function drawScene() {
                 if (obj.rot) ctx.rotate(obj.rot * Math.PI / 180);
                 if (obj.skewX) ctx.transform(1, 0, Math.tan(obj.skewX * Math.PI / 180), 1, 0, 0);
                 
-                let baseScale = W / 1920;
+                let baseScale = W / 3840;
                 ctx.scale(obj.scale * (obj.scaleX||1) * baseScale, obj.scale * (obj.scaleY||1) * baseScale);
                 
                 if (obj.flipH) {
