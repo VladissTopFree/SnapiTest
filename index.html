@@ -6,7 +6,7 @@
 <title>Snapi_TEST</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(102)";
+  const APP_VERSION = "v2.4.0(103)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi_TEST " + APP_VERSION + " BETA";
 
@@ -2358,14 +2358,15 @@ body.os-non-apple .promo-banner {
     flex-direction: column;
   }
 
-  /* Анимация плавного появления новой картинки с блюром */
-@keyframes blurFadeInSlider {
-    0% { filter: blur(10px); opacity: 0; transform: scale(0.95); }
-    100% { filter: blur(0px); opacity: 1; transform: scale(1); }
+/* Анимация плавного переключения (мягкое уменьшение без блюра) */
+@keyframes smoothSliderAnim {
+    0% { transform: scale(1.08); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
-.blur-fade-in {
-    animation: blurFadeInSlider 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+.smooth-anim {
+    /* Используем ease-out для очень плавного и мягкого замедления */
+    animation: smoothSliderAnim 0.6s ease-out forwards;
 }
 
 </style>
@@ -4283,22 +4284,12 @@ function processImages(filesParam) {
   
   filesToProcess = files.length;
 
-setTimeout(async () => {
+  setTimeout(() => {
       for(let i = 0; i < files.length; i++) {
-          await new Promise((resolve) => {
-              const img = new Image();
-              img.onload = () => {
-                  setTimeout(() => {
-                      runMagicLogic(img);
-                      resolve();
-                  }, 100);
-              };
-              img.onerror = () => {
-                  checkBatchCompletion(); 
-                  resolve();
-              };
-              img.src = URL.createObjectURL(files[i]);
-          });
+        const img = new Image();
+        img.onload = () => runMagicLogic(img);
+        img.onerror = () => checkBatchCompletion(); 
+        img.src = URL.createObjectURL(files[i]);
       }
   }, 50);
 }
@@ -5861,22 +5852,13 @@ function drawPriceText(ctx, w, h, textStr, info) {
 }
 
 function runMagicLogic(img) {
-    let w = img.width; 
-    let h = img.height;
-    
-    const MAX_WIDTH = 1200;
-    if (w > MAX_WIDTH) {
-        h = Math.round(h * (MAX_WIDTH / w));
-        w = MAX_WIDTH;
-    }
-
+    const w = img.width; 
+    const h = img.height;
     const tmpCanvas = document.createElement('canvas');
     tmpCanvas.width = w; 
     tmpCanvas.height = h;
     const tCtx = tmpCanvas.getContext('2d', { willReadFrequently: true });
-    tCtx.imageSmoothingEnabled = true;
-    tCtx.imageSmoothingQuality = 'high';
-    tCtx.drawImage(img, 0, 0, w, h);
+    tCtx.drawImage(img, 0, 0);
     
     const imgData = tCtx.getImageData(0, 0, w, h);
     const data = imgData.data;
@@ -9411,18 +9393,29 @@ window.initPromoTimer = function() {
             return res.json();
         })
         .then(data => {
-            const serverTime = new Date(data.datetime).getTime();
+            // Исправляем баг Safari (iOS), убирая микросекунды
+            const safeDate = data.datetime.replace(/\.\d+/, '');
+            const serverTime = new Date(safeDate).getTime();
             const localTime = new Date().getTime();
-            offset = serverTime - localTime; 
+            
+            if (!isNaN(serverTime)) {
+                offset = serverTime - localTime;
+            }
             updateTimer(); 
         })
         .catch(() => {
             fetch('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Moscow')
                 .then(res => res.json())
                 .then(data => {
-                    const serverTime = new Date(data.dateTime).getTime();
+                    // Убираем микросекунды и ЖЕСТКО добавляем часовой пояс Москвы (+03:00), 
+                    // так как timeapi отдает время без него, из-за чего iOS сдвигает часы
+                    const safeDate = data.dateTime.replace(/\.\d+/, '') + '+03:00';
+                    const serverTime = new Date(safeDate).getTime();
                     const localTime = new Date().getTime();
-                    offset = serverTime - localTime; 
+                    
+                    if (!isNaN(serverTime)) {
+                        offset = serverTime - localTime; 
+                    }
                     updateTimer(); 
                 })
                 .catch(() => console.warn('Оба API времени недоступны. Работаем по системному.'));
@@ -9523,9 +9516,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             currentIndex = (currentIndex + 1) % images.length;
             imgEl.src = images[currentIndex];
-            imgEl.classList.remove('blur-fade-in');
+            imgEl.classList.remove('smooth-anim');
             void imgEl.offsetWidth; 
-            imgEl.classList.add('blur-fade-in');
+            imgEl.classList.add('smooth-anim');
         }, 1500);
     });
 });
