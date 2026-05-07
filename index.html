@@ -3,10 +3,10 @@
 <head> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-<title>Snapi_TEST</title>
+<title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(104)";
+  const APP_VERSION = "v2.4.0(106)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -283,7 +283,7 @@
     image-rendering: crisp-edges;
   }
   
-  #layer-panel {
+#layer-panel {
     width: 100%;
     flex-grow: 1; 
     margin-top: -30px; 
@@ -297,11 +297,11 @@
     z-index: 50;
     box-shadow: none;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding: 40px 20px 120px 20px; 
+    padding: 40px 20px 180px 20px; 
     box-sizing: border-box;
   }
 
-  .bottom-fade-container {
+.bottom-fade-container {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -315,6 +315,11 @@
     padding-top: 20px;
     padding-bottom: 40px; 
     box-sizing: border-box;
+    pointer-events: none; 
+  }
+
+  .bottom-fade-container > * {
+    pointer-events: auto; 
   }
 
   .bottom-fade-container::before {
@@ -2821,7 +2826,7 @@ body:not(.os-non-apple) .saved-works-icon {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 7 мая.</div>
+                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 7 мая.</div>
             </div>
          </div>
          
@@ -2834,7 +2839,7 @@ body:not(.os-non-apple) .saved-works-icon {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">49 сезон</div>
-                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 2 апреля.</div>
+                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 2 апреля.</div>
             </div>
          </div>
 
@@ -4014,6 +4019,7 @@ window.layerState = {
     textFont: 'Font16103',
     textStyleIndex: 0, 
     globalStrokeWidth: 2, 
+    globalOffersScale: 1.0, 
     offers: [],
     bgVisible: true,
     luchVisible: true,
@@ -5017,6 +5023,16 @@ if (window.layerState.isBrawlPassMode) {
             </div>
         `;
 
+        html += `
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="font-size:14px;">Размер акций</div>
+                <div class="ios-layer-action-text">размер</div>
+                <div id="v-offers-scale" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${window.layerState.globalOffersScale || 1}</div>
+                <input type="range" class="ios-slider" min="0.1" max="2.0" step="0.01" value="${window.layerState.globalOffersScale || 1}" oninput="document.getElementById('v-offers-scale').innerText=this.value; window.changeOffersScale(this.value)">
+                <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
+            </div>
+        `;
+
         if (window.layerState.isReadyBg) {
             let offersPos = window.layerState.offersPosition || 'bottom';
             html += `
@@ -5252,6 +5268,11 @@ window.changeGlobalStroke = (delta) => {
         }
     });
     startAnimation();
+};
+
+window.changeOffersScale = (val) => {
+    window.layerState.globalOffersScale = parseFloat(val);
+    window.requestRender();
 };
 
 window.toggleTextLayer = () => {
@@ -7391,7 +7412,8 @@ function drawScene() {
         persistentCtx.restore();
     }
     
-    let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
+let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
+    let globalScale = window.layerState.globalOffersScale !== undefined ? window.layerState.globalOffersScale : 1; // <-- ДОБАВЛЕНО
     
     window.layerState.offers.forEach(o => {
         if (o.anim.alpha < 0.01 || o.anim.scale < 0.01) return;
@@ -7411,7 +7433,7 @@ function drawScene() {
         let cy = Math.round(o.anim.y + o.anim.h/2);
         
         persistentCtx.translate(cx, cy);
-        persistentCtx.scale(o.anim.scale, o.anim.scale);
+        persistentCtx.scale(o.anim.scale * globalScale, o.anim.scale * globalScale); 
 
         persistentCtx.imageSmoothingEnabled = true;
         persistentCtx.imageSmoothingQuality = 'high';
