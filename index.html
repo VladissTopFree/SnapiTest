@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(118)";
+  const APP_VERSION = "v2.4.0(119)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5032,13 +5032,12 @@ if (window.layerState.isBrawlPassMode) {
 
         html += `
         <div class="ios-layer-row">
-            <div class="ios-layer-name" style="flex-shrink: 0; margin-right: auto;">Обводка</div>
+            <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: auto;">Обводка</div>
             
-                <div class="ios-layer-action-text" style="margin-right: 4px;">цвет</div>
+            <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 4px;">цвет</div>
             
             <div style="position: relative; width: 26px; height: 26px; flex-shrink: 0; background: ${window.layerState.globalStrokeColor || '#ffffff'}; border-radius: 50%; margin-right: 4px; display: flex; align-items: center; justify-content: center; padding: 1px; box-sizing: border-box; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);" id="stroke-color-display">
                 <input type="color" value="${window.layerState.globalStrokeColor || '#ffffff'}" style="position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer;" oninput="window.changeStrokeColor(this.value)">
-                
                 <div style="width: 22px; height: 22px; background: transparent; border-radius: 50%; z-index: 2; pointer-events: none; display: flex; align-items: center; justify-content: center;">
                     <svg id="stroke-color-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: ${(window.layerState.globalStrokeColor || '#ffffff').toLowerCase() === '#ffffff' ? '#b7b7b7' : '#ffffff'};"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </div>
@@ -5046,7 +5045,7 @@ if (window.layerState.isBrawlPassMode) {
 
             <div style="width: 0.5px; height: 14px; background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent); margin-left: 0; margin-right: 4px; flex-shrink: 0;"></div>
 
-            <div class="ios-layer-action-text" style="margin-right: 4px;">толщина</div>
+            <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 4px;">толщина</div>
             
             <div class="ios-stroke-control" style="background: transparent; flex-shrink: 0;">
                 <button class="ios-stroke-btn" style="padding: 0 8px; background: #01a2ff1f; color: #01a2ff;" onclick="changeGlobalStroke(-1)">-</button>
@@ -5058,23 +5057,24 @@ if (window.layerState.isBrawlPassMode) {
 
         html += `
         <div class="ios-layer-row">
-            <div class="ios-layer-name" style="width: 75px; flex-shrink: 0;">Высота</div>
+            <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Высота</div>
             
-            <div class="ios-layer-action-text" style="margin-right: 8px;">вверх</div>
-            <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.globalOffersOffsetY || 0}" oninput="window.changeOffersOffsetY(this.value)" style="flex-grow: 1; margin: 0;">
-            <div class="ios-layer-action-text" style="margin-left: 8px; margin-right: 0;">вниз</div>
+            <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">вверх</div>
+            <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.globalOffersOffsetY || 0}" oninput="window.changeOffersOffsetY(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+            <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">вниз</div>
         </div>
         `;
 
         html += `
         <div class="ios-layer-row">
-            <div class="ios-layer-name" style="width: 75px; flex-shrink: 0;">Размер</div>
+            <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Размер</div>
             
-            <div class="ios-layer-action-text" style="margin-right: 8px;">меньше</div>
-            <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${window.layerState.globalOffersScale || 1}" oninput="window.changeOffersScale(this.value)" style="flex-grow: 1; margin: 0;">
-            <div class="ios-layer-action-text" style="margin-left: 8px; margin-right: 0;">больше</div>
+            <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">меньше</div>
+            <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${window.layerState.globalOffersScale || 1}" oninput="window.changeOffersScale(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+            <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">больше</div>
         </div>
         `;
+
 
         if (window.layerState.isReadyBg) {
             let offersPos = window.layerState.offersPosition || 'bottom';
@@ -5101,12 +5101,12 @@ if (window.layerState.isBrawlPassMode) {
             html += `
                 <div class="ios-layer-row offer-item" data-idx="${idx}" ${idx === window.layerState.offers.length - 1 ? 'style="border-bottom:none;"' : ''}>
                     
-                    <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" style="margin-right: 10px; flex-shrink: 0;" onclick="toggleOffer(${idx})">
+                    <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" style="margin-right: 8px; flex-shrink: 0;" onclick="toggleOffer(${idx})">
                         ${getEyeSVG(offer.visible)}
                     </div>
                     
                     ${window.layerState.offers.length > 1 ? `
-                    <div class="ios-drag-handle" style="display: flex; align-items: center; justify-content: center; margin-right: 12px; cursor: grab; padding: 4px; touch-action: none; flex-shrink: 0;">
+                    <div class="ios-drag-handle" style="display: flex; align-items: center; justify-content: center; margin-right: 8px; cursor: grab; padding: 4px; touch-action: none; flex-shrink: 0;">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tg-theme-subtitle-text-color, #8E8E93)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="4" y1="12" x2="20" y2="12"></line>
                             <line x1="4" y1="6" x2="20" y2="6"></line>
@@ -5115,13 +5115,13 @@ if (window.layerState.isBrawlPassMode) {
                     </div>
                     ` : ''}
 
-                    <div class="ios-layer-name" style="flex-grow: 1; flex-shrink: 0; min-width: 35px;">#${idx + 1}</div>
+                    <div class="ios-layer-name" style="flex-grow: 1; flex-shrink: 0; margin-right: 8px;">#${idx + 1}</div>
                     
-                    <div class="ios-layer-action-text" style="flex-shrink: 0; margin-right: 8px;">значение</div>
+                    <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 6px;">значение</div>
                     
-                    <input type="text" inputmode="numeric" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5" style="background: ${priceBg}; color: ${priceColor}; flex-shrink: 0;" oninput="updateOfferPriceFromLayer(${idx}, this)">
+                    <input type="text" inputmode="numeric" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5" style="background: ${priceBg}; color: ${priceColor}; flex-shrink: 0; width: 65px; padding: 0 4px;" oninput="updateOfferPriceFromLayer(${idx}, this)">
                     
-                    <div class="ios-icon-btn" style="margin-left: 12px; color: var(--tg-theme-section-header-text-color); flex-shrink: 0;" onclick="downloadOfferLayer(${idx})">
+                    <div class="ios-icon-btn" style="margin-left: 8px; color: var(--tg-theme-section-header-text-color); flex-shrink: 0;" onclick="downloadOfferLayer(${idx})">
                         ${downloadIconSVG}
                     </div>
                 </div>
