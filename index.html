@@ -5115,7 +5115,7 @@ if (window.layerState.isBrawlPassMode) {
                     </div>
                     ` : ''}
 
-                    <div class="ios-layer-name">Акция #${idx + 1}</div>
+                    <div class="ios-layer-name">#${idx + 1}</div>
                     
                     <div class="ios-layer-action-text">значение</div>
                     <input type="text" inputmode="numeric" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5" style="background: ${priceBg}; color: ${priceColor};" oninput="updateOfferPriceFromLayer(${idx}, this)">
