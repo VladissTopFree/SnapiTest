@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(106)";
+  const APP_VERSION = "v2.4.0(107)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4019,7 +4019,9 @@ window.layerState = {
     textFont: 'Font16103',
     textStyleIndex: 0, 
     globalStrokeWidth: 2, 
-    globalOffersScale: 1.0, 
+    globalOffersScale: 1.0,       
+    globalStrokeColor: '#ffffff', 
+    globalOffersOffsetY: 0,       
     offers: [],
     bgVisible: true,
     luchVisible: true,
@@ -5010,27 +5012,51 @@ if (window.layerState.isBrawlPassMode) {
 
     if (!window.layerState.isBrawlPassMode && window.layerState.offers && window.layerState.offers.length > 0) {
         html += `<div class="ios-layer-group ${animCls}">`;
+        
+        html += `<div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-top: 16px; margin-bottom: 4px; padding: 0;">Редактирование акций</div>`;
+
         html += `
-            <div class="ios-layer-row">
-                <div class="ios-layer-name">Обводка</div>
-                <div class="ios-layer-action-text">размер</div>
-                <div class="ios-stroke-control">
-                    <button class="ios-stroke-btn" onclick="changeGlobalStroke(-1)">-</button>
-                    <div class="ios-stroke-val" id="global-stroke-val">${window.layerState.globalStrokeWidth}</div>
-                    <button class="ios-stroke-btn" onclick="changeGlobalStroke(1)">+</button>
+        <div class="ios-layer-row">
+                <div class="ios-layer-name" style="flex-shrink: 0; margin-right: auto;">Обводка</div>            
+                
+            <div class="ios-layer-action-text">цвет</div>
+            <div style="position: relative; width: 64px; height: 28px; background: ${window.layerState.globalStrokeColor || '#ffffff'}; border-radius: 14px; margin-right: 12px; display: flex; align-items: center; justify-content: flex-end; padding: 2px; box-sizing: border-box; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);" id="stroke-color-display">                
+                <input type="color" value="${window.layerState.globalStrokeColor || '#ffffff'}" style="position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer;" oninput="window.changeStrokeColor(this.value)">
+                
+                <div style="width: 24px; height: 24px; background: #000000a6; border-radius: 50%; z-index: 2; pointer-events: none; display: flex; align-items: center; justify-content: center;">
+                    <svg id="stroke-color-icon" viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: ${window.layerState.globalStrokeColor || '#000000'};"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </div>
-                <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
             </div>
+
+            <div style="width: 1px; height: 16px; background-color: var(--tg-theme-section-separator-color, #E5E5EA); margin-right: 10px;"></div>
+
+            <div class="ios-layer-action-text">толщина</div>
+            <div class="ios-stroke-control">
+                <button class="ios-stroke-btn" onclick="changeGlobalStroke(-1)">-</button>
+                <div class="ios-stroke-val" id="global-stroke-val">${window.layerState.globalStrokeWidth}</div>
+                <button class="ios-stroke-btn" onclick="changeGlobalStroke(1)">+</button>
+            </div>
+        </div>
         `;
 
         html += `
-            <div class="ios-layer-row">
-                <div class="ios-layer-name" style="font-size:14px;">Размер акций</div>
-                <div class="ios-layer-action-text">размер</div>
-                <div id="v-offers-scale" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${window.layerState.globalOffersScale || 1}</div>
-                <input type="range" class="ios-slider" min="0.1" max="2.0" step="0.01" value="${window.layerState.globalOffersScale || 1}" oninput="document.getElementById('v-offers-scale').innerText=this.value; window.changeOffersScale(this.value)">
-                <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
-            </div>
+        <div class="ios-layer-row">
+            <div class="ios-layer-name" style="width: 75px; flex-shrink: 0;">Высота</div>
+            
+            <div class="ios-layer-action-text" style="margin-right: 8px;">вверх</div>
+            <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.globalOffersOffsetY || 0}" oninput="window.changeOffersOffsetY(this.value)" style="flex-grow: 1; margin: 0;">
+            <div class="ios-layer-action-text" style="margin-left: 8px; margin-right: 0;">вниз</div>
+        </div>
+        `;
+
+        html += `
+        <div class="ios-layer-row">
+            <div class="ios-layer-name" style="width: 75px; flex-shrink: 0;">Размер</div>
+            
+            <div class="ios-layer-action-text" style="margin-right: 8px;">меньше</div>
+            <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${window.layerState.globalOffersScale || 1}" oninput="window.changeOffersScale(this.value)" style="flex-grow: 1; margin: 0;">
+            <div class="ios-layer-action-text" style="margin-left: 8px; margin-right: 0;">больше</div>
+        </div>
         `;
 
         if (window.layerState.isReadyBg) {
@@ -5058,15 +5084,16 @@ if (window.layerState.isBrawlPassMode) {
                     <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" onclick="toggleOffer(${idx})">
                         ${getEyeSVG(offer.visible)}
                     </div>
-                    <div class="ios-layer-name">Акция #${idx + 1}</div>
+                    <div class="ios-layer-name">Акция...</div>
                     <div class="ios-layer-action-text">значение</div>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5" style="background: ${priceBg}; color: ${priceColor};" oninput="updateOfferPriceFromLayer(${idx}, this)">
+                    <input type="text" inputmode="numeric" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5" style="background: ${priceBg}; color: ${priceColor};" oninput="updateOfferPriceFromLayer(${idx}, this)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
                         ${downloadIconSVG}
                     </div>
                 </div>
             `;
         });
+        
         html += `</div>`;
     }
 
@@ -5272,6 +5299,27 @@ window.changeGlobalStroke = (delta) => {
 
 window.changeOffersScale = (val) => {
     window.layerState.globalOffersScale = parseFloat(val);
+    window.requestRender();
+};
+
+window.changeStrokeColor = (color) => {
+    window.layerState.globalStrokeColor = color;
+    let colorDisplay = document.getElementById('stroke-color-display');
+    if(colorDisplay) colorDisplay.style.background = color;
+    
+    let colorIcon = document.getElementById('stroke-color-icon');
+    if(colorIcon) colorIcon.style.fill = color;
+
+    window.layerState.offers.forEach(offer => {
+        if (offer.hasStroke && offer.target.w) {
+            generateOfferCache(offer, offer.target.w, offer.target.h);
+        }
+    });
+    startAnimation();
+};
+
+window.changeOffersOffsetY = (val) => {
+    window.layerState.globalOffersOffsetY = parseFloat(val);
     window.requestRender();
 };
 
@@ -5638,7 +5686,7 @@ function generateOfferCache(offer, targetW, targetH) {
         let silCtx = silCanvas.getContext('2d');
         silCtx.drawImage(hdCard, 0, 0);
         silCtx.globalCompositeOperation = 'source-in';
-        silCtx.fillStyle = '#ffffff';
+        silCtx.fillStyle = window.layerState.globalStrokeColor || '#ffffff';
         silCtx.fillRect(0, 0, tW, tH);
 
         const steps = 36;
@@ -7430,10 +7478,13 @@ let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
         persistentCtx.shadowOffsetY = Math.round(16 * hdScale);  
         
         let cx = Math.round(o.anim.x + o.anim.w/2);
-        let cy = Math.round(o.anim.y + o.anim.h/2);
+        let offsetY = window.layerState.globalOffersOffsetY !== undefined ? window.layerState.globalOffersOffsetY : 0;
+        let cy = Math.round(o.anim.y + o.anim.h/2 + offsetY);
+        
+        let globalScale = window.layerState.globalOffersScale !== undefined ? window.layerState.globalOffersScale : 1;
         
         persistentCtx.translate(cx, cy);
-        persistentCtx.scale(o.anim.scale * globalScale, o.anim.scale * globalScale); 
+        persistentCtx.scale(o.anim.scale * globalScale, o.anim.scale * globalScale);
 
         persistentCtx.imageSmoothingEnabled = true;
         persistentCtx.imageSmoothingQuality = 'high';
