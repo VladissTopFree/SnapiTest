@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(111)";
+  const APP_VERSION = "v2.4.0(112)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5025,18 +5025,18 @@ if (window.layerState.isBrawlPassMode) {
                 <input type="color" value="${window.layerState.globalStrokeColor || '#ffffff'}" style="position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer;" oninput="window.changeStrokeColor(this.value)">
                 
                 <div style="width: 22px; height: 22px; background: transparent; border-radius: 50%; z-index: 2; pointer-events: none; display: flex; align-items: center; justify-content: center;">
-                    <svg id="stroke-color-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: #000000;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                    <svg id="stroke-color-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: #b7b7b7;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 </div>
             </div>
 
-            <div style="width: 1px; height: 14px; background-color: var(--tg-theme-subtitle-text-color, #8E8E93); opacity: 0.4; margin-left: 0; margin-right: 4px; flex-shrink: 0;"></div>
-
+                <div style="width: 1px; height: 14px; background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent); margin-left: 0; margin-right: 4px; flex-shrink: 0;"></div>
+                
             <div class="ios-layer-action-text" style="margin-right: 4px;">толщина</div>
             
-            <div class="ios-stroke-control" style="background: #01a2ff1f; flex-shrink: 0;">
-                <button class="ios-stroke-btn" style="padding: 0 8px; background: transparent; color: #01a2ff;" onclick="changeGlobalStroke(-1)">-</button>
-                <div class="ios-stroke-val" style="padding: 0 6px; background: transparent; color: #01a2ff;" id="global-stroke-val">${window.layerState.globalStrokeWidth}</div>
-                <button class="ios-stroke-btn" style="padding: 0 8px; background: transparent; color: #01a2ff;" onclick="changeGlobalStroke(1)">+</button>
+            <div class="ios-stroke-control" style="flex-shrink: 0;">
+                <button class="ios-stroke-btn" style="padding: 0 8px; background: #01a2ff65; color: #ffffff;" onclick="changeGlobalStroke(-1)">-</button>
+                <div class="ios-stroke-val" style="padding: 0 6px; background: #01a2ff1f; color: #01a2ff;" id="global-stroke-val">${window.layerState.globalStrokeWidth}</div>
+                <button class="ios-stroke-btn" style="padding: 0 8px; background: #01a2ff65; color: #ffffff;" onclick="changeGlobalStroke(1)">+</button>
             </div>
         </div>
         `;
