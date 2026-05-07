@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(107)";
+  const APP_VERSION = "v2.4.0(108)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5017,10 +5017,11 @@ if (window.layerState.isBrawlPassMode) {
 
         html += `
         <div class="ios-layer-row">
-                <div class="ios-layer-name" style="flex-shrink: 0; margin-right: auto;">Обводка</div>            
-                
-            <div class="ios-layer-action-text">цвет</div>
-            <div style="position: relative; width: 74px; height: 28px; background: ${window.layerState.globalStrokeColor || '#ffffff'}; border-radius: 14px; margin-right: 12px; display: flex; align-items: center; justify-content: flex-end; padding: 2px; box-sizing: border-box; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);" id="stroke-color-display">
+            <div class="ios-layer-name" style="flex-shrink: 0; margin-right: auto;">Обводка</div>
+            
+            <div class="ios-layer-action-text" style="margin-right: 6px;">цвет</div>
+            
+            <div style="position: relative; width: 28px; height: 28px; background: ${window.layerState.globalStrokeColor || '#ffffff'}; border-radius: 50%; margin-right: 8px; display: flex; align-items: center; justify-content: center; padding: 2px; box-sizing: border-box; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);" id="stroke-color-display">
                 <input type="color" value="${window.layerState.globalStrokeColor || '#ffffff'}" style="position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer;" oninput="window.changeStrokeColor(this.value)">
                 
                 <div style="width: 24px; height: 24px; background: transparent; border-radius: 50%; z-index: 2; pointer-events: none; display: flex; align-items: center; justify-content: center;">
@@ -5028,9 +5029,10 @@ if (window.layerState.isBrawlPassMode) {
                 </div>
             </div>
 
-                <div style="width: 1px; height: 16px; background-color: var(--tg-theme-section-separator-color, #8E8E93); opacity: 0.4; margin-left: 4px; margin-right: 16px; flex-shrink: 0;"></div>
+            <div style="width: 1px; height: 16px; background-color: var(--tg-theme-subtitle-text-color, #8E8E93); opacity: 0.4; margin-left: 0; margin-right: 8px; flex-shrink: 0;"></div>
 
-            <div class="ios-layer-action-text" style="margin-right: 16px;">толщина</div>
+            <div class="ios-layer-action-text" style="margin-right: 8px;">толщина</div>
+            
             <div class="ios-stroke-control">
                 <button class="ios-stroke-btn" onclick="changeGlobalStroke(-1)">-</button>
                 <div class="ios-stroke-val" id="global-stroke-val">${window.layerState.globalStrokeWidth}</div>
