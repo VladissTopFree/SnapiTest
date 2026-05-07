@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(115)";
+  const APP_VERSION = "v2.4.0(116)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5083,10 +5083,22 @@ if (window.layerState.isBrawlPassMode) {
 
             html += `
                 <div class="ios-layer-row" ${idx === window.layerState.offers.length - 1 ? 'style="border-bottom:none;"' : ''}>
-                    <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" onclick="toggleOffer(${idx})">
+                    
+                    <div class="ios-icon-btn ios-eye-icon ${offerEyeClass}" style="margin-right: 8px;" onclick="toggleOffer(${idx})">
                         ${getEyeSVG(offer.visible)}
                     </div>
-                    <div class="ios-layer-name">Акция...</div>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 10px;">
+                        <div onclick="window.moveOfferLayer(${idx}, -1)" style="padding: 2px 4px; cursor: pointer; opacity: ${idx === 0 ? 0.2 : 1}; pointer-events: ${idx === 0 ? 'none' : 'auto'};">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--tg-theme-text-color, #000000)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                        </div>
+                        <div onclick="window.moveOfferLayer(${idx}, 1)" style="padding: 2px 4px; cursor: pointer; opacity: ${idx === window.layerState.offers.length - 1 ? 0.2 : 1}; pointer-events: ${idx === window.layerState.offers.length - 1 ? 'none' : 'auto'};">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--tg-theme-text-color, #000000)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </div>
+
+                    <div class="ios-layer-name">Акция #${idx + 1}</div>
+                    
                     <div class="ios-layer-action-text">значение</div>
                     <input type="text" inputmode="numeric" class="ios-price-input" id="layer-price-${idx}" value="${offer.price}" maxlength="5" style="background: ${priceBg}; color: ${priceColor};" oninput="updateOfferPriceFromLayer(${idx}, this)">
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadOfferLayer(${idx})">
@@ -5351,6 +5363,19 @@ window.toggleOffer = (idx) => {
     offer.visible = !offer.visible;
     renderLayerPanel();
     calculateLayoutTarget(); 
+};
+
+window.moveOfferLayer = (idx, direction) => {
+    let offers = window.layerState.offers;
+    
+    if (idx + direction < 0 || idx + direction >= offers.length) return;
+    
+    let temp = offers[idx];
+    offers[idx] = offers[idx + direction];
+    offers[idx + direction] = temp;
+    
+    renderLayerPanel();
+    calculateLayoutTarget();
 };
 
 window.updateOfferPriceFromLayer = (idx, inputEl) => {
