@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(119)";
+  const APP_VERSION = "v2.4.0(120)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5075,21 +5075,6 @@ if (window.layerState.isBrawlPassMode) {
         </div>
         `;
 
-
-        if (window.layerState.isReadyBg) {
-            let offersPos = window.layerState.offersPosition || 'bottom';
-            html += `
-            <div class="ios-layer-row">
-                <div class="ios-layer-name">Акции</div>
-                <div class="ios-layer-action-text">расположение</div>
-                <button class="ios-pill-btn" onclick="toggleOffersPosition()">
-                    ${offersPos !== 'bottom' ? 'ВНИЗ' : 'ВВЕРХ'}
-                </button>
-                <div style="width: 24px; margin-left: 10px; flex-shrink: 0;"></div>
-            </div>
-            `;
-        }
-
         html += `<div id="offers-sortable-list">`;
 
         window.layerState.offers.forEach((offer, idx) => {
@@ -6530,10 +6515,13 @@ function calculateLayoutTarget() {
   let boxLeft = bgW * 0.04;                 
   let boxRight = bgW * 0.96;                 
 
-  let boxW = boxRight - boxLeft;
-  let boxH = boxBottom - boxTop;
+    let boxW = boxRight - boxLeft;
+    let boxH = boxBottom - boxTop;
 
-  let activeOffers = window.layerState.offers.filter(o => o.visible);
+    window.layerState.gridCx = boxLeft + boxW / 2;
+    window.layerState.gridCy = boxTop + boxH / 2;
+
+    let activeOffers = window.layerState.offers.filter(o => o.visible);
   
   let bestCols = 1; let bestH = 0; let bestRows = 1; let gapX = 0; let gapY = 0;
   let n = activeOffers.length;
@@ -7531,7 +7519,9 @@ function drawScene() {
     }
     
 let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
-    let globalScale = window.layerState.globalOffersScale !== undefined ? window.layerState.globalOffersScale : 1; // <-- ДОБАВЛЕНО
+    let globalScale = window.layerState.globalOffersScale !== undefined ? window.layerState.globalOffersScale : 1;
+    let gridCx = window.layerState.gridCx || (w / 2);
+    let gridCy = window.layerState.gridCy || (h / 2);
     
     window.layerState.offers.forEach(o => {
         if (o.anim.alpha < 0.01 || o.anim.scale < 0.01) return;
@@ -7548,10 +7538,13 @@ let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
         persistentCtx.shadowOffsetY = Math.round(16 * hdScale);  
         
         let cx = Math.round(o.anim.x + o.anim.w/2);
-        let offsetY = window.layerState.globalOffersOffsetY !== undefined ? window.layerState.globalOffersOffsetY : 0;
-        let cy = Math.round(o.anim.y + o.anim.h/2 + offsetY);
+        let cy = Math.round(o.anim.y + o.anim.h/2);
         
-        let globalScale = window.layerState.globalOffersScale !== undefined ? window.layerState.globalOffersScale : 1;
+        cx = gridCx + (cx - gridCx) * globalScale;
+        cy = gridCy + (cy - gridCy) * globalScale;
+
+        let offsetY = window.layerState.globalOffersOffsetY !== undefined ? window.layerState.globalOffersOffsetY : 0;
+        cy += offsetY;
         
         persistentCtx.translate(cx, cy);
         persistentCtx.scale(o.anim.scale * globalScale, o.anim.scale * globalScale);
