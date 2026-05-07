@@ -6,7 +6,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(112)";
+  const APP_VERSION = "v2.4.0(113)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5029,14 +5029,16 @@ if (window.layerState.isBrawlPassMode) {
                 </div>
             </div>
 
-                <div style="width: 1px; height: 14px; background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent); margin-left: 0; margin-right: 4px; flex-shrink: 0;"></div>
+                <div style="width: 0.5px; height: 14px; background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent); margin-left: 0; margin-right: 4px; flex-shrink: 0;"></div>
                 
             <div class="ios-layer-action-text" style="margin-right: 4px;">толщина</div>
             
-            <div class="ios-stroke-control" style="flex-shrink: 0;">
-                <button class="ios-stroke-btn" style="padding: 0 8px; background: #01a2ff65; color: #ffffff;" onclick="changeGlobalStroke(-1)">-</button>
-                <div class="ios-stroke-val" style="padding: 0 6px; background: #01a2ff1f; color: #01a2ff;" id="global-stroke-val">${window.layerState.globalStrokeWidth}</div>
-                <button class="ios-stroke-btn" style="padding: 0 8px; background: #01a2ff65; color: #ffffff;" onclick="changeGlobalStroke(1)">+</button>
+            <div class="ios-stroke-control" style="background: transparent; flex-shrink: 0;">
+                <button class="ios-stroke-btn" style="padding: 0 10px; background: #01a2ff65; color: #ffffff;" onclick="changeGlobalStroke(-1)">-</button>
+                
+                <div class="ios-stroke-val" style="padding: 0 8px; background: #01a2ff1f; color: #01a2ff;" id="global-stroke-val">${window.layerState.globalStrokeWidth}</div>
+                
+                <button class="ios-stroke-btn" style="padding: 0 10px; background: #01a2ff65; color: #ffffff;" onclick="changeGlobalStroke(1)">+</button>
             </div>
         </div>
         `;
