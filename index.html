@@ -7,11 +7,11 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(120)";
+  const APP_VERSION = "v2.4.0(122)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = true; 
+  const SHOW_PROMO_BANNER = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -4693,6 +4693,22 @@ if (window.layerState.isBrawlPassMode) {
                     </div>
                 </div>
             `;
+
+            html += `
+                <div class="ios-layer-row">
+                    <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Высота</div>
+                    <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">вверх</div>
+                    <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.mainTextOffsetY || 0}" oninput="window.changeMainTextOffsetY(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+                    <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">вниз</div>
+                </div>
+                <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+                    <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Размер</div>
+                    <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">меньше</div>
+                    <input type="range" class="ios-slider" min="0.1" max="3" step="0.01" value="${window.layerState.mainTextScale || 1}" oninput="window.changeMainTextScale(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+                    <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">больше</div>
+                </div>
+            `;
+
             html += `<div class="ios-font-label">Изменить шрифт</div>`;
             html += `<div class="ios-font-grid">`;
             FONT_OPTIONS.forEach((f) => {
@@ -4994,18 +5010,31 @@ if (window.layerState.isBrawlPassMode) {
     } else {
         html += `
             <div class="ios-layer-group ${animCls}">
-            <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+            <div class="ios-layer-row">
                 <div class="ios-icon-btn ios-eye-icon ${window.layerState.textVisible ? '' : 'hidden'}" onclick="toggleTextLayer()">
                     ${getEyeSVG(window.layerState.textVisible)}
                 </div>
-                <div class="ios-layer-name" style="max-width: 120px;">${(window.layerState.textValue || 'SNAPI').substring(0, 10)}${(window.layerState.textValue || '').length > 10 ? '...' : ''}</div>
-                <div class="ios-layer-action-text">расположение</div>
-                <button class="ios-pill-btn" onclick="toggleTextPosition()">
+                <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">${(window.layerState.textValue || 'SNAPI').substring(0, 10)}${(window.layerState.textValue || '').length > 10 ? '...' : ''}</div>
+                <div class="ios-layer-action-text" style="flex-shrink: 0; margin-right: 8px;">расположение</div>
+                <button class="ios-pill-btn" onclick="toggleTextPosition()" style="flex-shrink: 0;">
                     ${window.layerState.textPosition !== 'bottom' ? 'ВВЕРХ' : 'ВНИЗ'}
                 </button>
-                <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadTextLayer()">
+                <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color); flex-shrink: 0;" onclick="downloadTextLayer()">
                     ${downloadIconSVG}
                 </div>
+            </div>
+            
+            <div class="ios-layer-row">
+                <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Высота</div>
+                <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">вверх</div>
+                <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.mainTextOffsetY || 0}" oninput="window.changeMainTextOffsetY(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+                <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">вниз</div>
+            </div>
+            <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+                <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Размер</div>
+                <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">меньше</div>
+                <input type="range" class="ios-slider" min="0.1" max="3" step="0.01" value="${window.layerState.mainTextScale || 1}" oninput="window.changeMainTextScale(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+                <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">больше</div>
             </div>
         `;
         html += `<div class="ios-font-label">Изменить шрифт</div>`;
@@ -5065,12 +5094,22 @@ if (window.layerState.isBrawlPassMode) {
         </div>
         `;
 
-        html += `
+    html += `
         <div class="ios-layer-row">
             <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Размер</div>
             
             <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">меньше</div>
             <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${window.layerState.globalOffersScale || 1}" oninput="window.changeOffersScale(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+            <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">больше</div>
+        </div>
+        `;
+
+        html += `
+        <div class="ios-layer-row">
+            <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Цены</div>
+            
+            <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">меньше</div>
+            <input type="range" class="ios-slider" min="0.5" max="2.0" step="0.01" value="${window.layerState.globalPriceScale || 1}" oninput="window.changeGlobalPriceScale(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
             <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">больше</div>
         </div>
         `;
@@ -5342,6 +5381,47 @@ window.changeOffersScale = (val) => {
     window.requestRender();
 };
 
+let priceScaleThrottle = false;
+let priceScaleTimeout = null;
+
+window.changeGlobalPriceScale = (val) => {
+    window.layerState.globalPriceScale = parseFloat(val);
+    
+    if (!priceScaleThrottle) {
+        priceScaleThrottle = true;
+        window.layerState.offers.forEach(offer => {
+            if (offer.target && offer.target.w) {
+                generateOfferCache(offer, offer.target.w, offer.target.h, true); // быстрый рендер
+            }
+        });
+        window.requestRender();
+
+        setTimeout(() => {
+            priceScaleThrottle = false;
+        }, 100);
+    }
+    
+    clearTimeout(priceScaleTimeout);
+    priceScaleTimeout = setTimeout(() => {
+        window.layerState.offers.forEach(offer => {
+            if (offer.target && offer.target.w) {
+                generateOfferCache(offer, offer.target.w, offer.target.h, false); // высокое качество
+            }
+        });
+        window.requestRender();
+    }, 150);
+};
+
+window.changeMainTextOffsetY = (val) => {
+    window.layerState.mainTextOffsetY = parseFloat(val);
+    window.requestRender();          
+};
+
+window.changeMainTextScale = (val) => {
+    window.layerState.mainTextScale = parseFloat(val);
+    window.requestRender();
+};
+
 window.changeStrokeColor = (color) => {
     window.layerState.globalStrokeColor = color;
     let colorDisplay = document.getElementById('stroke-color-display');
@@ -5474,7 +5554,19 @@ window.downloadCosmeticLayer = (layerName) => {
             }
             
             if (window.layerState.textVisible && window.layerState.textValue) {
+                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+
+                ctx.save();
+                let tw2 = w/2;
+                let th2 = h/2;
+                ctx.translate(tw2, th2 + tOffsetY * getHDScale());
+                ctx.scale(tScale, tScale);
+                ctx.translate(-tw2, -th2);
+                
                 drawBeautifulNick(ctx, window.layerState.textValue, w, h);
+                
+                ctx.restore();
             }
         } else {
             if (rawBgImage) {
@@ -5516,7 +5608,19 @@ window.downloadTextLayer = () => {
     tempC.height = rawBgImage ? rawBgImage.height * scale : 2160;
     let ctx = tempC.getContext('2d');
     if (window.layerState.textValue && window.layerState.textVisible) {
+        let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+        let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+        
+        ctx.save();
+        let tw2 = tempC.width/2;
+        let th2 = tempC.height/2;
+        ctx.translate(tw2, th2 + tOffsetY * getHDScale());
+        ctx.scale(tScale, tScale);
+        ctx.translate(-tw2, -th2);
+        
         drawBeautifulNick(ctx, window.layerState.textValue, tempC.width, tempC.height);
+        
+        ctx.restore();
     }
     downloadCanvas(tempC, 'text_layer.png');
 };
@@ -5659,7 +5763,7 @@ function fallbackDownload(blob, filename) {
     }
 }
 
-function generateOfferCache(offer, targetW, targetH) {
+function generateOfferCache(offer, targetW, targetH, isFastMode = false) {
     let item = offer.ref;
     let tW = targetW || item.canvas.width;
     let tH = targetH || item.canvas.height;
@@ -5744,7 +5848,7 @@ function generateOfferCache(offer, targetW, targetH) {
         silCtx.fillStyle = window.layerState.globalStrokeColor || '#ffffff';
         silCtx.fillRect(0, 0, tW, tH);
 
-        const steps = 36;
+        const steps = isFastMode ? 8 : 36;
         for (let i = 0; i < steps; i++) {
             let angle = (i / steps) * Math.PI * 2;
             stCtx.drawImage(silCanvas, pad + Math.cos(angle) * sw, pad + Math.sin(angle) * sw, tW, tH);
@@ -5754,6 +5858,7 @@ function generateOfferCache(offer, targetW, targetH) {
     stCtx.drawImage(hdCard, pad, pad, tW, tH);
     offer.cache = { canvas: strokedCard, pad: pad, tW: tW, tH: tH, scaleMult: 1 };
 }
+   
 
 function autoReplacePrice(ctx, w, h) {
   const imgData = ctx.getImageData(0, 0, w, h);
@@ -5904,8 +6009,10 @@ function isBg(x, y) {
 function drawPriceText(ctx, w, h, textStr, info) {
   if (!textStr || textStr.trim() === "") return;
   let { textX, textY, boxHeight } = info;
-  let fontSize = Math.floor(boxHeight * 0.60); 
-  if (fontSize < 22) fontSize = 22;
+  
+  let priceScale = window.layerState.globalPriceScale !== undefined ? window.layerState.globalPriceScale : 1;
+  let fontSize = Math.floor((boxHeight * 0.60) * priceScale); 
+  if (fontSize < Math.floor(22 * priceScale)) fontSize = Math.floor(22 * priceScale);
 
   let isFree = textStr.trim().toUpperCase() === 'FREE';
   let isNumber = !isNaN(textStr.trim()) && textStr.trim() !== '';
@@ -6819,13 +6926,16 @@ function drawScene() {
                 });
                 ctx.restore();
             }
-
+            
             if (cachedTextCanvas && animText.alpha > 0.01) {
+                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+                
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
                 ctx.translate(W/2, H/2);
-                ctx.translate(-225*s, -115*s);
-                ctx.scale(0.7 * animText.scale, 0.7 * animText.scale); 
+                ctx.translate(-225*s, -115*s + tOffsetY * s);
+                ctx.scale(0.7 * animText.scale * tScale, 0.7 * animText.scale * tScale); 
                 ctx.translate(-W/2, -H/2);
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
@@ -7178,21 +7288,23 @@ function drawScene() {
             ctx.restore();
 
             if (cachedTextCanvas && animText.alpha > 0.01) {
-
                 let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
                 let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 581;
                 let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
+
+                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
 
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
                 let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
                 ctx.translate(tw2, th2);
-                ctx.translate(txtX * s, txtY * s); 
-                ctx.scale(txtS * animText.scale, txtS * animText.scale); 
+                ctx.translate(txtX * s, (txtY + tOffsetY) * s); 
+                ctx.scale(txtS * animText.scale * tScale, txtS * animText.scale * tScale); 
                 ctx.translate(-W/2, -H/2);
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
-            } 
+            }
             
             return; 
         }
@@ -7461,11 +7573,14 @@ function drawScene() {
             }
 
             if (cachedTextCanvas && animText.alpha > 0.01) {
+                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+
                 persistentCtx.save();
                 persistentCtx.globalAlpha = animText.alpha;
                 let tw2 = Math.round(w/2); let th2 = Math.round(h/2);
-                persistentCtx.translate(tw2, th2);
-                persistentCtx.scale(animText.scale, animText.scale);
+                persistentCtx.translate(tw2, th2 + tOffsetY * getHDScale());
+                persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
                 persistentCtx.translate(-tw2, -th2);
                 persistentCtx.drawImage(cachedTextCanvas, 0, 0);
                 persistentCtx.restore();
@@ -7505,12 +7620,15 @@ function drawScene() {
     }
     
     if (cachedTextCanvas && animText.alpha > 0.01) {
+        let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+        let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+
         persistentCtx.save();
         persistentCtx.globalAlpha = animText.alpha;
         let tw2 = Math.round(w/2);
         let th2 = Math.round(h/2);
-        persistentCtx.translate(tw2, th2);
-        persistentCtx.scale(animText.scale, animText.scale);
+        persistentCtx.translate(tw2, th2 + tOffsetY * getHDScale());
+        persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
         persistentCtx.translate(-tw2, -th2);
         persistentCtx.imageSmoothingEnabled = true;
         persistentCtx.imageSmoothingQuality = 'high';
@@ -7651,10 +7769,12 @@ function drawStars(ctx, starImg, w, h, opacity = 1.0, forExport = false) {
 
 function drawBeautifulNick(ctx, text, w, h) {
     let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
+
     let x = Math.round(w / 2); 
     let y = window.layerState.textPosition === 'bottom' 
         ? Math.round(h * 0.92 - (fontSize / 2))
         : Math.round(h * 0.06 + (fontSize / 2)); 
+
     let shadowDepth = Math.max(1, Math.floor(fontSize * 0.10));
 
     let style = TEXT_STYLES[window.layerState.textStyleIndex || 0];
@@ -8940,8 +9060,9 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     if (bpText.length === 5) {
         bpFontSize = bpFontSize * 0.88; 
-        mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`; 
     }
+    
+    mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`; 
 
     const bpShadowDepth = Math.max(1, Math.floor(bpFontSize * 0.10));
     const lineGap = 0;
@@ -8997,7 +9118,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         for (let i = bpShadowDepth; i >= 0; i--) {
             lines.forEach(({ text, y }) => {
                 sCtx.save();
-                sCtx.translate(bpTextX, y);
+                sCtx.translate(bpTextX, y); 
                 sCtx.transform(1, 0, -0.07, 1, 0, 0);
                 sCtx.rotate(-0.02);
                 sCtx.strokeText(text, 0, i);
@@ -9031,7 +9152,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     lines.forEach(({ text, y }) => {
         fCtx.save();
-        fCtx.translate(bpTextX, y);
+        fCtx.translate(bpTextX, y); 
         fCtx.transform(1, 0, -0.07, 1, 0, 0);
         fCtx.rotate(-0.02);
         
@@ -9051,7 +9172,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
-    ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult));
+    ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult)); 
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = Math.max(4, Math.round(16 * scaleMult));
     ctx.drawImage(strokeC, 0, 0);
@@ -9352,6 +9473,12 @@ const TARGET_DATE_STRING = "2026-05-07T11:00:00+03:00";
 
 
 window.initPromoTimer = function() {
+    if (!SHOW_PROMO_BANNER) {
+        let bannerEl = document.getElementById('main-promo');
+        if (bannerEl) bannerEl.style.display = 'none';
+        return;
+    }
+
     const timerEl = document.getElementById('promo-timer');
     if (!timerEl) return;
 
