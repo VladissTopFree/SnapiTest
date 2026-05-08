@@ -7,11 +7,11 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(124)";
+  const APP_VERSION = "v2.4.0(125)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = false; 
+  const SHOW_PROMO_BANNER = true; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -4437,9 +4437,17 @@ window.updateBPPrice = (side, inputEl) => {
 window.ENABLE_TEMP_EDITOR = false; 
 
 
-window.requestRender = function() {
+window.needsTextCacheUpdate = false;
+
+window.requestRender = function(updateTextCache = false) {
+    if (updateTextCache) window.needsTextCacheUpdate = true;
     if (window.renderThrottle) return;
+    
     window.renderThrottle = setTimeout(() => {
+        if (window.needsTextCacheUpdate && typeof window.updateCachedTextCanvas === 'function') {
+            window.updateCachedTextCanvas();
+            window.needsTextCacheUpdate = false;
+        }
         if (typeof startAnimation === 'function') startAnimation();
         window.renderThrottle = null;
     }, 35); 
@@ -5381,45 +5389,26 @@ window.changeOffersScale = (val) => {
     window.requestRender();
 };
 
-let priceScaleThrottle = false;
-let priceScaleTimeout = null;
-
 window.changeGlobalPriceScale = (val) => {
     window.layerState.globalPriceScale = parseFloat(val);
     
-    if (!priceScaleThrottle) {
-        priceScaleThrottle = true;
-        window.layerState.offers.forEach(offer => {
-            if (offer.target && offer.target.w) {
-                generateOfferCache(offer, offer.target.w, offer.target.h, true); // быстрый рендер
-            }
-        });
-        window.requestRender();
-
-        setTimeout(() => {
-            priceScaleThrottle = false;
-        }, 100);
-    }
+    window.layerState.offers.forEach(offer => {
+        if (offer.target && offer.target.w) {
+            generateOfferCache(offer, offer.target.w, offer.target.h);
+        }
+    });
     
-    clearTimeout(priceScaleTimeout);
-    priceScaleTimeout = setTimeout(() => {
-        window.layerState.offers.forEach(offer => {
-            if (offer.target && offer.target.w) {
-                generateOfferCache(offer, offer.target.w, offer.target.h, false); // высокое качество
-            }
-        });
-        window.requestRender();
-    }, 150);
+    if (typeof startAnimation === 'function') startAnimation();
 };
 
 window.changeMainTextOffsetY = (val) => {
     window.layerState.mainTextOffsetY = parseFloat(val);
-    window.requestRender();          
+    window.requestRender(true); 
 };
 
 window.changeMainTextScale = (val) => {
     window.layerState.mainTextScale = parseFloat(val);
-    window.requestRender();
+    window.requestRender(true); 
 };
 
 window.changeStrokeColor = (color) => {
@@ -5554,23 +5543,7 @@ window.downloadCosmeticLayer = (layerName) => {
             }
             
             if (window.layerState.textVisible && window.layerState.textValue) {
-                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
-
-                let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
-                let anchorX = Math.round(w / 2);
-                let anchorY = window.layerState.textPosition === 'bottom' 
-                    ? Math.round(h * 0.92 - (fontSize / 2))
-                    : Math.round(h * 0.06 + (fontSize / 2));
-
-                ctx.save();
-                ctx.translate(anchorX, anchorY + tOffsetY * getHDScale());
-                ctx.scale(tScale, tScale);
-                ctx.translate(-anchorX, -anchorY);
-                
                 drawBeautifulNick(ctx, window.layerState.textValue, w, h);
-                
-                ctx.restore();
             }
         } else {
             if (rawBgImage) {
@@ -5612,23 +5585,7 @@ window.downloadTextLayer = () => {
     tempC.height = rawBgImage ? rawBgImage.height * scale : 2160;
     let ctx = tempC.getContext('2d');
     if (window.layerState.textValue && window.layerState.textVisible) {
-        let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-        let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
-        
-        let fontSize = Math.floor(tempC.height * 0.12); if (fontSize < 30) fontSize = 30;
-        let anchorX = Math.round(tempC.width / 2);
-        let anchorY = window.layerState.textPosition === 'bottom' 
-            ? Math.round(tempC.height * 0.92 - (fontSize / 2))
-            : Math.round(tempC.height * 0.06 + (fontSize / 2));
-
-        ctx.save();
-        ctx.translate(anchorX, anchorY + tOffsetY * getHDScale());
-        ctx.scale(tScale, tScale);
-        ctx.translate(-anchorX, -anchorY);
-        
         drawBeautifulNick(ctx, window.layerState.textValue, tempC.width, tempC.height);
-        
-        ctx.restore();
     }
     downloadCanvas(tempC, 'text_layer.png');
 };
@@ -5771,7 +5728,7 @@ function fallbackDownload(blob, filename) {
     }
 }
 
-function generateOfferCache(offer, targetW, targetH, isFastMode = false) {
+function generateOfferCache(offer, targetW, targetH) {
     let item = offer.ref;
     let tW = targetW || item.canvas.width;
     let tH = targetH || item.canvas.height;
@@ -5856,7 +5813,7 @@ function generateOfferCache(offer, targetW, targetH, isFastMode = false) {
         silCtx.fillStyle = window.layerState.globalStrokeColor || '#ffffff';
         silCtx.fillRect(0, 0, tW, tH);
 
-        const steps = isFastMode ? 8 : 36;
+        const steps = 36;
         for (let i = 0; i < steps; i++) {
             let angle = (i / steps) * Math.PI * 2;
             stCtx.drawImage(silCanvas, pad + Math.cos(angle) * sw, pad + Math.sin(angle) * sw, tW, tH);
@@ -5866,7 +5823,6 @@ function generateOfferCache(offer, targetW, targetH, isFastMode = false) {
     stCtx.drawImage(hdCard, pad, pad, tW, tH);
     offer.cache = { canvas: strokedCard, pad: pad, tW: tW, tH: tH, scaleMult: 1 };
 }
-   
 
 function autoReplacePrice(ctx, w, h) {
   const imgData = ctx.getImageData(0, 0, w, h);
@@ -6934,29 +6890,17 @@ function drawScene() {
                 });
                 ctx.restore();
             }
-            
+
             if (cachedTextCanvas && animText.alpha > 0.01) {
-                    let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-                    let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
-
-                    let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
-                    let anchorX = Math.round(w / 2);
-                    let anchorY = window.layerState.textPosition === 'bottom' 
-                        ? Math.round(h * 0.92 - (fontSize / 2))
-                        : Math.round(h * 0.06 + (fontSize / 2));
-
-                    persistentCtx.save();
-                    persistentCtx.globalAlpha = animText.alpha;
-                    
-                    persistentCtx.translate(anchorX, anchorY + tOffsetY * getHDScale());
-                    persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
-                    persistentCtx.translate(-anchorX, -anchorY);
-                    
-                    persistentCtx.imageSmoothingEnabled = true;
-                    persistentCtx.imageSmoothingQuality = 'high';
-                    persistentCtx.drawImage(cachedTextCanvas, 0, 0);
-                    persistentCtx.restore();
-                }
+                ctx.save();
+                ctx.globalAlpha = animText.alpha;
+                ctx.translate(W/2, H/2);
+                ctx.translate(-225*s, -115*s);
+                ctx.scale(0.7 * animText.scale, 0.7 * animText.scale); 
+                ctx.translate(-W/2, -H/2);
+                ctx.drawImage(cachedTextCanvas, 0, 0);
+                ctx.restore();
+            }
 
             let lineW = 16*s; let lineH = H * 1.5;
             let lineX = W * 0.58 + 6*s; let lineY = -H * 0.25;
@@ -7232,7 +7176,20 @@ function drawScene() {
                 offCtx.restore();
             };
 
-            if (rawBgImage) offCtx.drawImage(rawBgImage, 0, 0, W, H);
+            if (!window.layerState.isGeneratedBg) {
+                drawZone('#ffaa00', -20, 0, 507, 736, -76, 1);
+                drawZone('#0015ff', 488, -5, 436, 736, -76, 1);
+                drawZone('#005e0e', 924, -2, 451, 736, -76, 1);
+            }
+
+            if (rawBgImage) {
+                offCtx.save();
+                if (!window.layerState.isGeneratedBg) {
+                    offCtx.globalCompositeOperation = 'overlay';
+                }
+                offCtx.drawImage(rawBgImage, 0, 0, W, H);
+                offCtx.restore();
+            }
 
             if (window.layerState.watermarksVisible !== false) {
                 let wmText = window.layerState.textValue || "SNAPI";
@@ -7275,12 +7232,6 @@ function drawScene() {
             if (window.layerState.detailsVisible !== false) {
                 drawLayer(globalAssets.s3Details, 0, 0, 1280, 720, 1, 1, 'source-over');
             }
-            
-            if (!window.layerState.isGeneratedBg) {
-                drawZone('#ffaa00', -20, 0, 507, 736, -76, 0.36);
-                drawZone('#0015ff', 488, -5, 436, 736, -76, 0.36);
-                drawZone('#005e0e', 924, -2, 451, 736, -76, 0.36);
-            }
 
             drawLayer(globalAssets.s3PanelL, 34, 33, 417, 520, 1, 1, 'source-over');
             drawLayer(globalAssets.s3PriceL, 106, 494, 240, 85, 1, 1, 'source-over');
@@ -7305,28 +7256,21 @@ function drawScene() {
             ctx.restore();
 
             if (cachedTextCanvas && animText.alpha > 0.01) {
-                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
-                
-                let fontSize = Math.floor(H * 0.12); if (fontSize < 30) fontSize = 30;
-                let anchorX = Math.round(W / 2);
-                let anchorY = window.layerState.textPosition === 'bottom' 
-                    ? Math.round(H * 0.92 - (fontSize / 2))
-                    : Math.round(H * 0.06 + (fontSize / 2));
-                
-                let screenX = anchorX - 225 * s;
-                let screenY = anchorY - 115 * s + tOffsetY * s;
+
+                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 581;
+                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
-                
-                ctx.translate(screenX, screenY);
-                ctx.scale(0.7 * animText.scale * tScale, 0.7 * animText.scale * tScale); 
-                ctx.translate(-anchorX, -anchorY);
-                
+                let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
+                ctx.translate(tw2, th2);
+                ctx.translate(txtX * s, txtY * s); 
+                ctx.scale(txtS * animText.scale, txtS * animText.scale); 
+                ctx.translate(-W/2, -H/2);
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
-            }
+            } 
             
             return; 
         }
@@ -7595,28 +7539,14 @@ function drawScene() {
             }
 
             if (cachedTextCanvas && animText.alpha > 0.01) {
-                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
-                
-                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 581;
-                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
-
-                let anchorX = W / 2;
-                let anchorY = H * 0.91; 
-                
-                let screenX = W / 2 + txtX * s;
-                let screenY = txtY * s + anchorY + tOffsetY * s;
-
-                ctx.save();
-                ctx.globalAlpha = animText.alpha;
-                
-                ctx.translate(screenX, screenY); 
-                ctx.scale(txtS * animText.scale * tScale, txtS * animText.scale * tScale); 
-                ctx.translate(-anchorX, -anchorY);
-                
-                ctx.drawImage(cachedTextCanvas, 0, 0);
-                ctx.restore();
+                persistentCtx.save();
+                persistentCtx.globalAlpha = animText.alpha;
+                let tw2 = Math.round(w/2); let th2 = Math.round(h/2);
+                persistentCtx.translate(tw2, th2);
+                persistentCtx.scale(animText.scale, animText.scale);
+                persistentCtx.translate(-tw2, -th2);
+                persistentCtx.drawImage(cachedTextCanvas, 0, 0);
+                persistentCtx.restore();
             }
         }
         
@@ -7652,26 +7582,19 @@ function drawScene() {
         drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
     }
     
-            if (cachedTextCanvas && animText.alpha > 0.01) {
-                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
-
-                let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
-                let anchorX = Math.round(w / 2);
-                let anchorY = window.layerState.textPosition === 'bottom' 
-                    ? Math.round(h * 0.92 - (fontSize / 2))
-                    : Math.round(h * 0.06 + (fontSize / 2));
-
-                persistentCtx.save();
-                persistentCtx.globalAlpha = animText.alpha;
-
-                persistentCtx.translate(anchorX, anchorY + tOffsetY * getHDScale());
-                persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
-                persistentCtx.translate(-anchorX, -anchorY);
-                
-                persistentCtx.drawImage(cachedTextCanvas, 0, 0);
-                persistentCtx.restore();
-            }
+    if (cachedTextCanvas && animText.alpha > 0.01) {
+        persistentCtx.save();
+        persistentCtx.globalAlpha = animText.alpha;
+        let tw2 = Math.round(w/2);
+        let th2 = Math.round(h/2);
+        persistentCtx.translate(tw2, th2);
+        persistentCtx.scale(animText.scale, animText.scale);
+        persistentCtx.translate(-tw2, -th2);
+        persistentCtx.imageSmoothingEnabled = true;
+        persistentCtx.imageSmoothingQuality = 'high';
+        persistentCtx.drawImage(cachedTextCanvas, 0, 0);
+        persistentCtx.restore();
+    }
     
 let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
     let globalScale = window.layerState.globalOffersScale !== undefined ? window.layerState.globalOffersScale : 1;
@@ -7806,12 +7729,20 @@ function drawStars(ctx, starImg, w, h, opacity = 1.0, forExport = false) {
 
 function drawBeautifulNick(ctx, text, w, h) {
     let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
+    
+    let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+    fontSize = Math.floor(fontSize * tScale);
+    if (fontSize < Math.floor(30 * tScale)) fontSize = Math.floor(30 * tScale);
 
     let x = Math.round(w / 2); 
     let y = window.layerState.textPosition === 'bottom' 
         ? Math.round(h * 0.92 - (fontSize / 2))
         : Math.round(h * 0.06 + (fontSize / 2)); 
 
+    let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+    let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
+    y += tOffsetY * hdScale;
+    
     let shadowDepth = Math.max(1, Math.floor(fontSize * 0.10));
 
     let style = TEXT_STYLES[window.layerState.textStyleIndex || 0];
@@ -9133,12 +9064,16 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         }
     }
 
+    let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+    let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+    let offsetPx = tOffsetY * scaleMult;
+
     let y1, y2;
     if (line2) {
-        y2 = FIXED_BOTTOM_Y - (maxLineH / 2); 
-        y1 = y2 - maxLineH - lineGap;         
+        y2 = FIXED_BOTTOM_Y - ((maxLineH * tScale) / 2);
+        y1 = y2 - (maxLineH * tScale) - (lineGap * tScale);
     } else {
-        y1 = FIXED_BOTTOM_Y - (maxLineH / 2); 
+        y1 = FIXED_BOTTOM_Y - ((maxLineH * tScale) / 2);
     }
 
     const lines = line2 ? [{ text: line1, y: y1 }, { text: line2, y: y2 }] : [{ text: line1, y: y1 }];
@@ -9155,7 +9090,8 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
         for (let i = bpShadowDepth; i >= 0; i--) {
             lines.forEach(({ text, y }) => {
                 sCtx.save();
-                sCtx.translate(bpTextX, y); 
+                sCtx.translate(bpTextX, y + offsetPx); 
+                sCtx.scale(tScale, tScale);            
                 sCtx.transform(1, 0, -0.07, 1, 0, 0);
                 sCtx.rotate(-0.02);
                 sCtx.strokeText(text, 0, i);
@@ -9189,7 +9125,8 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     lines.forEach(({ text, y }) => {
         fCtx.save();
-        fCtx.translate(bpTextX, y); 
+        fCtx.translate(bpTextX, y + offsetPx);
+        fCtx.scale(tScale, tScale);           
         fCtx.transform(1, 0, -0.07, 1, 0, 0);
         fCtx.rotate(-0.02);
         
@@ -9209,9 +9146,9 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
-    ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult)); 
+    ctx.shadowBlur = Math.max(5, Math.round(21 * scaleMult * tScale)); 
     ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = Math.max(4, Math.round(16 * scaleMult));
+    ctx.shadowOffsetY = Math.max(4, Math.round(16 * scaleMult * tScale));
     ctx.drawImage(strokeC, 0, 0);
     ctx.restore();
     ctx.drawImage(fillC, 0, 0);
@@ -9510,12 +9447,6 @@ const TARGET_DATE_STRING = "2026-05-07T11:00:00+03:00";
 
 
 window.initPromoTimer = function() {
-    if (!SHOW_PROMO_BANNER) {
-        let bannerEl = document.getElementById('main-promo');
-        if (bannerEl) bannerEl.style.display = 'none';
-        return;
-    }
-
     const timerEl = document.getElementById('promo-timer');
     if (!timerEl) return;
 
