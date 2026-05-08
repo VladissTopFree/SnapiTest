@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(122)";
+  const APP_VERSION = "v2.4.0(123)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5557,12 +5557,16 @@ window.downloadCosmeticLayer = (layerName) => {
                 let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
                 let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
 
+                let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
+                let anchorX = Math.round(w / 2);
+                let anchorY = window.layerState.textPosition === 'bottom' 
+                    ? Math.round(h * 0.92 - (fontSize / 2))
+                    : Math.round(h * 0.06 + (fontSize / 2));
+
                 ctx.save();
-                let tw2 = w/2;
-                let th2 = h/2;
-                ctx.translate(tw2, th2 + tOffsetY * getHDScale());
+                ctx.translate(anchorX, anchorY + tOffsetY * getHDScale());
                 ctx.scale(tScale, tScale);
-                ctx.translate(-tw2, -th2);
+                ctx.translate(-anchorX, -anchorY);
                 
                 drawBeautifulNick(ctx, window.layerState.textValue, w, h);
                 
@@ -5611,12 +5615,16 @@ window.downloadTextLayer = () => {
         let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
         let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
         
+        let fontSize = Math.floor(tempC.height * 0.12); if (fontSize < 30) fontSize = 30;
+        let anchorX = Math.round(tempC.width / 2);
+        let anchorY = window.layerState.textPosition === 'bottom' 
+            ? Math.round(tempC.height * 0.92 - (fontSize / 2))
+            : Math.round(tempC.height * 0.06 + (fontSize / 2));
+
         ctx.save();
-        let tw2 = tempC.width/2;
-        let th2 = tempC.height/2;
-        ctx.translate(tw2, th2 + tOffsetY * getHDScale());
+        ctx.translate(anchorX, anchorY + tOffsetY * getHDScale());
         ctx.scale(tScale, tScale);
-        ctx.translate(-tw2, -th2);
+        ctx.translate(-anchorX, -anchorY);
         
         drawBeautifulNick(ctx, window.layerState.textValue, tempC.width, tempC.height);
         
@@ -6928,18 +6936,27 @@ function drawScene() {
             }
             
             if (cachedTextCanvas && animText.alpha > 0.01) {
-                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
-                
-                ctx.save();
-                ctx.globalAlpha = animText.alpha;
-                ctx.translate(W/2, H/2);
-                ctx.translate(-225*s, -115*s + tOffsetY * s);
-                ctx.scale(0.7 * animText.scale * tScale, 0.7 * animText.scale * tScale); 
-                ctx.translate(-W/2, -H/2);
-                ctx.drawImage(cachedTextCanvas, 0, 0);
-                ctx.restore();
-            }
+                    let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+                    let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+
+                    let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
+                    let anchorX = Math.round(w / 2);
+                    let anchorY = window.layerState.textPosition === 'bottom' 
+                        ? Math.round(h * 0.92 - (fontSize / 2))
+                        : Math.round(h * 0.06 + (fontSize / 2));
+
+                    persistentCtx.save();
+                    persistentCtx.globalAlpha = animText.alpha;
+                    
+                    persistentCtx.translate(anchorX, anchorY + tOffsetY * getHDScale());
+                    persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
+                    persistentCtx.translate(-anchorX, -anchorY);
+                    
+                    persistentCtx.imageSmoothingEnabled = true;
+                    persistentCtx.imageSmoothingQuality = 'high';
+                    persistentCtx.drawImage(cachedTextCanvas, 0, 0);
+                    persistentCtx.restore();
+                }
 
             let lineW = 16*s; let lineH = H * 1.5;
             let lineX = W * 0.58 + 6*s; let lineY = -H * 0.25;
@@ -7288,20 +7305,22 @@ function drawScene() {
             ctx.restore();
 
             if (cachedTextCanvas && animText.alpha > 0.01) {
-                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
-                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 581;
-                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
-
                 let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
                 let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+                
+                let anchorX = W / 2;
+                let anchorY = H * 0.91; 
+                
+                let screenX = anchorX - 225 * s;
+                let screenY = anchorY - 115 * s + tOffsetY * s;
 
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
-                let tw2 = Math.round(W/2); let th2 = Math.round(H/2);
-                ctx.translate(tw2, th2);
-                ctx.translate(txtX * s, (txtY + tOffsetY) * s); 
-                ctx.scale(txtS * animText.scale * tScale, txtS * animText.scale * tScale); 
-                ctx.translate(-W/2, -H/2);
+                
+                ctx.translate(screenX, screenY);
+                ctx.scale(0.7 * animText.scale * tScale, 0.7 * animText.scale * tScale); 
+                ctx.translate(-anchorX, -anchorY);
+                
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
             }
@@ -7575,15 +7594,26 @@ function drawScene() {
             if (cachedTextCanvas && animText.alpha > 0.01) {
                 let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
                 let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+                
+                let txtX = window.layerState.s3TextX !== undefined ? window.layerState.s3TextX : 0;
+                let txtY = window.layerState.s3TextY !== undefined ? window.layerState.s3TextY : 581;
+                let txtS = window.layerState.s3TextScale !== undefined ? window.layerState.s3TextScale : 1.1;
 
-                persistentCtx.save();
-                persistentCtx.globalAlpha = animText.alpha;
-                let tw2 = Math.round(w/2); let th2 = Math.round(h/2);
-                persistentCtx.translate(tw2, th2 + tOffsetY * getHDScale());
-                persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
-                persistentCtx.translate(-tw2, -th2);
-                persistentCtx.drawImage(cachedTextCanvas, 0, 0);
-                persistentCtx.restore();
+                let anchorX = W / 2;
+                let anchorY = H * 0.91; 
+                
+                let screenX = W / 2 + txtX * s;
+                let screenY = txtY * s + anchorY + tOffsetY * s;
+
+                ctx.save();
+                ctx.globalAlpha = animText.alpha;
+                
+                ctx.translate(screenX, screenY); 
+                ctx.scale(txtS * animText.scale * tScale, txtS * animText.scale * tScale); 
+                ctx.translate(-anchorX, -anchorY);
+                
+                ctx.drawImage(cachedTextCanvas, 0, 0);
+                ctx.restore();
             }
         }
         
@@ -7619,22 +7649,23 @@ function drawScene() {
         drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
     }
     
-    if (cachedTextCanvas && animText.alpha > 0.01) {
-        let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-        let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
+            if (cachedTextCanvas && animText.alpha > 0.01) {
+                let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+                let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
 
-        persistentCtx.save();
-        persistentCtx.globalAlpha = animText.alpha;
-        let tw2 = Math.round(w/2);
-        let th2 = Math.round(h/2);
-        persistentCtx.translate(tw2, th2 + tOffsetY * getHDScale());
-        persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
-        persistentCtx.translate(-tw2, -th2);
-        persistentCtx.imageSmoothingEnabled = true;
-        persistentCtx.imageSmoothingQuality = 'high';
-        persistentCtx.drawImage(cachedTextCanvas, 0, 0);
-        persistentCtx.restore();
-    }
+                let anchorX = w / 2;
+                let anchorY = h * 0.91;
+
+                persistentCtx.save();
+                persistentCtx.globalAlpha = animText.alpha;
+                
+                persistentCtx.translate(anchorX, anchorY + tOffsetY * getHDScale());
+                persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
+                persistentCtx.translate(-anchorX, -anchorY);
+                
+                persistentCtx.drawImage(cachedTextCanvas, 0, 0);
+                persistentCtx.restore();
+            }
     
 let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
     let globalScale = window.layerState.globalOffersScale !== undefined ? window.layerState.globalOffersScale : 1;
