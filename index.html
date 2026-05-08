@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(123)";
+  const APP_VERSION = "v2.4.0(124)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -7308,8 +7308,11 @@ function drawScene() {
                 let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
                 let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
                 
-                let anchorX = W / 2;
-                let anchorY = H * 0.91; 
+                let fontSize = Math.floor(H * 0.12); if (fontSize < 30) fontSize = 30;
+                let anchorX = Math.round(W / 2);
+                let anchorY = window.layerState.textPosition === 'bottom' 
+                    ? Math.round(H * 0.92 - (fontSize / 2))
+                    : Math.round(H * 0.06 + (fontSize / 2));
                 
                 let screenX = anchorX - 225 * s;
                 let screenY = anchorY - 115 * s + tOffsetY * s;
@@ -7653,12 +7656,15 @@ function drawScene() {
                 let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
                 let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
 
-                let anchorX = w / 2;
-                let anchorY = h * 0.91;
+                let fontSize = Math.floor(h * 0.12); if (fontSize < 30) fontSize = 30;
+                let anchorX = Math.round(w / 2);
+                let anchorY = window.layerState.textPosition === 'bottom' 
+                    ? Math.round(h * 0.92 - (fontSize / 2))
+                    : Math.round(h * 0.06 + (fontSize / 2));
 
                 persistentCtx.save();
                 persistentCtx.globalAlpha = animText.alpha;
-                
+
                 persistentCtx.translate(anchorX, anchorY + tOffsetY * getHDScale());
                 persistentCtx.scale(animText.scale * tScale, animText.scale * tScale);
                 persistentCtx.translate(-anchorX, -anchorY);
