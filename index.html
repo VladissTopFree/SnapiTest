@@ -11,7 +11,7 @@
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = false; 
+  const SHOW_PROMO_BANNER = true; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -2419,8 +2419,8 @@ body:not(.os-non-apple) .saved-works-icon {
 
 <div class="promo-banner is-loading" id="main-promo" onclick="window.openBPFromPromo()">
 <div id="promo-bg-stars-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99;"></div>
-      <img src="BP/brawler_s50_2.png" class="promo-brawler-left" alt="">
-      <img src="BP/brawler_s50_1.png" class="promo-brawler-right" alt="">
+      <img src="BP/brawler_s51_2.png" class="promo-brawler-left" alt="">
+      <img src="BP/brawler_s51_1.png" class="promo-brawler-right" alt="">
 
     <div class="promo-text-glow"></div>
 
@@ -4463,7 +4463,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -6563,7 +6563,7 @@ window.addCustomText = () => {
         return;
     }
     window.layerState.customTexts.push({ 
-        text: 'АКЦИЯ', 
+        text: 'TEXT', 
         x: 50, 
         y: 50, 
         scale: 1,
@@ -9468,7 +9468,7 @@ window.updateActivePromoStar = function(param, value) {
 setTimeout(() => { window.renderPromoBgStars(); }, 150);
 
 
-const TARGET_DATE_STRING = "2026-05-07T11:00:00+03:00"; 
+const TARGET_DATE_STRING = "2026-05-16T11:00:00+03:00"; 
 
 
 window.initPromoTimer = function() {
