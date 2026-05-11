@@ -2011,7 +2011,7 @@
     height: 116px;    
     min-height: 116px; 
     flex-shrink: 0;    
-    background: linear-gradient(to right, #70b0ff 0%, #3991ff 100%);    
+    background: linear-gradient(to right, #d39eff 0%, #c885ff 100%);    
     border-radius: 24px;
     margin: 0 auto 24px auto; 
     
@@ -2057,9 +2057,9 @@ body.os-non-apple .promo-banner {
   
   .promo-brawler-left {
     position: absolute;
-    bottom: calc(-5px + var(--b2-y));
-    right: calc(110px + var(--b2-x)); 
-    height: 140px; 
+    bottom: calc(12px + var(--b2-y));
+    right: calc(106px + var(--b2-x)); 
+    height: 116px; 
     z-index: 2;
     pointer-events: none;
     transform: scale(var(--b2-s));
@@ -2068,9 +2068,9 @@ body.os-non-apple .promo-banner {
   
   .promo-brawler-right {
     position: absolute;
-    bottom: calc(-5px + var(--b1-y));
-    right: calc(-10px + var(--b1-x));
-    height: 130px; 
+    bottom: calc(-12px + var(--b1-y));
+    right: calc(-4px + var(--b1-x));
+    height: 136px; 
     z-index: 1;
     pointer-events: none;
     transform: scale(var(--b1-s));
@@ -2303,7 +2303,7 @@ body.os-non-apple .promo-banner {
   bottom: 25px;   
   left: 30px; 
   width: 256px; 
-  background: #70b0ffc9; 
+  background: #d39eff; 
   filter: blur(26px); 
   opacity: 0.76;
   border-radius: 50%; 
@@ -2444,7 +2444,7 @@ body:not(.os-non-apple) .saved-works-icon {
           <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
                 fill="url(#star-grad)" stroke="url(#star-grad)" stroke-width="6" stroke-linejoin="round"/>
         </svg>
-        <span>50</span>
+        <span>51</span>
       </div>
       
       <div class="promo-content">
@@ -4463,7 +4463,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.needsTextCacheUpdate = false;
