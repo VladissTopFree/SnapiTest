@@ -7,11 +7,12 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(130)";
+  const APP_VERSION = "v2.4.0(131)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
+  const REQUIRE_TELEGRAM_APP = true; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -2029,9 +2030,9 @@
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     
-    --b2-x: -68px; --b2-y: -26px; --b2-s: 1.15; 
+    --b2-x: -146px; --b2-y: -46px; --b2-s: 1.36; 
     --b1-x: -7px; --b1-y: -4px;  --b1-s: 0.86;  
-    --star-x: -14px; --star-y: -1px; --star-s: 0.73; 
+    --star-x: 41px; --star-y: -1px; --star-s: 0.86; 
     --txt-x: 0px; --txt-y: 0px; 
   }
   
@@ -2058,7 +2059,7 @@ body.os-non-apple .promo-banner {
   .promo-brawler-left {
     position: absolute;
     bottom: calc(12px + var(--b2-y));
-    right: calc(151px + var(--b2-x)); 
+    right: calc(136px + var(--b2-x)); 
     height: 121px; 
     z-index: 2;
     pointer-events: none;
@@ -2067,10 +2068,11 @@ body.os-non-apple .promo-banner {
   }
   
   .promo-brawler-right {
+    display: none;
     position: absolute;
     bottom: calc(-12px + var(--b1-y));
-    right: calc(-46px + var(--b1-x));
-    height: 136px; 
+    right: calc(-36px + var(--b1-x));
+    height: 131px; 
     z-index: 1;
     pointer-events: none;
     transform: scale(var(--b1-s));
@@ -3335,6 +3337,11 @@ if (window.Telegram && window.Telegram.WebApp) {
     
     let tgData = window.Telegram.WebApp.initDataUnsafe || {};
     let tgUser = tgData.user;
+
+    if (REQUIRE_TELEGRAM_APP && !tgUser) {
+        window.location.href = 'https://t.me/SnapiCreate_bot';
+    }
+
     let userIdElement = document.getElementById('user-tg-id');
     let userAvatarElement = document.getElementById('user-tg-avatar');
     
@@ -3766,6 +3773,14 @@ window.selectBPStyle = function(styleId) {
 
 document.getElementById('ios-btn-create').addEventListener('click', async function() {
     window.triggerHaptic();
+
+    if (REQUIRE_TELEGRAM_APP) {
+        let tgData = window.Telegram?.WebApp?.initDataUnsafe || {};
+        if (!tgData.user) {
+            window.location.href = 'https://t.me/SnapiCreate_bot';
+            return; 
+        }
+    }
 
     if (window.resetWizardState) window.resetWizardState();
 
@@ -9401,9 +9416,9 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 }
 
 window.promoBgStars = [
-    { x: 81, y: 10, s: 0.1, o: 1 },
-    { x: 96, y: 10, s: 0.05, o: 1 },
-    { x: 89, y: 0, s: 0.2, o: 1 },
+    { x: 56, y: 86, s: 0.15, o: 1 },
+    { x: 67, y: 88, s: 0.05, o: 1 },
+    { x: 49, y: 65, s: 0.1, o: 1 },
 ];
 window.activePromoBgStarIndex = 0;
 
@@ -9566,7 +9581,7 @@ window.initPromoTimer = function() {
             const subtitleEl = contentContainer.querySelector('.promo-subtitle');
             
             if (subtitleEl) {
-                swapTextWithFlip(subtitleEl, subtitleEl.innerText, "Новый сезон уже вышел!");
+                swapTextWithFlip(subtitleEl, subtitleEl.innerText, "Новый сезон вышел!");
             }
             
             const oldTimerText = timerEl.innerText;
