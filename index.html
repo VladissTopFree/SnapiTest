@@ -7,12 +7,12 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(131)";
+  const APP_VERSION = "v2.4.0(132)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = true; 
-  const REQUIRE_TELEGRAM_APP = true; 
+  const SHOW_PROMO_BANNER = false; 
+  const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -380,17 +380,6 @@
     animation: fadeInContent 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 
-  .ios-section-title {
-    color: var(--tg-theme-subtitle-text-color, #8E8E93);
-    font-size: 13px;
-    text-transform: uppercase;
-    margin-top: 20px;
-    margin-bottom: 12px; 
-    margin-left: 14px;
-    letter-spacing: 0.5px;
-    width: 100%;
-  }
-
   .ios-layer-group {
     background: var(--tg-theme-section-bg-color, #ffffff);
     border-radius: 24px;
@@ -650,8 +639,17 @@
   }
 
   .ios-profile-info { display: flex; flex-direction: column; gap: 4px; }
-  .ios-id { color: var(--tg-theme-subtitle-text-color, #8E8E93); font-size: 11px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
-  .ios-sub { color: var(--tg-theme-text-color, #000000); font-size: 14px; font-weight: 400; }
+  .ios-id { 
+    background: #01a2ff1f;
+    color: #01a2ff;
+    font-size: 11px; 
+    font-weight: 500; 
+    letter-spacing: 0.5px; 
+    padding: 4px 10px; 
+    border-radius: 100px; 
+    display: inline-block; 
+  }
+  .ios-sub { color: var(--tg-theme-text-color, #000000); font-size: 14px; font-weight: 300; }
 
   .ios-menu-item { display: flex; align-items: center; padding: 10px 20px; margin: 0 -20px; cursor: pointer; transition: background-color 0.2s; min-height: 54px; border-radius: 0; }
   .ios-menu-item:active { background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent); }
@@ -679,6 +677,7 @@
     margin-left: 14px;
     letter-spacing: 0.5px;
     width: 100%;
+    font-weight: 200; 
   }
 
   @keyframes shimmerBg {
@@ -2405,15 +2404,111 @@ body:not(.os-non-apple) .saved-works-icon {
       stroke-linecap: round;
   }
 
+  .avatar-spark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: flyAvatarSpark var(--duration) linear infinite;
+  }
+
+  @keyframes flyAvatarSpark {
+    0% {
+      transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+      transform: translate(calc(-50% + var(--sx) + (var(--ex) - var(--sx)) * 0.15), calc(-50% + var(--sy) + (var(--ey) - var(--sy)) * 0.15)) scale(1) rotate(calc(var(--rot) * 0.15));
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(calc(-50% + var(--ex)), calc(-50% + var(--ey))) scale(0) rotate(var(--rot));
+      opacity: 0;
+    }
+  }
+
+  .avatar-line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: var(--thickness);
+    width: var(--length);
+    background: linear-gradient(90deg, transparent 0%, var(--color) 100%);
+    border-radius: 100px;
+    opacity: 0;
+    pointer-events: none;
+    transform-origin: left center;
+    margin-top: calc(var(--thickness) / -2); 
+    animation: flyAvatarLine var(--duration) cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  }
+
+  @keyframes flyAvatarLine {
+    0% {
+      transform: rotate(var(--rot)) translateX(var(--startRadius)) scaleX(0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+      transform: rotate(var(--rot)) translateX(calc(var(--startRadius) + 15px)) scaleX(1);
+    }
+    100% {
+      transform: rotate(var(--rot)) translateX(var(--endRadius)) scaleX(0.3);
+      opacity: 0;
+    }
+  }
+
+  @keyframes flyOutBlurRight {
+    0% { transform: translateX(0); filter: blur(0px); opacity: 1; }
+    100% { transform: translateX(25px); filter: blur(6px); opacity: 0; }
+  }
+  
+  @keyframes flyInBlurLeft {
+    0% { transform: translateX(-25px); filter: blur(6px); opacity: 0; }
+    100% { transform: translateX(0); filter: blur(0px); opacity: 1; }
+  }
+
+  .text-fly-out {
+    animation: flyOutBlurRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .text-fly-in {
+    animation: flyInBlurLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
 </style>
 </head>
 <body oncontextmenu="return false;">
 
 <div id="ios-dashboard">
   <div class="ios-container">
-    <div class="ios-card ios-profile">
-      <div class="ios-avatar loading" id="user-tg-avatar"></div>
-      <div class="ios-profile-info">
+
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-left: 8px; margin-bottom: 6px; overflow: hidden;">
+      
+      <img src="AnimatedSticker-ezgif.com-gif-maker-2.gif" alt="" style="width: 28px; height: 28px; margin-right: 6px; object-fit: contain; margin-bottom: 3px;">
+      
+      <span id="snapi-app-title" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; color: var(--tg-theme-link-color, #3390ec); letter-spacing: 0.5px; display: inline-block;">
+        Snapi
+      </span>
+    </div>
+
+    <div class="ios-card ios-profile" style="flex-direction: column; justify-content: center; padding: 20px; overflow: hidden; position: relative;">
+      
+      <div id="avatar-interactive-zone" style="position: relative; margin-bottom: 12px; margin-left: auto; margin-right: auto; width: 74px; height: 74px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s ease; -webkit-tap-highlight-color: transparent;" onclick="boostAvatar()">
+        
+        <div id="avatar-sparks-container" style="position: absolute; top: 50%; left: 50%; width: 0; height: 0; z-index: 0; pointer-events: none;"></div>
+        
+        <video src="ava_Snapi.mp4" autoplay loop muted playsinline style="position: relative; z-index: 1; width: 74px; height: 74px; border-radius: 50%; object-fit: cover; background: var(--tg-theme-secondary-bg-color, #F2F2F7);"></video>
+        
+        <div class="ios-avatar loading" id="user-tg-avatar" style="position: absolute; bottom: -2px; right: -6px; z-index: 2; width: 32px; height: 32px; margin: 0; border: 2.5px solid var(--tg-theme-section-bg-color, #ffffff); box-sizing: content-box;"></div>
+      </div>
+
+      <div class="ios-profile-info" style="align-items: center; text-align: center;">
         <div class="ios-id" id="user-tg-id">ID: загрузка...</div>
         <div class="ios-sub" id="sub-profile-status">Добро пожаловать в Snapi</div>
       </div>
@@ -3347,9 +3442,9 @@ if (window.Telegram && window.Telegram.WebApp) {
     
     if (tgUser) {
         if (userIdElement && tgUser.id) {
-            userIdElement.innerText = 'ID: ' + tgUser.id;
+            userIdElement.innerText = 'id: ' + tgUser.id;
         } else if (userIdElement) {
-            userIdElement.innerText = 'ID: не в Telegram';
+            userIdElement.innerText = 'id: не в Telegram';
         }
               
         if (userAvatarElement) {
@@ -3368,7 +3463,7 @@ if (window.Telegram && window.Telegram.WebApp) {
             }
         }
     } else {
-        if (userIdElement) userIdElement.innerText = 'ID: не в Telegram';
+        if (userIdElement) userIdElement.innerText = 'id: не в Telegram';
         if (userAvatarElement) {
             userAvatarElement.classList.remove('loading');
             userAvatarElement.style.background = '#4A90E2';
@@ -9405,6 +9500,179 @@ function initSparks() {
     }
 }
 
+window.initAvatarSparks = function() {
+    const container = document.getElementById('avatar-sparks-container');
+    if (!container) return;
+    
+    container.innerHTML = ''; 
+    
+    const numSparks = 12; 
+    const numLines = 20;  
+    const radius = 37;    
+    
+    const svgPath = "M10.3072 7.21992C10.9493 5.61924 11.2704 4.81889 11.7919 4.70797C11.9291 4.6788 12.0708 4.6788 12.208 4.70797C12.7295 4.81889 13.0506 5.61924 13.6927 7.21992C14.0578 8.1302 14.2404 8.58535 14.582 8.89491C14.6778 8.98174 14.7818 9.05907 14.8926 9.12582C15.2874 9.3638 15.7803 9.40794 16.7661 9.49623C18.4348 9.64568 19.2692 9.7204 19.524 10.1961C19.5768 10.2947 19.6127 10.4014 19.6302 10.5118C19.7146 11.0448 19.1012 11.6028 17.8744 12.719L17.5338 13.0289C16.9602 13.5507 16.6735 13.8116 16.5076 14.1372C16.4081 14.3325 16.3414 14.5429 16.3101 14.7598C16.258 15.1215 16.342 15.5 16.5099 16.257L16.5699 16.5275C16.8711 17.885 17.0217 18.5638 16.8337 18.8974C16.6649 19.1971 16.3538 19.389 16.0102 19.4054C15.6277 19.4236 15.0887 18.9844 14.0107 18.106C13.3005 17.5273 12.9454 17.238 12.5512 17.1249C12.191 17.0216 11.8089 17.0216 11.4487 17.1249C11.0545 17.238 10.6994 17.5273 9.98917 18.106C8.91119 18.9844 8.37221 19.4236 7.98968 19.4054C7.64609 19.389 7.33504 19.1971 7.16617 18.8974C6.97818 18.5638 7.12878 17.885 7.42997 16.5275L7.48998 16.257C7.65794 15.5 7.74191 15.1215 7.6898 14.7598C7.65854 14.5429 7.59182 14.3325 7.49232 14.1372C7.32645 13.8116 7.03968 13.5507 6.46613 13.0289L6.12546 12.719C4.89867 11.6028 4.28527 11.0448 4.36975 10.5118C4.38724 10.4014 4.42312 10.2947 4.47589 10.1961C4.73069 9.7204 5.56507 9.64568 7.23384 9.49623C8.21962 9.40794 8.71251 9.3638 9.10735 9.12582C9.2181 9.05907 9.32211 8.98174 9.41793 8.89491C9.75954 8.58535 9.94211 8.1302 10.3072 7.21992Z";
+    const colorsSVG = ['%2388cdfb', '%23c861ff', '%23d9a5ff', '%23ffcc00'];
+    const colorsCSS = ['#88cdfb', '#c861ff', '#d9a5ff', '#ffcc00'];
+
+    for (let i = 0; i < numSparks; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'avatar-spark';
+        
+        const baseAngle = i * (Math.PI * 2 / numSparks);
+        const angle = baseAngle + (Math.random() * 0.4 - 0.2); 
+        
+        const startX = Math.cos(angle) * (radius - 5);
+        const startY = Math.sin(angle) * (radius - 5);
+        const travelDist = 35 + Math.random() * 45; 
+        const endX = startX + Math.cos(angle) * travelDist;
+        const endY = startY + Math.sin(angle) * travelDist;
+        
+        const rotation = (Math.random() - 0.5) * 360; 
+        const duration = 2 + Math.random() * 2.5;
+        const size = 10 + Math.random() * 8; 
+        
+        const color = colorsSVG[Math.floor(Math.random() * colorsSVG.length)];
+        const svgStr = `data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg"><path d="${svgPath}"/></svg>`;
+        
+        spark.style.backgroundImage = `url('${svgStr}')`;
+        spark.style.width = `${size}px`;
+        spark.style.height = `${size}px`;
+        spark.style.setProperty('--sx', `${startX}px`);
+        spark.style.setProperty('--sy', `${startY}px`);
+        spark.style.setProperty('--ex', `${endX}px`);
+        spark.style.setProperty('--ey', `${endY}px`);
+        spark.style.setProperty('--rot', `${rotation}deg`);
+        spark.style.setProperty('--duration', `${duration}s`);
+        spark.style.animationDelay = `${-(Math.random() * duration)}s`;
+        
+        spark.dataset.origEx = endX;
+        spark.dataset.origEy = endY;
+        spark.dataset.origDuration = duration;
+        spark.dataset.isBg = 'true';
+        
+        container.appendChild(spark);
+    }
+
+    for (let i = 0; i < numLines; i++) {
+        const line = document.createElement('div');
+        line.className = 'avatar-line';
+        
+        const baseAngle = i * (360 / numLines);
+        const angle = baseAngle + (Math.random() * 10 - 5); 
+        
+        const length = 15 + Math.random() * 30; 
+        const thickness = 1 + Math.random() * 1.5; 
+        const duration = 0.3 + Math.random() * 0.5; 
+        const endRadius = 80 + Math.random() * 60;
+        const color = colorsCSS[Math.floor(Math.random() * colorsCSS.length)];
+        
+        line.style.setProperty('--rot', `${angle}deg`);
+        line.style.setProperty('--startRadius', `${radius}px`); 
+        line.style.setProperty('--endRadius', `${endRadius}px`); 
+        line.style.setProperty('--length', `${length}px`);
+        line.style.setProperty('--thickness', `${thickness}px`);
+        line.style.setProperty('--color', color);
+        line.style.setProperty('--duration', `${duration}s`);
+        line.style.animationDelay = `${-(Math.random() * duration)}s`;
+        
+        line.dataset.origEndRadius = endRadius;
+        line.dataset.origDuration = duration;
+        line.dataset.isBg = 'true';
+
+        container.appendChild(line);
+    }
+};
+
+window.boostAvatar = function() {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); 
+    } else if (navigator.vibrate) {
+        navigator.vibrate(50);
+    }
+    
+    const zone = document.getElementById('avatar-interactive-zone');
+    if (zone) {
+        zone.style.transform = 'scale(0.9)';
+        setTimeout(() => zone.style.transform = 'scale(1)', 150);
+    }
+
+    const container = document.getElementById('avatar-sparks-container');
+    if (!container) return;
+
+    const bgElements = container.querySelectorAll('[data-is-bg="true"]');
+    bgElements.forEach(el => {
+        const fastDuration = parseFloat(el.dataset.origDuration) / 3.5;
+        el.style.setProperty('--duration', `${fastDuration}s`);
+        
+        if (el.classList.contains('avatar-spark')) {
+            el.style.setProperty('--ex', `${parseFloat(el.dataset.origEx) * 3}px`);
+            el.style.setProperty('--ey', `${parseFloat(el.dataset.origEy) * 3}px`);
+        } else if (el.classList.contains('avatar-line')) {
+            el.style.setProperty('--endRadius', `${parseFloat(el.dataset.origEndRadius) * 3}px`);
+        }
+    });
+
+    setTimeout(() => {
+        bgElements.forEach(el => {
+            el.style.setProperty('--duration', `${el.dataset.origDuration}s`);
+            if (el.classList.contains('avatar-spark')) {
+                el.style.setProperty('--ex', `${el.dataset.origEx}px`);
+                el.style.setProperty('--ey', `${el.dataset.origEy}px`);
+            } else if (el.classList.contains('avatar-line')) {
+                el.style.setProperty('--endRadius', `${el.dataset.origEndRadius}px`);
+            }
+        });
+    }, 600);
+
+
+    const numBurst = 14; 
+    const radius = 37;
+    const svgPath = "M10.3072 7.21992C10.9493 5.61924 11.2704 4.81889 11.7919 4.70797C11.9291 4.6788 12.0708 4.6788 12.208 4.70797C12.7295 4.81889 13.0506 5.61924 13.6927 7.21992C14.0578 8.1302 14.2404 8.58535 14.582 8.89491C14.6778 8.98174 14.7818 9.05907 14.8926 9.12582C15.2874 9.3638 15.7803 9.40794 16.7661 9.49623C18.4348 9.64568 19.2692 9.7204 19.524 10.1961C19.5768 10.2947 19.6127 10.4014 19.6302 10.5118C19.7146 11.0448 19.1012 11.6028 17.8744 12.719L17.5338 13.0289C16.9602 13.5507 16.6735 13.8116 16.5076 14.1372C16.4081 14.3325 16.3414 14.5429 16.3101 14.7598C16.258 15.1215 16.342 15.5 16.5099 16.257L16.5699 16.5275C16.8711 17.885 17.0217 18.5638 16.8337 18.8974C16.6649 19.1971 16.3538 19.389 16.0102 19.4054C15.6277 19.4236 15.0887 18.9844 14.0107 18.106C13.3005 17.5273 12.9454 17.238 12.5512 17.1249C12.191 17.0216 11.8089 17.0216 11.4487 17.1249C11.0545 17.238 10.6994 17.5273 9.98917 18.106C8.91119 18.9844 8.37221 19.4236 7.98968 19.4054C7.64609 19.389 7.33504 19.1971 7.16617 18.8974C6.97818 18.5638 7.12878 17.885 7.42997 16.5275L7.48998 16.257C7.65794 15.5 7.74191 15.1215 7.6898 14.7598C7.65854 14.5429 7.59182 14.3325 7.49232 14.1372C7.32645 13.8116 7.03968 13.5507 6.46613 13.0289L6.12546 12.719C4.89867 11.6028 4.28527 11.0448 4.36975 10.5118C4.38724 10.4014 4.42312 10.2947 4.47589 10.1961C4.73069 9.7204 5.56507 9.64568 7.23384 9.49623C8.21962 9.40794 8.71251 9.3638 9.10735 9.12582C9.2181 9.05907 9.32211 8.98174 9.41793 8.89491C9.75954 8.58535 9.94211 8.1302 10.3072 7.21992Z";
+    const colorsSVG = ['%2388cdfb', '%23c861ff', '%23d9a5ff', '%23ffcc00'];
+
+    for (let i = 0; i < numBurst; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'avatar-spark';
+        
+        const baseAngle = i * (Math.PI * 2 / numBurst);
+        const angle = baseAngle + (Math.random() * 0.4 - 0.2);
+        
+        const startX = Math.cos(angle) * (radius - 5);
+        const startY = Math.sin(angle) * (radius - 5);
+        
+        const travelDist = 100 + Math.random() * 60; 
+        const endX = startX + Math.cos(angle) * travelDist;
+        const endY = startY + Math.sin(angle) * travelDist;
+        
+        const rotation = (Math.random() - 0.5) * 720; 
+        const duration = 0.3 + Math.random() * 0.3; 
+        const size = 12 + Math.random() * 8;
+        
+        const color = colorsSVG[Math.floor(Math.random() * colorsSVG.length)];
+        const svgStr = `data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="${color}" xmlns="http://www.w3.org/2000/svg"><path d="${svgPath}"/></svg>`;
+        
+        spark.style.backgroundImage = `url('${svgStr}')`;
+        spark.style.width = `${size}px`;
+        spark.style.height = `${size}px`;
+        spark.style.setProperty('--sx', `${startX}px`);
+        spark.style.setProperty('--sy', `${startY}px`);
+        spark.style.setProperty('--ex', `${endX}px`);
+        spark.style.setProperty('--ey', `${endY}px`);
+        spark.style.setProperty('--rot', `${rotation}deg`);
+        spark.style.setProperty('--duration', `${duration}s`);
+        
+        container.appendChild(spark);
+        
+        setTimeout(() => {
+            if (spark.parentNode) spark.remove();
+        }, duration * 1000);
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initAvatarSparks();
+});
+
 document.addEventListener('DOMContentLoaded', initSparks);
 window.addEventListener('resize', () => {
     clearTimeout(window.sparkResizeTimer);
@@ -9740,6 +10008,56 @@ document.addEventListener("DOMContentLoaded", () => {
             imgEl.classList.add('smooth-anim');
         }, 1500);
     });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const titleEl = document.getElementById('snapi-app-title');
+    if (!titleEl) return;
+
+    let dotsInterval;
+    let isOfflineMode = !navigator.onLine; 
+
+    function changeTextWithAnim(newText, startDots) {
+        titleEl.classList.remove('text-fly-in');
+        titleEl.classList.add('text-fly-out');
+        
+        setTimeout(() => {
+            titleEl.innerText = newText;
+            
+            titleEl.classList.remove('text-fly-out');
+            titleEl.classList.add('text-fly-in');
+            
+            clearInterval(dotsInterval);
+            if (startDots) {
+                let dotsCount = 0;
+                dotsInterval = setInterval(() => {
+                    dotsCount = (dotsCount + 1) % 4; 
+                    titleEl.innerText = 'Соединение' + '.'.repeat(dotsCount);
+                }, 400);
+            }
+        }, 300); 
+    }
+
+    function checkNetwork() {
+        const isCurrentlyOffline = !navigator.onLine;
+        
+        if (isCurrentlyOffline && !isOfflineMode) {
+            isOfflineMode = true;
+            changeTextWithAnim('Соединение', true);
+        } else if (!isCurrentlyOffline && isOfflineMode) {
+            isOfflineMode = false;
+            changeTextWithAnim('Snapi', false);
+        }
+    }
+
+    window.addEventListener('online', checkNetwork);
+    window.addEventListener('offline', checkNetwork);
+
+    setInterval(checkNetwork, 1500);
+
+    if (isOfflineMode) {
+        changeTextWithAnim('Соединение', true);
+    }
 });
 
 </script>
