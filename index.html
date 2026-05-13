@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(134)";
+  const APP_VERSION = "v2.4.0(135)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5805,13 +5805,15 @@ async function downloadCanvas(canvas, filename) {
 
         window.Telegram.WebApp.showAlert("⏳ Отправляем слой в бота...");
 
-        const response = await fetch(`https://api.snapi.online/send-result?v=2`, {
+        const response = await fetch('https://api.snapi.online/send-result?v=123', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 image: base64Image,
                 chat_id: tgUserId
-            })
+            }),
+            mode: 'cors',
+            redirect: 'follow'
         });
         
         const data = await response.json();
@@ -8899,13 +8901,15 @@ document.getElementById('dl-btn-actual-download').onclick = (e) => {
             let dataUrl = smallC.toDataURL('image/jpeg', 0.90);
             let base64Image = dataUrl.split(',')[1]; 
 
-            const response = await fetch(`https://api.snapi.online/send-result?v=2`, {
+            const response = await fetch('https://api.snapi.online/send-result?v=123', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     image: base64Image,
                     chat_id: tgUserId
-                })
+                }),
+                mode: 'cors',
+                redirect: 'follow'
             });
             
             const data = await response.json();
