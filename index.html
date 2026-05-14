@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(139)";
+  const APP_VERSION = "v2.4.0(140)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4572,21 +4572,7 @@ window.lastRenderTime = 0;
 window.requestRender = function(updateTextCache = false) {
     if (updateTextCache) window.needsTextCacheUpdate = true;
 
-    const now = Date.now();
-
-    if (now - window.lastRenderTime > 60) {
-        executeRender();
-    } else {
-        if (window.renderDebounceTimer) clearTimeout(window.renderDebounceTimer);
-        window.renderDebounceTimer = setTimeout(executeRender, 50);
-    }
-};
-
-function executeRender() {
-    window.lastRenderTime = Date.now();
-
     if (window.renderThrottle || animReq) {
-        window.pendingRenderCache = true;
         return;
     }
 
@@ -4603,7 +4589,7 @@ function executeRender() {
             window.renderThrottle = false;
         }
     });
-}
+};
 
 window.updateBrawlerParams = (param, val) => {
     window.layerState[param] = parseFloat(val);
@@ -5944,7 +5930,7 @@ function generateOfferCache(offer, targetW, targetH) {
         silCtx.fillStyle = window.layerState.globalStrokeColor || '#ffffff';
         silCtx.fillRect(0, 0, tW, tH);
 
-        const steps = 36;
+        const steps = 8; 
         for (let i = 0; i < steps; i++) {
             let angle = (i / steps) * Math.PI * 2;
             stCtx.drawImage(silCanvas, pad + Math.cos(angle) * sw, pad + Math.sin(angle) * sw, tW, tH);
@@ -6731,7 +6717,9 @@ function drawCustomBeautifulNick(ctx, text, w, h, customX, customY, customScale,
     let shadowDepth = Math.max(1, Math.floor(fontSize * 0.10));
     let style = TEXT_STYLES[customStyleIndex];
 
-    let textCanvas = document.createElement('canvas'); textCanvas.width = w; textCanvas.height = h; let txCtx = textCanvas.getContext('2d');
+    let textCanvas = window._sharedTextCanvas; 
+    textCanvas.width = w; textCanvas.height = h; 
+    let txCtx = textCanvas.getContext('2d');    
     txCtx.textAlign = "center"; txCtx.textBaseline = "middle"; txCtx.font = `${fontSize}px '${customFont}', sans-serif`;
     txCtx.lineJoin = "round"; txCtx.lineCap = "round";
 
@@ -6761,7 +6749,9 @@ function drawCustomBeautifulNick(ctx, text, w, h, customX, customY, customScale,
     }
     txCtx.restore();
 
-    let tempCanvas = document.createElement('canvas'); tempCanvas.width = w; tempCanvas.height = h; let tCtx = tempCanvas.getContext('2d');
+let tempCanvas = window._sharedTempCanvas; 
+    tempCanvas.width = w; tempCanvas.height = h; 
+    let tCtx = tempCanvas.getContext('2d');    
     tCtx.textAlign = "center"; tCtx.textBaseline = "middle"; tCtx.font = `${fontSize}px '${customFont}', sans-serif`;
     tCtx.save(); tCtx.translate(x, y); tCtx.transform(1, 0, -0.10, 1, 0, 0); 
 
@@ -7989,6 +7979,9 @@ function drawStars(ctx, starImg, w, h, opacity = 1.0, forExport = false) {
     ctx.restore();
 }
 
+window._sharedTextCanvas = document.createElement('canvas');
+window._sharedTempCanvas = document.createElement('canvas');
+
 function drawBeautifulNick(ctx, text, w, h) {
     let baseFontSize = Math.floor(h * 0.12); 
     if (baseFontSize < 30) baseFontSize = 30;
@@ -8010,7 +8003,9 @@ function drawBeautifulNick(ctx, text, w, h) {
 
     let style = TEXT_STYLES[window.layerState.textStyleIndex || 0];
 
-    let textCanvas = document.createElement('canvas'); textCanvas.width = w; textCanvas.height = h; let txCtx = textCanvas.getContext('2d');
+    let textCanvas = window._sharedTextCanvas; 
+    textCanvas.width = w; textCanvas.height = h; 
+    let txCtx = textCanvas.getContext('2d');    
     txCtx.textAlign = "center"; txCtx.textBaseline = "middle"; txCtx.font = `${fontSize}px '${window.layerState.textFont}', sans-serif`;
     txCtx.lineJoin = "round"; txCtx.lineCap = "round";
 
@@ -8044,7 +8039,9 @@ function drawBeautifulNick(ctx, text, w, h) {
     
     txCtx.restore();
 
-    let tempCanvas = document.createElement('canvas'); tempCanvas.width = w; tempCanvas.height = h; let tCtx = tempCanvas.getContext('2d');
+    let tempCanvas = window._sharedTempCanvas; 
+    tempCanvas.width = w; tempCanvas.height = h; 
+    let tCtx = tempCanvas.getContext('2d');    
     tCtx.textAlign = "center"; tCtx.textBaseline = "middle"; tCtx.font = `${fontSize}px '${window.layerState.textFont}', sans-serif`;
     tCtx.save(); tCtx.translate(x, y); tCtx.transform(1, 0, -0.10, 1, 0, 0); 
 
@@ -9142,6 +9139,10 @@ async function generateBrawlPassTest() {
     window.bpForegroundImage.src = c.toDataURL('image/png');
 }
 
+window._sharedMeasureC = document.createElement('canvas');
+window._sharedStrokeC = document.createElement('canvas');
+window._sharedFillC = document.createElement('canvas');
+
 function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     const bpStyle = TEXT_STYLES[window.layerState.textStyleIndex !== undefined ? window.layerState.textStyleIndex : 9];
     const bpText = (nick || "SNAPI").trim().substring(0, 16);
@@ -9161,7 +9162,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     }
     const BP_MAX_TEXT_WIDTH = line2 ? WIDTH * 0.30 : WIDTH * 0.38;
 
-    const measureC = document.createElement('canvas');
+    const measureC = window._sharedMeasureC;
     const mCtx = measureC.getContext('2d');
     
     let scaleMult = HEIGHT / 675;
@@ -9183,7 +9184,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     
     mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`; 
 
-    const bpShadowDepth = Math.max(1, Math.floor(bpFontSize * 0.10));
+    const bpShadowDepth = Math.max(1, Math.floor(bpFontSize * 0.05));
     const lineGap = 0;
 
     const bpTextX = (WIDTH / 2 + (bpFontSize * 0.07 * 0.5)) - 12; 
@@ -9233,7 +9234,7 @@ let y1, y2;
         ? [{ text: line1, yOffset: y1 - blockCenterY }, { text: line2, yOffset: y2 - blockCenterY }] 
         : [{ text: line1, yOffset: 0 }];
 
-    const strokeC = document.createElement('canvas');
+    const strokeC = window._sharedStrokeC;
     strokeC.width = WIDTH; strokeC.height = HEIGHT;
     const sCtx = strokeC.getContext('2d');
     sCtx.textAlign = "center"; sCtx.textBaseline = "middle"; sCtx.lineJoin = "round"; sCtx.lineCap = "round";
@@ -9273,7 +9274,7 @@ let y1, y2;
         }
     }
 
-    const fillC = document.createElement('canvas');
+    const fillC = window._sharedFillC;
     fillC.width = WIDTH; fillC.height = HEIGHT;
     const fCtx = fillC.getContext('2d');
     fCtx.textAlign = "center"; fCtx.textBaseline = "middle"; fCtx.lineJoin = "round"; fCtx.lineCap = "round";
