@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(137)";
+  const APP_VERSION = "v2.4.0(138)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4367,8 +4367,13 @@ function processImages(filesParam) {
       files = files.slice(0, maxLimit); 
   }
 
+  window.layerState.textFont = window.layerState.textFont || 'Font16103';
+  window.layerState.textStyleIndex = window.layerState.textStyleIndex !== undefined ? window.layerState.textStyleIndex : 0;
+  window.layerState.watermarksFont = window.layerState.watermarksFont || 'Font16103';
+
   document.body.style.background = "#F2F2F7";
   document.body.style.color = "#000";
+  
   
   document.getElementById('wizard-overlay').style.display = 'none';
   resultBox.style.display = 'block';
@@ -5587,12 +5592,16 @@ window.changeGlobalStroke = (delta) => {
     window.layerState.globalStrokeWidth = Math.max(0, window.layerState.globalStrokeWidth + delta);
     let valDiv = document.getElementById('global-stroke-val');
     if (valDiv) valDiv.innerText = window.layerState.globalStrokeWidth;
-    window.layerState.offers.forEach(offer => {
-        if (offer.hasStroke && offer.target.w) {
-            generateOfferCache(offer, offer.target.w, offer.target.h);
-        }
-    });
-    startAnimation();
+    
+    if (window.strokeTimer) clearTimeout(window.strokeTimer);
+    window.strokeTimer = setTimeout(() => {
+        window.layerState.offers.forEach(offer => {
+            if (offer.hasStroke && offer.target.w) {
+                generateOfferCache(offer, offer.target.w, offer.target.h);
+            }
+        });
+        window.requestRender();
+    }, 50);
 };
 
 window.changeOffersScale = (val) => {
@@ -5602,14 +5611,15 @@ window.changeOffersScale = (val) => {
 
 window.changeGlobalPriceScale = (val) => {
     window.layerState.globalPriceScale = parseFloat(val);
-    
-    window.layerState.offers.forEach(offer => {
-        if (offer.target && offer.target.w) {
-            generateOfferCache(offer, offer.target.w, offer.target.h);
-        }
-    });
-    
-    if (typeof startAnimation === 'function') startAnimation();
+    if (window.priceScaleTimer) clearTimeout(window.priceScaleTimer);
+    window.priceScaleTimer = setTimeout(() => {
+        window.layerState.offers.forEach(offer => {
+            if (offer.target && offer.target.w) {
+                generateOfferCache(offer, offer.target.w, offer.target.h);
+            }
+        });
+        window.requestRender();
+    }, 50);
 };
 
 window.changeMainTextOffsetY = (val) => {
@@ -5619,9 +5629,11 @@ window.changeMainTextOffsetY = (val) => {
 
 window.changeMainTextScale = (val) => {
     window.layerState.mainTextScale = parseFloat(val);
-    window.requestRender(true); 
+    if (window.textScaleTimer) clearTimeout(window.textScaleTimer);
+    window.textScaleTimer = setTimeout(() => {
+        window.requestRender(true);
+    }, 50);
 };
-
 window.changeStrokeColor = (color) => {
     window.layerState.globalStrokeColor = color;
     let colorDisplay = document.getElementById('stroke-color-display');
