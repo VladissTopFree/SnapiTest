@@ -7,12 +7,12 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(140)";
+  const APP_VERSION = "v2.4.0(141)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = false; 
-  const REQUIRE_TELEGRAM_APP = true; 
+  const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -150,6 +150,13 @@
   @font-face { font-family: 'BebasNeue'; src: url('bebasneuecyrillic.ttf') format('truetype'); }
   @font-face { font-family: 'AmericanCaptain'; src: url('americancaptaincyrillic.ttf') format('truetype'); }
   @font-face { font-family: 'ArialRoundedOld'; src: local('Arial Rounded MT Bold'), local('ArialRoundedMTBold'), url('Arial%20Rounded%20Old.ttf') format('truetype'); font-display: swap; }
+
+  @font-face { font-family: 'Molot'; src: url('Molot.otf') format('opentype'); }
+  @font-face { font-family: 'Nougat'; src: url('ofont.ru_Nougat.ttf') format('truetype'); }
+  @font-face { font-family: 'TTSupermolot'; src: url('TTSupermolotNeue-ExpXBoldIt.ttf') format('truetype'); }
+  @font-face { font-family: 'ArialBlackCustom'; src: local('Arial Black'), url('Arial Black.ttf') format('truetype'); }
+  @font-face { font-family: 'ImpactCustom'; src: local('Impact'), url('Impact.ttf') format('truetype'); }
+  @font-face { font-family: 'Font11246'; src: url('11246.ttf') format('truetype'); }
 
   :root {
     --app-top-padding: 140px;
@@ -2613,6 +2620,12 @@ body:not(.os-non-apple) .saved-works-icon {
     <span style="font-family: 'BebasNeue'">preload</span>
     <span style="font-family: 'AmericanCaptain'">preload</span>
     <span style="font-family: 'ArialRoundedOld'">preload</span>
+    <span style="font-family: 'Molot'">preload</span>
+    <span style="font-family: 'Nougat'">preload</span>
+    <span style="font-family: 'TTSupermolot'">preload</span>
+    <span style="font-family: 'ArialBlackCustom'">preload</span>
+    <span style="font-family: 'ImpactCustom'">preload</span>
+    <span style="font-family: 'Font11246'">preload</span>
 </div>
 
 <div id="category-overlay">
@@ -4162,7 +4175,13 @@ const FONT_OPTIONS = [
     { family: 'SupercellMagic' },
     { family: 'PusiaBold' },
     { family: 'BebasNeue' },
-    { family: 'AmericanCaptain' }
+    { family: 'AmericanCaptain' },
+    { family: 'Molot' },
+    { family: 'Nougat' },
+    { family: 'TTSupermolot' },
+    { family: 'ArialBlackCustom' },
+    { family: 'ImpactCustom' },
+    { family: 'Font11246' }
 ];
 
 const TEXT_STYLES = [
@@ -4175,7 +4194,12 @@ const TEXT_STYLES = [
     { grad: ['#ffba00', '#fcff00', '#ffba00'], inner: '#fcff00', shadow: '#5b2900', outer: '#3a1a00' },
     { grad: ['#c7c7c7', '#ffffff', '#c7c7c7'], inner: '#ffffff', shadow: '#000000', outer: '#000000' },
     { grad: ['#c7c7c7', '#ffffff', '#c7c7c7'], inner: '#ffffff', shadow: '#393939', outer: null },
-    { grad: ['#ffba00', '#fcff00', '#ffba00'], inner: '#fcff00', shadow: '#61005a', outer: '#42003d' }
+    { grad: ['#ffba00', '#fcff00', '#ffba00'], inner: '#fcff00', shadow: '#61005a', outer: '#42003d' },
+    { grad: ['#f3f3f3', '#f3f3f3', '#f3f3f3'], inner: null, shadow: '#191919', outer: '#313131', solidColor: '#f3f3f3' },
+    { grad: ['#ffc000', '#ffc000', '#ffc000'], inner: null, shadow: '#2b1a00', outer: '#573500', solidColor: '#ffc000' },
+    { grad: ['#49de00', '#49de00', '#49de00'], inner: null, shadow: '#0c2500', outer: '#174700', solidColor: '#49de00' },
+    { grad: ['#c600f0', '#c600f0', '#c600f0'], inner: null, shadow: '#280031', outer: '#550067', solidColor: '#c600f0' },
+    { grad: ['#008df0', '#008df0', '#008df0'], inner: null, shadow: '#002138', outer: '#003e6a', solidColor: '#008df0' }
 ];
 
 function createStylePreviewURL(style, font) {
@@ -4207,10 +4231,10 @@ function createStylePreviewURL(style, font) {
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
         } else if (style.outer) {
+            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
+            txCtx.strokeText(text, 0, shadowDepth);
             txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+            txCtx.strokeText(text, 0, 0);
         } else {
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
@@ -4228,11 +4252,13 @@ function createStylePreviewURL(style, font) {
     grad.addColorStop(1, style.grad[2]);
     tCtx.fillStyle = grad; tCtx.fillText(text, 0, 0);
     
-    tCtx.globalCompositeOperation = "source-atop"; 
-    tCtx.lineWidth = fontSize * 0.06; 
-    tCtx.strokeStyle = style.isClassic ? "#fcff00" : style.inner; 
-    tCtx.lineJoin = "round"; 
-    tCtx.strokeText(text, 0, 0);
+    if (style.inner) {
+        tCtx.globalCompositeOperation = "source-atop"; 
+        tCtx.lineWidth = fontSize * 0.06; 
+        tCtx.strokeStyle = style.isClassic ? "#fcff00" : style.inner; 
+        tCtx.lineJoin = "round"; 
+        tCtx.strokeText(text, 0, 0);
+    }
     tCtx.restore();
 
     txCtx.drawImage(tempCanvas, 0, 0);
@@ -4847,11 +4873,28 @@ if (window.layerState.isBrawlPassMode) {
                     <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.mainTextOffsetY || 0}" oninput="window.changeMainTextOffsetY(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
                     <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">вниз</div>
                 </div>
-                <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+                <div class="ios-layer-row">
                     <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Размер</div>
                     <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">меньше</div>
                     <input type="range" class="ios-slider" min="0.1" max="3" step="0.01" value="${window.layerState.mainTextScale || 1}" oninput="window.changeMainTextScale(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
                     <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">больше</div>
+                </div>
+
+                <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+                    <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 85px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Интервал</div>
+                    <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">уже</div>
+                    <input type="range" class="ios-slider" min="-15" max="50" step="1" value="${window.layerState.mainTextLetterSpacing || 0}" oninput="window.changeMainTextLetterSpacing(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+                    <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 4px;">шире</div>
+                    
+                    <div style="width: 1px; height: 20px; background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent); margin: 0 8px; flex-shrink: 0;"></div>
+                    
+                    <div class="ios-icon-btn" onclick="window.toggleMainTextItalic()" style="flex-shrink: 0; width: 28px; height: 28px; background: ${window.layerState.mainTextItalic ? 'var(--tg-theme-button-color, #3390ec)' : 'transparent'}; color: ${window.layerState.mainTextItalic ? '#ffffff' : 'var(--tg-theme-text-color, #000000)'}; border-radius: 6px; transition: 0.2s;">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="4" x2="10" y2="4"></line>
+                            <line x1="14" y1="20" x2="5" y2="20"></line>
+                            <line x1="15" y1="4" x2="9" y2="20"></line>
+                        </svg>
+                    </div>
                 </div>
             `;
 
@@ -5187,11 +5230,28 @@ if (window.layerState.isBrawlPassMode) {
                 <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.mainTextOffsetY || 0}" oninput="window.changeMainTextOffsetY(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
                 <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">вниз</div>
             </div>
-            <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+            <div class="ios-layer-row">
                 <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Размер</div>
                 <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">меньше</div>
                 <input type="range" class="ios-slider" min="0.1" max="3" step="0.01" value="${window.layerState.mainTextScale || 1}" oninput="window.changeMainTextScale(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
                 <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">больше</div>
+            </div>
+
+            <div class="ios-layer-row" style="border-bottom:none; padding-bottom: 0;">
+                <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 85px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Интервал</div>
+                <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">уже</div>
+                <input type="range" class="ios-slider" min="-15" max="50" step="1" value="${window.layerState.mainTextLetterSpacing || 0}" oninput="window.changeMainTextLetterSpacing(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+                <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 4px;">шире</div>
+                
+                <div style="width: 1px; height: 20px; background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent); margin: 0 8px; flex-shrink: 0;"></div>
+                
+                <div class="ios-icon-btn" onclick="window.toggleMainTextItalic()" style="flex-shrink: 0; width: 28px; height: 28px; background: ${window.layerState.mainTextItalic ? 'var(--tg-theme-button-color, #3390ec)' : 'transparent'}; color: ${window.layerState.mainTextItalic ? '#ffffff' : 'var(--tg-theme-text-color, #000000)'}; border-radius: 6px; transition: 0.2s;">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="4" x2="10" y2="4"></line>
+                        <line x1="14" y1="20" x2="5" y2="20"></line>
+                        <line x1="15" y1="4" x2="9" y2="20"></line>
+                    </svg>
+                </div>
             </div>
         `;
         html += `<div class="ios-font-label">Изменить шрифт</div>`;
@@ -5611,6 +5671,18 @@ window.changeMainTextOffsetY = (val) => {
 window.changeMainTextScale = (val) => {
     window.layerState.mainTextScale = parseFloat(val);
     window.requestRender(true); 
+};
+
+window.changeMainTextLetterSpacing = (val) => {
+    window.layerState.mainTextLetterSpacing = parseFloat(val);
+    window.requestRender(true);
+};
+
+window.toggleMainTextItalic = () => {
+    window.layerState.mainTextItalic = !window.layerState.mainTextItalic;
+    if (window.triggerHaptic) window.triggerHaptic();
+    renderLayerPanel();
+    window.requestRender(true);
 };
 
 window.changeStrokeColor = (color) => {
@@ -6738,10 +6810,10 @@ function drawCustomBeautifulNick(ctx, text, w, h, customX, customY, customScale,
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
         } else if (style.outer) {
+            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
+            txCtx.strokeText(text, 0, shadowDepth);
             txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+            txCtx.strokeText(text, 0, 0);
         } else {
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
@@ -6761,11 +6833,13 @@ let tempCanvas = window._sharedTempCanvas;
     grad.addColorStop(1, style.grad[2]);
     tCtx.fillStyle = grad; tCtx.fillText(text, 0, 0);
     
-    tCtx.globalCompositeOperation = "source-atop"; 
-    tCtx.lineWidth = fontSize * 0.06; 
-    tCtx.strokeStyle = style.isClassic ? "#fcff00" : style.inner; 
-    tCtx.lineJoin = "round"; 
-    tCtx.strokeText(text, 0, 0);
+    if (style.inner) {
+        tCtx.globalCompositeOperation = "source-atop"; 
+        tCtx.lineWidth = fontSize * 0.06; 
+        tCtx.strokeStyle = style.isClassic ? "#fcff00" : style.inner; 
+        tCtx.lineJoin = "round"; 
+        tCtx.strokeText(text, 0, 0);
+    }
     tCtx.restore();
 
     txCtx.drawImage(tempCanvas, 0, 0);
@@ -8005,11 +8079,18 @@ function drawBeautifulNick(ctx, text, w, h) {
 
     let textCanvas = window._sharedTextCanvas; 
     textCanvas.width = w; textCanvas.height = h; 
-    let txCtx = textCanvas.getContext('2d');    
+
+    let txCtx = textCanvas.getContext('2d'); 
+
+    let ls = (window.layerState.mainTextLetterSpacing || 0) + "px";
+    if ('letterSpacing' in txCtx) txCtx.letterSpacing = ls;
+
     txCtx.textAlign = "center"; txCtx.textBaseline = "middle"; txCtx.font = `${fontSize}px '${window.layerState.textFont}', sans-serif`;
     txCtx.lineJoin = "round"; txCtx.lineCap = "round";
 
-    txCtx.save(); txCtx.translate(x, y); txCtx.transform(1, 0, -0.10, 1, 0, 0); 
+    let skewVal = window.layerState.mainTextItalic ? -0.18 : -0.05;
+
+    txCtx.save(); txCtx.translate(x, y); txCtx.transform(1, 0, skewVal, 1, 0, 0);
     
     if (style.isClassic) {
         txCtx.lineWidth = fontSize * 0.18; txCtx.strokeStyle = "#ffffff"; for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
@@ -8019,18 +8100,15 @@ function drawBeautifulNick(ctx, text, w, h) {
         if (style.outer2) {
             txCtx.lineWidth = fontSize * 0.18; txCtx.strokeStyle = style.outer2; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-            
             txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-            
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
         } else if (style.outer) {
+            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
+            txCtx.strokeText(text, 0, shadowDepth);
             txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-            
-            txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
-            for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
+            txCtx.strokeText(text, 0, 0);
         } else {
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
@@ -8042,8 +8120,9 @@ function drawBeautifulNick(ctx, text, w, h) {
     let tempCanvas = window._sharedTempCanvas; 
     tempCanvas.width = w; tempCanvas.height = h; 
     let tCtx = tempCanvas.getContext('2d');    
+    if ('letterSpacing' in tCtx) tCtx.letterSpacing = ls;
     tCtx.textAlign = "center"; tCtx.textBaseline = "middle"; tCtx.font = `${fontSize}px '${window.layerState.textFont}', sans-serif`;
-    tCtx.save(); tCtx.translate(x, y); tCtx.transform(1, 0, -0.10, 1, 0, 0); 
+    tCtx.save(); tCtx.translate(x, y); tCtx.transform(1, 0, skewVal, 1, 0, 0);
 
     let grad = tCtx.createLinearGradient(0, -fontSize * 0.4, 0, fontSize * 0.4);
     grad.addColorStop(0, style.grad[0]); 
@@ -8051,11 +8130,13 @@ function drawBeautifulNick(ctx, text, w, h) {
     grad.addColorStop(1, style.grad[2]);
     tCtx.fillStyle = grad; tCtx.fillText(text, 0, 0);
     
-    tCtx.globalCompositeOperation = "source-atop"; 
-    tCtx.lineWidth = fontSize * 0.06; 
-    tCtx.strokeStyle = style.isClassic ? "#fcff00" : style.inner; 
-    tCtx.lineJoin = "round"; 
-    tCtx.strokeText(text, 0, 0);
+    if (style.inner) {
+        tCtx.globalCompositeOperation = "source-atop"; 
+        tCtx.lineWidth = fontSize * 0.06; 
+        tCtx.strokeStyle = style.isClassic ? "#fcff00" : style.inner; 
+        tCtx.lineJoin = "round"; 
+        tCtx.strokeText(text, 0, 0);
+    }
     tCtx.restore();
 
     txCtx.drawImage(tempCanvas, 0, 0);
@@ -9162,8 +9243,13 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     }
     const BP_MAX_TEXT_WIDTH = line2 ? WIDTH * 0.30 : WIDTH * 0.38;
 
+    let ls = (window.layerState.mainTextLetterSpacing || 0) + "px";
+    let skewVal = window.layerState.mainTextItalic ? -0.15 : -0.03;
+
     const measureC = window._sharedMeasureC;
     const mCtx = measureC.getContext('2d');
+
+    if ('letterSpacing' in mCtx) mCtx.letterSpacing = ls;
     
     let scaleMult = HEIGHT / 675;
     let maxAllowedFontSize = 145 * scaleMult;
@@ -9237,6 +9323,7 @@ let y1, y2;
     const strokeC = window._sharedStrokeC;
     strokeC.width = WIDTH; strokeC.height = HEIGHT;
     const sCtx = strokeC.getContext('2d');
+    if ('letterSpacing' in sCtx) sCtx.letterSpacing = ls;
     sCtx.textAlign = "center"; sCtx.textBaseline = "middle"; sCtx.lineJoin = "round"; sCtx.lineCap = "round";
     sCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
 
@@ -9249,7 +9336,7 @@ let y1, y2;
                 sCtx.translate(bpTextX, blockCenterY + offsetPx);
                 sCtx.scale(tScale, tScale); 
                 sCtx.translate(0, yOffset);
-                sCtx.transform(1, 0, -0.07, 1, 0, 0);
+                sCtx.transform(1, 0, skewVal, 1, 0, 0);
                 sCtx.rotate(-0.02);
                 sCtx.strokeText(text, 0, i);
                 sCtx.restore();
@@ -9267,8 +9354,19 @@ let y1, y2;
             drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);  
             drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow); 
         } else if (bpStyle.outer) {
+            sCtx.lineWidth = bpFontSize * 0.12;
+            sCtx.strokeStyle = bpStyle.shadow;
+            lines.forEach(({ text, yOffset }) => {
+                sCtx.save();
+                sCtx.translate(bpTextX, blockCenterY + offsetPx);
+                sCtx.scale(tScale, tScale);
+                sCtx.translate(0, yOffset);
+                sCtx.transform(1, 0, skewVal, 1, 0, 0);
+                sCtx.rotate(-0.02);
+                sCtx.strokeText(text, 0, bpShadowDepth);
+                sCtx.restore();
+            });
             drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);
-            drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow);
         } else {
             drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow);
         }
@@ -9277,6 +9375,7 @@ let y1, y2;
     const fillC = window._sharedFillC;
     fillC.width = WIDTH; fillC.height = HEIGHT;
     const fCtx = fillC.getContext('2d');
+    if ('letterSpacing' in fCtx) fCtx.letterSpacing = ls;
     fCtx.textAlign = "center"; fCtx.textBaseline = "middle"; fCtx.lineJoin = "round"; fCtx.lineCap = "round";
     fCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
 
@@ -9285,7 +9384,7 @@ let y1, y2;
         fCtx.translate(bpTextX, blockCenterY + offsetPx);
         fCtx.scale(tScale, tScale);           
         fCtx.translate(0, yOffset);
-        fCtx.transform(1, 0, -0.07, 1, 0, 0);
+        fCtx.transform(1, 0, skewVal, 1, 0, 0);
         fCtx.rotate(-0.02);
         
         let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
