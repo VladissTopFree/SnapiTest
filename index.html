@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(138)";
+  const APP_VERSION = "v2.4.0(139)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4360,9 +4360,9 @@ function processImages(filesParam) {
 
   if (files.length > maxLimit) {
       if (window.hasActiveSubscription) {
-          alert("Вы достигли лимита загрузки скриншотов, удалите и добавьте новый.");
+          alert("Вы достигли лимита загрузки скриншотов, удалите и добавьте новые.");
       } else {
-          alert("Вы достигли лимита загрузки скриншотов, удалите и добавьте новый или оформите/продлите подписку.");
+          alert("Вы достигли лимита загрузки скриншотов, удалите и добавьте новые.");
       }
       files = files.slice(0, maxLimit); 
   }
@@ -5592,16 +5592,12 @@ window.changeGlobalStroke = (delta) => {
     window.layerState.globalStrokeWidth = Math.max(0, window.layerState.globalStrokeWidth + delta);
     let valDiv = document.getElementById('global-stroke-val');
     if (valDiv) valDiv.innerText = window.layerState.globalStrokeWidth;
-    
-    if (window.strokeTimer) clearTimeout(window.strokeTimer);
-    window.strokeTimer = setTimeout(() => {
-        window.layerState.offers.forEach(offer => {
-            if (offer.hasStroke && offer.target.w) {
-                generateOfferCache(offer, offer.target.w, offer.target.h);
-            }
-        });
-        window.requestRender();
-    }, 50);
+    window.layerState.offers.forEach(offer => {
+        if (offer.hasStroke && offer.target.w) {
+            generateOfferCache(offer, offer.target.w, offer.target.h);
+        }
+    });
+    startAnimation();
 };
 
 window.changeOffersScale = (val) => {
@@ -5611,15 +5607,14 @@ window.changeOffersScale = (val) => {
 
 window.changeGlobalPriceScale = (val) => {
     window.layerState.globalPriceScale = parseFloat(val);
-    if (window.priceScaleTimer) clearTimeout(window.priceScaleTimer);
-    window.priceScaleTimer = setTimeout(() => {
-        window.layerState.offers.forEach(offer => {
-            if (offer.target && offer.target.w) {
-                generateOfferCache(offer, offer.target.w, offer.target.h);
-            }
-        });
-        window.requestRender();
-    }, 50);
+    
+    window.layerState.offers.forEach(offer => {
+        if (offer.target && offer.target.w) {
+            generateOfferCache(offer, offer.target.w, offer.target.h);
+        }
+    });
+    
+    if (typeof startAnimation === 'function') startAnimation();
 };
 
 window.changeMainTextOffsetY = (val) => {
@@ -5629,11 +5624,9 @@ window.changeMainTextOffsetY = (val) => {
 
 window.changeMainTextScale = (val) => {
     window.layerState.mainTextScale = parseFloat(val);
-    if (window.textScaleTimer) clearTimeout(window.textScaleTimer);
-    window.textScaleTimer = setTimeout(() => {
-        window.requestRender(true);
-    }, 50);
+    window.requestRender(true); 
 };
+
 window.changeStrokeColor = (color) => {
     window.layerState.globalStrokeColor = color;
     let colorDisplay = document.getElementById('stroke-color-display');
