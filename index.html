@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.0(141)";
+  const APP_VERSION = "v2.4.1";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -9270,7 +9270,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     
     mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`; 
 
-    const bpShadowDepth = Math.max(1, Math.floor(bpFontSize * 0.05));
+    const bpShadowDepth = Math.max(1, Math.floor(bpFontSize * 0.10));
     const lineGap = 0;
 
     const bpTextX = (WIDTH / 2 + (bpFontSize * 0.07 * 0.5)) - 12; 
@@ -9354,20 +9354,31 @@ let y1, y2;
             drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);  
             drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow); 
         } else if (bpStyle.outer) {
-            sCtx.lineWidth = bpFontSize * 0.12;
-            sCtx.strokeStyle = bpStyle.shadow;
-            lines.forEach(({ text, yOffset }) => {
-                sCtx.save();
-                sCtx.translate(bpTextX, blockCenterY + offsetPx);
-                sCtx.scale(tScale, tScale);
-                sCtx.translate(0, yOffset);
-                sCtx.transform(1, 0, skewVal, 1, 0, 0);
-                sCtx.rotate(-0.02);
-                sCtx.strokeText(text, 0, bpShadowDepth);
-                sCtx.restore();
-            });
-            drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);
-        } else {
+            sCtx.lineWidth = bpFontSize * 0.12;
+            sCtx.strokeStyle = bpStyle.shadow;
+            lines.forEach(({ text, yOffset }) => {
+                sCtx.save();
+                sCtx.translate(bpTextX, blockCenterY + offsetPx);
+                sCtx.scale(tScale, tScale);
+                sCtx.translate(0, yOffset);
+                sCtx.transform(1, 0, skewVal, 1, 0, 0);
+                sCtx.rotate(-0.02);
+                sCtx.strokeText(text, 0, bpShadowDepth);
+                sCtx.restore();
+            });
+            
+            sCtx.strokeStyle = bpStyle.outer;
+            lines.forEach(({ text, yOffset }) => {
+                sCtx.save();
+                sCtx.translate(bpTextX, blockCenterY + offsetPx);
+                sCtx.scale(tScale, tScale);
+                sCtx.translate(0, yOffset);
+                sCtx.transform(1, 0, skewVal, 1, 0, 0);
+                sCtx.rotate(-0.02);
+                sCtx.strokeText(text, 0, 0);
+                sCtx.restore();
+            });
+        } else {
             drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow);
         }
     }
@@ -9383,23 +9394,25 @@ let y1, y2;
         fCtx.save();
         fCtx.translate(bpTextX, blockCenterY + offsetPx);
         fCtx.scale(tScale, tScale);           
-        fCtx.translate(0, yOffset);
+        fCtx.translate(0, yOffset);
         fCtx.transform(1, 0, skewVal, 1, 0, 0);
         fCtx.rotate(-0.02);
         
         let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
-        bpGrad.addColorStop(0, bpStyle.grad[0]);
-        bpGrad.addColorStop(bpStyle.isClassic ? 0.48 : 0.52, bpStyle.grad[1] || bpStyle.grad[0]);
-        bpGrad.addColorStop(1, bpStyle.grad[2] || bpStyle.grad[0]);
-        fCtx.fillStyle = bpGrad;
-        fCtx.fillText(text, 0, 0);
-        
-        fCtx.globalCompositeOperation = "source-atop";
-        fCtx.lineWidth = bpFontSize * 0.06;
-        fCtx.strokeStyle = bpStyle.isClassic ? "#fcff00" : (bpStyle.inner || '#ffffff');
-        fCtx.strokeText(text, 0, 0);
-        fCtx.restore();
-    });
+        bpGrad.addColorStop(0, bpStyle.grad[0]);
+        bpGrad.addColorStop(bpStyle.isClassic ? 0.48 : 0.52, bpStyle.grad[1] || bpStyle.grad[0]);
+        bpGrad.addColorStop(1, bpStyle.grad[2] || bpStyle.grad[0]);
+        fCtx.fillStyle = bpGrad;
+        fCtx.fillText(text, 0, 0);
+        
+        if (bpStyle.inner) {
+            fCtx.globalCompositeOperation = "source-atop";
+            fCtx.lineWidth = bpFontSize * 0.06;
+            fCtx.strokeStyle = bpStyle.isClassic ? "#fcff00" : bpStyle.inner;
+            fCtx.strokeText(text, 0, 0);
+        }
+        fCtx.restore();
+    });
 
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
