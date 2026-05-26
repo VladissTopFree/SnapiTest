@@ -7051,7 +7051,8 @@ function drawScene() {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
-            const s = W / 1280; 
+            const s = Math.min(W / 1280, H / 720);
+ 
 
             let currentSeason = window.layerState.bpSeason || 50;
             let s2Config = (BP_SEASON_CONFIG[currentSeason] && BP_SEASON_CONFIG[currentSeason].style2Brawlers) 
@@ -7127,28 +7128,14 @@ function drawScene() {
                 ctx.restore();
             }
 
-            if (rawBgImage && C.backgrounds && C.backgrounds.length >= 2) {
-                const drawMaskedBg = (bg, isTop) => {
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
-                    ctx.closePath();
-                    ctx.clip();
-
-                    ctx.beginPath();
-                    if (isTop) ctx.rect(0, 0, W, H/2 - 8*s); 
-                    else ctx.rect(0, H/2 + 8*s, W, H/2);    
-                    ctx.clip();
-
-                    ctx.translate(bg.x * s, bg.y * s);
-                    if (bg.skewX) ctx.transform(1, 0, Math.tan(bg.skewX * Math.PI / 180), 1, 0, 0);
-                    ctx.scale(bg.scale, bg.scale);
-                    ctx.drawImage(rawBgImage, 0, 0, W, H);
-                    ctx.restore();
-                };
-
-                drawMaskedBg(C.backgrounds[0], true);  
-                drawMaskedBg(C.backgrounds[1], false); 
+            if (rawBgImage) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(rawBgImage, 0, 0, W, H);
+                ctx.restore();
             }
 
             if (window.layerState.detailsS2Visible !== false && globalAssets.style2Details) {
@@ -7461,7 +7448,8 @@ function drawScene() {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
-            const s = W / 1280;
+            const s = Math.min(W / 1280, H / 720);
+
 
             const offC = document.createElement('canvas');
             offC.width = W; offC.height = H;
@@ -7623,7 +7611,8 @@ function drawScene() {
             const ctx = persistentCtx;
             const W = persistentCanvas.width;
             const H = persistentCanvas.height;
-            const s = W / 1280; 
+            const s = Math.min(W / 1280, H / 720);
+ 
 
             const drawLayerImg = (img, x, y, w, h) => {
                 if (!img) return;
@@ -7631,7 +7620,9 @@ function drawScene() {
             };
 
             if (rawBgImage) {
-                drawLayerImg(rawBgImage, -7, 0, 1548, 761);
+                ctx.save();
+                ctx.drawImage(rawBgImage, 0, 0, W, H);
+                ctx.restore();
             }
 
             ctx.save();
@@ -8000,6 +7991,30 @@ function drawFallbackRays(ctx, w, h, opacity = 1.0) {
     for (let i = 0; i < numRays; i += 2) {
       ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, radius, i * angleStep, (i + 1) * angleStep); ctx.closePath(); ctx.fill();
     }
+    ctx.restore();
+}
+
+function drawImageCover(ctx, img, x, y, w, h) {
+    if (!img) return;
+    const imgRatio = img.width / img.height;
+    const canvasRatio = w / h;
+    let drawW, drawH, drawX, drawY;
+    if (imgRatio > canvasRatio) {
+        drawH = h;
+        drawW = h * imgRatio;
+        drawX = x + (w - drawW) / 2;
+        drawY = y;
+    } else {
+        drawW = w;
+        drawH = w / imgRatio;
+        drawX = x;
+        drawY = y + (h - drawH) / 2;
+    }
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+    ctx.drawImage(img, drawX, drawY, drawW, drawH);
     ctx.restore();
 }
 
