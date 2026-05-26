@@ -7614,10 +7614,12 @@ function drawScene() {
             const s = Math.min(W / 1280, H / 720);
  
 
-            const drawLayerImg = (img, x, y, w, h) => {
-                if (!img) return;
-                ctx.drawImage(img, x * s, y * s, w * s, h * s);
-            };
+            const offsetX = (W - 1280 * s) / 2;
+            const offsetY = (H - 720 * s) / 2;
+            const drawLayerImg = (img, x, y, w, h) => {
+                if (!img) return;
+                ctx.drawImage(img, offsetX + x * s, offsetY + y * s, w * s, h * s);
+            };
 
             if (rawBgImage) {
                 ctx.save();
@@ -7627,13 +7629,13 @@ function drawScene() {
 
             ctx.save();
             ctx.globalCompositeOperation = 'overlay';
-            if (window.layerState.pointsVisible !== false) {
+            if (window.layerState.pointsVisible !== false && globalAssets.dopPoints) {
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
-                drawLayerImg(globalAssets.dopPoints, 0, 0, 1280, 720);
+                ctx.drawImage(globalAssets.dopPoints, 0, 0, W, H);
             }
-            if (window.layerState.starsVisible !== false) {
+            if (window.layerState.starsVisible !== false && globalAssets.dopStarsEff) {
                 ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
-                drawLayerImg(globalAssets.dopStarsEff, 0, 0, 1280, 720);
+                ctx.drawImage(globalAssets.dopStarsEff, 0, 0, W, H);
             }
             ctx.restore();
 
@@ -7660,7 +7662,7 @@ function drawScene() {
                 
                 wms.forEach(wm => {
                     ctx.font = `italic 900 ${wm.h * s}px "${wmFont}", Impact, sans-serif`;
-                    ctx.fillText(wmText, wm.x * s, wm.y * s);
+                    ctx.fillText(wmText, offsetX + wm.x * s, offsetY + wm.y * s);
                 });
                 ctx.restore();
             }
@@ -7668,8 +7670,8 @@ function drawScene() {
             drawLayerImg(globalAssets.dopStar, 561, 61, 771, 675);
 
             ctx.save();
-            const cx = (599 + 609 / 2) * s;
-            const cy = (150 + 576 / 2) * s;
+            const cx = offsetX + (599 + 609 / 2) * s;
+            const cy = offsetY + (150 + 576 / 2) * s;
             const r = Math.min(609, 576) / 2 * s;
             const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
             grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
@@ -7704,7 +7706,7 @@ function drawScene() {
 
                 ctx.save();
                 
-                ctx.translate(b2x * s, b2y * s); 
+                ctx.translate(offsetX + b2x * s, offsetY + b2y * s); 
                 if (b2rot) ctx.rotate(b2rot * Math.PI / 180);
             
                 ctx.scale(b2s * b2sx, b2s * b2sy);
@@ -7748,9 +7750,9 @@ function drawScene() {
             let textBoxHeight = window.layerState.bpVariantIndex === 2 ? 114 : 124; 
 
             drawPriceText(ctx, W, H, pText, {
-                textX: textXPos * s, 
-                textY: textYPos * s, 
-                boxHeight: textBoxHeight * s 
+                textX: offsetX + textXPos * s,
+                textY: offsetY + textYPos * s,
+                boxHeight: textBoxHeight * s
             });
 
             if (window.layerState.bpVariantIndex === 4 && globalAssets.style2Text) {
