@@ -7,11 +7,11 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(1)";
+  const APP_VERSION = "v2.4.1(3)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = false; 
+  const SHOW_PROMO_BANNER = true; 
   const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
@@ -684,7 +684,7 @@
     margin-left: 14px;
     letter-spacing: 0.5px;
     width: 100%;
-    font-weight: 200; 
+    font-weight: 300; 
   }
 
   body.os-non-apple .ios-section-title {
@@ -2001,349 +2001,172 @@
       top: -1px; 
   }
 
-.promo-banner {
-    position: relative;
-    width: 100%;     
-    height: 116px;    
-    min-height: 116px; 
-    flex-shrink: 0;    
-    background: linear-gradient(to right, #d39eff 0%, #c885ff 100%);    
-    border-radius: 24px;
-    margin: 0 auto 24px auto; 
-    
-    -webkit-clip-path: inset(-500px -200px 0 -200px round 0 0 24px 24px);
-    clip-path: inset(-500px -200px 0 -200px round 0 0 24px 24px);
-    
-    display: flex;
-    flex-direction: column;
-    
-    justify-content: center; 
-    
-    padding: 0 20px; 
-    box-sizing: border-box;
-    
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    
-    --b2-x: -146px; --b2-y: -46px; --b2-s: 1.36; 
-    --b1-x: -7px; --b1-y: -4px;  --b1-s: 0.86;  
-    --star-x: 41px; --star-y: -1px; --star-s: 0.86; 
-    --txt-x: 0px; --txt-y: 0px; 
-  }
-  
-  .promo-banner:active {
-    transform: scale(0.97);
-    opacity: 0.9;
-    transition: all 0.1s ease;
-  }
-
-.promo-custom-star {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    transform-origin: center;
-    opacity: 1;
-  }
-  
-body.os-non-apple .promo-banner {
-    border-radius: 16px !important;
-    -webkit-clip-path: inset(-500px -200px 0 -200px round 0 0 16px 16px) !important;
-    clip-path: inset(-500px -200px 0 -200px round 0 0 16px 16px) !important;
-  }
-  
-  .promo-brawler-left {
-    position: absolute;
-    bottom: calc(12px + var(--b2-y));
-    right: calc(136px + var(--b2-x)); 
-    height: 121px; 
-    z-index: 2;
-    pointer-events: none;
-    transform: scale(var(--b2-s));
-    transform-origin: bottom right;
-  }
-  
-  .promo-brawler-right {
-    display: none;
-    position: absolute;
-    bottom: calc(-12px + var(--b1-y));
-    right: calc(-36px + var(--b1-x));
-    height: 131px; 
-    z-index: 1;
-    pointer-events: none;
-    transform: scale(var(--b1-s));
-    transform-origin: bottom right;
-  }
-  
-  .promo-badge {
-    position: absolute;
-    right: calc(60px + var(--star-x));
-    top: 53%;
-    transform: translateY(-50%) scale(var(--star-s));
-    margin-top: var(--star-y);
-    width: 60px;
-    height: 60px;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .badge-bg {
-    position: absolute;
-    width: 140%; 
-    height: 140%;
-    top: -20%;
-    left: -20%;
-    z-index: -1;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-  }
-  
-  .promo-badge span {
-    font-family: 'LilitaOneRus', 'Arial Black', sans-serif;
-    color: #924000;
-    font-size: 31px;
-    z-index: 1;
-    margin-top: -2px;
-  }
-  
-.promo-content {
-    position: relative;
-    z-index: 4;
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-    max-width: 180px; 
-    margin: 0;
-  }
-  
-.promo-subtitle {
-    color: rgb(255, 255, 255);
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1.2;
-    white-space: normal;
-    word-wrap: break-word; 
-  }
-  
-.promo-title {
-    font-family: ui-rounded, 'SF Pro Rounded', 'ArialRoundedOld', 'Arial Rounded MT Bold', sans-serif;
-    font-weight: 800; 
-    font-size: 28px;
-    
-    -webkit-text-stroke: 0px transparent; 
-    
-    background: #ffef9e;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1.1;
-
-    margin: 6px 0;
-  }
-
-  body.os-non-apple .promo-title {
-    font-family: 'Roboto', sans-serif !important;
-    font-weight: 900 !important;
-    -webkit-text-stroke: 0px transparent;
-  }
-  
-  .promo-action {
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-.promo-action svg {
-  width: 6px;
-  height: 10px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  
-  margin-top: 2px; 
-  animation: arrowBounce 1.2s ease-in-out infinite; 
-}
-
-@keyframes arrowBounce {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(4px); 
-  }
-}
-
-  .promo-badge-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: var(--badge-glow-size, 106px);
-    height: var(--badge-glow-size, 106px);
-    background: var(--badge-glow-color, #caefffde);
-    filter: blur(var(--badge-glow-blur, 30px));
-    opacity: var(--badge-glow-opacity, 0.8);
-    border-radius: 50%;
-    z-index: -2; 
-    pointer-events: none;
-  }
-
-  @keyframes timeUpdateBlur {
-    0% { filter: blur(4px); opacity: 0.5; }
-    100% { filter: blur(0px); opacity: 1; }
-  }
-  .timer-tick {
-    animation: timeUpdateBlur 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    display: inline-block; 
-  }
-
-  .promo-title span {
-    background: #ffef9e;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-  }
-
-  .timer-part {
-    position: relative;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .timer-colon, .digit-old, .digit-new {
-    background: linear-gradient(180deg, #ffef9e 0%, #ffb82c 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-  }
-
-  .timer-colon {
-    margin: 0; 
-    position: relative;
-    top: -2px; 
-  }
-
-  .digit-old {
-    position: absolute;
-    animation: digitOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  .digit-new {
-    animation: digitIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  @keyframes digitOut {
-    0% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
-    100% { transform: translateY(-70%) scale(0.6); opacity: 0; filter: blur(2px); }
-  }
-
-  @keyframes digitIn {
-    0% { transform: translateY(15%) scale(0.9); opacity: 0; filter: blur(5px); }
-    100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0px); }
-  }
-
-  @keyframes contentBlurSwap {
-    0% { filter: blur(0px); opacity: 1; transform: scale(1); }
-    50% { filter: blur(10px); opacity: 0; transform: scale(0.95); }
-    100% { filter: blur(0px); opacity: 1; transform: scale(1); }
-  }
-  
-  .promo-content.swapping {
-    animation: contentBlurSwap 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-.promo-desc {
-    color: #ffe47a; 
-    font-size: 12px; 
-    font-weight: 500;
-    line-height: 1.35; 
-    margin: 8px 0 10px 0; 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    max-width: 100%; 
-  }
-
-  .promo-hidden {
-    display: none !important;
-  }
-
-  @media (max-width: 380px) {
-    .promo-content {
-      max-width: 160px; 
-    }
-    .promo-subtitle {
-      font-size: 11px; 
-    }
-    .promo-desc {
-      font-size: 11px;
-    }
-    .promo-action {
-      font-size: 12px;
-    }
-  }
-
-.promo-text-glow {
+.promo-bg-arrows {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 3;
+  right: 0;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: -12px;
+  padding-right: 20px;
+  z-index: 0; 
+  pointer-events: none;
+  opacity: 0.1;
+}
+
+  .promo-content {
+    position: relative; 
+    z-index: 2;         
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .promo-icon-wrapper {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+.promo-bg-arrows svg {
+    width: 120px;
+    height: 120px;
+    margin-left: -50px; 
+  }
+
+  .promo-bg-arrows svg:first-child {
+  margin-left: 0;
+}
+
+@keyframes blurFadeOutTimer {
+  0% { filter: blur(0px); opacity: 1; transform: scale(1); }
+  100% { filter: blur(8px); opacity: 0; transform: scale(0.95); }
+}
+
+.blur-fade-out {
+  animation: blurFadeOutTimer 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
   pointer-events: none;
 }
 
-.promo-text-glow::before {
-  content: "";
-  position: absolute;
-  top: 25px;      
-  bottom: 25px;   
-  left: 30px; 
-  width: 256px; 
-  background: #d39eff; 
-  filter: blur(26px); 
-  opacity: 0.76;
-  border-radius: 50%; 
-}
+.promo-action svg {
+    width: 16px;  
+    height: 16px;
+    fill: currentColor; 
+    stroke: none; 
+    margin-top: 2px;
+    margin-left: -3px;
+  }
 
-.flip-wrapper {
+
+.promo-banner {
   position: relative;
-  display: inline-block;
-}
-.flip-old {
-  position: absolute;
-  left: 0;
-  top: 0;
-  animation: digitOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-.flip-new {
-  display: inline-block;
-  animation: digitIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-
-.promo-banner.is-loading {
-  background: var(--tg-theme-section-bg-color, #ffffff) !important; 
-  pointer-events: none !important; 
-}
-
-.promo-banner > * {
-  transition: opacity 0.4s ease-in-out;
+  width: 100%;
+  height: 91px; 
+  min-height: 86px;
+  background: #edba2e;
+  border-radius: 21px;
+  margin: 0 auto 24px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  
+  -webkit-tap-highlight-color: transparent; 
+  user-select: none; 
+  -webkit-user-select: none;
+  transition: transform 0.1s ease, opacity 0.1s ease; 
 }
 
-.promo-banner.is-loading > * {
-  opacity: 0 !important;
+.promo-banner:active {
+  transform: scale(0.95);
+  opacity: 0.8;
 }
 
-@keyframes bannerFadeIn {
-  from { opacity: 0; transform: translateY(-8px) scale(0.98); filter: blur(4px); }
-  to   { opacity: 1; transform: translateY(0)   scale(1);    filter: blur(0px); }
+.promo-bp-icon {
+  height: 75%; 
+  width: auto;
+  object-fit: contain;
+  
+  pointer-events: none; 
+  user-select: none;
+  -webkit-user-drag: none; 
 }
 
-.promo-banner.banner-ready {
-  animation: bannerFadeIn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+.promo-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
+.promo-subtitle {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.promo-action {
+    color: #ffee00;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.promo-icon-wrapper {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.promo-bp-icon {
+    height: 75%; 
+    width: auto;
+    object-fit: contain;
+}
+
+.promo-timer-box {
+  display: inline-flex;
+  align-items: center;
+  background: #ff691843;
+  color: #ffe8dc;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: -apple-system, sans-serif;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 4px;
+  width: fit-content;
+  
+  max-height: 30px; 
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#promo-timer {
+  margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.promo-timer-box.hidden-smooth {
+  max-height: 0;
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.timer-part { display: inline-flex; align-items: center; }
   .sub-options-wrap {
     display: grid;
     grid-template-rows: 0fr;
@@ -2499,6 +2322,17 @@ body:not(.os-non-apple) .saved-works-icon {
     background-clip: padding-box !important;
   }
 
+body.os-desktop #wizard-step3 {
+  transition: background-color 0.2s, border 0.2s;
+  border: 2px solid transparent;
+}
+
+body.os-desktop #wizard-step3.dragover {
+  background-color: rgba(0, 160, 255, 0.05) !important;
+  border: 2px dashed var(--tg-theme-button-color);
+  border-radius: 24px;
+}
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -2532,45 +2366,44 @@ body:not(.os-non-apple) .saved-works-icon {
       </div>
     </div>
 
-<div class="promo-banner is-loading" id="main-promo" onclick="window.openBPFromPromo()">
-<div id="promo-bg-stars-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99;"></div>
-      <img src="BP/brawler_s51_2.png" class="promo-brawler-left" alt="">
-      <img src="BP/brawler_s51_1.png" class="promo-brawler-right" alt="">
+<div class="promo-banner" id="main-promo" onclick="window.openBPFromPromo()">
+<div class="promo-bg-arrows">
+    <svg viewBox="0 0 512 512">
+      <g transform="translate(0,512) scale(0.1,-0.1)" fill="#ffffff" stroke="none">
+        <path d="M1519 4852 c-123 -32 -234 -128 -292 -250 -30 -64 -32 -73 -32 -187 0 -207 -71 -120 859 -1053 l801 -802 -811 -813 c-758 -760 -812 -816 -838 -875 -38 -88 -51 -177 -36 -260 45 -262 303 -432 555 -367 126 33 106 15 1124 1029 530 529 983 987 1007 1019 114 153 114 381 0 534 -24 32 -473 486 -997 1010 -1015 1012 -984 984 -1116 1018 -73 19 -141 18 -224 -3z"/>
+      </g>
+    </svg>
+    <svg viewBox="0 0 512 512">
+      <g transform="translate(0,512) scale(0.1,-0.1)" fill="#ffffff" stroke="none">
+        <path d="M1519 4852 c-123 -32 -234 -128 -292 -250 -30 -64 -32 -73 -32 -187 0 -207 -71 -120 859 -1053 l801 -802 -811 -813 c-758 -760 -812 -816 -838 -875 -38 -88 -51 -177 -36 -260 45 -262 303 -432 555 -367 126 33 106 15 1124 1029 530 529 983 987 1007 1019 114 153 114 381 0 534 -24 32 -473 486 -997 1010 -1015 1012 -984 984 -1116 1018 -73 19 -141 18 -224 -3z"/>
+      </g>
+    </svg>
+    <svg viewBox="0 0 512 512">
+      <g transform="translate(0,512) scale(0.1,-0.1)" fill="#ffffff" stroke="none">
+        <path d="M1519 4852 c-123 -32 -234 -128 -292 -250 -30 -64 -32 -73 -32 -187 0 -207 -71 -120 859 -1053 l801 -802 -811 -813 c-758 -760 -812 -816 -838 -875 -38 -88 -51 -177 -36 -260 45 -262 303 -432 555 -367 126 33 106 15 1124 1029 530 529 983 987 1007 1019 114 153 114 381 0 534 -24 32 -473 486 -997 1010 -1015 1012 -984 984 -1116 1018 -73 19 -141 18 -224 -3z"/>
+      </g>
+    </svg>
+  </div>
 
-    <div class="promo-text-glow"></div>
-
-      <div class="promo-badge">
-        <div class="promo-badge-glow"></div>
-        
-        <svg class="badge-bg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="star-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#ffef9e"/>
-              <stop offset="100%" stop-color="#ffb82c"/>
-            </linearGradient>
-          </defs>
-
-          <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
-                fill="#cd6a2e" stroke="#cd6a2e" stroke-width="24" stroke-linejoin="round"/>
-          
-          <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
-                fill="#fff0c7" stroke="#fff0c7" stroke-width="14" stroke-linejoin="round"/>
-          
-          <path d="M 50 12 L 60.33 25.05 L 76.87 23.13 L 74.95 39.67 L 88 50 L 74.95 60.33 L 76.87 76.87 L 60.33 74.95 L 50 88 L 39.67 74.95 L 23.13 76.87 L 25.05 60.33 L 12 50 L 25.05 39.67 L 23.13 23.13 L 39.67 25.05 Z" 
-                fill="url(#star-grad)" stroke="url(#star-grad)" stroke-width="6" stroke-linejoin="round"/>
-        </svg>
-        <span>51</span>
-      </div>
-      
-      <div class="promo-content">
-        <div class="promo-subtitle">Новый сезон скоро выйдет!</div>
-        <div class="promo-title" id="promo-timer"></div>        
-        <div class="promo-action">
-          Пора оформить 
-          <svg viewBox="0 0 8 14"><path d="M1 1l6 6-6 6"></path></svg>
-        </div>
-      </div>
+<div class="promo-content">
+    <div class="promo-subtitle">Новый 51 сезон</div>
+    <div class="promo-timer-box" id="promo-timer-container">
+      через <span id="promo-timer">00:00:00</span>
     </div>
+    <div class="promo-action">
+      Оформить 
+      <svg viewBox="0 0 512 512">
+        <g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor" stroke="none">
+          <path d="M1519 4852 c-123 -32 -234 -128 -292 -250 -30 -64 -32 -73 -32 -187 0 -207 -71 -120 859 -1053 l801 -802 -811 -813 c-758 -760 -812 -816 -838 -875 -38 -88 -51 -177 -36 -260 45 -262 303 -432 555 -367 126 33 106 15 1124 1029 530 529 983 987 1007 1019 114 153 114 381 0 534 -24 32 -473 486 -997 1010 -1015 1012 -984 984 -1116 1018 -73 19 -141 18 -224 -3z"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+  
+  <div class="promo-icon-wrapper">
+    <img src="BP/bp_icon_brawl_pass.png" class="promo-bp-icon" alt="" draggable="false">
+  </div>
+</div>
 
     <div class="ios-section-title" style="margin-top: 0;">ПУНКТ УПРАВЛЕНИЯ</div>
     
@@ -2915,7 +2748,7 @@ body:not(.os-non-apple) .saved-works-icon {
 
   <div id="wizard-step3" class="wizard-step">
     <div class="ios-wizard-title">Создание акции</div>
-    <div class="ios-wizard-subtitle">Скриншот. Загрузите скриншоты из игры<br>что бы система смогла их вырезать<br>и вставить на Ваш фон.</div>
+    <div class="ios-wizard-subtitle">Скриншот. Загрузите скриншоты из игры<br>что бы система смогла их вырезать<br>и вставить на Ваш фон. Или перетащите их со своего устройства сюда.</div>
     
     <div class="ios-info-plate">
         <svg class="ios-info-icon" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
@@ -4398,9 +4231,47 @@ function handleFilesAdded(files) {
 }
 
 fileInput.onchange = (e) => { 
-    if (e.target.files.length > 0) handleFilesAdded(e.target.files); 
-    e.target.value = ''; 
+  if (e.target.files.length > 0) handleFilesAdded(e.target.files); 
+  e.target.value = ''; 
 };
+
+const dropZone = document.getElementById('wizard-step3');
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  dropZone.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, false);
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+  dropZone.addEventListener(eventName, () => {
+    if (document.body.classList.contains('os-desktop')) {
+      dropZone.classList.add('dragover');
+    }
+  }, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+  dropZone.addEventListener(eventName, () => {
+    dropZone.classList.remove('dragover');
+  }, false);
+});
+
+dropZone.addEventListener('drop', (e) => {
+  if (!document.body.classList.contains('os-desktop')) return;
+
+  let dt = e.dataTransfer;
+  let files = dt.files;
+
+  if (files && files.length > 0) {
+    let imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length > 0) {
+      handleFilesAdded(imageFiles);
+    }
+  }
+}, false);
 
 document.getElementById('file-add-screens').onchange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -6067,15 +5938,18 @@ function autoReplacePrice(ctx, w, h) {
   const imgData = ctx.getImageData(0, 0, w, h);
   const d = imgData.data;
 
-  let isWide = (w / h) > 0.85; 
-  let seedX = isWide ? Math.floor(w * 0.8) : Math.floor(w * 0.5);
-  let seedY = h - 1;
-  
-  while (seedY > 0) {
-    let i = (seedY * w + seedX) * 4;
-    if (d[i+3] > 200 && (d[i] > 60 || d[i+1] > 60 || d[i+2] > 60)) { seedY = Math.max(0, seedY - 15); break; }
-    seedY--;
+let isWide = (w / h) > 0.85; 
+let seedX = isWide ? Math.floor(w * 0.65) : Math.floor(w * 0.5);
+let seedY = h - 1;
+
+while (seedY > 0) {
+  let i = (seedY * w + seedX) * 4;
+  if (d[i+3] > 200 && (d[i] > 60 || d[i+1] > 60 || d[i+2] > 60)) { 
+    seedY = Math.max(0, seedY - 15); 
+    break; 
   }
+  seedY--;
+}
 
   let colors = {};
   for(let y = seedY - 20; y <= seedY + 20; y++) {
@@ -6114,10 +5988,14 @@ function autoReplacePrice(ctx, w, h) {
 
 function isBg(x, y) {
     if (x<0 || x>=w || y<0 || y>=h) return false;
+    
+    if (seedY - y > h * 0.28) return false; 
+    
     let i = (y*w + x)*4;
     if (d[i+3] < 128) return false;
     if (d[i] < 70 && d[i+1] < 70 && d[i+2] < 70) return false;
-    return Math.abs(d[i]-bgR) < 30 && Math.abs(d[i+1]-bgG) < 30 && Math.abs(d[i+2]-bgB) < 30;
+    
+    return Math.abs(d[i]-bgR) < 25 && Math.abs(d[i+1]-bgG) < 25 && Math.abs(d[i+2]-bgB) < 25;
   }
 
   let isBgMask = new Uint8Array(w * h);
@@ -6225,7 +6103,7 @@ function drawPriceText(ctx, w, h, textStr, info) {
   let numStr = textStr.trim(); 
   let symStr = isNumber ? " ₽" : ""; 
   let mainColor = isFree ? "#3bf83b" : "#fff";
-  let fontNum = `normal ${fontSize}px 'Lilita One', 'Arial Black', Impact, sans-serif`;
+  let fontNum = `normal ${fontSize}px 'LilitaOneRus', 'Arial Black', Impact, sans-serif`;
   let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
 
   ctx.font = fontNum; let wNum = ctx.measureText(numStr).width;
@@ -8306,13 +8184,22 @@ function drawBeautifulNick(ctx, text, w, h) {
           if (radio) radio.classList.remove('checked');
       }
 
-      let varBtnNext = document.getElementById('bp-variant-btn-next');
+    let varBtnNext = document.getElementById('bp-variant-btn-next');
       if (varBtnNext) varBtnNext.classList.remove('show');
 
       uploadMode = null;
       selectedColor = null;
       uploadedBaseImg.removeAttribute('src');
       uploadedReadyBaseImg.removeAttribute('src');
+      rawBgImage = null;
+
+      if (animReq) {
+          cancelAnimationFrame(animReq);
+          animReq = null;
+      }
+      window.renderThrottle = false;
+      window.pendingRenderCache = false;
+
       wizardColorWraps.forEach(w => w.classList.remove('selected'));
 
       document.querySelectorAll('.fankit-item, .fankit-rec-item').forEach(el => el.classList.remove('selected'));
@@ -8785,6 +8672,7 @@ wizardNextBtn3.onclick = async () => {
       wizardNextBtn3.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"></circle></svg>`;
       
       setTimeout(async () => {
+          await document.fonts.ready; 
           window.layerState.isBrawlPassMode = false;
           let nick = wizardNickInput.value.trim().substring(0, 16) || "Snapi";
           window.layerState.textValue = nick;
@@ -9953,190 +9841,63 @@ window.updateActivePromoStar = function(param, value) {
 setTimeout(() => { window.renderPromoBgStars(); }, 150);
 
 
-const TARGET_DATE_STRING = "2026-05-16T11:00:00+03:00"; 
-
-
 window.initPromoTimer = function() {
-    if (!SHOW_PROMO_BANNER) {
-        let bannerEl = document.getElementById('main-promo');
-        if (bannerEl) bannerEl.style.display = 'none';
-        return;
+    const timerEl = document.getElementById('promo-timer');
+    const container = document.getElementById('promo-timer-container');
+    if (!timerEl || !container) return;
+
+    const targetTime = new Date("2026-06-04T11:00:00+03:00").getTime();
+    let timeOffset = 0; 
+    let timerInterval;
+
+
+    if (targetTime - new Date().getTime() <= 0) {
+        container.style.display = 'none';
+        return; 
     }
 
-    const timerEl = document.getElementById('promo-timer');
-    if (!timerEl) return;
-
-    timerEl.innerHTML = `<span id="promo-h" style="display:inline-flex;"></span><span class="timer-colon">:</span><span id="promo-m" style="display:inline-flex;"></span><span class="timer-colon">:</span><span id="promo-s" style="display:inline-flex;"></span>`;
-
-    const elH = document.getElementById('promo-h');
-    const elM = document.getElementById('promo-m');
-    const elS = document.getElementById('promo-s');
-
-    let offset = 0; 
-    let targetTime = new Date(TARGET_DATE_STRING).getTime();
-    let prevH = "", prevM = "", prevS = "";
-    let isFirstRender = true; 
-
-    const animateDigit = (elId, oldChar, newChar) => {
-        const el = document.getElementById(elId);
-        if (!el) return;
-        if (isFirstRender) {
-            el.innerHTML = `<span style="display:inline-block; background: #ffef9e; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${newChar}</span>`;
-            return;
-        }
-        if (!oldChar) {
-            el.innerHTML = `<span class="digit-new">${newChar}</span>`;
-        } else {
-            el.innerHTML = `<span class="digit-old">${oldChar}</span><span class="digit-new">${newChar}</span>`;
-        }
-    };
-
-    const updateGroup = (groupEl, oldStr, newStr) => {
-        if (!oldStr || oldStr.length !== newStr.length) {
-            groupEl.innerHTML = '';
-            for (let i = 0; i < newStr.length; i++) {
-                const span = document.createElement('span');
-                span.id = `${groupEl.id}-${i}`;
-                span.className = 'timer-part';
-                groupEl.appendChild(span);
-                animateDigit(span.id, "", newStr[i]);
-            }
-        } else {
-            for (let i = 0; i < newStr.length; i++) {
-                if (oldStr[i] !== newStr[i]) {
-                    animateDigit(`${groupEl.id}-${i}`, oldStr[i], newStr[i]);
-                }
-            }
-        }
-    };
-
-    const swapTextWithFlip = (el, oldText, newText, newClassName) => {
-        const oldWords = oldText.trim().split(/\s+/);
-        const newWords = newText.trim().split(/\s+/);
-        const maxLen = Math.max(oldWords.length, newWords.length);
-        
-        let html = '';
-        for (let i = 0; i < maxLen; i++) {
-            let ow = oldWords[i] || '';
-            let nw = newWords[i] || '';
-            
-            if (ow === nw) {
-                html += `${nw} `;
-            } else {
-                html += `<span class="flip-wrapper">`;
-                if (ow) {
-                    let extraStyle = newClassName ? `font-family: ui-rounded, 'SF Pro Rounded', 'ArialRoundedOld', 'Arial Rounded MT Bold', sans-serif; font-weight: 800; font-size: 28px; background: linear-gradient(180deg, #ffef9e 0%, #ffb82c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap;` : `white-space: nowrap;`;
-                    html += `<span class="flip-old" style="${extraStyle}">${ow}</span>`;
-                }
-                if (nw) {
-                    html += `<span class="flip-new">${nw}</span>`;
-                }
-                html += `</span> `;
-            }
-        }
-        
-        if (newClassName) el.className = newClassName;
-        el.innerHTML = html.trim();
+    const hideSmoothly = () => {
+        container.classList.add('hidden-smooth');
+        setTimeout(() => {
+            container.style.display = 'none';
+        }, 500);
     };
 
     const updateTimer = () => {
-        const currentTime = new Date().getTime() + offset;
+        const currentTime = new Date().getTime() + timeOffset;
         const diff = targetTime - currentTime;
 
         if (diff <= 0) {
-            if (timerEl.dataset.swapped === "true") return;
-            timerEl.dataset.swapped = "true";
-
-            const contentContainer = timerEl.closest('.promo-content');
-            const subtitleEl = contentContainer.querySelector('.promo-subtitle');
-            
-            if (subtitleEl) {
-                swapTextWithFlip(subtitleEl, subtitleEl.innerText, "Новый сезон вышел!");
-            }
-            
-            const oldTimerText = timerEl.innerText;
-            swapTextWithFlip(timerEl, oldTimerText, "На выбор - стили работ, текста и многое другое", "promo-desc");
-
+            clearInterval(timerInterval);
+            hideSmoothly();
             return;
         }
 
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        const h = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+        const m = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+        const s = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
 
-        const h = String(hours).padStart(2, '0'); 
-        const m = String(minutes).padStart(2, '0');
-        const s = String(seconds).padStart(2, '0');
-
-        if (h !== prevH) { updateGroup(elH, prevH, h); prevH = h; }
-        if (m !== prevM) { updateGroup(elM, prevM, m); prevM = m; }
-        if (s !== prevS) { updateGroup(elS, prevS, s); prevS = s; }
-        
-        isFirstRender = false; 
+        timerEl.innerText = `${h}:${m}:${s}`;
     };
 
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
 
-    updateTimer(); 
-    setInterval(updateTimer, 1000);
-
-    fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow')
-        .then(res => {
-            if (!res.ok) throw new Error('worldtimeapi error');
-            return res.json();
-        })
+    fetch('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Moscow')
+        .then(res => res.json())
         .then(data => {
-            const safeDate = data.datetime.replace(/\.\d+/, '');
-            const serverTime = new Date(safeDate).getTime();
-            const localTime = new Date().getTime();
-            
-            if (!isNaN(serverTime)) {
-                offset = serverTime - localTime;
+            if (data && data.dateTime) {
+                const serverTime = new Date(data.dateTime).getTime();
+                timeOffset = serverTime - new Date().getTime();
+                updateTimer(); 
             }
-            updateTimer(); 
         })
-        .catch(() => {
-            fetch('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Moscow')
-                .then(res => res.json())
-                .then(data => {
-
-                    const safeDate = data.dateTime.replace(/\.\d+/, '') + '+03:00';
-                    const serverTime = new Date(safeDate).getTime();
-                    const localTime = new Date().getTime();
-                    
-                    if (!isNaN(serverTime)) {
-                        offset = serverTime - localTime; 
-                    }
-                    updateTimer(); 
-                })
-                .catch(() => console.warn('Оба API времени недоступны. Работаем по системному.'));
+        .catch(e => {
+            console.warn("API времени недоступно, используем локальное", e);
         });
+};
 
-    const banner = document.getElementById('main-promo');
-    if (banner) {
-        const images = Array.from(banner.querySelectorAll('img'));
-        
-        const allLoaded = images.map(img => {
-            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-            return new Promise(resolve => {
-                img.onload  = resolve;
-                img.onerror = resolve;
-            });
-        });
-
-        const timeout = new Promise(resolve => setTimeout(resolve, 1200));
-
-        Promise.all([Promise.all(allLoaded), timeout]).then(() => {
-            banner.classList.remove('is-loading');
-            banner.classList.add('banner-ready');
-        });
-    }
-}; 
-
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    window.initPromoTimer();
-} else {
-    document.addEventListener('DOMContentLoaded', window.initPromoTimer);
-}
+window.initPromoTimer();
 
 window.openBPFromPromo = function() {
     if (window.triggerHaptic) window.triggerHaptic();
