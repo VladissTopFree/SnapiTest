@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(4)";
+  const APP_VERSION = "v2.4.1(5)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4747,8 +4747,16 @@ window.rebuildStyle1Background = () => {
         ctx.drawImage(globalAssets.bpStar, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
-    if (globalAssets.bpPanelL) ctx.drawImage(globalAssets.bpPanelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
-    if (globalAssets.bpPanelR) ctx.drawImage(globalAssets.bpPanelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
+    if (globalAssets.bpPanelL) {
+        let ph = HEIGHT - 210;
+        let pw = globalAssets.bpPanelL.width * (ph / globalAssets.bpPanelL.height);
+        ctx.drawImage(globalAssets.bpPanelL, 14, 50, pw, ph);
+    }
+    if (globalAssets.bpPanelR) {
+        let ph = HEIGHT - 210;
+        let pw = globalAssets.bpPanelR.width * (ph / globalAssets.bpPanelR.height);
+        ctx.drawImage(globalAssets.bpPanelR, WIDTH - 14 - pw, 50, pw, ph);
+    }
     
     window.bpForegroundImage.src = c.toDataURL('image/png');
     window.bpForegroundImage.onload = () => {
@@ -9009,7 +9017,15 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
                 }
 
         document.getElementById('wizard-overlay').style.display = 'none';
-        window.openSizeOverlay();
+
+        let si = window.layerState.bpStyleIndex;
+        if (si === 2) {
+            window.openBPTestEditor();
+        } else if (si === 3) {
+            window.openBPStyle3Editor();
+        } else {
+            window.openSizeOverlay();
+        }
         
         btn.style.pointerEvents = 'auto';
         btn.innerHTML = originalText;
@@ -9250,8 +9266,16 @@ async function generateBrawlPassTest() {
         ctx.drawImage(star, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
-    if (panelL) ctx.drawImage(panelL, 14, 50, WIDTH * 0.28, HEIGHT - 210);
-    if (panelR) ctx.drawImage(panelR, WIDTH - 14 - WIDTH * 0.32, 50, WIDTH * 0.32, HEIGHT - 210);
+    if (panelL) {
+        let ph = HEIGHT - 210;
+        let pw = panelL.width * (ph / panelL.height);
+        ctx.drawImage(panelL, 14, 50, pw, ph);
+    }
+    if (panelR) {
+        let ph = HEIGHT - 210;
+        let pw = panelR.width * (ph / panelR.height);
+        ctx.drawImage(panelR, WIDTH - 14 - pw, 50, pw, ph);
+    }
 
     let cxL = (WIDTH * 0.39) - 16; 
     let cxR = (WIDTH * 0.589) - 16; 
@@ -10202,28 +10226,14 @@ document.getElementById('size-custom-h').addEventListener('blur', () => {
     document.getElementById('custom-h-wrap').classList.remove('focused');
 });
 
+// СТАЛО — стили 2 и 3 идут напрямую без size overlay:
 window.onSizeGenerateClick = function() {
     if (!window.selectedSizeW || !window.selectedSizeH) return;
     if (window.triggerHaptic) window.triggerHaptic();
-
-    // Сохраняем выбранный размер в layerState
     window.layerState.outputW = window.selectedSizeW;
     window.layerState.outputH = window.selectedSizeH;
-
     window.closeSizeOverlay();
-
-    // Запускаем нужный редактор в зависимости от режима
-    let styleIndex = window.layerState.bpStyleIndex;
-    if (styleIndex === 2) {
-        window.openBPTestEditor();
-    } else if (styleIndex === 3) {
-        window.openBPStyle3Editor();
-    } else if (styleIndex === 'dop') {
-        window.openBPDopEditor();
-    } else {
-        // style 1 — стандартный BP
-        generateBrawlPassTest();
-    }
+    window.openBPDopEditor();
 };
 
 // ─── АДАПТАЦИЯ CANVAS ПОД ВЫБРАННЫЙ РАЗМЕР ───────────────────────
