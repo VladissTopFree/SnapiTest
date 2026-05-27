@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(5)";
+  const APP_VERSION = "v2.4.1(6)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -9019,11 +9019,17 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
         document.getElementById('wizard-overlay').style.display = 'none';
 
         let si = window.layerState.bpStyleIndex;
+        // СТАЛО:
         if (si === 2) {
             window.openBPTestEditor();
         } else if (si === 3) {
+            window.layerState.outputW = 1280;
+            window.layerState.outputH = 720;
             window.openBPStyle3Editor();
+        } else if (si === 1) {
+            window.openSizeOverlay();
         } else {
+            // 'dop'
             window.openSizeOverlay();
         }
         
@@ -10226,14 +10232,20 @@ document.getElementById('size-custom-h').addEventListener('blur', () => {
     document.getElementById('custom-h-wrap').classList.remove('focused');
 });
 
-// СТАЛО — стили 2 и 3 идут напрямую без size overlay:
+// СТАЛО:
 window.onSizeGenerateClick = function() {
     if (!window.selectedSizeW || !window.selectedSizeH) return;
     if (window.triggerHaptic) window.triggerHaptic();
     window.layerState.outputW = window.selectedSizeW;
     window.layerState.outputH = window.selectedSizeH;
     window.closeSizeOverlay();
-    window.openBPDopEditor();
+    
+    let si = window.layerState.bpStyleIndex;
+    if (si === 1) {
+        generateBrawlPassTest();
+    } else {
+        window.openBPDopEditor();
+    }
 };
 
 // ─── АДАПТАЦИЯ CANVAS ПОД ВЫБРАННЫЙ РАЗМЕР ───────────────────────
