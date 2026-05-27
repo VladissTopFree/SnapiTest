@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(6)";
+  const APP_VERSION = "v2.4.1(7)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3185,70 +3185,65 @@ body.os-desktop #wizard-step3.dragover {
 
 <div id="size-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: var(--tg-viewport-stable-height, 100vh); background: var(--tg-theme-secondary-bg-color, #F2F2F7); z-index: 300; flex-direction: column; box-sizing: border-box; overflow-y: auto; -webkit-overflow-scrolling: touch;">
   <div style="max-width: 440px; margin: 0 auto; width: 100%; padding: var(--app-top-padding) 20px 120px 20px; box-sizing: border-box;">
-    
+
     <div style="font-size: 32px; font-weight: 700; color: var(--tg-theme-text-color, #000); margin-bottom: 8px;">Размер работы</div>
     <div style="font-size: 15px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-bottom: 28px; line-height: 1.35;">Выберите подходящий размер работы или настройте его сами, а сервис сам адаптирует под Вашу работу.</div>
 
-    <!-- Произвольный размер -->
-    <div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Произвольные размеры</div>
+    <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000); margin-bottom: 10px;">Произвольные размеры</div>
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 28px;">
       <div style="flex: 1; position: relative; background: var(--tg-theme-section-bg-color, #fff); border-radius: 14px; padding: 22px 14px 10px 14px; box-sizing: border-box; border: 1.5px solid transparent; transition: border-color 0.2s;" id="custom-w-wrap">
-        <div style="position: absolute; top: 7px; right: 12px; font-size: 11px; color: var(--tg-theme-subtitle-text-color, #8E8E93); font-weight: 500; pointer-events: none;">Ширина</div>
-        <input type="text" inputmode="numeric" id="size-custom-w" maxlength="5" placeholder="Введите ширину..." style="width: 100%; background: transparent; border: none; font-size: 15px; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.onCustomSizeInput();">
+        <div style="position: absolute; top: 7px; right: 12px; font-size: 11px; color: var(--tg-theme-text-color, #000); font-weight: 500; pointer-events: none;">Ширина</div>
+        <input type="text" inputmode="numeric" id="size-custom-w" maxlength="5" placeholder="px..." style="width: 100%; background: transparent; border: none; font-size: 15px; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.onCustomSizeInput();">
       </div>
-      <div style="font-size: 18px; color: var(--tg-theme-subtitle-text-color, #8E8E93); font-weight: 500; flex-shrink: 0;">X</div>
+      <div style="font-size: 18px; color: var(--tg-theme-subtitle-text-color, #8E8E93); font-weight: 500; flex-shrink: 0;">×</div>
       <div style="flex: 1; position: relative; background: var(--tg-theme-section-bg-color, #fff); border-radius: 14px; padding: 22px 14px 10px 14px; box-sizing: border-box; border: 1.5px solid transparent; transition: border-color 0.2s;" id="custom-h-wrap">
-        <div style="position: absolute; top: 7px; right: 12px; font-size: 11px; color: var(--tg-theme-subtitle-text-color, #8E8E93); font-weight: 500; pointer-events: none;">Высота</div>
-        <input type="text" inputmode="numeric" id="size-custom-h" maxlength="5" placeholder="Введите высоту..." style="width: 100%; background: transparent; border: none; font-size: 15px; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.onCustomSizeInput();">
+        <div style="position: absolute; top: 7px; right: 12px; font-size: 11px; color: var(--tg-theme-text-color, #000); font-weight: 500; pointer-events: none;">Высота</div>
+        <input type="text" inputmode="numeric" id="size-custom-h" maxlength="5" placeholder="px..." style="width: 100%; background: transparent; border: none; font-size: 15px; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.onCustomSizeInput();">
       </div>
     </div>
 
-    <!-- Шаблонные размеры -->
-    <div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Заготовленные размеры<br>(часто используемые)</div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" id="size-presets-grid">
-      
-      <!-- Playerok -->
+    <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000); margin-bottom: 12px;">Заготовленные размеры</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px;" id="size-presets-grid">
+
       <div class="size-preset-card" data-w="1280" data-h="960" onclick="window.selectSizePreset(this, 1280, 960)" style="background: var(--tg-theme-section-bg-color, #fff); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; border: 1.5px solid transparent; transition: border-color 0.2s, transform 0.1s; -webkit-tap-highlight-color: transparent;">
-        <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center;">
-          <span style="color: #fff; font-size: 22px; font-weight: 900; font-family: -apple-system, sans-serif;">PI</span>
+        <div style="width: 56px; height: 56px; border-radius: 14px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+          <img src="playerok_size.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentNode.innerHTML='<span style=\'font-size:20px;font-weight:900;color:#2563eb;\'>PI</span>'">
         </div>
-        <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000);">1280<br>x<br>960</div>
+        <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000); text-align: center; line-height: 1.3;">1280 × 960</div>
         <div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93);">Playerok</div>
       </div>
 
-      <!-- Telegram -->
       <div class="size-preset-card" data-w="1280" data-h="720" onclick="window.selectSizePreset(this, 1280, 720)" style="background: var(--tg-theme-section-bg-color, #fff); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; border: 1.5px solid transparent; transition: border-color 0.2s, transform 0.1s; -webkit-tap-highlight-color: transparent;">
-        <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, #3bc5f5, #2ca3d4); display: flex; align-items: center; justify-content: center;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.46.7-.92.44l-2.56-1.88-1.24 1.2c-.14.14-.26.26-.52.26l.18-2.6 4.72-4.26c.2-.18-.04-.28-.32-.1L7.9 14.6 5.38 13.8c-.56-.18-.58-.56.12-.82l8.9-3.42c.46-.18.86.1.72.84h.02z"/></svg>
+        <div style="width: 56px; height: 56px; border-radius: 14px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+          <img src="telegram_size.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentNode.innerHTML='<svg width=\'32\' height=\'32\' viewBox=\'0 0 24 24\' fill=\'#2ca3d4\'><path d=\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.46.7-.92.44l-2.56-1.88-1.24 1.2c-.14.14-.26.26-.52.26l.18-2.6 4.72-4.26c.2-.18-.04-.28-.32-.1L7.9 14.6 5.38 13.8c-.56-.18-.58-.56.12-.82l8.9-3.42c.46-.18.86.1.72.84h.02z\'/></svg>'">
         </div>
-        <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000);">1280<br>x<br>720</div>
+        <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000); text-align: center; line-height: 1.3;">1280 × 720</div>
         <div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93);">Telegram</div>
       </div>
 
-      <!-- Yoomarket -->
       <div class="size-preset-card" data-w="1620" data-h="1080" onclick="window.selectSizePreset(this, 1620, 1080)" style="background: var(--tg-theme-section-bg-color, #fff); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; border: 1.5px solid transparent; transition: border-color 0.2s, transform 0.1s; -webkit-tap-highlight-color: transparent;">
-        <div style="width: 56px; height: 56px; border-radius: 14px; background: #111; display: flex; align-items: center; justify-content: center;">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22L19.5 10H13L13 2Z" fill="#00e676" stroke="#00e676" stroke-width="0.5"/></svg>
+        <div style="width: 56px; height: 56px; border-radius: 14px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+          <img src="yoomarket_size.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentNode.innerHTML='<svg width=\'28\' height=\'28\' viewBox=\'0 0 24 24\' fill=\'none\'><path d=\'M13 2L4.5 13.5H11L10 22L19.5 10H13L13 2Z\' fill=\'#00e676\' stroke=\'#00e676\' stroke-width=\'0.5\'/></svg>'">
         </div>
-        <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000);">1620<br>x<br>1080</div>
+        <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000); text-align: center; line-height: 1.3;">1620 × 1080</div>
         <div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93);">Yoomarket</div>
       </div>
 
-      <!-- Квадрат -->
-      <div class="size-preset-card" data-w="800" data-h="800" onclick="window.selectSizePreset(this, 800, 800)" style="background: var(--tg-theme-section-bg-color, #fff); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; border: 1.5px solid transparent; transition: border-color 0.2s, transform 0.1s; -webkit-tap-highlight-color: transparent;">
-        <div style="width: 56px; height: 56px; border-radius: 14px; background: #e8f0fe; display: flex; align-items: center; justify-content: center;">
-          <div style="width: 32px; height: 32px; background: #7ba7f5; border-radius: 4px;"></div>
-        </div>
-        <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000);">800<br>x<br>800</div>
-        <div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93);">Квадрат</div>
-      </div>
-
     </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+      <div style="font-size: 15px; font-weight: 600; color: var(--tg-theme-text-color, #000);">Мои размеры</div>
+      <button id="add-custom-preset-btn" onclick="window.addCustomPreset()" style="background: #01a2ff1f; color: #01a2ff; border: none; border-radius: 12px; padding: 6px 14px; font-size: 14px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent;">+ Добавить</button>
+    </div>
+
+    <div id="custom-presets-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px;"></div>
+
+    <div id="custom-presets-empty" style="font-size: 14px; color: var(--tg-theme-subtitle-text-color, #8E8E93); text-align: center; padding: 16px 0; display: block;">Нет сохранённых размеров. Добавьте до 3 штук.</div>
+
   </div>
 
-  <!-- Кнопка -->
   <div class="bottom-fade-container">
-    <button id="size-generate-btn" class="ios-action-btn" style="margin: 0 auto; opacity: 0.4; pointer-events: none;" onclick="window.onSizeGenerateClick()">Сгенерировать</button>
+    <button id="size-generate-btn" class="ios-action-btn" style="margin: 0 auto; display: none;" onclick="window.onSizeGenerateClick()">Сгенерировать</button>
   </div>
 </div>
 <script>
@@ -6748,10 +6743,10 @@ function setupPersistentCanvas() {
     let scale = getHDScale();
         
     if (window.layerState.isBrawlPassMode) {
-        let outW = window.layerState.outputW || 1280;
-        let outH = window.layerState.outputH || 720;
-        persistentCanvas.width = outW * scale;
-        persistentCanvas.height = outH * scale;
+        const outW = window.layerState.outputW || 1280;
+        const outH = window.layerState.outputH || 720;
+        persistentCanvas.width = outW;
+        persistentCanvas.height = outH;
     } else {
         persistentCanvas.width = rawBgImage.width * scale;
         persistentCanvas.height = rawBgImage.height * scale;
@@ -9019,17 +9014,16 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
         document.getElementById('wizard-overlay').style.display = 'none';
 
         let si = window.layerState.bpStyleIndex;
-        // СТАЛО:
+
         if (si === 2) {
+            window.layerState.outputW = 1280;
+            window.layerState.outputH = 720;
             window.openBPTestEditor();
         } else if (si === 3) {
             window.layerState.outputW = 1280;
             window.layerState.outputH = 720;
             window.openBPStyle3Editor();
-        } else if (si === 1) {
-            window.openSizeOverlay();
         } else {
-            // 'dop'
             window.openSizeOverlay();
         }
         
@@ -10155,17 +10149,106 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.selectedSizeW = null;
 window.selectedSizeH = null;
+window._customPresets = JSON.parse(localStorage.getItem('Snapi_custom_presets') || '[]');
+
+window.saveCustomPresets = function() {
+    localStorage.setItem('Snapi_custom_presets', JSON.stringify(window._customPresets));
+};
+
+window.renderCustomPresets = function() {
+    const list = document.getElementById('custom-presets-list');
+    const empty = document.getElementById('custom-presets-empty');
+    const addBtn = document.getElementById('add-custom-preset-btn');
+    if (!list) return;
+
+    const presets = window._customPresets;
+    empty.style.display = presets.length === 0 ? 'block' : 'none';
+    addBtn.style.display = presets.length >= 3 ? 'none' : 'inline-block';
+
+    list.innerHTML = '';
+    presets.forEach((preset, idx) => {
+        const card = document.createElement('div');
+        card.className = 'size-preset-card';
+        card.id = `custom-preset-card-${idx}`;
+        card.style.cssText = `background: var(--tg-theme-section-bg-color, #fff); border-radius: 18px; padding: 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; border: 1.5px solid transparent; transition: border-color 0.2s, transform 0.1s, opacity 0.3s, filter 0.3s, max-height 0.35s; -webkit-tap-highlight-color: transparent; overflow: hidden; max-height: 200px;`;
+        card.setAttribute('data-w', preset.w);
+        card.setAttribute('data-h', preset.h);
+        card.onclick = () => window.selectSizePreset(card, preset.w, preset.h);
+
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        const avatarSrc = tgUser?.photo_url || '';
+        const initial = tgUser?.first_name ? tgUser.first_name.charAt(0).toUpperCase() : '?';
+
+        card.innerHTML = `
+            <div style="width: 56px; height: 56px; border-radius: 14px; overflow: hidden; flex-shrink: 0; background: linear-gradient(180deg, #619af7 0%, #467af9 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+                ${avatarSrc ? `<img src="${avatarSrc}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"><div style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:600;font-family:-apple-system,sans-serif;">${initial}</div>` : `<div style="color:#fff;font-size:22px;font-weight:600;font-family:-apple-system,sans-serif;">${initial}</div>`}
+                <div style="position:absolute;bottom:2px;right:2px;background:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#467af9;">${idx + 1}</div>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:16px;font-weight:600;color:var(--tg-theme-text-color,#000);">${preset.w} × ${preset.h}</div>
+                <div style="font-size:13px;color:#16a34a;background:#00ff591f;display:inline-block;padding:2px 10px;border-radius:8px;margin-top:4px;">Мой размер #${idx + 1}</div>
+            </div>
+            <div onclick="event.stopPropagation(); window.removeCustomPreset(${idx}, this.closest('.size-preset-card'))" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+                    <path d="M6 7V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V7M6 7H5M6 7H8M18 7H19M18 7H16M10 11V16M14 11V16M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7M8 7H16" stroke="var(--tg-theme-destructive-text-color, #ff3b30)" stroke-width="1.752" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        `;
+        list.appendChild(card);
+    });
+};
+
+window.addCustomPreset = function() {
+    if (window._customPresets.length >= 3) return;
+    const w = parseInt(document.getElementById('size-custom-w').value);
+    const h = parseInt(document.getElementById('size-custom-h').value);
+    if (!w || !h || w <= 0 || h <= 0) {
+        document.getElementById('custom-w-wrap').style.borderColor = 'var(--tg-theme-destructive-text-color, #ff3b30)';
+        document.getElementById('custom-h-wrap').style.borderColor = 'var(--tg-theme-destructive-text-color, #ff3b30)';
+        setTimeout(() => {
+            document.getElementById('custom-w-wrap').style.borderColor = '';
+            document.getElementById('custom-h-wrap').style.borderColor = '';
+        }, 1200);
+        return;
+    }
+    window._customPresets.push({ w, h });
+    window.saveCustomPresets();
+    document.getElementById('size-custom-w').value = '';
+    document.getElementById('size-custom-h').value = '';
+    window.selectedSizeW = null;
+    window.selectedSizeH = null;
+    window.updateSizeBtn();
+    window.renderCustomPresets();
+    if (window.triggerHaptic) window.triggerHaptic();
+};
+
+window.removeCustomPreset = function(idx, cardEl) {
+    if (window.triggerHaptic) window.triggerHaptic();
+    cardEl.style.opacity = '0';
+    cardEl.style.filter = 'blur(8px)';
+    cardEl.style.maxHeight = '0';
+    cardEl.style.padding = '0 16px';
+    cardEl.style.marginBottom = '0';
+    setTimeout(() => {
+        window._customPresets.splice(idx, 1);
+        window.saveCustomPresets();
+        if (window.selectedSizeW === window._customPresets[idx]?.w && window.selectedSizeH === window._customPresets[idx]?.h) {
+            window.selectedSizeW = null;
+            window.selectedSizeH = null;
+            window.updateSizeBtn();
+        }
+        window.renderCustomPresets();
+    }, 380);
+};
 
 window.openSizeOverlay = function() {
-    // Сбрасываем состояние
     window.selectedSizeW = null;
     window.selectedSizeH = null;
     document.getElementById('size-custom-w').value = '';
     document.getElementById('size-custom-h').value = '';
     document.querySelectorAll('.size-preset-card').forEach(c => c.classList.remove('selected'));
-    let btn = document.getElementById('size-generate-btn');
-    btn.style.opacity = '0.4';
-    btn.style.pointerEvents = 'none';
+    window.updateSizeBtn();
+    window.renderCustomPresets();
 
     document.getElementById('size-overlay').style.display = 'flex';
     window.scrollTo(0, 0);
@@ -10184,7 +10267,6 @@ window.selectSizePreset = function(el, w, h) {
     el.classList.add('selected');
     window.selectedSizeW = w;
     window.selectedSizeH = h;
-    // Очищаем произвольный ввод
     document.getElementById('size-custom-w').value = '';
     document.getElementById('size-custom-h').value = '';
     document.getElementById('custom-w-wrap').classList.remove('focused');
@@ -10193,10 +10275,9 @@ window.selectSizePreset = function(el, w, h) {
 };
 
 window.onCustomSizeInput = function() {
-    // При вводе произвольного — снимаем выбор пресета
     document.querySelectorAll('.size-preset-card').forEach(c => c.classList.remove('selected'));
-    let w = parseInt(document.getElementById('size-custom-w').value);
-    let h = parseInt(document.getElementById('size-custom-h').value);
+    const w = parseInt(document.getElementById('size-custom-w').value);
+    const h = parseInt(document.getElementById('size-custom-h').value);
     if (w > 0 && h > 0) {
         window.selectedSizeW = w;
         window.selectedSizeH = h;
@@ -10208,17 +10289,16 @@ window.onCustomSizeInput = function() {
 };
 
 window.updateSizeBtn = function() {
-    let btn = document.getElementById('size-generate-btn');
+    const btn = document.getElementById('size-generate-btn');
+    if (!btn) return;
     if (window.selectedSizeW && window.selectedSizeH) {
-        btn.style.opacity = '1';
-        btn.style.pointerEvents = 'auto';
+        btn.style.display = 'flex';
+        btn.style.animation = 'slideUpFade 0.3s ease-out forwards';
     } else {
-        btn.style.opacity = '0.4';
-        btn.style.pointerEvents = 'none';
+        btn.style.display = 'none';
     }
 };
 
-// Подсветка инпутов при фокусе
 document.getElementById('size-custom-w').addEventListener('focus', () => {
     document.getElementById('custom-w-wrap').classList.add('focused');
 });
@@ -10232,27 +10312,20 @@ document.getElementById('size-custom-h').addEventListener('blur', () => {
     document.getElementById('custom-h-wrap').classList.remove('focused');
 });
 
-// СТАЛО:
 window.onSizeGenerateClick = function() {
     if (!window.selectedSizeW || !window.selectedSizeH) return;
     if (window.triggerHaptic) window.triggerHaptic();
     window.layerState.outputW = window.selectedSizeW;
     window.layerState.outputH = window.selectedSizeH;
     window.closeSizeOverlay();
-    
-    let si = window.layerState.bpStyleIndex;
+
+    const si = window.layerState.bpStyleIndex;
     if (si === 1) {
         generateBrawlPassTest();
     } else {
         window.openBPDopEditor();
     }
 };
-
-// ─── АДАПТАЦИЯ CANVAS ПОД ВЫБРАННЫЙ РАЗМЕР ───────────────────────
-
-// Переопределяем setupPersistentCanvas чтобы учитывать outputW/outputH
-const _origSetupPersistentCanvas = setupPersistentCanvas;
-window._patchedSetup = true;
 
 </script>
 </body>
