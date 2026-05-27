@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(8)";
+  const APP_VERSION = "v2.4.1(9)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -33,6 +33,24 @@
 
   const BP_SEASON_CONFIG = {
       50: {
+          lineColor: '#00fff0', 
+          gradientLeft: ['#6aff0055', '#6aff0055'], 
+          gradientRight: ['#0037ff50', '#0037ff50'],
+          style2Brawlers: { // yes
+              brawler2: { x: 990, y: 12, scale: 0.3, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
+              brawler1: { x: 971, y: 386, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
+        
+
+          },
+          style1Brawlers: { // yes
+              brawler2: { x: 469, y: 512, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
+              brawler1: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
+          },
+          dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 566, y: 182, scale: 0.75, scaleX: 1.24, scaleY: 1, rot: 0, flipH: true },
+          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
+      },
+      49: {
           lineColor: '#b2beff', 
           gradientLeft: ['#90c4c486', '#90c4c486'], 
           gradientRight: ['#7084f4', '#7084f4'],
@@ -50,7 +68,7 @@
           dopBrawler1: { x: 566, y: 182, scale: 0.75, scaleX: 1.24, scaleY: 1, rot: 0, flipH: true },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
       },
-      49: {
+      48: {
           lineColor: '#ffa800', 
           gradientLeft: ['#ff5e00', '#ff5e00'], 
           gradientRight: ['#7b00d9', '#7b00d9'],
@@ -66,22 +84,6 @@
           dopBrawler1: { x: 618, y: 93, scale: 0.76, scaleX: 1, scaleY: 1.07, rot: 0, flipH: true },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
         },
-      48: {
-          lineColor: '#ff3700', 
-          gradientLeft: ['#c33b15da', '#c33b15da'], 
-          gradientRight: ['#006effcc', '#006effcc'],
-          style2Brawlers: { // yes
-              brawler1: { x: 1013, y: 276, scale: 0.39, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
-              brawler2: { x: 1057, y: -24, scale: 0.32, scaleX: 1, scaleY: 1, rot: 0 } 
-          },
-          style1Brawlers: { // yes
-              brawler2: { x: 688, y: 511, scale: 0.53, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler1: { x: 485, y: 511, scale: 0.64, flipH: true }  // Верхний (x: 1200*0.58-30)
-          },
-          dopBrawler: { x: 674, y: -1, scale: 1.07, scaleX: 0.53, scaleY: 1, rot: 0 },
-          dopBrawler1: { x: 613, y: -40, scale: 1, scaleX: 0.72, scaleY: 1, rot: 0, flipH: true },
-          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
-        }
   };
 
 </script>
@@ -1438,11 +1440,11 @@
     opacity: 1;
   }
 
-    .fankit-sheet {
+  .fankit-sheet {
     background: var(--tg-theme-secondary-bg-color, #F2F2F7);
     width: 100%;
     max-height: 91vh;
-    border-radius: 16px 16px 0 0;
+    border-radius: 21px 21px 0 0;
     padding: 0 0 40px 0; 
     display: flex;
     flex-direction: column;
@@ -1459,11 +1461,11 @@
   }
 
   .fankit-drag-pill {
-    width: 46px; 
-    height: 6px;
-    background: var(--tg-theme-subtitle-text-color);
+    width: 36px; 
+    height: 8px;
+    background: var(--tg-theme-subtitle-text-color, #8E8E93);
     border-radius: 6px;
-    margin: 6px auto 20px auto;
+    margin: 8px auto 20px auto;
   }
 
   .fankit-title {
@@ -1529,7 +1531,7 @@
   
   .fankit-rec-title {
     font-size: 11px;
-    font-weight: 500;
+    font-weight: 300;
     color: var(--tg-theme-subtitle-text-color, #8E8E93);
     text-transform: uppercase;
     margin-bottom: 10px;
@@ -2818,8 +2820,8 @@ body.os-desktop #wizard-step3.dragover {
                 <img src="demo_png50s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 7 мая.</div>
+                <div class="cat-name" style="width: 100%;">51 сезон</div>
+                <div class="cat-desc">Будущий сезон Brawl Pass.<br>Выйдет 7 мая.</div>
             </div>
          </div>
          
@@ -2831,8 +2833,8 @@ body.os-desktop #wizard-step3.dragover {
                 <img src="demo_png49s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">49 сезон</div>
-                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 2 апреля.</div>
+                <div class="cat-name" style="width: 100%;">50 сезон</div>
+                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 7 мая.</div>
             </div>
          </div>
 
@@ -2844,8 +2846,8 @@ body.os-desktop #wizard-step3.dragover {
                 <img src="demo_png48s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">48 сезон</div>
-                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 5 марта.</div>
+                <div class="cat-name" style="width: 100%;">49 сезон</div>
+                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 2 апреля.</div>
             </div>
          </div>
 
@@ -8420,9 +8422,9 @@ if (fankitGrid && fankitGrid.children.length === 0) {
     const recGrid = document.getElementById('fankit-rec-grid');
     
     const recBackgrounds = [
-        { src: 'bg/bg18_BP50.png', text: 'для 50 сезона BP' },
-        { src: 'bg/bg19_BP49.png', text: 'для 49 сезона BP' },
-        { src: 'bg/bg20_BP48.png', text: 'для 48 сезона BP' }
+        { src: 'bg/bg18_BP50.png', text: 'для 51 сезона BP' },
+        { src: 'bg/bg19_BP49.png', text: 'для 50 сезона BP' },
+        { src: 'bg/bg20_BP48.png', text: 'для 49 сезона BP' }
     ];
 
     const handleFankitSelection = (itemElement, imgSrc) => {
@@ -9089,7 +9091,6 @@ document.getElementById('dl-btn-actual-download').onclick = (e) => {
 
             let smallC = document.createElement('canvas');
             let ratio = persistentCanvas.height / persistentCanvas.width;
-            // Делаем ресайз под лимиты Telegram, чтобы файл не был слишком огромным
             smallC.width = Math.min(persistentCanvas.width, 2048);
             smallC.height = Math.round(smallC.width * ratio);
             let sCtx = smallC.getContext('2d');
@@ -10161,7 +10162,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ─── SIZE OVERLAY LOGIC ───────────────────────────────────────────
 
 window.selectedSizeW = null;
 window.selectedSizeH = null;
