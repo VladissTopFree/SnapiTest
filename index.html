@@ -11,7 +11,7 @@
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = false; 
+  const SHOW_PROMO_BANNER = true; 
   const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
@@ -1458,7 +1458,7 @@
   }
 
   #fankit-sheet {
-    height: calc(var(--tg-viewport-stable-height, 100vh) * 0.76);
+    height: 93%; 
   }
 
   #fankit-overlay.show .fankit-sheet {
@@ -9986,6 +9986,13 @@ setTimeout(() => { window.renderPromoBgStars(); }, 150);
 
 
 window.initPromoTimer = function() {
+
+    if (!SHOW_PROMO_BANNER) {
+        let bannerEl = document.getElementById('main-promo');
+        if (bannerEl) bannerEl.style.display = 'none';
+        return;
+    }
+
     const timerEl = document.getElementById('promo-timer');
     const container = document.getElementById('promo-timer-container');
     if (!timerEl || !container) return;
