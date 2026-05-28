@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(9)";
+  const APP_VERSION = "v2.4.1(10)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2821,7 +2821,7 @@ body.os-desktop #wizard-step3.dragover {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">51 сезон</div>
-                <div class="cat-desc">Будущий сезон Brawl Pass.<br>Выйдет 7 мая.</div>
+                <div class="cat-desc">Будущий сезон Brawl Pass.<br>Выйдет 4 июня.</div>
             </div>
          </div>
          
@@ -7150,12 +7150,54 @@ function drawScene() {
             }
 
             if (rawBgImage) {
+                const lineTopX = (809 + 27) * s;
+                const lineBottomX = (750 + 27) * s;
+                const halfH = H / 2;
+
                 ctx.save();
                 ctx.beginPath();
-                ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
+                ctx.moveTo(lineTopX, 0);
+                ctx.lineTo(W, 0);
+                ctx.lineTo(W, halfH - 8*s);
+                ctx.lineTo(lineBottomX + (lineTopX - lineBottomX) * 0.5, halfH - 8*s);
                 ctx.closePath();
                 ctx.clip();
                 ctx.drawImage(rawBgImage, 0, 0, W, H);
+
+                const gradL1 = ctx.createLinearGradient(lineTopX, 0, lineTopX + 80*s, 0);
+                gradL1.addColorStop(0, 'rgba(0,0,0,0.55)');
+                gradL1.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradL1;
+                ctx.fillRect(lineTopX, 0, 80*s, halfH - 8*s);
+
+                const gradT1 = ctx.createLinearGradient(0, 0, 0, 70*s);
+                gradT1.addColorStop(0, 'rgba(0,0,0,0.55)');
+                gradT1.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradT1;
+                ctx.fillRect(lineTopX, 0, W - lineTopX, 70*s);
+                ctx.restore();
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(lineBottomX, halfH + 8*s);
+                ctx.lineTo(W, halfH + 8*s);
+                ctx.lineTo(W, H);
+                ctx.lineTo(lineBottomX, H);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(rawBgImage, 0, 0, W, H);
+
+                const gradL2 = ctx.createLinearGradient(lineBottomX, 0, lineBottomX + 80*s, 0);
+                gradL2.addColorStop(0, 'rgba(0,0,0,0.55)');
+                gradL2.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradL2;
+                ctx.fillRect(lineBottomX, halfH + 8*s, 80*s, H - halfH - 8*s);
+
+                const gradT2 = ctx.createLinearGradient(0, halfH + 8*s, 0, halfH + 70*s);
+                gradT2.addColorStop(0, 'rgba(0,0,0,0.55)');
+                gradT2.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradT2;
+                ctx.fillRect(lineBottomX, halfH + 8*s, W - lineBottomX, 70*s);
                 ctx.restore();
             }
 
@@ -7317,12 +7359,12 @@ function drawScene() {
                 }
 
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; 
-                ctx.shadowOffsetX = 3 * s / baseScale; 
-                ctx.shadowOffsetY = -6 * s / baseScale;
+                ctx.shadowOffsetX = 1.5 * s / baseScale; 
+                ctx.shadowOffsetY = -3 * s / baseScale;
                 ctx.drawImage(img, 0, 0, targetW, targetH);
 
-                ctx.shadowOffsetX = 2 * s / baseScale; 
-                ctx.shadowOffsetY = -4 * s / baseScale; 
+                ctx.shadowOffsetX = 1 * s / baseScale; 
+                ctx.shadowOffsetY = -2 * s / baseScale; 
                 ctx.drawImage(img, 0, 0, targetW, targetH);
 
                 ctx.restore();
