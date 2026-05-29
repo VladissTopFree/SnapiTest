@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(10)";
+  const APP_VERSION = "v2.4.1(11)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -37,17 +37,17 @@
           gradientLeft: ['#6aff0055', '#6aff0055'], 
           gradientRight: ['#0037ff50', '#0037ff50'],
           style2Brawlers: { // yes
-              brawler2: { x: 990, y: 12, scale: 0.3, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
-              brawler1: { x: 971, y: 386, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
+              brawler2: { x: 1029, y: 23, scale: 0.27, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
+              brawler1: { x: 941, y: 418, scale: 0.34, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
         
 
           },
           style1Brawlers: { // yes
-              brawler2: { x: 469, y: 512, scale: 0.59, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler1: { x: 663, y: 503, scale: 0.45, flipH: false }  // Верхний (x: 1200*0.58-30)
+              brawler2: { x: 484, y: 512, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
+              brawler1: { x: 703, y: 517, scale: 0.49, flipH: false }  // Верхний (x: 1200*0.58-30)
           },
-          dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
-          dopBrawler1: { x: 566, y: 182, scale: 0.75, scaleX: 1.24, scaleY: 1, rot: 0, flipH: true },
+          dopBrawler: { x: 569, y: 96, scale: 0.88, scaleX: 0.86, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 392, y: 76, scale: 0.89, scaleX: 1.37, scaleY: 1, rot: 0, flipH: true },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
       },
       49: {
@@ -2067,8 +2067,8 @@
 }
 
 .promo-action svg {
-    width: 16px;  
-    height: 16px;
+    width: 15px;  
+    height: 15px;
     fill: currentColor; 
     stroke: none; 
     margin-top: 2px;
@@ -2122,13 +2122,13 @@
 
 .promo-subtitle {
     color: #ffffff;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
 }
 
 .promo-action {
     color: #ffee00;
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -2366,14 +2366,22 @@ body.os-desktop #wizard-step3.dragover {
 <div id="ios-dashboard">
   <div class="ios-container">
 
-    <div style="display: flex; align-items: center; justify-content: flex-start; margin-left: 8px; margin-bottom: 6px; overflow: hidden;">
-      
-      <img src="AnimatedSticker-ezgif.com-gif-maker-2.gif" alt="" draggable="false" style="width: 28px; height: 28px; margin-right: 6px; object-fit: contain; margin-bottom: 3px; user-select: none; -webkit-user-drag: none;">
-      
-      <span id="snapi-app-title" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; color: var(--tg-theme-link-color, #3390ec); letter-spacing: 0.5px; display: inline-block;">
-        Snapi
-      </span>
-    </div>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; overflow: hidden;">
+  <div style="display: flex; align-items: center; margin-left: 8px;">
+    <img src="AnimatedSticker-ezgif.com-gif-maker-2.gif" alt="" draggable="false" style="width: 28px; height: 28px; margin-right: 6px; object-fit: contain; margin-bottom: 3px; user-select: none; -webkit-user-drag: none;">
+    <span id="snapi-app-title" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; color: var(--tg-theme-link-color, #3390ec); letter-spacing: 0.5px; display: inline-block;">
+      Snapi
+    </span>
+  </div>
+<div onclick="openSettings()" class="settings-header-btn" style="display: flex; align-items: center; gap: 7px; background: color-mix(in srgb, var(--tg-theme-destructive-text-color) 18%, transparent); border-radius: 20px; padding: 7px 14px 7px 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s, transform 0.15s; flex-shrink: 0;">
+  <svg width="18" height="18" viewBox="0 0 512 512" fill="var(--tg-theme-destructive-text-color)" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    <g transform="translate(0,512) scale(0.1,-0.1)" stroke="none">
+      <path d="M1644 5106 c-240 -55 -425 -231 -490 -467 -14 -49 -18 -96 -16 -199 2 -183 -21 -261 -104 -344 -84 -83 -160 -106 -349 -103 -158 2 -211 -9 -325 -69 -295 -154 -424 -497 -303 -804 43 -108 95 -177 217 -289 91 -84 133 -184 123 -298 -8 -99 -51 -177 -144 -260 -130 -117 -198 -230 -229 -384 -42 -209 21 -415 176 -570 81 -82 148 -124 250 -160 55 -19 93 -24 245 -28 168 -6 184 -8 237 -33 73 -34 142 -103 176 -176 26 -54 27 -65 28 -222 0 -176 8 -224 54 -325 130 -289 492 -445 790 -341 109 38 173 81 289 197 126 126 176 151 301 151 119 0 178 -27 275 -126 111 -113 160 -151 246 -190 100 -45 167 -60 274 -60 297 1 544 194 621 487 12 43 17 109 18 217 1 145 3 159 27 211 37 79 90 133 167 171 66 33 68 33 247 38 161 5 188 9 253 32 136 49 243 134 324 257 71 108 98 204 98 344 0 208 -54 332 -216 492 -55 55 -108 112 -117 126 -31 51 -50 139 -45 210 8 103 40 158 167 285 162 163 211 274 211 479 0 192 -52 319 -184 450 -143 143 -266 190 -486 187 -158 -1 -219 12 -297 64 -60 41 -118 120 -138 188 -10 32 -14 93 -14 189 1 162 -10 218 -68 336 -53 109 -169 224 -283 280 -277 135 -575 72 -788 -167 -47 -53 -79 -79 -130 -104 -61 -30 -74 -33 -162 -33 -132 0 -185 25 -301 145 -104 107 -186 162 -293 196 -100 32 -242 40 -332 20z m1136 -1572 c298 -62 581 -292 699 -571 65 -151 76 -211 76 -403 0 -153 -3 -185 -23 -255 -50 -173 -138 -322 -261 -446 -89 -89 -172 -147 -287 -201 -146 -68 -214 -82 -414 -82 -153 -1 -185 2 -255 22 -105 30 -264 108 -345 170 -424 322 -522 920 -221 1355 97 140 235 259 386 332 202 98 420 125 645 79z"/>
+    </g>
+  </svg>
+  <span style="font-size: 15px; font-weight: 600; color: var(--tg-theme-destructive-text-color);">Настройки</span>
+</div>
+</div>
 
     <div class="ios-card ios-profile" style="flex-direction: column; justify-content: center; padding: 20px; overflow: hidden; position: relative;">
       
@@ -2447,22 +2455,6 @@ body.os-desktop #wizard-step3.dragover {
       <div class="ios-menu-value" id="saved-count-val">0</div>
       <div class="ios-chevron">
         <svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-    </div>
-
-    <div class="ios-card-group">
-      <div class="ios-menu-item" onclick="openSettings()">
-        <div class="ios-icon-box" style="background: linear-gradient(180deg, #e06861 0%, #de4c3e 100%);">
-          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
-             <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="white" stroke="none">
-               <path d="M1644 5106 c-240 -55 -425 -231 -490 -467 -14 -49 -18 -96 -16 -199 2 -183 -21 -261 -104 -344 -84 -83 -160 -106 -349 -103 -158 2 -211 -9 -325 -69 -295 -154 -424 -497 -303 -804 43 -108 95 -177 217 -289 91 -84 133 -184 123 -298 -8 -99 -51 -177 -144 -260 -130 -117 -198 -230 -229 -384 -42 -209 21 -415 176 -570 81 -82 148 -124 250 -160 55 -19 93 -24 245 -28 168 -6 184 -8 237 -33 73 -34 142 -103 176 -176 26 -54 27 -65 28 -222 0 -176 8 -224 54 -325 130 -289 492 -445 790 -341 109 38 173 81 289 197 126 126 176 151 301 151 119 0 178 -27 275 -126 111 -113 160 -151 246 -190 100 -45 167 -60 274 -60 297 1 544 194 621 487 12 43 17 109 18 217 1 145 3 159 27 211 37 79 90 133 167 171 66 33 68 33 247 38 161 5 188 9 253 32 136 49 243 134 324 257 71 108 98 204 98 344 0 208 -54 332 -216 492 -55 55 -108 112 -117 126 -31 51 -50 139 -45 210 8 103 40 158 167 285 162 163 211 274 211 479 0 192 -52 319 -184 450 -143 143 -266 190 -486 187 -158 -1 -219 12 -297 64 -60 41 -118 120 -138 188 -10 32 -14 93 -14 189 1 162 -10 218 -68 336 -53 109 -169 224 -283 280 -277 135 -575 72 -788 -167 -47 -53 -79 -79 -130 -104 -61 -30 -74 -33 -162 -33 -132 0 -185 25 -301 145 -104 107 -186 162 -293 196 -100 32 -242 40 -332 20z m1136 -1572 c298 -62 581 -292 699 -571 65 -151 76 -211 76 -403 0 -153 -3 -185 -23 -255 -50 -173 -138 -322 -261 -446 -89 -89 -172 -147 -287 -201 -146 -68 -214 -82 -414 -82 -153 -1 -185 2 -255 22 -105 30 -264 108 -345 170 -424 322 -522 920 -221 1355 97 140 235 259 386 332 202 98 420 125 645 79z"/>
-             </g>
-           </svg>
-        </div>
-        <div class="ios-menu-text">Настройки</div>
-        <div class="ios-chevron">
-          <svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
       </div>
     </div>
 
@@ -2834,7 +2826,7 @@ body.os-desktop #wizard-step3.dragover {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">51 сезон</div>
-                <div class="cat-desc">Будущий сезон Brawl Pass.<br>Выйдет 7 мая.</div>
+                <div class="cat-desc">Будущий сезон Brawl Pass.<br>Выйдет 4 июня.</div>
             </div>
          </div>
          
@@ -4594,7 +4586,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.needsTextCacheUpdate = false;
