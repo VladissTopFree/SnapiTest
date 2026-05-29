@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(9)";
+  const APP_VERSION = "v2.4.1(10)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -1457,9 +1457,17 @@
     overflow-x: hidden; 
   }
 
-  #fankit-sheet {
-    height: 93%; 
-  }
+    #fankit-sheet {
+        height: 86%; 
+    }
+
+    body.os-non-apple #fankit-sheet {
+        height: 71%;
+    }
+
+    body.os-android #fankit-sheet {
+        height: 86%;
+    }
 
   #fankit-overlay.show .fankit-sheet {
     transform: translateY(0);
@@ -1513,19 +1521,19 @@
   }
 
     .fankit-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 8px;
-    overflow-y: auto;
-    
-    overflow-x: hidden; 
-    touch-action: pan-y; 
-    
-    -webkit-overflow-scrolling: touch;
-    padding: 5px 20px 20px 20px; 
-    height: 100%;
-    box-sizing: border-box;
-  }
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 8px;
+        overflow-y: auto;
+        overflow-x: hidden; 
+        touch-action: pan-y; 
+        -webkit-overflow-scrolling: touch;
+        padding: 5px 12px 20px 12px; 
+        height: 100%;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+    }
 
   .fankit-recommended-wrapper {
     background: var(--tg-theme-section-bg-color, #ffffff);
@@ -4586,7 +4594,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -7161,6 +7169,19 @@ function drawScene() {
                 ctx.closePath();
                 ctx.clip();
                 ctx.drawImage(rawBgImage, 0, 0, W, H);
+
+                const vigL = ctx.createLinearGradient(750*s, 0, 900*s, 0);
+                vigL.addColorStop(0, 'rgba(0,0,0,0.55)');
+                vigL.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = vigL;
+                ctx.fillRect(750*s, 0, 150*s, H);
+
+                const vigT = ctx.createLinearGradient(0, 0, 0, H * 0.22);
+                vigT.addColorStop(0, 'rgba(0,0,0,0.45)');
+                vigT.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = vigT;
+                ctx.fillRect(750*s, 0, W, H * 0.22);
+
                 ctx.restore();
             }
 
@@ -7381,9 +7402,13 @@ function drawScene() {
 
             ctx.save();
             ctx.beginPath();
-            ctx.rect(0, 0, W, H/2 - 8*s); 
+            ctx.moveTo(lineCx + 27*s, lineY);
+            ctx.lineTo(W, lineY);
+            ctx.lineTo(W, H * 0.75);
+            ctx.lineTo(lineCx + 27*s + (H * 0.75 - lineY) * Math.tan(7 * Math.PI / 180), H * 0.75);
+            ctx.closePath();
             ctx.clip();
-            drawBrawler(globalAssets[`brawler_${season}_2`], C.brawler2); 
+            drawBrawler(globalAssets[`brawler_${season}_2`], C.brawler2);
             ctx.restore();
             
             drawItem(globalAssets.style2BPP, C.bppIcon, 15);
@@ -7859,8 +7884,8 @@ function drawScene() {
                 persistentCtx.shadowColor = '#000';
                 persistentCtx.shadowBlur = 0;
                 
-                let strokeSize = 12 * (w / 3840); 
-                let diag = strokeSize * 0.75;
+                let strokeSize = 6 * (w / 3840);
+                let diag = strokeSize * 0.375;
                 
                 const offsets = [
                     [strokeSize, 0], [-strokeSize, 0], [0, strokeSize], [0, -strokeSize], 
