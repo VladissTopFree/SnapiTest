@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(12)";
+  const APP_VERSION = "v2.4.1(13)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3039,7 +3039,7 @@ body.os-desktop #wizard-step3.dragover {
     
 window.checkBPStyle4Ready = function() {
         let allFilled = true;
-        for (let i = 0; i <= 8; i++) {
+        for (let i = 0; i <= 10; i++) {
             let el = document.getElementById('ws4-p' + i);
             if (!el || el.value.trim() === '') { allFilled = false; break; }
         }
@@ -3131,6 +3131,14 @@ window.checkBPStyle4Ready = function() {
             <div style="position: relative; width: 100%; grid-column: span 2; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
                 <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Pro Pass</div>
                 <input type="text" inputmode="numeric" maxlength="4" id="ws4-p8" placeholder="Цена..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>9999)this.value='9999'; window.checkBPStyle4Ready();">
+            </div>
+            <div style="position: relative; width: 100%; grid-column: span 2; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Пин левый</div>
+                <input type="text" inputmode="numeric" maxlength="4" id="ws4-p9" placeholder="Цена..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>9999)this.value='9999'; window.checkBPStyle4Ready();">
+            </div>
+                        <div style="position: relative; width: 100%; grid-column: span 2; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Пин правый</div>
+                <input type="text" inputmode="numeric" maxlength="4" id="ws4-p10" placeholder="Цена..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>9999)this.value='9999'; window.checkBPStyle4Ready();">
             </div>
 
         </div>
@@ -7838,10 +7846,10 @@ else if (window.layerState.bpStyleIndex === 4) {
 
             // Свечения
             const lights4 = [
-                { x: 372, y: 292, scale: 1.3, alpha: 0.5, r: 200, blur: 100, col: '#00c6ff' },
-                { x: 1038, y: 215, scale: 1.0, alpha: 0.2, r: 200, blur: 100, col: '#00c6ff' },
-                { x: 1121, y: 609, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: '#00c6ff' },
-                { x: 851, y: 603, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: '#00c6ff' }
+                { x: 372, y: 292, scale: 1.3, alpha: 0.5, r: 200, blur: 100, col: '#ffffff' },
+                { x: 1038, y: 215, scale: 1.0, alpha: 0.2, r: 200, blur: 100, col: '#ffffff' },
+                { x: 1121, y: 609, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: '#ffffff' },
+                { x: 851, y: 603, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: '#ffffff' }
             ];
             lights4.forEach(l => {
                 ctx.save();
@@ -7955,7 +7963,11 @@ else if (window.layerState.bpStyleIndex === 4) {
             if (globalAssets.s4Gems) {
                 ctx.save();
                 ctx.shadowColor = 'rgba(0,0,0,1)'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 15*s; ctx.shadowBlur = 35*s;
-                ctx.drawImage(globalAssets.s4Gems, (380 - 500*1.4/2)*s, (277 - 550*1.4/2)*s, 500*1.4*s, 550*1.4*s);
+                ctx.save();
+                ctx.shadowColor = 'rgba(0,0,0,1)'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 15*s; ctx.shadowBlur = 35*s;
+                const scGems = Math.min(500*1.4/globalAssets.s4Gems.width, 550*1.4/globalAssets.s4Gems.height);
+                ctx.drawImage(globalAssets.s4Gems, (380 - globalAssets.s4Gems.width*scGems/2)*s, (277 - globalAssets.s4Gems.height*scGems/2)*s, globalAssets.s4Gems.width*scGems*s, globalAssets.s4Gems.height*scGems*s);
+                ctx.restore();
                 ctx.restore();
             }
 
@@ -8021,9 +8033,12 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.scale(scl, scl);
                 const rw = w*s, rh = h*s, rx = -rw/2, ry = -rh/2, rr = r*s;
                 // double outline white
+                ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6*s; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 7*s;
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
-                ctx.moveTo(rx-5*s+rr, ry-5*s); ctx.lineTo(rx+rw+5*s-rr, ry-5*s); ctx.arcTo(rx+rw+5*s, ry-5*s, rx+rw+5*s, ry-5*s+rr, rr+5*s);
+                ctx.moveTo(rx-5*s+rr, ry-5*s); 
+                ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+                ctx.lineTo(rx+rw+5*s-rr, ry-5*s); ctx.arcTo(rx+rw+5*s, ry-5*s, rx+rw+5*s, ry-5*s+rr, rr+5*s);
                 ctx.lineTo(rx+rw+5*s, ry+rh+5*s-rr); ctx.arcTo(rx+rw+5*s, ry+rh+5*s, rx+rw+5*s-rr, ry+rh+5*s, rr+5*s);
                 ctx.lineTo(rx-5*s+rr, ry+rh+5*s); ctx.arcTo(rx-5*s, ry+rh+5*s, rx-5*s, ry+rh+5*s-rr, rr+5*s);
                 ctx.lineTo(rx-5*s, ry-5*s+rr); ctx.arcTo(rx-5*s, ry-5*s, rx-5*s+rr, ry-5*s, rr+5*s);
@@ -9352,7 +9367,7 @@ document.getElementById('wizard-next-btn3-bp-style3').onclick = async () => {
 document.getElementById('wizard-next-btn3-bp-style4').onclick = async () => {
     window.triggerHaptic();
     window.layerState.style4Prices = [];
-    for (let i = 0; i <= 8; i++) {
+    for (let i = 0; i <= 10; i++) {
         let el = document.getElementById('ws4-p' + i);
         window.layerState.style4Prices[i] = el ? (el.value || "0") : "0";
     }
@@ -10201,7 +10216,7 @@ window.openBPStyle4Editor = function() {
         if (!globalAssets.s4BrawlerL)   globalAssets.s4BrawlerL   = await load('BP/brawler_s50_2.png');
         if (!globalAssets.s4BrawlerR)   globalAssets.s4BrawlerR   = await load('BP/brawler_s50_1.png');
 
-        if (!rawBgImage) rawBgImage = globalAssets.s4Bg;
+        rawBgImage = globalAssets.s4Bg;
 
         setupPersistentCanvas();
         renderLayerPanel(true);
