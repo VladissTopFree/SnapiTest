@@ -2377,7 +2377,7 @@ body.os-desktop #wizard-step3.dragover {
 
     <svg width="14" height="14" viewBox="0 0 512 512" fill="var(--tg-theme-destructive-text-color)" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-        fill="var(--tg-theme-destructive-text-color)" stroke="none">
+        fill="#000000" stroke="none">
         <path d="M2310 5104 c-89 -39 -124 -101 -139 -249 -6 -60 -14 -131 -17 -157
         l-6 -47 -51 -11 c-29 -6 -92 -22 -141 -36 -73 -22 -90 -24 -97 -13 -5 8 -48
         68 -96 133 -104 141 -133 161 -233 161 -64 0 -67 -1 -242 -103 -121 -70 -189
@@ -2666,24 +2666,25 @@ body.os-desktop #wizard-step3.dragover {
                 </div>
         </div>
 
-
-    <div class="cat-card" onclick="selectBPStyle(4)" style="border-bottom: none;">
+        <div class="cat-card" onclick="selectBPStyle(4)">
             <div class="cat-radio" id="bp-radio-4">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-                <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: #1a1a2e;">
+                <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: #0d1e3d; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <span style="color: #00c6ff; font-size: 10px; font-weight: bold; text-align: center; padding: 4px; line-height: 1.2;">Стиль #4</span>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
                     <div class="cat-name">Стиль #4</div>
-                    <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, кристаллы, пины и детали для улучшения работы.</div>
+                    <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, гемы, пины и детали сезона.</div>
                 </div>
         </div>
+
+    </div>
 
     <div class="bottom-fade-container">
         <button id="bp-style-btn-next" class="ios-action-btn">Далее</button>
     </div>
   </div>
-      </div>
 </div>
 
 <div id="bp-variant-overlay" style="display: none; width: 100%; height: var(--tg-viewport-stable-height, 100vh); overflow: hidden; background: var(--tg-theme-secondary-bg-color, #F2F2F7); flex-direction: column; box-sizing: border-box; position: relative;">
@@ -3035,9 +3036,23 @@ body.os-desktop #wizard-step3.dragover {
             else btn.classList.remove('show');
         }
     };
-    
-    setTimeout(window.checkBPStyle2Ready, 50);
+    
+window.checkBPStyle4Ready = function() {
+        let allFilled = true;
+        for (let i = 0; i <= 8; i++) {
+            let el = document.getElementById('ws4-p' + i);
+            if (!el || el.value.trim() === '') { allFilled = false; break; }
+        }
+        let btn = document.getElementById('wizard-next-btn3-bp-style4');
+        if (btn) {
+            if (allFilled) btn.classList.add('show');
+            else btn.classList.remove('show');
+        }
+    };
+
+    setTimeout(window.checkBPStyle2Ready, 50);
     setTimeout(window.checkBPStyle3Ready, 50);
+    setTimeout(window.checkBPStyle4Ready, 50);
 </script>
 
 <div id="wizard-step3-bp-style3" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
@@ -3118,62 +3133,11 @@ body.os-desktop #wizard-step3.dragover {
                 <input type="text" inputmode="numeric" maxlength="4" id="ws4-p8" placeholder="Цена..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>9999)this.value='9999'; window.checkBPStyle4Ready();">
             </div>
 
-            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Пин лев.</div>
-                <input type="text" inputmode="numeric" maxlength="4" id="ws4-p9" placeholder="Цена..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>9999)this.value='9999'; window.checkBPStyle4Ready();">
-            </div>
-
-            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
-                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Пин прав.</div>
-                <input type="text" inputmode="numeric" maxlength="4" id="ws4-p10" placeholder="Цена..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>9999)this.value='9999'; window.checkBPStyle4Ready();">
-            </div>
-
         </div>
     </div>
 
     <button id="wizard-next-btn3-bp-style4" class="ios-action-btn ios-btn-next">Далее</button>
 </div>
-
-<script>
-    window.checkBPStyle4Ready = function() {
-    let allFilled = true;
-    for (let i = 0; i <= 10; i++) {
-        let el = document.getElementById('ws4-p' + i);
-        if (!el || el.value.trim() === '') { allFilled = false; break; }
-    }
-    let btn = document.getElementById('wizard-next-btn3-bp-style4');
-    if (btn) {
-        if (allFilled) btn.classList.add('show');
-        else btn.classList.remove('show');
-    }
-};
-setTimeout(window.checkBPStyle4Ready, 50);
-
-document.getElementById('wizard-next-btn3-bp-style4').onclick = async () => {
-    window.triggerHaptic();
-    window.layerState.style4Prices = [];
-    for (let i = 0; i <= 10; i++) {
-        let el = document.getElementById('ws4-p' + i);
-        window.layerState.style4Prices[i] = el ? (el.value || "0") : "0";
-    }
-    let currentStep = document.getElementById('wizard-step3-bp-style4');
-    let targetStep4 = document.getElementById('wizard-step4-bp');
-    let progStep3 = document.getElementById('prog-step3');
-    let progStep4 = document.getElementById('prog-step4');
-    let progLine3 = document.getElementById('prog-line3');
-
-    currentStep.classList.add('fade-out');
-    setTimeout(() => {
-        currentStep.classList.remove('active', 'fade-out');
-        targetStep4.classList.add('active');
-        progStep3.classList.remove('active');
-        progStep3.classList.add('small');
-        progLine3.classList.add('active');
-        progStep4.classList.remove('small');
-        progStep4.classList.add('active');
-    }, 300);
-};
-</script>
 
 <div id="wizard-step3-bp-dop" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
     <div class="ios-wizard-title">Создание Brawl Pass</div>
@@ -3977,7 +3941,8 @@ window.selectBPStyle = function(styleId) {
     window.triggerHaptic();
 
     for (let i = 1; i <= 4; i++) {
-        document.getElementById(`bp-radio-${i}`).classList.remove('checked');
+        let el = document.getElementById(`bp-radio-${i}`);
+        if (el) el.classList.remove('checked');
     }
     document.getElementById(`bp-radio-${styleId}`).classList.add('checked');
     document.getElementById('bp-style-btn-next').classList.add('show');
@@ -4120,13 +4085,13 @@ document.getElementById('bp-variant-btn-next').addEventListener('click', functio
     wizardMode = 'bp'; 
     
     window.layerState.bpStyleIndex = 'dop';
-    window.layerState.bpVariantIndex = selectedBPVariant;
+    window.layerState.bpVariantIndex = selectedBPVariant;
 
     let variantBadge = "dop #1";
     if (selectedBPVariant === 2) variantBadge = "dop #2";
     if (selectedBPVariant === 3) variantBadge = "dop #3";
     if (selectedBPVariant === 4) variantBadge = "dop #4";
-    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">${variantBadge}</span></span>`;
+    let bpTitleHtml = `Создание Brawl <span style="white-space: nowrap;">Pass <span class="bp-style-badge">${variantBadge}</span></span>`;
 
     let labelEl = document.getElementById('wizard-dop-price-label');
     if (labelEl) {
@@ -4191,6 +4156,9 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     
     let step3bpStyle3 = document.querySelector('#wizard-step3-bp-style3 .ios-wizard-title');
     if(step3bpStyle3) step3bpStyle3.innerHTML = bpTitleHtml;
+
+    let step3bpStyle4 = document.querySelector('#wizard-step3-bp-style4 .ios-wizard-title');
+    if(step3bpStyle4) step3bpStyle4.innerHTML = bpTitleHtml;
     
     let step4bp = document.querySelector('#wizard-step4-bp .ios-wizard-title');
     if(step4bp) step4bp.innerHTML = bpTitleHtml;
@@ -4214,11 +4182,6 @@ document.getElementById('bp-style-btn-next').addEventListener('click', function(
     document.getElementById('prog-step3').style.display = 'flex';
     document.getElementById('prog-line3').style.display = 'block';
     document.getElementById('prog-step4').style.display = 'flex';
-
-    if (selectedBPStyle === 4) {
-        let s4step = document.querySelector('#wizard-step3-bp-style4 .ios-wizard-subtitle');
-        if (s4step) s4step.innerText = 'Цены. Укажите нужные значения.';
-    }
 
     document.getElementById('wizard-overlay').style.display = 'flex';
     window.scrollTo(0,0);
@@ -5196,6 +5159,18 @@ if (window.layerState.isBrawlPassMode) {
                     <input type="range" class="ios-slider" min="-400" max="400" step="1" value="${txtY}" oninput="document.getElementById('v3-txty').innerText=this.value; updateBrawlerParams('s3TextY', this.value)">
                 </div>`;
             }
+
+            } else if (window.layerState.bpStyleIndex === 4) {
+            const labels4 = ["30 gems","80 gems","170 gems","360 gems","950 gems","2000 gems","Brawl Pass","Brawl Pass+","Pro Pass"];
+            for (let i = 0; i <= 8; i++) {
+                let val = (window.layerState.style4Prices && window.layerState.style4Prices[i]) ? window.layerState.style4Prices[i] : "";
+                html += `
+                <div class="ios-layer-row" ${i===8 ? 'style="border-bottom:none;"' : ''}>
+                    <div class="ios-layer-name" style="font-size:15px;">${labels4[i]}</div>
+                    <div class="ios-layer-action-text">значение</div>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="4" oninput="updateS4PriceLayer(${i}, this)" style="width:65px;">
+                </div>`;
+            }
             } else {
             if (window.layerState.bpStyleIndex === 'dop') {
                 let panelLabel = "Brawl Pass";
@@ -5719,20 +5694,7 @@ if (window.layerState.isBrawlPassMode) {
                     {x: -158, y: 125, scale: 0.54, skewX: -12}, {x: 332, y: -27, scale: 0.72, skewX: -12},
                     {x: 887, y: 7, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.21, skewX: -12}
                 ];
-            } 
-            else if (window.layerState.bpStyleIndex === 4) {
-            const labels4 = ["30 gems","80 gems","170 gems","360 gems","950 gems","2000 gems","Brawl Pass","BP Plus","Pro Pass","Пин лев.","Пин прав."];
-            for (let i = 0; i <= 10; i++) {
-                let val = (window.layerState.style4Prices && window.layerState.style4Prices[i]) ? window.layerState.style4Prices[i] : "";
-                html += `
-                <div class="ios-layer-row" ${i===10 ? 'style="border-bottom:none;"' : ''}>
-                    <div class="ios-layer-name" style="font-size:15px;">${labels4[i]}</div>
-                    <div class="ios-layer-action-text">значение</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="4" oninput="updateS4PriceLayer(${i}, this)" style="width:65px;">
-                </div>`;
-            }
-        }
-            else { 
+            } else { 
                 window.layerState.customWatermarks = [
                     { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
                     { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
@@ -7210,277 +7172,6 @@ function calculateLayoutTarget() {
   startAnimation();
 }
 
-function drawBPStyle4(ctx, W, H) {
-    const s = Math.min(W / 1280, H / 720);
-    const p = window.layerState.style4Prices || [];
-    const fmt = (i, suffix) => {
-        let v = p[i] !== undefined ? p[i] : "0";
-        return v + (suffix || " ₽");
-    };
-
-    // --- ФОН ---
-    if (rawBgImage) ctx.drawImage(rawBgImage, 0, 0, W, H);
-
-    // splitBg черный (левая часть)
-    ctx.save();
-    ctx.globalAlpha = 0.3;
-    ctx.translate(751*s, 360*s);
-    ctx.scale(1.4, 1.4);
-    ctx.beginPath();
-    ctx.moveTo(-640*s, -360*s);
-    ctx.lineTo(93*s, -360*s);
-    ctx.lineTo(5*s, 17*s);
-    ctx.lineTo(53*s, -12*s);
-    ctx.lineTo(-6*s, 360*s);
-    ctx.lineTo(-640*s, 360*s);
-    ctx.closePath();
-    ctx.fillStyle = "#000000";
-    ctx.fill();
-    ctx.restore();
-
-    // splitBg белый (правая часть)
-    ctx.save();
-    ctx.globalAlpha = 0.05;
-    ctx.translate(751*s, 360*s);
-    ctx.scale(1.4, 1.4);
-    ctx.beginPath();
-    ctx.moveTo(93*s, -360*s);
-    ctx.lineTo(640*s, -360*s);
-    ctx.lineTo(640*s, 360*s);
-    ctx.lineTo(-6*s, 360*s);
-    ctx.lineTo(53*s, -12*s);
-    ctx.lineTo(5*s, 17*s);
-    ctx.closePath();
-    ctx.fillStyle = "#ffffff";
-    ctx.fill();
-    ctx.restore();
-
-    // Свечения
-    const lights = [
-        { x: 372, y: 292, scale: 1.3, alpha: 0.5, color: "#00c6ff" },
-        { x: 1038, y: 215, scale: 1.0, alpha: 0.2, color: "#00c6ff" },
-        { x: 1121, y: 609, scale: 0.65, alpha: 0.8, color: "#00c6ff" },
-        { x: 851, y: 603, scale: 0.65, alpha: 0.8, color: "#00c6ff" },
-    ];
-    lights.forEach(l => {
-        const r = parseInt(l.color.slice(1,3),16),
-              g = parseInt(l.color.slice(3,5),16),
-              b = parseInt(l.color.slice(5,7),16);
-        const radius = (200 + 100) * l.scale * s;
-        const coreR = Math.max(0, (200 - 100)) * l.scale * s;
-        ctx.save();
-        ctx.globalCompositeOperation = "screen";
-        ctx.globalAlpha = l.alpha;
-        const grd = ctx.createRadialGradient(l.x*s, l.y*s, coreR, l.x*s, l.y*s, radius);
-        grd.addColorStop(0, `rgba(${r},${g},${b},1)`);
-        grd.addColorStop(0.5, `rgba(${r},${g},${b},0.3)`);
-        grd.addColorStop(1, `rgba(${r},${g},${b},0)`);
-        ctx.fillStyle = grd;
-        ctx.beginPath();
-        ctx.arc(l.x*s, l.y*s, radius, 0, Math.PI*2);
-        ctx.fill();
-        ctx.restore();
-    });
-
-    // Points overlay
-    if (window.layerState.pointsVisible !== false && globalAssets.s4Points) {
-        ctx.save();
-        ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
-        ctx.drawImage(globalAssets.s4Points, 0, 0, W, H);
-        ctx.restore();
-    }
-
-    // Stars overlay
-    if (window.layerState.starsVisible !== false && globalAssets.s4Stars) {
-        ctx.save();
-        ctx.globalCompositeOperation = "overlay";
-        ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
-        ctx.drawImage(globalAssets.s4Stars, 0, 0, W, H);
-        ctx.restore();
-    }
-
-    // Watermarks
-    if (window.layerState.watermarksVisible !== false && window.layerState.textValue) {
-        drawBPWatermarks(ctx, window.layerState.textValue, W, H,
-            window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.8);
-    }
-
-    const drawImgCentered = (img, cx, cy, targetW, targetH) => {
-        if (!img) return;
-        const sc = Math.min(targetW / img.width, targetH / img.height);
-        const dw = img.width * sc, dh = img.height * sc;
-        ctx.drawImage(img, cx - dw/2, cy - dh/2, dw, dh);
-    };
-
-    const drawShadowedImg = (img, cx, cy, targetW, targetH, shadowCol, sx, sy, sblur) => {
-        if (!img) return;
-        ctx.save();
-        ctx.shadowColor = shadowCol; ctx.shadowOffsetX = sx*s; ctx.shadowOffsetY = sy*s; ctx.shadowBlur = sblur*s;
-        drawImgCentered(img, cx, cy, targetW, targetH);
-        ctx.restore();
-    };
-
-    // --- ПЕРСОНАЖИ ---
-    let season = window.layerState.bpSeason || 50;
-    const drawS4Brawler = (img, cx, cy, w, h) => {
-        if (!img) return;
-        ctx.save();
-        ctx.shadowColor = "rgba(255,255,255,1)"; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
-        drawImgCentered(img, cx, cy, w, h);
-        ctx.restore();
-    };
-
-    // brawlerRight: x:1127, y:580, w:450, h:450
-    drawS4Brawler(globalAssets[`brawler_${season}_1`], 1127*s, 580*s, 450*s, 450*s);
-    // brawlerLeft: x:846, y:611, w:400, h:400
-    drawS4Brawler(globalAssets[`brawler_${season}_2`], 846*s, 611*s, 400*s, 400*s);
-
-    // --- ГЕМЫ ---
-    drawShadowedImg(globalAssets.s4Gems, 380*s, 277*s, 500*s*1.4, 550*s*1.4, "rgba(0,0,0,1)", 0, 15, 35);
-
-    // --- ЦЕНЫ КРИСТАЛЛОВ (extra_price) ---
-    // Позиции из 1-го кода
-    const gemPrices = [
-        { x: 163, y: 237, idx: 0 },  // 30 gems
-        { x: 381, y: 237, idx: 1 },  // 80 gems
-        { x: 607, y: 236, idx: 2 },  // 170 gems
-        { x: 142, y: 488, idx: 3 },  // 360 gems
-        { x: 365, y: 488, idx: 4 },  // 950 gems
-        { x: 589, y: 488, idx: 5 },  // 2000 gems
-    ];
-    gemPrices.forEach(gp => {
-        drawS4Text(ctx, fmt(gp.idx), gp.x*s, gp.y*s, 34*s, "#ffffff", "#000000", 6*s);
-    });
-
-    // --- ПИНЫ ---
-    // pinLeft_box: x:251, y:585, scale:1.25
-    drawS4RoundRect(ctx, (251-140*1.25/2)*s, (585-50*1.25/2)*s, 140*1.25*s, 50*1.25*s, 25*s, "rgba(0,0,0,0.4)");
-    drawImgCentered(globalAssets.s4PinLeft, 158*s, 587*s, 90*1.05*s, 90*1.05*s);
-    drawS4Text(ctx, fmt(9), 265*s, 584*s, 24*1.3*s, "#ffffff", "#000000", 5*s);
-
-    // pinRight_box: x:527, y:587, scale:1.25
-    drawS4RoundRect(ctx, (527-140*1.25/2)*s, (587-50*1.25/2)*s, 140*1.25*s, 50*1.25*s, 25*s, "rgba(0,0,0,0.4)");
-    drawImgCentered(globalAssets.s4PinRight, 429*s, 586*s, 90*1.3*s, 90*1.3*s);
-    drawS4Text(ctx, fmt(10), 539*s, 588*s, 24*1.25*s, "#ffffff", "#000000", 5*s);
-
-    // --- BP (желтый) ---
-drawS4RotatedBox(ctx, 1070*s, 89*s, 180*1.3*s, 60*1.3*s, 15*s, 1,
-    "#fbeb4e", "#f0953a", 0.7, { col:"rgba(0,0,0,0.5)", x:0, y:7*s, blur:6*s });
-// иконки рисуются отдельно без drawS4RotatedBox — они уже без обводки, всё ок
-    drawS4Text(ctx, fmt(6), 1076*s, 90*s, 34*1.3*s, "#ffffff", "#000000", 6*s);
-
-    // --- BP+ (синий) ---
-    drawS4RotatedBox(ctx, 1071*s, 210*s, 180*1.25*s, 60*1.25*s, 15*s, 1,
-        "#d8f7fe", "#5da7d6", 0.7, { col:"rgba(0,0,0,0.5)", x:0, y:7*s, blur:6*s });
-    drawImgCentered(globalAssets.s4PassBlue, 897*s, 209*s, 170*s, 100*s);
-    drawS4Text(ctx, fmt(7), 1080*s, 211*s, 34*1.25*s, "#ffffff", "#000000", 6*s);
-
-    // --- PRO (зеленый) ---
-    drawS4RotatedBox(ctx, 1019*s, 325*s, 180*1.3*s, 60*1.3*s, 15*s, 1,
-        "#89fc4d", "#50a830", 0.7, { col:"rgba(0,0,0,0.5)", x:0, y:7*s, blur:6*s });
-    drawImgCentered(globalAssets.s4PassPro, 893*s, 322*s, 140*0.9*s, 140*0.9*s);
-    drawS4Text(ctx, fmt(8), 1026*s, 326*s, 34*1.3*s, "#ffffff", "#000000", 6*s);
-
-    // --- НИК ---
-    if (cachedTextCanvas && window.layerState.textVisible) {
-        ctx.save();
-        ctx.drawImage(cachedTextCanvas, 0, 0);
-        ctx.restore();
-    }
-}
-
-function drawS4Text(ctx, text, x, y, fontSize, fillCol, strokeCol, strokeW) {
-    const style = TEXT_STYLES[window.layerState.textStyleIndex !== undefined ? window.layerState.textStyleIndex : 0];
-    ctx.save();
-    ctx.font = `${fontSize}px '${window.layerState.textFont || 'LilitaOneRus'}', sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.lineJoin = "round"; ctx.miterLimit = 2;
-    const shadowDepth = Math.max(1, Math.floor(fontSize * 0.08));
-    if (style.outer2) {
-        ctx.lineWidth = fontSize * 0.18; ctx.strokeStyle = style.outer2;
-        for (let i = shadowDepth; i >= 0; i--) ctx.strokeText(text, x, y + i);
-        ctx.lineWidth = fontSize * 0.12; ctx.strokeStyle = style.outer;
-        for (let i = shadowDepth; i >= 0; i--) ctx.strokeText(text, x, y + i);
-        ctx.lineWidth = fontSize * 0.0154; ctx.strokeStyle = style.shadow;
-        for (let i = shadowDepth; i >= 0; i--) ctx.strokeText(text, x, y + i);
-    } else if (style.outer) {
-        ctx.lineWidth = fontSize * 0.12; ctx.strokeStyle = style.shadow;
-        ctx.strokeText(text, x, y + shadowDepth);
-        ctx.lineWidth = fontSize * 0.12; ctx.strokeStyle = style.outer;
-        ctx.strokeText(text, x, y);
-    } else {
-        ctx.lineWidth = fontSize * 0.12; ctx.strokeStyle = style.shadow || '#000000';
-        for (let i = shadowDepth; i >= 0; i--) ctx.strokeText(text, x, y + i);
-    }
-    const grad = ctx.createLinearGradient(x, y - fontSize * 0.4, x, y + fontSize * 0.4);
-    grad.addColorStop(0, style.grad[0]);
-    grad.addColorStop(style.isClassic ? 0.48 : 0.52, style.grad[1] || style.grad[0]);
-    grad.addColorStop(1, style.grad[2] || style.grad[0]);
-    ctx.fillStyle = grad;
-    ctx.fillText(text, x, y);
-    if (style.inner) {
-        ctx.globalCompositeOperation = "source-atop";
-        ctx.lineWidth = fontSize * 0.06;
-        ctx.strokeStyle = style.isClassic ? "#fcff00" : style.inner;
-        ctx.strokeText(text, x, y);
-        ctx.globalCompositeOperation = "source-over";
-    }
-    ctx.restore();
-}
-
-function drawS4RoundRect(ctx, x, y, w, h, r, fillStyle) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y); ctx.arcTo(x+w, y, x+w, y+r, r);
-    ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
-    ctx.lineTo(x+r, y+h); ctx.arcTo(x, y+h, x, y+h-r, r);
-    ctx.lineTo(x, y+r); ctx.arcTo(x, y, x+r, y, r); ctx.closePath();
-    ctx.fillStyle = fillStyle; ctx.fill();
-    ctx.restore();
-}
-
-function drawS4RotatedBox(ctx, cx, cy, w, h, r, rot, bgColor, shadowInCol, shadowInAlpha, dropShadow) {
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(rot * Math.PI / 180);
-    if (dropShadow) {
-        ctx.shadowColor = dropShadow.col; ctx.shadowOffsetY = dropShadow.y; ctx.shadowBlur = dropShadow.blur;
-    }
-    // double outline
-    const drawRR = (dx, dy, dw, dh, dr, col) => {
-        ctx.beginPath();
-        ctx.moveTo(dx+dr, dy); ctx.lineTo(dx+dw-dr, dy); ctx.arcTo(dx+dw, dy, dx+dw, dy+dr, dr);
-        ctx.lineTo(dx+dw, dy+dh-dr); ctx.arcTo(dx+dw, dy+dh, dx+dw-dr, dy+dh, dr);
-        ctx.lineTo(dx+dr, dy+dh); ctx.arcTo(dx, dy+dh, dx, dy+dh-dr, dr);
-        ctx.lineTo(dx, dy+dr); ctx.arcTo(dx, dy, dx+dr, dy, dr); ctx.closePath();
-        ctx.fillStyle = col; ctx.fill();
-    };
-    if (!noOutline) {
-        drawRR(-w/2-5, -h/2-5, w+10, h+10, r+5, "#ffffff");
-        ctx.shadowColor = "transparent";
-        drawRR(-w/2-3, -h/2-3, w+6, h+6, r+3, "#000000");
-    } else {
-        ctx.shadowColor = "transparent";
-    }
-    drawRR(-w/2, -h/2, w, h, r, bgColor);
-    // inner shadow
-    if (shadowInAlpha > 0) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(-w/2+r, -h/2); ctx.lineTo(-w/2+w-r, -h/2); ctx.arcTo(-w/2+w, -h/2, -w/2+w, -h/2+r, r);
-        ctx.lineTo(-w/2+w, -h/2+h-r); ctx.arcTo(-w/2+w, -h/2+h, -w/2+w-r, -h/2+h, r);
-        ctx.lineTo(-w/2+r, -h/2+h); ctx.arcTo(-w/2, -h/2+h, -w/2, -h/2+h-r, r);
-        ctx.lineTo(-w/2, -h/2+r); ctx.arcTo(-w/2, -h/2, -w/2+r, -h/2, r); ctx.closePath();
-        ctx.clip();
-        ctx.shadowColor = shadowInCol; ctx.shadowBlur = 0; ctx.shadowOffsetY = -5;
-        ctx.globalAlpha = shadowInAlpha;
-        ctx.fillStyle = "#000000"; ctx.fill("evenodd");
-        ctx.restore();
-    }
-    ctx.restore();
-}
-
 function startAnimation() {
    if (!animReq) animReq = requestAnimationFrame(renderLoop);
 }
@@ -8100,16 +7791,326 @@ function drawScene() {
             return; 
         }
 
-        else if (window.layerState.bpStyleIndex === 4) {
-            drawBPStyle4(persistentCtx, persistentCanvas.width, persistentCanvas.height);
+else if (window.layerState.bpStyleIndex === 4) {
+            const ctx = persistentCtx;
+            const W = persistentCanvas.width;
+            const H = persistentCanvas.height;
+            const s = Math.min(W / 1280, H / 720);
+
+            // Фон
+            if (rawBgImage) {
+                ctx.drawImage(rawBgImage, 0, 0, W, H);
+            }
+
+            // splitBg черный (левая часть)
+            ctx.save();
+            ctx.translate(751*s, 360*s);
+            ctx.scale(1.4, 1.4);
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            ctx.moveTo(-640*s, -360*s);
+            ctx.lineTo(93*s, -360*s);
+            ctx.lineTo(5*s, 17*s);
+            ctx.lineTo(53*s, -12*s);
+            ctx.lineTo(-6*s, 360*s);
+            ctx.lineTo(-640*s, 360*s);
+            ctx.closePath();
+            ctx.fillStyle = '#000000';
+            ctx.fill();
+            ctx.restore();
+
+            // splitBg белый (правая часть)
+            ctx.save();
+            ctx.translate(751*s, 360*s);
+            ctx.scale(1.4, 1.4);
+            ctx.globalAlpha = 0.05;
+            ctx.beginPath();
+            ctx.moveTo(93*s, -360*s);
+            ctx.lineTo(640*s, -360*s);
+            ctx.lineTo(640*s, 360*s);
+            ctx.lineTo(-6*s, 360*s);
+            ctx.lineTo(53*s, -12*s);
+            ctx.lineTo(5*s, 17*s);
+            ctx.closePath();
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.restore();
+
+            // Свечения
+            const lights4 = [
+                { x: 372, y: 292, scale: 1.3, alpha: 0.5, r: 200, blur: 100, col: '#00c6ff' },
+                { x: 1038, y: 215, scale: 1.0, alpha: 0.2, r: 200, blur: 100, col: '#00c6ff' },
+                { x: 1121, y: 609, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: '#00c6ff' },
+                { x: 851, y: 603, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: '#00c6ff' }
+            ];
+            lights4.forEach(l => {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                ctx.globalAlpha = l.alpha;
+                ctx.translate(l.x*s, l.y*s);
+                ctx.scale(l.scale, l.scale);
+                const totalR = (l.r + l.blur) * s;
+                const coreR = Math.max(0, l.r - l.blur) * s;
+                let cR = parseInt(l.col.slice(1,3),16), cG = parseInt(l.col.slice(3,5),16), cB = parseInt(l.col.slice(5,7),16);
+                let grd = ctx.createRadialGradient(0,0,coreR,0,0,totalR);
+                grd.addColorStop(0, `rgba(${cR},${cG},${cB},1)`);
+                grd.addColorStop(0.5, `rgba(${cR},${cG},${cB},0.3)`);
+                grd.addColorStop(1, `rgba(${cR},${cG},${cB},0)`);
+                ctx.beginPath();
+                ctx.arc(0,0,totalR,0,Math.PI*2);
+                ctx.fillStyle = grd;
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // Points overlay
+            if (window.layerState.pointsVisible !== false && globalAssets.s4Points) {
+                ctx.save();
+                ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
+                ctx.drawImage(globalAssets.s4Points, 0, 0, W, H);
+                ctx.restore();
+            }
+
+            // Stars overlay
+            if (window.layerState.starsVisible !== false && globalAssets.s4Stars) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'overlay';
+                ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
+                ctx.drawImage(globalAssets.s4Stars, 0, 0, W, H);
+                ctx.restore();
+            }
+
+            // Ватермарки
+            if (window.layerState.watermarksVisible !== false) {
+                drawBPWatermarks(ctx, window.layerState.textValue || "SNAPI", W, H,
+                    window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.8);
+            }
+
+            const p4 = window.layerState.style4Prices || [];
+            const fmt4 = (i) => (p4[i] !== undefined && p4[i] !== "") ? p4[i] + " ₽" : "0 ₽";
+
+            // Вспомогательная функция рисования текста цены (стиль как в 1-м коде)
+            const drawS4PriceText = (txt, x, y, fontSize) => {
+                ctx.save();
+                ctx.font = `${fontSize}px 'Russo One', sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.miterLimit = 2;
+                ctx.lineJoin = 'round';
+                ctx.lineWidth = 6 * (W/1280);
+                ctx.strokeStyle = '#000000';
+                ctx.strokeText(txt, x*s, y*s);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(txt, x*s, y*s);
+                ctx.restore();
+            };
+
+            // Вспомогательная для иконок с double-outline
+            const drawS4Icon = (img, cx, cy, maxW, maxH) => {
+                if (!img) return;
+                const sc = Math.min(maxW / img.width, maxH / img.height);
+                const dw = img.width * sc * s;
+                const dh = img.height * sc * s;
+                ctx.save();
+                // white outline
+                ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 0.5;
+                for (let a = 0; a < Math.PI*2; a += Math.PI/4) {
+                    ctx.shadowOffsetX = Math.cos(a)*5; ctx.shadowOffsetY = Math.sin(a)*5;
+                    ctx.drawImage(img, cx*s - dw/2, cy*s - dh/2, dw, dh);
+                }
+                // black outline
+                ctx.shadowColor = '#000000'; ctx.shadowBlur = 0.5;
+                for (let a = 0; a < Math.PI*2; a += Math.PI/4) {
+                    ctx.shadowOffsetX = Math.cos(a)*3; ctx.shadowOffsetY = Math.sin(a)*3;
+                    ctx.drawImage(img, cx*s - dw/2, cy*s - dh/2, dw, dh);
+                }
+                ctx.shadowColor = 'transparent'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+                ctx.drawImage(img, cx*s - dw/2, cy*s - dh/2, dw, dh);
+                ctx.restore();
+            };
+
+            // Brawler правый (x:1127 y:580 w:450 h:450) — белая тень снизу
+            if (globalAssets.s4BrawlerR) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(255,255,255,1)';
+                ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
+                const sc = Math.min(450/globalAssets.s4BrawlerR.width, 450/globalAssets.s4BrawlerR.height);
+                const dw = globalAssets.s4BrawlerR.width*sc*s, dh = globalAssets.s4BrawlerR.height*sc*s;
+                ctx.drawImage(globalAssets.s4BrawlerR, 1127*s-dw/2, 580*s-dh/2, dw, dh);
+                ctx.restore();
+            }
+
+            // Brawler левый (x:846 y:611 w:400 h:400) — белая тень снизу
+            if (globalAssets.s4BrawlerL) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(255,255,255,1)';
+                ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
+                const sc = Math.min(400/globalAssets.s4BrawlerL.width, 400/globalAssets.s4BrawlerL.height);
+                const dw = globalAssets.s4BrawlerL.width*sc*s, dh = globalAssets.s4BrawlerL.height*sc*s;
+                ctx.drawImage(globalAssets.s4BrawlerL, 846*s-dw/2, 611*s-dh/2, dw, dh);
+                ctx.restore();
+            }
+
+            // Гемы (x:380 y:277 scale:1.4 w:500 h:550) — тень снизу
+            if (globalAssets.s4Gems) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(0,0,0,1)'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 15*s; ctx.shadowBlur = 35*s;
+                ctx.drawImage(globalAssets.s4Gems, (380 - 500*1.4/2)*s, (277 - 550*1.4/2)*s, 500*1.4*s, 550*1.4*s);
+                ctx.restore();
+            }
+
+            // Цены на гемы
+            const gemFontSize = 34 * s;
+            drawS4PriceText(fmt4(0), 163, 237, gemFontSize); // 30 gems
+            drawS4PriceText(fmt4(1), 381, 237, gemFontSize); // 80 gems
+            drawS4PriceText(fmt4(2), 607, 236, gemFontSize); // 170 gems
+            drawS4PriceText(fmt4(3), 142, 488, gemFontSize); // 360 gems
+            drawS4PriceText(fmt4(4), 365, 488, gemFontSize); // 950 gems
+            drawS4PriceText(fmt4(5), 589, 488, gemFontSize); // 2000 gems
+
+            // Пин левый — плашка (x:251 y:585 scale:1.25 w:140 h:50 r:25)
+            const hexToRgba4 = (hex, a) => {
+                let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+                return `rgba(${r},${g},${b},${a})`;
+            };
+            ctx.save();
+            ctx.globalAlpha = 0.4;
+            ctx.fillStyle = '#000000';
+            const pinLW = 140*1.25*s, pinLH = 50*1.25*s;
+            const pinLX = (251 - 140*1.25/2)*s, pinLY = (585 - 50*1.25/2)*s;
+            const pinRad = 25*s;
+            ctx.beginPath();
+            ctx.moveTo(pinLX+pinRad, pinLY); ctx.lineTo(pinLX+pinLW-pinRad, pinLY); ctx.arcTo(pinLX+pinLW, pinLY, pinLX+pinLW, pinLY+pinRad, pinRad);
+            ctx.lineTo(pinLX+pinLW, pinLY+pinLH-pinRad); ctx.arcTo(pinLX+pinLW, pinLY+pinLH, pinLX+pinLW-pinRad, pinLY+pinLH, pinRad);
+            ctx.lineTo(pinLX+pinRad, pinLY+pinLH); ctx.arcTo(pinLX, pinLY+pinLH, pinLX, pinLY+pinLH-pinRad, pinRad);
+            ctx.lineTo(pinLX, pinLY+pinRad); ctx.arcTo(pinLX, pinLY, pinLX+pinRad, pinLY, pinRad);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            // Пин левый — иконка (x:158 y:587 scale:1.05 w:90 h:90)
+            drawS4Icon(globalAssets.s4PinLeft, 158, 587, 90*1.05, 90*1.05);
+            // Пин левый — цена
+            drawS4PriceText(fmt4(6), 265, 584, 24 * 1.3 * s);
+
+            // Пин правый — плашка (x:527 y:587)
+            ctx.save();
+            ctx.globalAlpha = 0.4;
+            ctx.fillStyle = '#000000';
+            const pinRW = 140*1.25*s, pinRH = 50*1.25*s;
+            const pinRX = (527 - 140*1.25/2)*s, pinRY = (587 - 50*1.25/2)*s;
+            ctx.beginPath();
+            ctx.moveTo(pinRX+pinRad, pinRY); ctx.lineTo(pinRX+pinRW-pinRad, pinRY); ctx.arcTo(pinRX+pinRW, pinRY, pinRX+pinRW, pinRY+pinRad, pinRad);
+            ctx.lineTo(pinRX+pinRW, pinRY+pinRH-pinRad); ctx.arcTo(pinRX+pinRW, pinRY+pinRH, pinRX+pinRW-pinRad, pinRY+pinRH, pinRad);
+            ctx.lineTo(pinRX+pinRad, pinRY+pinRH); ctx.arcTo(pinRX, pinRY+pinRH, pinRX, pinRY+pinRH-pinRad, pinRad);
+            ctx.lineTo(pinRX, pinRY+pinRad); ctx.arcTo(pinRX, pinRY, pinRX+pinRad, pinRY, pinRad);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            // Пин правый — иконка (x:429 y:586 scale:1.3)
+            drawS4Icon(globalAssets.s4PinRight, 429, 586, 90*1.3, 90*1.3);
+            // Пин правый — цена
+            drawS4PriceText(fmt4(7), 539, 588, 24 * 1.25 * s);
+
+            // BP кнопка жёлтая (x:1070 y:89 scale:1.3 w:180 h:60 r:15 rot:1°) — double outline + inShadow orange
+            const drawS4Rect = (cx, cy, w, h, r, fillCol, rot, scl, inShadowCol, inShadowY) => {
+                ctx.save();
+                ctx.translate(cx*s, cy*s);
+                ctx.rotate(rot * Math.PI/180);
+                ctx.scale(scl, scl);
+                const rw = w*s, rh = h*s, rx = -rw/2, ry = -rh/2, rr = r*s;
+                // double outline white
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.moveTo(rx-5*s+rr, ry-5*s); ctx.lineTo(rx+rw+5*s-rr, ry-5*s); ctx.arcTo(rx+rw+5*s, ry-5*s, rx+rw+5*s, ry-5*s+rr, rr+5*s);
+                ctx.lineTo(rx+rw+5*s, ry+rh+5*s-rr); ctx.arcTo(rx+rw+5*s, ry+rh+5*s, rx+rw+5*s-rr, ry+rh+5*s, rr+5*s);
+                ctx.lineTo(rx-5*s+rr, ry+rh+5*s); ctx.arcTo(rx-5*s, ry+rh+5*s, rx-5*s, ry+rh+5*s-rr, rr+5*s);
+                ctx.lineTo(rx-5*s, ry-5*s+rr); ctx.arcTo(rx-5*s, ry-5*s, rx-5*s+rr, ry-5*s, rr+5*s);
+                ctx.closePath(); ctx.fill();
+                // double outline black inner
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.moveTo(rx-3*s+rr, ry-3*s); ctx.lineTo(rx+rw+3*s-rr, ry-3*s); ctx.arcTo(rx+rw+3*s, ry-3*s, rx+rw+3*s, ry-3*s+rr, rr+3*s);
+                ctx.lineTo(rx+rw+3*s, ry+rh+3*s-rr); ctx.arcTo(rx+rw+3*s, ry+rh+3*s, rx+rw+3*s-rr, ry+rh+3*s, rr+3*s);
+                ctx.lineTo(rx-3*s+rr, ry+rh+3*s); ctx.arcTo(rx-3*s, ry+rh+3*s, rx-3*s, ry+rh+3*s-rr, rr+3*s);
+                ctx.lineTo(rx-3*s, ry-3*s+rr); ctx.arcTo(rx-3*s, ry-3*s, rx-3*s+rr, ry-3*s, rr+3*s);
+                ctx.closePath(); ctx.fill();
+                // fill
+                ctx.fillStyle = fillCol;
+                ctx.beginPath();
+                ctx.moveTo(rx+rr, ry); ctx.lineTo(rx+rw-rr, ry); ctx.arcTo(rx+rw, ry, rx+rw, ry+rr, rr);
+                ctx.lineTo(rx+rw, ry+rh-rr); ctx.arcTo(rx+rw, ry+rh, rx+rw-rr, ry+rh, rr);
+                ctx.lineTo(rx+rr, ry+rh); ctx.arcTo(rx, ry+rh, rx, ry+rh-rr, rr);
+                ctx.lineTo(rx, ry+rr); ctx.arcTo(rx, ry, rx+rr, ry, rr);
+                ctx.closePath(); ctx.fill();
+                // inner shadow
+                if (inShadowCol) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(rx+rr, ry); ctx.lineTo(rx+rw-rr, ry); ctx.arcTo(rx+rw, ry, rx+rw, ry+rr, rr);
+                    ctx.lineTo(rx+rw, ry+rh-rr); ctx.arcTo(rx+rw, ry+rh, rx+rw-rr, ry+rh, rr);
+                    ctx.lineTo(rx+rr, ry+rh); ctx.arcTo(rx, ry+rh, rx, ry+rh-rr, rr);
+                    ctx.lineTo(rx, ry+rr); ctx.arcTo(rx, ry, rx+rr, ry, rr);
+                    ctx.closePath(); ctx.clip();
+                    ctx.shadowColor = inShadowCol; ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = inShadowY*s;
+                    ctx.globalAlpha = 0.7;
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(-999*s, -999*s, 9999*s, 9999*s);
+                    ctx.restore();
+                }
+                ctx.restore();
+            };
+
+            // BP жёлтая плашка (x:1070 y:89 scale:1.3 w:180 h:60 r:15 rot:1)
+            drawS4Rect(1070, 89, 180, 60, 15, '#ffea00', 1, 1.3, '#ff6a18', -5);
+            // BP иконка (x:896 y:89 rot:5)
+            ctx.save();
+            ctx.translate(896*s, 89*s);
+            ctx.rotate(5 * Math.PI/180);
+            drawS4Icon(globalAssets.s4PassYellow, 0, 0, 170, 100);
+            ctx.restore();
+            // BP цена
+            drawS4PriceText(fmt4(6), 1076, 90, 34 * 1.3 * s);
+
+            // BP+ синяя плашка (x:1071 y:210 scale:1.25 w:180 h:60 r:15 rot:1)
+            drawS4Rect(1071, 210, 180, 60, 15, '#d0f8ff', 1, 1.25, '#0088cc', -5);
+            // BP+ иконка (x:897 y:209 rot:6)
+            ctx.save();
+            ctx.translate(897*s, 209*s);
+            ctx.rotate(6 * Math.PI/180);
+            drawS4Icon(globalAssets.s4PassBlue, 0, 0, 170, 100);
+            ctx.restore();
+            // BP+ цена
+            drawS4PriceText(fmt4(7), 1080, 211, 34 * 1.25 * s);
+
+            // Pro зелёная плашка (x:1019 y:325 scale:1.3 w:180 h:60 r:15 rot:1)
+            drawS4Rect(1019, 325, 180, 60, 15, '#55ff00', 1, 1.3, '#008800', -5);
+            // Pro иконка (x:893 y:322 scale:0.9 rot:1)
+            ctx.save();
+            ctx.translate(893*s, 322*s);
+            ctx.rotate(1 * Math.PI/180);
+            drawS4Icon(globalAssets.s4PassPro, 0, 0, 140*0.9, 140*0.9);
+            ctx.restore();
+            // Pro цена
+            drawS4PriceText(fmt4(8), 1026, 326, 34 * 1.3 * s);
+
+            // Ник
+            if (cachedTextCanvas && animText.alpha > 0.01) {
+                ctx.save();
+                ctx.globalAlpha = animText.alpha;
+                ctx.drawImage(cachedTextCanvas, 0, 0);
+                ctx.restore();
+            }
+
             return;
         }
 
-        else if (window.layerState.bpStyleIndex === 'dop') {
-            const ctx = persistentCtx;
-            const W = persistentCanvas.width;
-            const H = persistentCanvas.height;
-            const s = Math.min(W / 1280, H / 720);
+        else if (window.layerState.bpStyleIndex === 'dop') {
+            const ctx = persistentCtx;
+            const W = persistentCanvas.width;
+            const H = persistentCanvas.height;
+            const s = Math.min(W / 1280, H / 720);
  
 
             const offsetX = (W - 1280 * s) / 2;
@@ -8119,11 +8120,11 @@ function drawScene() {
                 ctx.drawImage(img, offsetX + x * s, offsetY + y * s, w * s, h * s);
             };
 
-            if (rawBgImage) {
-                ctx.save();
+            if (rawBgImage) {
+                ctx.save();
                 ctx.drawImage(rawBgImage, 0, 0, W, H);
                 ctx.restore();
-            }
+            }
 
             ctx.save();
             ctx.globalCompositeOperation = 'overlay';
@@ -8165,21 +8166,21 @@ function drawScene() {
                 ctx.restore();
             }
 
-            drawLayerImg(globalAssets.dopStar, 561, 61, 771, 675);
+            drawLayerImg(globalAssets.dopStar, 561, 61, 771, 675);
 
-            ctx.save();
+            ctx.save();
             const cx = offsetX + (599 + 609 / 2) * s;
             const cy = offsetY + (150 + 576 / 2) * s;
-            const r = Math.min(609, 576) / 2 * s;
-            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-            grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.7)');
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(cx, cy, r, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
+            const r = Math.min(609, 576) / 2 * s;
+            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.7)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
 
             let season = window.layerState.bpSeason || 50;
             let brawler;
@@ -8224,8 +8225,8 @@ function drawScene() {
                 ctx.restore();
             }
 
-            drawLayerImg(globalAssets.dopPanelL, 82, 21, 546, 649);
-            
+            drawLayerImg(globalAssets.dopPanelL, 82, 21, 546, 649);
+            
             let pricePlateX = 158;
             let pricePlateY = 589;
             let pricePlateW = 350;
@@ -8272,7 +8273,7 @@ function drawScene() {
 
             return; 
 
-        }
+        }
 
         else {
             if (window.layerState.luchVisible && globalAssets.luchImg) {
@@ -8598,17 +8599,17 @@ window._sharedTextCanvas = document.createElement('canvas');
 window._sharedTempCanvas = document.createElement('canvas');
 
 function drawBeautifulNick(ctx, text, w, h) {
-    let baseFontSize = Math.floor(h * 0.12); 
+    let baseFontSize = Math.floor(h * 0.12); 
     if (baseFontSize < 30) baseFontSize = 30;
-    
-    let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
-    let fontSize = Math.floor(baseFontSize * tScale);
-    if (fontSize < Math.floor(30 * tScale)) fontSize = Math.floor(30 * tScale);
+    
+    let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
+    let fontSize = Math.floor(baseFontSize * tScale);
+    if (fontSize < Math.floor(30 * tScale)) fontSize = Math.floor(30 * tScale);
 
-    let x = Math.round(w / 2); 
-    let y = window.layerState.textPosition === 'bottom' 
-        ? Math.round(h * 0.92 - (baseFontSize / 2))
-        : Math.round(h * 0.06 + (baseFontSize / 2));
+    let x = Math.round(w / 2); 
+    let y = window.layerState.textPosition === 'bottom' 
+        ? Math.round(h * 0.92 - (baseFontSize / 2))
+        : Math.round(h * 0.06 + (baseFontSize / 2));
 
     let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
     let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
@@ -8831,16 +8832,11 @@ function drawBeautifulNick(ctx, text, w, h) {
           if (el) el.value = '';
       });
 
-      for (let i = 0; i <= 10; i++) {
-          let el = document.getElementById('ws2-p' + i);
-          if (el) el.value = '';
-      }
-      if (window.layerState) window.layerState.style2Prices = [];
-      if (window.layerState) window.layerState.style4Prices = [];
-      for (let i = 0; i <= 10; i++) {
+    for (let i = 0; i <= 8; i++) {
           let el = document.getElementById('ws4-p' + i);
           if (el) el.value = '';
       }
+      if (window.layerState) window.layerState.style4Prices = [];
       let bpNextBtn3Style4 = document.getElementById('wizard-next-btn3-bp-style4');
       if (bpNextBtn3Style4) bpNextBtn3Style4.classList.remove('show');
       let bpNextBtn3Style2 = document.getElementById('wizard-next-btn3-bp-style2');
@@ -8928,20 +8924,15 @@ if (fankitGrid && fankitGrid.children.length === 0) {
                 window.layerState.isReadyBg = false;
                 
                 if (window.layerState.isBrawlPassMode) {
-                    const si = window.layerState.bpStyleIndex;
-                    if (si === 1) {
-                        generateBrawlPassTest();
-                    } else if (si === 2) {
+                if (window.layerState.isBrawlPassMode) {
+                    if (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3 || window.layerState.bpStyleIndex === 'dop') {
                         if (typeof startAnimation === 'function') startAnimation();
-                    } else if (si === 3) {
-                        if (typeof startAnimation === 'function') startAnimation();
-                    } else if (si === 4) {
-                        if (typeof startAnimation === 'function') startAnimation();
-                    } else if (si === 'dop') {
-                        if (typeof startAnimation === 'function') startAnimation();
+                    } else {
+                        generateBrawlPassTest(); 
                     }
+                }
                 } else {
-                    calculateLayoutTarget();
+                    calculateLayoutTarget(); 
                     if (typeof startAnimation === 'function') startAnimation();
                 }
                 
@@ -9356,6 +9347,17 @@ document.getElementById('wizard-next-btn3-bp-style3').onclick = async () => {
     ];
     let targetStep4 = document.getElementById('wizard-step4-bp');
     transitionStep(document.getElementById('wizard-step3-bp-style3'), targetStep4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
+};
+
+document.getElementById('wizard-next-btn3-bp-style4').onclick = async () => {
+    window.triggerHaptic();
+    window.layerState.style4Prices = [];
+    for (let i = 0; i <= 8; i++) {
+        let el = document.getElementById('ws4-p' + i);
+        window.layerState.style4Prices[i] = el ? (el.value || "0") : "0";
+    }
+    let targetStep4 = document.getElementById('wizard-step4-bp');
+    transitionStep(document.getElementById('wizard-step3-bp-style4'), targetStep4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
 };
 
 const bpPriceInput = document.getElementById('wizard-bp-price');
@@ -9900,16 +9902,16 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     let offsetPx = tOffsetY * scaleMult;
 
 let y1, y2;
-    if (line2) {
-        y2 = FIXED_BOTTOM_Y - (maxLineH / 2);
-        y1 = y2 - maxLineH - lineGap;
-    } else {
-        y1 = FIXED_BOTTOM_Y - (maxLineH / 2);
-    }
+    if (line2) {
+        y2 = FIXED_BOTTOM_Y - (maxLineH / 2);
+        y1 = y2 - maxLineH - lineGap;
+    } else {
+        y1 = FIXED_BOTTOM_Y - (maxLineH / 2);
+    }
 
     let blockCenterY = line2 ? (y1 + y2) / 2 : y1;
 
-    const lines = line2 
+    const lines = line2 
         ? [{ text: line1, yOffset: y1 - blockCenterY }, { text: line2, yOffset: y2 - blockCenterY }] 
         : [{ text: line1, yOffset: 0 }];
 
@@ -9924,17 +9926,17 @@ let y1, y2;
         sCtx.lineWidth = width;
         sCtx.strokeStyle = color;
             for (let i = bpShadowDepth; i >= 0; i--) {
-            lines.forEach(({ text, yOffset }) => {
-                sCtx.save();
-                sCtx.translate(bpTextX, blockCenterY + offsetPx);
-                sCtx.scale(tScale, tScale); 
+            lines.forEach(({ text, yOffset }) => {
+                sCtx.save();
+                sCtx.translate(bpTextX, blockCenterY + offsetPx);
+                sCtx.scale(tScale, tScale); 
                 sCtx.translate(0, yOffset);
-                sCtx.transform(1, 0, skewVal, 1, 0, 0);
-                sCtx.rotate(-0.02);
-                sCtx.strokeText(text, 0, i);
-                sCtx.restore();
-            });
-        }
+                sCtx.transform(1, 0, skewVal, 1, 0, 0);
+                sCtx.rotate(-0.02);
+                sCtx.strokeText(text, 0, i);
+                sCtx.restore();
+            });
+        }
     };
 
     if (bpStyle.isClassic) {
@@ -9947,31 +9949,31 @@ let y1, y2;
             drawStrokeLayer(bpFontSize * 0.12, bpStyle.outer);  
             drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow); 
         } else if (bpStyle.outer) {
-            sCtx.lineWidth = bpFontSize * 0.12;
-            sCtx.strokeStyle = bpStyle.shadow;
-            lines.forEach(({ text, yOffset }) => {
-                sCtx.save();
-                sCtx.translate(bpTextX, blockCenterY + offsetPx);
-                sCtx.scale(tScale, tScale);
-                sCtx.translate(0, yOffset);
-                sCtx.transform(1, 0, skewVal, 1, 0, 0);
-                sCtx.rotate(-0.02);
-                sCtx.strokeText(text, 0, bpShadowDepth);
-                sCtx.restore();
-            });
-            
-            sCtx.strokeStyle = bpStyle.outer;
-            lines.forEach(({ text, yOffset }) => {
-                sCtx.save();
-                sCtx.translate(bpTextX, blockCenterY + offsetPx);
-                sCtx.scale(tScale, tScale);
-                sCtx.translate(0, yOffset);
-                sCtx.transform(1, 0, skewVal, 1, 0, 0);
-                sCtx.rotate(-0.02);
-                sCtx.strokeText(text, 0, 0);
-                sCtx.restore();
-            });
-        } else {
+            sCtx.lineWidth = bpFontSize * 0.12;
+            sCtx.strokeStyle = bpStyle.shadow;
+            lines.forEach(({ text, yOffset }) => {
+                sCtx.save();
+                sCtx.translate(bpTextX, blockCenterY + offsetPx);
+                sCtx.scale(tScale, tScale);
+                sCtx.translate(0, yOffset);
+                sCtx.transform(1, 0, skewVal, 1, 0, 0);
+                sCtx.rotate(-0.02);
+                sCtx.strokeText(text, 0, bpShadowDepth);
+                sCtx.restore();
+            });
+            
+            sCtx.strokeStyle = bpStyle.outer;
+            lines.forEach(({ text, yOffset }) => {
+                sCtx.save();
+                sCtx.translate(bpTextX, blockCenterY + offsetPx);
+                sCtx.scale(tScale, tScale);
+                sCtx.translate(0, yOffset);
+                sCtx.transform(1, 0, skewVal, 1, 0, 0);
+                sCtx.rotate(-0.02);
+                sCtx.strokeText(text, 0, 0);
+                sCtx.restore();
+            });
+        } else {
             drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow);
         }
     }
@@ -9984,28 +9986,28 @@ let y1, y2;
     fCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
 
     lines.forEach(({ text, yOffset }) => {
-        fCtx.save();
-        fCtx.translate(bpTextX, blockCenterY + offsetPx);
-        fCtx.scale(tScale, tScale);           
-        fCtx.translate(0, yOffset);
-        fCtx.transform(1, 0, skewVal, 1, 0, 0);
-        fCtx.rotate(-0.02);
-        
-        let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
-        bpGrad.addColorStop(0, bpStyle.grad[0]);
-        bpGrad.addColorStop(bpStyle.isClassic ? 0.48 : 0.52, bpStyle.grad[1] || bpStyle.grad[0]);
-        bpGrad.addColorStop(1, bpStyle.grad[2] || bpStyle.grad[0]);
-        fCtx.fillStyle = bpGrad;
-        fCtx.fillText(text, 0, 0);
-        
-        if (bpStyle.inner) {
-            fCtx.globalCompositeOperation = "source-atop";
-            fCtx.lineWidth = bpFontSize * 0.06;
-            fCtx.strokeStyle = bpStyle.isClassic ? "#fcff00" : bpStyle.inner;
-            fCtx.strokeText(text, 0, 0);
-        }
-        fCtx.restore();
-    });
+        fCtx.save();
+        fCtx.translate(bpTextX, blockCenterY + offsetPx);
+        fCtx.scale(tScale, tScale);           
+        fCtx.translate(0, yOffset);
+        fCtx.transform(1, 0, skewVal, 1, 0, 0);
+        fCtx.rotate(-0.02);
+        
+        let bpGrad = fCtx.createLinearGradient(0, -bpFontSize * 0.4, 0, bpFontSize * 0.4);
+        bpGrad.addColorStop(0, bpStyle.grad[0]);
+        bpGrad.addColorStop(bpStyle.isClassic ? 0.48 : 0.52, bpStyle.grad[1] || bpStyle.grad[0]);
+        bpGrad.addColorStop(1, bpStyle.grad[2] || bpStyle.grad[0]);
+        fCtx.fillStyle = bpGrad;
+        fCtx.fillText(text, 0, 0);
+        
+        if (bpStyle.inner) {
+            fCtx.globalCompositeOperation = "source-atop";
+            fCtx.lineWidth = bpFontSize * 0.06;
+            fCtx.strokeStyle = bpStyle.isClassic ? "#fcff00" : bpStyle.inner;
+            fCtx.strokeText(text, 0, 0);
+        }
+        fCtx.restore();
+    });
 
     ctx.save();
     ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
@@ -10059,22 +10061,22 @@ window.openBPTestEditor = function() {
 };
 
 window.openBPDopEditor = function() {
-    window.triggerHaptic();
-    document.getElementById('ios-dashboard').style.display = 'none';
-    document.getElementById('bp-variant-overlay').style.display = 'none';
-    document.getElementById('result-box').style.display = 'block';
-    window.scrollTo(0,0);
-    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+    window.triggerHaptic();
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('bp-variant-overlay').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    window.scrollTo(0,0);
+    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
 
-    const cardsContainer = document.getElementById('cards-container');
-    const layerPanel = document.getElementById('layer-panel');
-    
-    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
-    layerPanel.style.display = 'flex';
-    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
+    const cardsContainer = document.getElementById('cards-container');
+    const layerPanel = document.getElementById('layer-panel');
+    
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
 
-    window.layerState.isBrawlPassMode = true;
-    window.layerState.bpStyleIndex = 'dop'; 
+    window.layerState.isBrawlPassMode = true;
+    window.layerState.bpStyleIndex = 'dop'; 
 
     window.layerState.starsVisible = true;
     window.layerState.pointsVisible = true;
@@ -10083,12 +10085,12 @@ window.openBPDopEditor = function() {
     window.layerState.pointsOpacity = 1.0;
     window.layerState.watermarksOpacity = 0.15;
 
-    setTimeout(async () => {
-        const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
-        
-        let season = window.layerState.bpSeason || 50;
-        
-        if (!rawBgImage) rawBgImage = await load('bg/bg20_BP48.png');
+    setTimeout(async () => {
+        const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
+        
+        let season = window.layerState.bpSeason || 50;
+        
+        if (!rawBgImage) rawBgImage = await load('bg/bg20_BP48.png');
 
         if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
         if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
@@ -10113,11 +10115,11 @@ window.openBPDopEditor = function() {
 
         if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
-        setupPersistentCanvas();
-        renderLayerPanel(true);
-        window.updateCachedTextCanvas();
-        startAnimation();
-    }, 100);
+        setupPersistentCanvas();
+        renderLayerPanel(true);
+        window.updateCachedTextCanvas();
+        startAnimation();
+    }, 100);
 };
 
 window.openBPStyle3Editor = function() {
@@ -10183,19 +10185,23 @@ window.openBPStyle4Editor = function() {
 
     setTimeout(async () => {
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
+
         let season = window.layerState.bpSeason || 50;
 
-        // Грузим все ассеты из 1-го кода
-        if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
-        if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
-        if (!globalAssets.s4Points)   globalAssets.s4Points   = await load('BP/bp_style2_points.png');
-        if (!globalAssets.s4Stars)    globalAssets.s4Stars    = await load('BP/style4_stars_bp.png');
-        if (!globalAssets.s4Gems)     globalAssets.s4Gems     = await load('BP/bp_gems.png');
-        if (!globalAssets.s4PinLeft)  globalAssets.s4PinLeft  = await load('BP/pin_4styleBP_left.png');
-        if (!globalAssets.s4PinRight) globalAssets.s4PinRight = await load('BP/pin_4styleBP_right.png');
+        // Загружаем все ресурсы из 1-го кода
+        if (!globalAssets.s4Bg)         globalAssets.s4Bg         = await load('bg/bg8.png');
+        if (!globalAssets.s4Points)     globalAssets.s4Points     = await load('BP/bp_style2_points.png');
+        if (!globalAssets.s4Stars)      globalAssets.s4Stars      = await load('BP/style4_stars_bp.png');
+        if (!globalAssets.s4Gems)       globalAssets.s4Gems       = await load('BP/bp_gems.png');
+        if (!globalAssets.s4PinLeft)    globalAssets.s4PinLeft    = await load('BP/pin_4styleBP_left.png');
+        if (!globalAssets.s4PinRight)   globalAssets.s4PinRight   = await load('BP/pin_4styleBP_right.png');
         if (!globalAssets.s4PassYellow) globalAssets.s4PassYellow = await load('BP/bp_icon_brawl_pass.png');
         if (!globalAssets.s4PassBlue)   globalAssets.s4PassBlue   = await load('BP/bp_icon_brawl_pass_plus.png');
         if (!globalAssets.s4PassPro)    globalAssets.s4PassPro    = await load('BP/bp_icon_pro_pass_icon.png');
+        if (!globalAssets.s4BrawlerL)   globalAssets.s4BrawlerL   = await load('BP/brawler_s50_2.png');
+        if (!globalAssets.s4BrawlerR)   globalAssets.s4BrawlerR   = await load('BP/brawler_s50_1.png');
+
+        if (!rawBgImage) rawBgImage = globalAssets.s4Bg;
 
         setupPersistentCanvas();
         renderLayerPanel(true);
