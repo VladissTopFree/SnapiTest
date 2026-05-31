@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(20)";
+  const APP_VERSION = "v2.4.1(21)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -7674,11 +7674,9 @@ function drawScene() {
 
             ctx.save();
             ctx.beginPath();
-            ctx.moveTo(0, 0); ctx.lineTo(W, 0);
-            ctx.lineTo(W, H*0.5); ctx.lineTo(0, H*0.5); // обрезаем по горизонтальной линии
-            ctx.closePath();
+            ctx.rect(0, 0, W, H/2 - 8*s); 
             ctx.clip();
-            drawBrawler(globalAssets[`brawler_${season}_2`], C.brawler2);
+            drawBrawler(globalAssets[`brawler_${season}_2`], C.brawler2); 
             ctx.restore();
             
             drawItem(globalAssets.style2BPP, C.bppIcon, 15);
@@ -7688,9 +7686,7 @@ function drawScene() {
 
             ctx.save();
             ctx.beginPath();
-            ctx.moveTo(0, H*0.5); ctx.lineTo(W, H*0.5);
-            ctx.lineTo(W, H); ctx.lineTo(0, H);
-            ctx.closePath();
+            ctx.rect(0, H/2 + 8*s, W, H/2); 
             ctx.clip();
             drawBrawler(globalAssets[`brawler_${season}_1`], C.brawler1);
             ctx.restore();
