@@ -51,8 +51,8 @@
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
 
         style4Brawlers: {
-        brawlerL: { x: 846, y: 611, scale: 400, flipH: false },
-        brawlerR: { x: 1127, y: 580, scale: 450, flipH: false }
+        brawlerL: { x: 885, y: 611, scale: 400, flipH: false },
+        brawlerR: { x: 1133, y: 580, scale: 450, flipH: false }
         }
       },
       49: {
@@ -73,8 +73,8 @@
           dopBrawler1: { x: 566, y: 182, scale: 0.75, scaleX: 1.24, scaleY: 1, rot: 0, flipH: true },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
                   style4Brawlers: {
-            brawlerL: { x: 846, y: 611, scale: 400, flipH: false },
-            brawlerR: { x: 1127, y: 580, scale: 450, flipH: false }
+            brawlerL: { x: 855, y: 628, scale: 490, flipH: false },
+            brawlerR: { x: 1109, y: 583, scale: 415, flipH: false }
         }
       },
       48: {
@@ -93,8 +93,8 @@
           dopBrawler1: { x: 618, y: 93, scale: 0.76, scaleX: 1, scaleY: 1.07, rot: 0, flipH: true },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
                   style4Brawlers: {
-            brawlerL: { x: 846, y: 611, scale: 400, flipH: false },
-            brawlerR: { x: 1127, y: 580, scale: 450, flipH: false }
+            brawlerL: { x: 855, y: 592, scale: 430, flipH: false },
+            brawlerR: { x: 1112, y: 588, scale: 350, flipH: false }
         }    
         },
   };
@@ -5756,57 +5756,106 @@ if (window.layerState.isBrawlPassMode) {
     html += `</div>`;
 
     if (window.ENABLE_TEMP_EDITOR) {
+        // ✅ Инициализация customWatermarks — теперь с веткой для стиля 4
         if (!window.layerState.customWatermarks) {
-            if (!window.layerState.isBrawlPassMode) { 
+            if (!window.layerState.isBrawlPassMode) {
                 window.layerState.customWatermarks = [
-                    { x: 50, y: 130, scale: 0.74, skewX: -10, align: "left" },
-                    { x: 25, y: 310, scale: 0.25, skewX: -10, align: "left" },
-                    { x: 38, y: 633, scale: 1.10, skewX: -10, align: "left" },
-                    { x: 1152, y: 158, scale: 0.80, skewX: -10, align: "right" },
-                    { x: 1176, y: 324, scale: 1.60, skewX: -10, align: "right" },
-                    { x: 1164, y: 612, scale: 0.70, skewX: -10, align: "right" }
+                    { x: 49, y: 79, scale: 0.35, skewX: -10, align: "center" },
+                    { x: 58, y: 233, scale: 0.54, skewX: -10, align: "center" },
+                    { x: 125, y: 347, scale: 0.23, skewX: -10, align: "center" },
+                    { x: 131, y: 719, scale: 1.1, skewX: -10, align: "center" },
+                    { x: 178, y: 488, scale: 0.44, skewX: -10, align: "center" },
+                    { x: 74, y: 600, scale: 0.14, skewX: -10, align: "center" },
+                    { x: 1248, y: 9, scale: 0.88, skewX: -10, align: "center" },
+                    { x: 1120, y: 159, scale: 0.28, skewX: -10, align: "center" },
+                    { x: 1247, y: 306, scale: 0.5, skewX: -10, align: "center" },
+                    { x: 1092, y: 405, scale: 0.17, skewX: -10, align: "center" },
+                    { x: 1230, y: 512, scale: 0.61, skewX: -10, align: "center" },
+                    { x: 1071, y: 675, scale: 0.79, skewX: -10, align: "center" }
                 ];
-            } else if (window.layerState.bpStyleIndex === 3) { 
+            } else if (window.layerState.bpStyleIndex === 4) {
+                // ✅ Новая ветка для стиля 4
                 window.layerState.customWatermarks = [
-                    {x: 1019, y: 601, scale: 0.3, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
-                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: -114, y: 687, scale: 0.93, skewX: -12},
-                    {x: 167, y: 666, scale: 0.26, skewX: -12}, {x: 23, y: 610, scale: 0.45, skewX: -12},
-                    {x: -158, y: 125, scale: 0.54, skewX: -12}, {x: 332, y: -27, scale: 0.72, skewX: -12},
-                    {x: 887, y: 7, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.21, skewX: -12}
+                    { x: 514, y: -31, scale: 0.74, skewX: -12 },
+                    { x: 71,  y: 17,  scale: 0.25, skewX: -12 },
+                    { x: 19,  y: 146, scale: 0.12, skewX: -12 },
+                    { x: 664, y: 82,  scale: 0.25, skewX: -12 },
+                    { x: 587, y: 598, scale: 0.33, skewX: -12 },
+                    { x: 421, y: 699, scale: 0.72, skewX: -12 },
                 ];
-            } else { 
+            } else if (window.layerState.bpStyleIndex === 3) {
                 window.layerState.customWatermarks = [
-                    { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
-                    { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
-                    { x: 587, y: 598, scale: 0.33, skewX: -12 }, { x: 421, y: 699, scale: 0.72, skewX: -12 },
-                    { x: 734, y: 262, scale: 0.1, skewX: -12 }, { x: 76, y: 602, scale: 0.38, skewX: -12 },
-                    { x: -92, y: 695, scale: 0.87, skewX: -12 }, { x: -52, y: 386, scale: 0.24, skewX: -12 },
-                    { x: 852, y: 189, scale: 0.22, skewX: -12 }, { x: 1237, y: 306, scale: 0.39, skewX: -12 },
-                    { x: 957, y: -21, scale: 0.5, skewX: -12 }, { x: 791, y: 558, scale: 0.21, skewX: -12 },
-                    { x: 878, y: 357, scale: 0.36, skewX: -12 }, { x: 1131, y: 391, scale: 0.13, skewX: -12 }
+                    {x: 1019, y: 601, scale: 0.3,  skewX: -12},
+                    {x: 1037, y: 657, scale: 0.75, skewX: -12},
+                    {x: 1173, y: 541, scale: 0.57, skewX: -12},
+                    {x: -114, y: 687, scale: 0.93, skewX: -12},
+                    {x: 167,  y: 666, scale: 0.26, skewX: -12},
+                    {x: 23,   y: 610, scale: 0.45, skewX: -12},
+                    {x: -158, y: 125, scale: 0.54, skewX: -12},
+                    {x: 332,  y: -27, scale: 0.72, skewX: -12},
+                    {x: 887,  y: 7,   scale: 0.39, skewX: -12},
+                    {x: 1242, y: 476, scale: 0.21, skewX: -12}
+                ];
+            } else {
+                window.layerState.customWatermarks = [
+                    { x: 514, y: -31, scale: 0.74, skewX: -12 },
+                    { x: 71,  y: 17,  scale: 0.25, skewX: -12 },
+                    { x: 19,  y: 146, scale: 0.12, skewX: -12 },
+                    { x: 664, y: 82,  scale: 0.25, skewX: -12 },
+                    { x: 587, y: 598, scale: 0.33, skewX: -12 },
+                    { x: 421, y: 699, scale: 0.72, skewX: -12 },
+                    { x: 734, y: 262, scale: 0.1,  skewX: -12 },
+                    { x: 76,  y: 602, scale: 0.38, skewX: -12 },
+                    { x: -92, y: 695, scale: 0.87, skewX: -12 },
+                    { x: -52, y: 386, scale: 0.24, skewX: -12 },
+                    { x: 852, y: 189, scale: 0.22, skewX: -12 },
+                    { x: 1237,y: 306, scale: 0.39, skewX: -12 },
+                    { x: 957, y: -21, scale: 0.5,  skewX: -12 },
+                    { x: 791, y: 558, scale: 0.21, skewX: -12 },
+                    { x: 878, y: 357, scale: 0.36, skewX: -12 },
+                    { x: 1131,y: 391, scale: 0.13, skewX: -12 }
                 ];
             }
         }
+
         window.layerState.activeWmIndex = window.layerState.activeWmIndex || 0;
         if (window.layerState.activeWmIndex >= window.layerState.customWatermarks.length) {
             window.layerState.activeWmIndex = Math.max(0, window.layerState.customWatermarks.length - 1);
         }
-        
+
         let activeWm = window.layerState.customWatermarks[window.layerState.activeWmIndex];
-        
+
+        // ✅ Редактор всегда виден — убрали if (window.ENABLE_TEMP_EDITOR)
         html += `<div class="ios-section-title" style="margin-left: 0; margin-top: 15px;">РЕДАКТОР МАЛЕНЬКИХ НИКОВ</div>`;
         html += `<div class="ios-layer-group ${animCls}">`;
-        
+
         html += `
             <div class="ios-layer-row">
                 <div class="ios-layer-name" style="font-size:14px;">Выбрать ник</div>
-                <select onchange="window.layerState.activeWmIndex = parseInt(this.value); renderLayerPanel();" style="background:var(--tg-theme-secondary-bg-color, #F2F2F7); border:none; border-radius:8px; padding:6px; outline:none; color:var(--tg-theme-text-color, #000); max-width: 120px;">
-                    ${window.layerState.customWatermarks.map((_, i) => `<option value="${i}" ${i === window.layerState.activeWmIndex ? 'selected' : ''}>Ник #${i+1}</option>`).join('')}
+                <select onchange="window.layerState.activeWmIndex = parseInt(this.value); renderLayerPanel();" 
+                    style="background:var(--tg-theme-secondary-bg-color, #F2F2F7); border:none; border-radius:8px; padding:6px; outline:none; color:var(--tg-theme-text-color, #000); max-width: 120px;">
+                    ${window.layerState.customWatermarks.map((_, i) => 
+                        `<option value="${i}" ${i === window.layerState.activeWmIndex ? 'selected' : ''}>Ник #${i+1}</option>`
+                    ).join('')}
                 </select>
             </div>
             <div class="ios-layer-row">
-                <button class="ios-pill-btn" style="background:#00ff591f; flex-grow:1; margin-right:8px;" onclick="window.layerState.customWatermarks.push({x:600, y:300, scale:0.5, skewX:-10, align:'center'}); window.layerState.activeWmIndex = window.layerState.customWatermarks.length-1; renderLayerPanel(); startAnimation();">+ Добавить</button>
-                <button class="ios-pill-btn" style="background:#FF3B30; flex-grow:1;" onclick="if(window.layerState.customWatermarks.length>0){ window.layerState.customWatermarks.splice(window.layerState.activeWmIndex, 1); window.layerState.activeWmIndex=Math.max(0, window.layerState.activeWmIndex-1); renderLayerPanel(); startAnimation(); }">- Удалить</button>
+                <button class="ios-pill-btn" style="background:#00ff591f; flex-grow:1; margin-right:8px; color:#16a34a;" 
+                    onclick="window.layerState.customWatermarks.push({x:600, y:300, scale:0.5, skewX:-10}); 
+                            window.layerState.activeWmIndex = window.layerState.customWatermarks.length-1; 
+                            renderLayerPanel(); 
+                            startAnimation();">
+                    + Добавить
+                </button>
+                <button class="ios-pill-btn" style="background: color-mix(in srgb, var(--tg-theme-destructive-text-color) 10%, transparent); color: var(--tg-theme-destructive-text-color); flex-grow:1;" 
+                    onclick="if(window.layerState.customWatermarks.length > 0){ 
+                                window.layerState.customWatermarks.splice(window.layerState.activeWmIndex, 1); 
+                                window.layerState.activeWmIndex = Math.max(0, window.layerState.activeWmIndex-1); 
+                                renderLayerPanel(); 
+                                startAnimation(); 
+                            }">
+                    - Удалить
+                </button>
             </div>
         `;
 
@@ -5815,20 +5864,30 @@ if (window.layerState.isBrawlPassMode) {
             <div class="ios-layer-row">
                 <div class="ios-layer-name" style="font-size:14px;">Размер</div>
                 <div id="v-wm-s" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${activeWm.scale}</div>
-                <input type="range" class="ios-slider" min="0.05" max="3.0" step="0.01" value="${activeWm.scale}" oninput="document.getElementById('v-wm-s').innerText=this.value; window.layerState.customWatermarks[window.layerState.activeWmIndex].scale = parseFloat(this.value); startAnimation();">
+                <input type="range" class="ios-slider" min="0.05" max="3.0" step="0.01" value="${activeWm.scale}" 
+                    oninput="document.getElementById('v-wm-s').innerText=this.value; 
+                            window.layerState.customWatermarks[window.layerState.activeWmIndex].scale = parseFloat(this.value); 
+                            startAnimation();">
             </div>
             <div class="ios-layer-row">
                 <div class="ios-layer-name" style="font-size:14px;">Позиция X</div>
                 <div id="v-wm-x" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${activeWm.x}</div>
-                <input type="range" class="ios-slider" min="-200" max="2500" step="1" value="${activeWm.x}" oninput="document.getElementById('v-wm-x').innerText=this.value; window.layerState.customWatermarks[window.layerState.activeWmIndex].x = parseFloat(this.value); startAnimation();">
+                <input type="range" class="ios-slider" min="-200" max="1500" step="1" value="${activeWm.x}" 
+                    oninput="document.getElementById('v-wm-x').innerText=this.value; 
+                            window.layerState.customWatermarks[window.layerState.activeWmIndex].x = parseFloat(this.value); 
+                            startAnimation();">
             </div>
             <div class="ios-layer-row" style="border-bottom:none;">
                 <div class="ios-layer-name" style="font-size:14px;">Позиция Y</div>
                 <div id="v-wm-y" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${activeWm.y}</div>
-                <input type="range" class="ios-slider" min="-200" max="1500" step="1" value="${activeWm.y}" oninput="document.getElementById('v-wm-y').innerText=this.value; window.layerState.customWatermarks[window.layerState.activeWmIndex].y = parseFloat(this.value); startAnimation();">
+                <input type="range" class="ios-slider" min="-200" max="1500" step="1" value="${activeWm.y}" 
+                    oninput="document.getElementById('v-wm-y').innerText=this.value; 
+                            window.layerState.customWatermarks[window.layerState.activeWmIndex].y = parseFloat(this.value); 
+                            startAnimation();">
             </div>
             `;
         }
+
         html += `</div>`;
     }
 
@@ -7970,12 +8029,6 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.restore();
             }
 
-            // Ватермарки
-            if (window.layerState.watermarksVisible !== false) {
-                drawBPWatermarks(ctx, window.layerState.textValue || "SNAPI", W, H,
-                    window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.8);
-            }
-
             const p4 = window.layerState.style4Prices || [];
             const fmt4 = (i) => (p4[i] !== undefined && p4[i] !== "") ? p4[i] + " ₽" : "0 ₽";
 
@@ -8093,6 +8146,11 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.drawImage(globalAssets.s4Gems, (380 - globalAssets.s4Gems.width*scGems/2)*s, (277 - globalAssets.s4Gems.height*scGems/2)*s, globalAssets.s4Gems.width*scGems*s, globalAssets.s4Gems.height*scGems*s);
                 ctx.restore();
                 ctx.restore();
+            }
+
+            if (window.layerState.watermarksVisible !== false) {
+                drawBPWatermarks(ctx, window.layerState.textValue || "SNAPI", W, H,
+                    window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.8);
             }
 
             // Цены на гемы
@@ -8675,44 +8733,77 @@ function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
     
     let wmArray = window.layerState.customWatermarks;
     
-    if (!wmArray || wmArray.length === 0) {
-        if (!window.layerState.isBrawlPassMode) {
-            wmArray = [
-                { x: 49, y: 79, scale: 0.35, skewX: -10, align: "center" },
-                { x: 58, y: 233, scale: 0.54, skewX: -10, align: "center" },
-                { x: 125, y: 347, scale: 0.23, skewX: -10, align: "center" },
-                { x: 131, y: 719, scale: 1.1, skewX: -10, align: "center" },
-                { x: 178, y: 488, scale: 0.44, skewX: -10, align: "center" },
-                { x: 74, y: 600, scale: 0.14, skewX: -10, align: "center" },
-                { x: 1248, y: 9, scale: 0.88, skewX: -10, align: "center" },
-                { x: 1120, y: 159, scale: 0.28, skewX: -10, align: "center" },
-                { x: 1247, y: 306, scale: 0.5, skewX: -10, align: "center" },
-                { x: 1092, y: 405, scale: 0.17, skewX: -10, align: "center" },
-                { x: 1230, y: 512, scale: 0.61, skewX: -10, align: "center" },
-                { x: 1071, y: 675, scale: 0.79, skewX: -10, align: "center" }
-            ];
-            } else if (window.layerState.bpStyleIndex === 3) { 
-                wmArray = [
-                    {x: 1019, y: 601, scale: 0.3, skewX: -12}, {x: 1037, y: 657, scale: 0.75, skewX: -12},
-                    {x: 1173, y: 541, scale: 0.57, skewX: -12}, {x: -114, y: 687, scale: 0.93, skewX: -12},
-                    {x: 167, y: 666, scale: 0.26, skewX: -12}, {x: 23, y: 610, scale: 0.45, skewX: -12},
-                    {x: -158, y: 125, scale: 0.54, skewX: -12}, {x: 332, y: -27, scale: 0.72, skewX: -12},
-                    {x: 887, y: 7, scale: 0.39, skewX: -12}, {x: 1242, y: 476, scale: 0.21, skewX: -12}
-                ];
-            } else { 
-                wmArray = [
-                    { x: 514, y: -31, scale: 0.74, skewX: -12 }, { x: 71, y: 17, scale: 0.25, skewX: -12 },
-                    { x: 19, y: 146, scale: 0.12, skewX: -12 }, { x: 664, y: 82, scale: 0.25, skewX: -12 },
-                    { x: 587, y: 598, scale: 0.33, skewX: -12 }, { x: 421, y: 699, scale: 0.72, skewX: -12 },
-                    { x: 734, y: 262, scale: 0.1, skewX: -12 }, { x: 76, y: 602, scale: 0.38, skewX: -12 },
-                    { x: -92, y: 695, scale: 0.87, skewX: -12 }, { x: -52, y: 386, scale: 0.24, skewX: -12 },
-                    { x: 852, y: 189, scale: 0.22, skewX: -12 }, { x: 1237, y: 306, scale: 0.39, skewX: -12 },
-                    { x: 957, y: -21, scale: 0.5, skewX: -12 }, { x: 791, y: 558, scale: 0.21, skewX: -12 },
-                    { x: 878, y: 357, scale: 0.36, skewX: -12 }, { x: 1131, y: 391, scale: 0.13, skewX: -12 }
-                ];
-            }
-            window.layerState.customWatermarks = wmArray;
-        }
+if (!wmArray || wmArray.length === 0) {
+    if (!window.layerState.isBrawlPassMode) {
+        wmArray = [
+            { x: 49, y: 79, scale: 0.35, skewX: -10, align: "center" },
+            { x: 58, y: 233, scale: 0.54, skewX: -10, align: "center" },
+            { x: 125, y: 347, scale: 0.23, skewX: -10, align: "center" },
+            { x: 131, y: 719, scale: 1.1, skewX: -10, align: "center" },
+            { x: 178, y: 488, scale: 0.44, skewX: -10, align: "center" },
+            { x: 74, y: 600, scale: 0.14, skewX: -10, align: "center" },
+            { x: 1248, y: 9, scale: 0.88, skewX: -10, align: "center" },
+            { x: 1120, y: 159, scale: 0.28, skewX: -10, align: "center" },
+            { x: 1247, y: 306, scale: 0.5, skewX: -10, align: "center" },
+            { x: 1092, y: 405, scale: 0.17, skewX: -10, align: "center" },
+            { x: 1230, y: 512, scale: 0.61, skewX: -10, align: "center" },
+            { x: 1071, y: 675, scale: 0.79, skewX: -10, align: "center" }
+        ];
+    } else if (window.layerState.bpStyleIndex === 4) {
+        // ✅ Новая ветка для стиля 4
+        wmArray = [
+            { x: 514, y: -31, scale: 0.74, skewX: -12 },
+            { x: 71,  y: 17,  scale: 0.25, skewX: -12 },
+            { x: 19,  y: 146, scale: 0.12, skewX: -12 },
+            { x: 664, y: 82,  scale: 0.25, skewX: -12 },
+            { x: 587, y: 598, scale: 0.33, skewX: -12 },
+            { x: 421, y: 699, scale: 0.72, skewX: -12 },
+            { x: 734, y: 262, scale: 0.1,  skewX: -12 },
+            { x: 76,  y: 602, scale: 0.38, skewX: -12 },
+            { x: -92, y: 695, scale: 0.87, skewX: -12 },
+            { x: -52, y: 386, scale: 0.24, skewX: -12 },
+            { x: 852, y: 189, scale: 0.22, skewX: -12 },
+            { x: 1237,y: 306, scale: 0.39, skewX: -12 },
+            { x: 957, y: -21, scale: 0.5,  skewX: -12 },
+            { x: 791, y: 558, scale: 0.21, skewX: -12 },
+            { x: 878, y: 357, scale: 0.36, skewX: -12 },
+            { x: 1131,y: 391, scale: 0.13, skewX: -12 }
+        ];
+    } else if (window.layerState.bpStyleIndex === 3) { 
+        wmArray = [
+            {x: 1019, y: 601, scale: 0.3,  skewX: -12},
+            {x: 1037, y: 657, scale: 0.75, skewX: -12},
+            {x: 1173, y: 541, scale: 0.57, skewX: -12},
+            {x: -114, y: 687, scale: 0.93, skewX: -12},
+            {x: 167,  y: 666, scale: 0.26, skewX: -12},
+            {x: 23,   y: 610, scale: 0.45, skewX: -12},
+            {x: -158, y: 125, scale: 0.54, skewX: -12},
+            {x: 332,  y: -27, scale: 0.72, skewX: -12},
+            {x: 887,  y: 7,   scale: 0.39, skewX: -12},
+            {x: 1242, y: 476, scale: 0.21, skewX: -12}
+        ];
+    } else { 
+        wmArray = [
+            { x: 514, y: -31, scale: 0.74, skewX: -12 },
+            { x: 71,  y: 17,  scale: 0.25, skewX: -12 },
+            { x: 19,  y: 146, scale: 0.12, skewX: -12 },
+            { x: 664, y: 82,  scale: 0.25, skewX: -12 },
+            { x: 587, y: 598, scale: 0.33, skewX: -12 },
+            { x: 421, y: 699, scale: 0.72, skewX: -12 },
+            { x: 734, y: 262, scale: 0.1,  skewX: -12 },
+            { x: 76,  y: 602, scale: 0.38, skewX: -12 },
+            { x: -92, y: 695, scale: 0.87, skewX: -12 },
+            { x: -52, y: 386, scale: 0.24, skewX: -12 },
+            { x: 852, y: 189, scale: 0.22, skewX: -12 },
+            { x: 1237,y: 306, scale: 0.39, skewX: -12 },
+            { x: 957, y: -21, scale: 0.5,  skewX: -12 },
+            { x: 791, y: 558, scale: 0.21, skewX: -12 },
+            { x: 878, y: 357, scale: 0.36, skewX: -12 },
+            { x: 1131,y: 391, scale: 0.13, skewX: -12 }
+        ];
+    }
+    window.layerState.customWatermarks = wmArray;
+}
 
     let s = w / 1280;
 
