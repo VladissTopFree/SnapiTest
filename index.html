@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(20)";
+  const APP_VERSION = "v2.4.1(21)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -7435,12 +7435,15 @@ function drawScene() {
             }
 
             if (rawBgImage) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(809*s, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(750*s, H);
-                ctx.closePath();
-                ctx.clip();
-                ctx.drawImage(rawBgImage, 0, 0, W, H);
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(lineCx + 22*s, -20);
+            ctx.lineTo(W, -20);
+            ctx.lineTo(W, H + 20);
+            ctx.lineTo(lineCx + 22*s + (H - lineY + 40) * Math.tan(7 * Math.PI / 180), H + 20);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(rawBgImage, 0, 0, W, H);
 
                 const vigL = ctx.createLinearGradient(750*s, 0, 900*s, 0);
                 vigL.addColorStop(0, 'rgba(0,0,0,0.55)');
@@ -7674,11 +7677,10 @@ function drawScene() {
 
             ctx.save();
             ctx.beginPath();
-            ctx.moveTo(lineCx + 27*s, 0);
-            ctx.lineTo(W, 0);
-            ctx.lineTo(W, H * 0.52);
-            ctx.lineTo(lineCx + 27*s + (H * 0.52 - lineY) * Math.tan(7 * Math.PI / 180), H * 0.52);
-            ctx.lineTo(lineCx + 27*s + (0 - lineY) * Math.tan(7 * Math.PI / 180), 0);
+            ctx.moveTo(lineCx + 22*s, -20);
+            ctx.lineTo(W, -20);
+            ctx.lineTo(W, H * 0.52 + 20);
+            ctx.lineTo(lineCx + 22*s + (H * 0.52 - lineY + 20) * Math.tan(7 * Math.PI / 180), H * 0.52 + 20);
             ctx.closePath();
             ctx.clip();
             drawBrawler(globalAssets[`brawler_${season}_2`], C.brawler2);
