@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(19)";
+  const APP_VERSION = "v2.4.1(20)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4867,7 +4867,7 @@ window.rebuildStyle1Background = () => {
 
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
+        ctx.moveTo(WIDTH, 0); ctx.lineTo(startX, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
         ctx.clip();
         let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
         grad2.addColorStop(0, window.layerState.tempGradR0 || config.gradientRight[0]); 
@@ -7674,11 +7674,11 @@ function drawScene() {
 
             ctx.save();
             ctx.beginPath();
-            ctx.moveTo(lineCx + 27*s, -20);
-            ctx.lineTo(W, -20);
+            ctx.moveTo(lineCx + 27*s, 0);
+            ctx.lineTo(W, 0);
             ctx.lineTo(W, H * 0.52);
-            ctx.lineTo(lineCx + 27*s + (H * 0.52 + 20 - lineY) * Math.tan(7 * Math.PI / 180), H * 0.52);
-            ctx.lineTo(lineCx + 27*s + (-20 - lineY) * Math.tan(7 * Math.PI / 180), -20);
+            ctx.lineTo(lineCx + 27*s + (H * 0.52 - lineY) * Math.tan(7 * Math.PI / 180), H * 0.52);
+            ctx.lineTo(lineCx + 27*s + (0 - lineY) * Math.tan(7 * Math.PI / 180), 0);
             ctx.closePath();
             ctx.clip();
             drawBrawler(globalAssets[`brawler_${season}_2`], C.brawler2);
@@ -10005,7 +10005,7 @@ async function generateBrawlPassTest() {
 
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(WIDTH, -20); ctx.lineTo(startX, -20); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT + 20); ctx.lineTo(WIDTH, HEIGHT + 20); ctx.closePath();
+        ctx.moveTo(WIDTH, 0); ctx.lineTo(startX, 0); ctx.lineTo(WIDTH * 0.34, HEIGHT * 0.50); ctx.lineTo(WIDTH * 0.37, HEIGHT * 0.46); ctx.lineTo(endX, HEIGHT); ctx.lineTo(WIDTH, HEIGHT); ctx.closePath();
         ctx.clip();
         let grad2 = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT * 0.2);
         grad2.addColorStop(0, config.gradientRight[0]); 
