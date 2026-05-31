@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(13)";
+  const APP_VERSION = "v2.4.1(14)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -48,7 +48,12 @@
           },
           dopBrawler: { x: 569, y: 96, scale: 0.88, scaleX: 0.86, scaleY: 1, rot: 0 },
           dopBrawler1: { x: 392, y: 76, scale: 0.89, scaleX: 1.37, scaleY: 1, rot: 0, flipH: true },
-          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
+          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
+
+        style4Brawlers: {
+        brawlerL: { x: 846, y: 611, scale: 400, flipH: false },
+        brawlerR: { x: 1127, y: 580, scale: 450, flipH: false }
+        }
       },
       49: {
           lineColor: '#b2beff', 
@@ -66,7 +71,11 @@
           },
           dopBrawler: { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 },
           dopBrawler1: { x: 566, y: 182, scale: 0.75, scaleX: 1.24, scaleY: 1, rot: 0, flipH: true },
-          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }
+          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
+                  style4Brawlers: {
+            brawlerL: { x: 846, y: 611, scale: 400, flipH: false },
+            brawlerR: { x: 1127, y: 580, scale: 450, flipH: false }
+        }
       },
       48: {
           lineColor: '#ffa800', 
@@ -82,7 +91,11 @@
           },
           dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
           dopBrawler1: { x: 618, y: 93, scale: 0.76, scaleX: 1, scaleY: 1.07, rot: 0, flipH: true },
-          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 }      
+          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
+                  style4Brawlers: {
+            brawlerL: { x: 846, y: 611, scale: 400, flipH: false },
+            brawlerR: { x: 1127, y: 580, scale: 450, flipH: false }
+        }    
         },
   };
 
@@ -2373,11 +2386,11 @@ body.os-desktop #wizard-step3.dragover {
       Snapi
     </span>
   </div>
-<div onclick="openSettings()" class="settings-header-btn" style="display: flex; align-items: center; gap: 3px; background: color-mix(in srgb, var(--tg-theme-destructive-text-color) 12%, transparent); border-radius: 8px; padding: 5px 6px 5px 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s, transform 0.15s; flex-shrink: 0;">
+<div onclick="openSettings()" class="settings-header-btn" style="display: flex; align-items: center; gap: 5px; background: color-mix(in srgb, var(--tg-theme-destructive-text-color) 12%, transparent); border-radius: 8px; padding: 5px 6px 5px 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s, transform 0.15s; flex-shrink: 0;">
 
     <svg width="14" height="14" viewBox="0 0 512 512" fill="var(--tg-theme-destructive-text-color)" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-        fill="#000000" stroke="none">
+        fill="var(--tg-theme-destructive-text-color)" stroke="none">
         <path d="M2310 5104 c-89 -39 -124 -101 -139 -249 -6 -60 -14 -131 -17 -157
         l-6 -47 -51 -11 c-29 -6 -92 -22 -141 -36 -73 -22 -90 -24 -97 -13 -5 8 -48
         68 -96 133 -104 141 -133 161 -233 161 -64 0 -67 -1 -242 -103 -121 -70 -189
@@ -4723,7 +4736,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -5168,17 +5181,76 @@ if (window.layerState.isBrawlPassMode) {
                 </div>`;
             }
 
-            } else if (window.layerState.bpStyleIndex === 4) {
-            const labels4 = ["30 gems","80 gems","170 gems","360 gems","950 gems","2000 gems","Brawl Pass","Brawl Pass+","Pro Pass"];
-            for (let i = 0; i <= 8; i++) {
-                let val = (window.layerState.style4Prices && window.layerState.style4Prices[i]) ? window.layerState.style4Prices[i] : "";
-                html += `
-                <div class="ios-layer-row" ${i===8 ? 'style="border-bottom:none;"' : ''}>
-                    <div class="ios-layer-name" style="font-size:15px;">${labels4[i]}</div>
-                    <div class="ios-layer-action-text">значение</div>
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="4" oninput="updateS4PriceLayer(${i}, this)" style="width:65px;">
-                </div>`;
-            }
+} else if (window.layerState.bpStyleIndex === 4) {
+    const labels4 = ["30 gems","80 gems","170 gems","360 gems","950 gems","2000 gems","Brawl Pass","Brawl Pass+","Pro Pass","Пин левый","Пин правый"];
+    for (let i = 0; i <= 10; i++) {
+        let val = (window.layerState.style4Prices && window.layerState.style4Prices[i]) ? window.layerState.style4Prices[i] : "";
+        html += `
+        <div class="ios-layer-row" ${i===10 && !window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
+            <div class="ios-layer-name" style="font-size:15px;">${labels4[i]}</div>
+            <div class="ios-layer-action-text">значение</div>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="4" oninput="updateS4PriceLayer(${i}, this)" style="width:65px;">
+        </div>`;
+    }
+
+    if (window.ENABLE_TEMP_EDITOR) {
+        const season4 = window.layerState.bpSeason || 50;
+        const s4Conf = (BP_SEASON_CONFIG[season4] && BP_SEASON_CONFIG[season4].style4Brawlers)
+            ? BP_SEASON_CONFIG[season4].style4Brawlers
+            : BP_SEASON_CONFIG[50].style4Brawlers;
+
+        const rX = window.layerState.s4BrawlerR_x     !== undefined ? window.layerState.s4BrawlerR_x     : s4Conf.brawlerR.x;
+        const rY = window.layerState.s4BrawlerR_y     !== undefined ? window.layerState.s4BrawlerR_y     : s4Conf.brawlerR.y;
+        const rS = window.layerState.s4BrawlerR_scale !== undefined ? window.layerState.s4BrawlerR_scale : s4Conf.brawlerR.scale;
+        const rF = window.layerState.s4BrawlerR_flip  !== undefined ? window.layerState.s4BrawlerR_flip  : s4Conf.brawlerR.flipH;
+        const lX = window.layerState.s4BrawlerL_x     !== undefined ? window.layerState.s4BrawlerL_x     : s4Conf.brawlerL.x;
+        const lY = window.layerState.s4BrawlerL_y     !== undefined ? window.layerState.s4BrawlerL_y     : s4Conf.brawlerL.y;
+        const lS = window.layerState.s4BrawlerL_scale !== undefined ? window.layerState.s4BrawlerL_scale : s4Conf.brawlerL.scale;
+        const lF = window.layerState.s4BrawlerL_flip  !== undefined ? window.layerState.s4BrawlerL_flip  : s4Conf.brawlerL.flipH;
+
+        html += `
+        <div class="ios-section-title" style="margin-left:0; margin-top:15px;">РЕДАКТОР ПЕРСОНАЖЕЙ (СТИЛЬ 4) — Сезон ${season4}</div>
+        
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Правый X</div>
+            <div id="v-s4r-x" style="margin-right:10px;color:#8E8E93;width:40px;text-align:right;">${rX}</div>
+            <input type="range" class="ios-slider" min="0" max="1280" step="1" value="${rX}" oninput="document.getElementById('v-s4r-x').innerText=this.value; window.layerState.s4BrawlerR_x=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Правый Y</div>
+            <div id="v-s4r-y" style="margin-right:10px;color:#8E8E93;width:40px;text-align:right;">${rY}</div>
+            <input type="range" class="ios-slider" min="0" max="720" step="1" value="${rY}" oninput="document.getElementById('v-s4r-y').innerText=this.value; window.layerState.s4BrawlerR_y=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Правый Размер</div>
+            <div id="v-s4r-s" style="margin-right:10px;color:#8E8E93;width:40px;text-align:right;">${rS}</div>
+            <input type="range" class="ios-slider" min="50" max="800" step="5" value="${rS}" oninput="document.getElementById('v-s4r-s').innerText=this.value; window.layerState.s4BrawlerR_scale=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Правый Отразить</div>
+            <button class="ios-pill-btn" onclick="window.layerState.s4BrawlerR_flip=!window.layerState.s4BrawlerR_flip; renderLayerPanel(); startAnimation();">${rF ? 'ДА' : 'НЕТ'}</button>
+        </div>
+
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Левый X</div>
+            <div id="v-s4l-x" style="margin-right:10px;color:#8E8E93;width:40px;text-align:right;">${lX}</div>
+            <input type="range" class="ios-slider" min="0" max="1280" step="1" value="${lX}" oninput="document.getElementById('v-s4l-x').innerText=this.value; window.layerState.s4BrawlerL_x=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Левый Y</div>
+            <div id="v-s4l-y" style="margin-right:10px;color:#8E8E93;width:40px;text-align:right;">${lY}</div>
+            <input type="range" class="ios-slider" min="0" max="720" step="1" value="${lY}" oninput="document.getElementById('v-s4l-y').innerText=this.value; window.layerState.s4BrawlerL_y=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Левый Размер</div>
+            <div id="v-s4l-s" style="margin-right:10px;color:#8E8E93;width:40px;text-align:right;">${lS}</div>
+            <input type="range" class="ios-slider" min="50" max="800" step="5" value="${lS}" oninput="document.getElementById('v-s4l-s').innerText=this.value; window.layerState.s4BrawlerL_scale=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row" style="border-bottom:none;"><div class="ios-layer-name" style="font-size:14px;">Левый Отразить</div>
+            <button class="ios-pill-btn" onclick="window.layerState.s4BrawlerL_flip=!window.layerState.s4BrawlerL_flip; renderLayerPanel(); startAnimation();">${lF ? 'ДА' : 'НЕТ'}</button>
+        </div>
+        
+        <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
+            <button class="ios-pill-btn" style="background:#00ff591f;color:#16a34a;flex-grow:1;" 
+                onclick="console.log('style4Brawlers season ${season4}:', JSON.stringify({ brawlerL:{x:${lX},y:${lY},scale:${lS},flipH:${lF}}, brawlerR:{x:${rX},y:${rY},scale:${rS},flipH:${rF}} })); alert('Данные скопированы в консоль!');">
+                📋 Вывести данные в консоль
+            </button>
+        </div>`;
+    }
+
             } else {
             if (window.layerState.bpStyleIndex === 'dop') {
                 let panelLabel = "Brawl Pass";
@@ -7054,7 +7126,7 @@ window.updateCachedTextCanvas = () => {
     cachedCustomTextCanvas.height = persistentCanvas.height;
     let customCtx = cachedCustomTextCanvas.getContext('2d');
     
-    if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 3) {
+    if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 3 && window.layerState.bpStyleIndex !== 4) {
         drawBPNickText(ctx, window.layerState.textValue || "SNAPI", persistentCanvas.width, persistentCanvas.height);
     } else {
         drawBeautifulNick(ctx, window.layerState.textValue, persistentCanvas.width, persistentCanvas.height);
@@ -7844,12 +7916,22 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.fill();
             ctx.restore();
 
-            // Свечения
+            const colorMap4 = {
+                'green':  '#5ee568',
+                'blue':   '#46b3ff',
+                'orange': '#ffcc00',
+                'purple': '#c861ff',
+                'black':  '#aaaaaa'
+            };
+            const glowColor4 = (window.layerState.isGeneratedBg && window.layerState.bgColorType)
+                ? (colorMap4[window.layerState.bgColorType] || '#ffffff')
+                : '#ffffff';
+
             const lights4 = [
-                { x: 372, y: 292, scale: 1.3, alpha: 0.5, r: 200, blur: 100, col: '#ffffff' },
-                { x: 1038, y: 215, scale: 1.0, alpha: 0.2, r: 200, blur: 100, col: '#ffffff' },
-                { x: 1121, y: 609, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: '#ffffff' },
-                { x: 851, y: 603, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: '#ffffff' }
+                { x: 372, y: 292, scale: 1.3, alpha: 0.5, r: 200, blur: 100, col: glowColor4 },
+                { x: 1038, y: 215, scale: 1.0, alpha: 0.2, r: 200, blur: 100, col: glowColor4 },
+                { x: 1121, y: 609, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: glowColor4 },
+                { x: 851, y: 603, scale: 0.65, alpha: 0.8, r: 200, blur: 100, col: glowColor4 }
             ];
             lights4.forEach(l => {
                 ctx.save();
@@ -7897,17 +7979,29 @@ else if (window.layerState.bpStyleIndex === 4) {
             const p4 = window.layerState.style4Prices || [];
             const fmt4 = (i) => (p4[i] !== undefined && p4[i] !== "") ? p4[i] + " ₽" : "0 ₽";
 
-            // Вспомогательная функция рисования текста цены (стиль как в 1-м коде)
             const drawS4PriceText = (txt, x, y, fontSize) => {
                 ctx.save();
-                ctx.font = `${fontSize}px 'Russo One', sans-serif`;
+                ctx.font = `${fontSize}px 'LilitaOneRus', 'Lilita One', sans-serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.miterLimit = 2;
                 ctx.lineJoin = 'round';
-                ctx.lineWidth = 6 * (W/1280);
+                const sw = fontSize * 0.18;
+                // чёрная тень-обводка снизу
+                ctx.lineWidth = sw;
                 ctx.strokeStyle = '#000000';
+                ctx.strokeText(txt, x*s, y*s + sw * 0.12); // смещение вниз = тень
+                // основная обводка
                 ctx.strokeText(txt, x*s, y*s);
+                // чёткая drop-shadow через shadowOffsetY
+                ctx.shadowColor = 'rgba(0,0,0,1)';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = Math.max(3, fontSize * 0.09);
+                ctx.strokeText(txt, x*s, y*s);
+                ctx.shadowColor = 'transparent';
+                ctx.shadowOffsetY = 0;
+                // белая заливка
                 ctx.fillStyle = '#ffffff';
                 ctx.fillText(txt, x*s, y*s);
                 ctx.restore();
@@ -7937,27 +8031,57 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.restore();
             };
 
-            // Brawler правый (x:1127 y:580 w:450 h:450) — белая тень снизу
-            if (globalAssets.s4BrawlerR) {
-                ctx.save();
-                ctx.shadowColor = 'rgba(255,255,255,1)';
-                ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
-                const sc = Math.min(450/globalAssets.s4BrawlerR.width, 450/globalAssets.s4BrawlerR.height);
-                const dw = globalAssets.s4BrawlerR.width*sc*s, dh = globalAssets.s4BrawlerR.height*sc*s;
-                ctx.drawImage(globalAssets.s4BrawlerR, 1127*s-dw/2, 580*s-dh/2, dw, dh);
-                ctx.restore();
-            }
+                            // Brawler правый (x:1127 y:580 w:450 h:450) — белая тень снизу
+                const season4 = window.layerState.bpSeason || 50;
+                const s4Conf = (BP_SEASON_CONFIG[season4] && BP_SEASON_CONFIG[season4].style4Brawlers)
+                    ? BP_SEASON_CONFIG[season4].style4Brawlers
+                    : BP_SEASON_CONFIG[50].style4Brawlers;
 
-            // Brawler левый (x:846 y:611 w:400 h:400) — белая тень снизу
-            if (globalAssets.s4BrawlerL) {
-                ctx.save();
-                ctx.shadowColor = 'rgba(255,255,255,1)';
-                ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
-                const sc = Math.min(400/globalAssets.s4BrawlerL.width, 400/globalAssets.s4BrawlerL.height);
-                const dw = globalAssets.s4BrawlerL.width*sc*s, dh = globalAssets.s4BrawlerL.height*sc*s;
-                ctx.drawImage(globalAssets.s4BrawlerL, 846*s-dw/2, 611*s-dh/2, dw, dh);
-                ctx.restore();
-            }
+                const s4BR_x     = window.layerState.s4BrawlerR_x     !== undefined ? window.layerState.s4BrawlerR_x     : s4Conf.brawlerR.x;
+                const s4BR_y     = window.layerState.s4BrawlerR_y     !== undefined ? window.layerState.s4BrawlerR_y     : s4Conf.brawlerR.y;
+                const s4BR_scale = window.layerState.s4BrawlerR_scale !== undefined ? window.layerState.s4BrawlerR_scale : s4Conf.brawlerR.scale;
+                const s4BR_flip  = window.layerState.s4BrawlerR_flip  !== undefined ? window.layerState.s4BrawlerR_flip  : s4Conf.brawlerR.flipH;
+
+                const s4BL_x     = window.layerState.s4BrawlerL_x     !== undefined ? window.layerState.s4BrawlerL_x     : s4Conf.brawlerL.x;
+                const s4BL_y     = window.layerState.s4BrawlerL_y     !== undefined ? window.layerState.s4BrawlerL_y     : s4Conf.brawlerL.y;
+                const s4BL_scale = window.layerState.s4BrawlerL_scale !== undefined ? window.layerState.s4BrawlerL_scale : s4Conf.brawlerL.scale;
+                const s4BL_flip  = window.layerState.s4BrawlerL_flip  !== undefined ? window.layerState.s4BrawlerL_flip  : s4Conf.brawlerL.flipH;
+
+                // Brawler правый
+                if (globalAssets[`brawler_${season4}_1`] || globalAssets.s4BrawlerR) {
+                    const brawlerR = globalAssets[`brawler_${season4}_1`] || globalAssets.s4BrawlerR;
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(255,255,255,1)';
+                    ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
+                    const sc = Math.min(s4BR_scale / brawlerR.width, s4BR_scale / brawlerR.height);
+                    const dw = brawlerR.width * sc * s, dh = brawlerR.height * sc * s;
+                    if (s4BR_flip) {
+                        ctx.translate(s4BR_x*s, s4BR_y*s);
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(brawlerR, -dw/2, -dh/2, dw, dh);
+                    } else {
+                        ctx.drawImage(brawlerR, s4BR_x*s - dw/2, s4BR_y*s - dh/2, dw, dh);
+                    }
+                    ctx.restore();
+                }
+
+                // Brawler левый
+                if (globalAssets[`brawler_${season4}_2`] || globalAssets.s4BrawlerL) {
+                    const brawlerL = globalAssets[`brawler_${season4}_2`] || globalAssets.s4BrawlerL;
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(255,255,255,1)';
+                    ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
+                    const sc = Math.min(s4BL_scale / brawlerL.width, s4BL_scale / brawlerL.height);
+                    const dw = brawlerL.width * sc * s, dh = brawlerL.height * sc * s;
+                    if (s4BL_flip) {
+                        ctx.translate(s4BL_x*s, s4BL_y*s);
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(brawlerL, -dw/2, -dh/2, dw, dh);
+                    } else {
+                        ctx.drawImage(brawlerL, s4BL_x*s - dw/2, s4BL_y*s - dh/2, dw, dh);
+                    }
+                    ctx.restore();
+                }
 
             // Гемы (x:380 y:277 scale:1.4 w:500 h:550) — тень снизу
             if (globalAssets.s4Gems) {
@@ -8002,8 +8126,8 @@ else if (window.layerState.bpStyleIndex === 4) {
 
             // Пин левый — иконка (x:158 y:587 scale:1.05 w:90 h:90)
             drawS4Icon(globalAssets.s4PinLeft, 158, 587, 90*1.05, 90*1.05);
-            // Пин левый — цена
-            drawS4PriceText(fmt4(6), 265, 584, 24 * 1.3 * s);
+            // Пин левый — цена (индекс 9)
+            drawS4PriceText(fmt4(9), 265, 584, 24 * 1.3 * s);
 
             // Пин правый — плашка (x:527 y:587)
             ctx.save();
@@ -8022,8 +8146,8 @@ else if (window.layerState.bpStyleIndex === 4) {
 
             // Пин правый — иконка (x:429 y:586 scale:1.3)
             drawS4Icon(globalAssets.s4PinRight, 429, 586, 90*1.3, 90*1.3);
-            // Пин правый — цена
-            drawS4PriceText(fmt4(7), 539, 588, 24 * 1.25 * s);
+            // Пин правый — цена (индекс 10)
+            drawS4PriceText(fmt4(10), 539, 588, 24 * 1.25 * s);
 
             // BP кнопка жёлтая (x:1070 y:89 scale:1.3 w:180 h:60 r:15 rot:1°) — double outline + inShadow orange
             const drawS4Rect = (cx, cy, w, h, r, fillCol, rot, scl, inShadowCol, inShadowY) => {
@@ -8033,7 +8157,8 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.scale(scl, scl);
                 const rw = w*s, rh = h*s, rx = -rw/2, ry = -rh/2, rr = r*s;
                 // double outline white
-                ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 6*s; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 7*s;
+                // ctx.shadowColor убираем отсюда — тень задаётся снаружи
+                ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
                 ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
                 ctx.moveTo(rx-5*s+rr, ry-5*s); 
@@ -8078,7 +8203,10 @@ else if (window.layerState.bpStyleIndex === 4) {
             };
 
             // BP жёлтая плашка (x:1070 y:89 scale:1.3 w:180 h:60 r:15 rot:1)
-            drawS4Rect(1070, 89, 180, 60, 15, '#ffea00', 1, 1.3, '#ff6a18', -5);
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 15*s; ctx.shadowBlur = 35*s;
+            drawS4Rect(1070, 89, 180, 60, 15, '#fbeb4e', 1, 1.3, '#f0953a', -5);
+            ctx.restore();
             // BP иконка (x:896 y:89 rot:5)
             ctx.save();
             ctx.translate(896*s, 89*s);
@@ -8086,29 +8214,33 @@ else if (window.layerState.bpStyleIndex === 4) {
             drawS4Icon(globalAssets.s4PassYellow, 0, 0, 170, 100);
             ctx.restore();
             // BP цена
-            drawS4PriceText(fmt4(6), 1076, 90, 34 * 1.3 * s);
+            drawS4PriceText(fmt4(6), 1076, 84, 34 * 1.3 * s);
 
             // BP+ синяя плашка (x:1071 y:210 scale:1.25 w:180 h:60 r:15 rot:1)
-            drawS4Rect(1071, 210, 180, 60, 15, '#d0f8ff', 1, 1.25, '#0088cc', -5);
-            // BP+ иконка (x:897 y:209 rot:6)
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 15*s; ctx.shadowBlur = 35*s;
+            drawS4Rect(1071, 210, 180, 60, 15, '#d8f7fe', 1, 1.25, '#5da7d6', -5);
+            ctx.restore();            // BP+ иконка (x:897 y:209 rot:6)
             ctx.save();
             ctx.translate(897*s, 209*s);
             ctx.rotate(6 * Math.PI/180);
             drawS4Icon(globalAssets.s4PassBlue, 0, 0, 170, 100);
             ctx.restore();
             // BP+ цена
-            drawS4PriceText(fmt4(7), 1080, 211, 34 * 1.25 * s);
+            drawS4PriceText(fmt4(7), 1080, 205, 34 * 1.25 * s);  // BP+ (-2px)
 
-            // Pro зелёная плашка (x:1019 y:325 scale:1.3 w:180 h:60 r:15 rot:1)
-            drawS4Rect(1019, 325, 180, 60, 15, '#55ff00', 1, 1.3, '#008800', -5);
-            // Pro иконка (x:893 y:322 scale:0.9 rot:1)
+            // Pro зелёная плашка — сдвиг +3px по Y
             ctx.save();
-            ctx.translate(893*s, 322*s);
+            ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 15*s; ctx.shadowBlur = 35*s;
+            drawS4Rect(1019, 328, 180, 60, 15, '#89fc4d', 1, 1.3, '#50a830', -5);
+            ctx.restore();            // Pro иконка — сдвиг +3px по Y
+            ctx.save();
+            ctx.translate(893*s, 325*s);
             ctx.rotate(1 * Math.PI/180);
             drawS4Icon(globalAssets.s4PassPro, 0, 0, 140*0.9, 140*0.9);
             ctx.restore();
-            // Pro цена
-            drawS4PriceText(fmt4(8), 1026, 326, 34 * 1.3 * s);
+            // Pro цена — сдвиг +3px по Y
+            drawS4PriceText(fmt4(8), 1026, 323, 34 * 1.3 * s);   // Pro (-2px, уже с +3px)
 
             // Ник
             if (cachedTextCanvas && animText.alpha > 0.01) {
@@ -8940,7 +9072,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
                 
                 if (window.layerState.isBrawlPassMode) {
                 if (window.layerState.isBrawlPassMode) {
-                    if (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3 || window.layerState.bpStyleIndex === 'dop') {
+                    if (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3 || window.layerState.bpStyleIndex === 'dop' || window.layerState.bpStyleIndex === 4) {
                         if (typeof startAnimation === 'function') startAnimation();
                     } else {
                         generateBrawlPassTest(); 
@@ -10203,8 +10335,17 @@ window.openBPStyle4Editor = function() {
 
         let season = window.layerState.bpSeason || 50;
 
-        // Загружаем все ресурсы из 1-го кода
-        if (!globalAssets.s4Bg)         globalAssets.s4Bg         = await load('bg/bg8.png');
+        // ✅ Добавляем установку фона, как в openBPTestEditor и openBPStyle3Editor
+        if (window.layerState.selectedColor || window.layerState.bgColorType) {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = true;
+            if (!rawBgImage) rawBgImage = await createGradientBg(window.layerState.bgColorType);
+        } else if (window.layerState.isReadyBg) {
+            // готовый фон уже в rawBgImage
+        } else if (!rawBgImage) {
+            rawBgImage = await load('bg/bg8.png');
+        }
+
         if (!globalAssets.s4Points)     globalAssets.s4Points     = await load('BP/bp_style2_points.png');
         if (!globalAssets.s4Stars)      globalAssets.s4Stars      = await load('BP/style4_stars_bp.png');
         if (!globalAssets.s4Gems)       globalAssets.s4Gems       = await load('BP/bp_gems.png');
@@ -10213,10 +10354,9 @@ window.openBPStyle4Editor = function() {
         if (!globalAssets.s4PassYellow) globalAssets.s4PassYellow = await load('BP/bp_icon_brawl_pass.png');
         if (!globalAssets.s4PassBlue)   globalAssets.s4PassBlue   = await load('BP/bp_icon_brawl_pass_plus.png');
         if (!globalAssets.s4PassPro)    globalAssets.s4PassPro    = await load('BP/bp_icon_pro_pass_icon.png');
-        if (!globalAssets.s4BrawlerL)   globalAssets.s4BrawlerL   = await load('BP/brawler_s50_2.png');
-        if (!globalAssets.s4BrawlerR)   globalAssets.s4BrawlerR   = await load('BP/brawler_s50_1.png');
-
-        rawBgImage = globalAssets.s4Bg;
+        const season4 = window.layerState.bpSeason || 50;
+        if (!globalAssets[`brawler_${season4}_1`]) globalAssets[`brawler_${season4}_1`] = await load(`BP/brawler_s${season4}_1.png`);
+        if (!globalAssets[`brawler_${season4}_2`]) globalAssets[`brawler_${season4}_2`] = await load(`BP/brawler_s${season4}_2.png`);
 
         setupPersistentCanvas();
         renderLayerPanel(true);
