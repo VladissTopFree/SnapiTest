@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(16)";
+  const APP_VERSION = "v2.4.1(17)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -7615,8 +7615,8 @@ function drawScene() {
                 }
 
                 ctx.shadowColor = "white"; ctx.shadowBlur = 0; 
-                ctx.shadowOffsetX = 3 * s / baseScale; 
-                ctx.shadowOffsetY = -6 * s / baseScale;
+                ctx.shadowOffsetX = 1.5 * s / baseScale; 
+                ctx.shadowOffsetY = -3 * s / baseScale;
                 ctx.drawImage(img, 0, 0, targetW, targetH);
 
                 ctx.shadowOffsetX = 2 * s / baseScale; 
@@ -7676,8 +7676,8 @@ function drawScene() {
             ctx.beginPath();
             ctx.moveTo(lineCx + 27*s, lineY);
             ctx.lineTo(W, lineY);
-            ctx.lineTo(W, H * 0.75);
-            ctx.lineTo(lineCx + 27*s + (H * 0.75 - lineY) * Math.tan(7 * Math.PI / 180), H * 0.75);
+            ctx.lineTo(W, H * 0.52);
+            ctx.lineTo(lineCx + 27*s + (H * 0.52 - lineY) * Math.tan(7 * Math.PI / 180), H * 0.52);
             ctx.closePath();
             ctx.clip();
             drawBrawler(globalAssets[`brawler_${season}_2`], C.brawler2);
@@ -7690,7 +7690,12 @@ function drawScene() {
 
             ctx.save();
             ctx.beginPath();
-            ctx.rect(0, H/2 + 8*s, W, H/2); 
+            ctx.moveTo(lineCx + 27*s + (H/2 - lineY) * Math.tan(7 * Math.PI / 180), H/2);
+            ctx.lineTo(W, H/2);
+            ctx.lineTo(W, H);
+            ctx.lineTo(0, H);
+            ctx.lineTo(0, H/2);
+            ctx.closePath();
             ctx.clip();
             drawBrawler(globalAssets[`brawler_${season}_1`], C.brawler1);
             ctx.restore();
@@ -9065,20 +9070,28 @@ function drawBeautifulNick(ctx, text, w, h) {
       let bpNextBtn3 = document.getElementById('wizard-next-btn3-bp');
       if(bpNextBtn3) bpNextBtn3.classList.remove('show');
 
-      ['ws3-p0', 'ws3-p1', 'ws3-p2'].forEach(id => {
-          let el = document.getElementById(id);
-          if (el) el.value = '';
-      });
+        ['ws3-p0', 'ws3-p1', 'ws3-p2'].forEach(id => {
+            let el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        window.layerState.style3Prices = [];
+        let bpNextBtn3Style3 = document.getElementById('wizard-next-btn3-bp-style3');
+        if (bpNextBtn3Style3) bpNextBtn3Style3.classList.remove('show');
 
-    for (let i = 0; i <= 8; i++) {
-          let el = document.getElementById('ws4-p' + i);
-          if (el) el.value = '';
-      }
-      if (window.layerState) window.layerState.style4Prices = [];
-      let bpNextBtn3Style4 = document.getElementById('wizard-next-btn3-bp-style4');
-      if (bpNextBtn3Style4) bpNextBtn3Style4.classList.remove('show');
-      let bpNextBtn3Style2 = document.getElementById('wizard-next-btn3-bp-style2');
-      if (bpNextBtn3Style2) bpNextBtn3Style2.classList.remove('show');
+        for (let i = 0; i <= 10; i++) {
+            let el = document.getElementById('ws4-p' + i);
+            if (el) el.value = '';
+        }
+        if (window.layerState) window.layerState.style4Prices = [];
+        let bpNextBtn3Style4 = document.getElementById('wizard-next-btn3-bp-style4');
+        if (bpNextBtn3Style4) bpNextBtn3Style4.classList.remove('show');
+    for (let i = 0; i <= 10; i++) {
+        let el = document.getElementById('ws2-p' + i);
+        if (el) el.value = '';
+    }
+    window.layerState.style2Prices = [];
+    let bpNextBtn3Style2 = document.getElementById('wizard-next-btn3-bp-style2');
+    if (bpNextBtn3Style2) bpNextBtn3Style2.classList.remove('show');
 
         window.layerState.offers = [];
       window.layerState.customTexts = []; 
@@ -10440,12 +10453,14 @@ window.openBPStyle4Editor = function() {
 
         let season = window.layerState.bpSeason || 50;
 
-        // ✅ Добавляем установку фона, как в openBPTestEditor и openBPStyle3Editor
         if (window.layerState.selectedColor || window.layerState.bgColorType) {
             window.layerState.isReadyBg = false;
             window.layerState.isGeneratedBg = true;
             if (!rawBgImage) rawBgImage = await createGradientBg(window.layerState.bgColorType);
-        } 
+        } else if (rawBgImage) {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = false;
+        }
 
         if (!globalAssets.s4Points)     globalAssets.s4Points     = await load('BP/bp_style2_points.png');
         if (!globalAssets.s4Stars)      globalAssets.s4Stars      = await load('BP/style4_stars_bp.png');
