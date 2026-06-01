@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(23)";
+  const APP_VERSION = "v2.4.1(24)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -8274,7 +8274,8 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.lineTo(rx+rr, ry+rh); ctx.arcTo(rx, ry+rh, rx, ry+rh-rr, rr);
                 ctx.lineTo(rx, ry+rr); ctx.arcTo(rx, ry, rx+rr, ry, rr);
                 ctx.closePath(); ctx.fill();
-                // inner shadow
+
+                // inner shadow (тиснение)
                 if (inShadowCol) {
                     ctx.save();
                     ctx.beginPath();
@@ -8282,13 +8283,18 @@ else if (window.layerState.bpStyleIndex === 4) {
                     ctx.lineTo(rx+rw, ry+rh-rr); ctx.arcTo(rx+rw, ry+rh, rx+rw-rr, ry+rh, rr);
                     ctx.lineTo(rx+rr, ry+rh); ctx.arcTo(rx, ry+rh, rx, ry+rh-rr, rr);
                     ctx.lineTo(rx, ry+rr); ctx.arcTo(rx, ry, rx+rr, ry, rr);
-                    ctx.closePath(); ctx.clip();
-                    ctx.shadowColor = inShadowCol; ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = inShadowY*s;
-                    ctx.globalAlpha = 0.7;
-                    ctx.fillStyle = '#000000';
-                    ctx.fillRect(-999*s, -999*s, 9999*s, 9999*s);
+                    ctx.closePath();
+                    ctx.clip();
+                    ctx.shadowColor = inShadowCol;
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = inShadowY * s;
+                    ctx.globalAlpha = 0.35;
+                    ctx.fillStyle = inShadowCol;
+                    ctx.fillRect(rx, ry, rw, rh);
                     ctx.restore();
                 }
+
                 ctx.restore();
             };
 
@@ -8322,8 +8328,9 @@ else if (window.layerState.bpStyleIndex === 4) {
             // Pro зелёная плашка — сдвиг +3px по Y
             ctx.save();
             ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 15*s; ctx.shadowBlur = 35*s;
-            drawS4Rect(1019, 328, 180, 60, 15, '#89fc4d', 1, 1.3, '#50a830', -5);
-            ctx.restore();            // Pro иконка — сдвиг +3px по Y
+            drawS4Rect(1019, 328, 180, 60, 15, '#89fc4d', 1, 1.3, '#50a830', -5);            
+            ctx.restore();            
+            // Pro иконка — сдвиг +3px по Y
             ctx.save();
             ctx.translate(893*s, 325*s);
             ctx.rotate(1 * Math.PI/180);
@@ -8335,11 +8342,14 @@ else if (window.layerState.bpStyleIndex === 4) {
 
             // Ник 4 стиль бп 
             if (cachedTextCanvas && animText.alpha > 0.01) {
+                const s4tx = window.layerState.s4TextX !== undefined ? window.layerState.s4TextX : -241;
+                const s4ty = window.layerState.s4TextY !== undefined ? window.layerState.s4TextY : 481;
+                const s4ts = window.layerState.s4TextScale !== undefined ? window.layerState.s4TextScale : 0.65;
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
                 ctx.translate(W/2, H/2);
-                ctx.translate(488 * s, -257 * s); // ← меняй X и Y
-                ctx.scale(0.65, 0.65);           // ← меняй размер
+                ctx.translate(s4tx * s, s4ty * s);
+                ctx.scale(s4ts * animText.scale, s4ts * animText.scale);
                 ctx.translate(-W/2, -H/2);
                 ctx.drawImage(cachedTextCanvas, 0, 0);
                 ctx.restore();
@@ -9840,6 +9850,7 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
             window._uploadMode = uploadMode;
             window._uploadedBaseImg = uploadedBaseImg;
             window._uploadedReadyBaseImg = uploadedReadyBaseImg;
+            window._selectedColor = selectedColor;
             window.layerState.outputW = 1280;
             window.layerState.outputH = 720;
             window.openBPStyle4Editor();
@@ -10147,7 +10158,7 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     if ('letterSpacing' in mCtx) mCtx.letterSpacing = ls;
     
     let scaleMult = HEIGHT / 675;
-    let maxAllowedFontSize = 145 * scaleMult;
+    let maxAllowedFontSize = 9999 * scaleMult;
     let bpFontSize = 30 * scaleMult; 
     
     const longestLine = line2.length > line1.length ? line2 : line1;
@@ -10170,8 +10181,8 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
 
     const bpTextX = (WIDTH / 2 + (bpFontSize * 0.07 * 0.5)) - 12; 
 
-    const FIXED_BOTTOM_Y = HEIGHT * 0.91; 
-    const BOUND_TOP = HEIGHT * 0.62;
+    const FIXED_BOTTOM_Y = HEIGHT * 0.91;
+    const BOUND_TOP = -HEIGHT;
 
     let metrics1 = mCtx.measureText(line1);
     let maxLineH = Math.max(
@@ -10180,22 +10191,6 @@ function drawBPNickText(ctx, nick, WIDTH, HEIGHT) {
     );
 
     let topEdge = line2 ? (FIXED_BOTTOM_Y - maxLineH * 2 - lineGap) : (FIXED_BOTTOM_Y - maxLineH);
-
-    if (topEdge < BOUND_TOP) {
-        const availableH = FIXED_BOTTOM_Y - BOUND_TOP;
-        const neededLines = line2 ? 2 : 1;
-        const maxFontByHeight = Math.floor((availableH - lineGap * (neededLines - 1)) / neededLines);
-        
-        if (maxFontByHeight < bpFontSize) {
-            bpFontSize = maxFontByHeight;
-            mCtx.font = `${bpFontSize}px '${window.layerState.textFont || 'Font16103'}', sans-serif`;
-            metrics1 = mCtx.measureText(line1);
-            maxLineH = Math.max(
-                metrics1.actualBoundingBoxAscent + metrics1.actualBoundingBoxDescent,
-                line2 ? (() => { const m = mCtx.measureText(line2); return m.actualBoundingBoxAscent + m.actualBoundingBoxDescent; })() : 0
-            );
-        }
-    }
 
     let tScale = window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : 1;
     let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
@@ -10488,12 +10483,18 @@ window.openBPStyle4Editor = function() {
 
         let season = window.layerState.bpSeason || 50;
 
-        if (window.layerState.isReadyBg) {
-            rawBgImage = window._uploadedReadyBaseImg || rawBgImage;
-        } else if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
-            if (!rawBgImage) rawBgImage = await createGradientBg(window.layerState.bgColorType);
-        } else {
-            rawBgImage = window._uploadedBaseImg || rawBgImage;
+        if (window._uploadMode === 'ready_bg' && window._uploadedReadyBaseImg?.src) {
+            window.layerState.isReadyBg = true;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = window._uploadedReadyBaseImg;
+        } else if (window._selectedColor) {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = true;
+            rawBgImage = await createGradientBg(window._selectedColor);
+        } else if (window._uploadedBaseImg?.src) {
+            window.layerState.isReadyBg = false;
+            window.layerState.isGeneratedBg = false;
+            rawBgImage = window._uploadedBaseImg;
         }
 
         if (!globalAssets.s4Points)     globalAssets.s4Points     = await load('BP/bp_style2_points.png');
