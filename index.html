@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(22)";
+  const APP_VERSION = "v2.4.1(23)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2687,8 +2687,8 @@ body.os-desktop #wizard-step3.dragover {
                     <span style="color: #00c6ff; font-size: 10px; font-weight: bold; text-align: center; padding: 4px; line-height: 1.2;">Стиль #4</span>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
-                    <div class="cat-name">Стиль #4</div>
-                    <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, кристаллы, пины матчерино и детали для улучшения работы.</div>
+                    <div class="cat-name">Стиль #4 <span style="background: var(--tg-theme-button-color); color: #ffffff; font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 6px; margin-left: 4px; vertical-align: middle; position: relative; top: -1px;">НОВОЕ</span></div>
+                    <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, кристаллы, пины и детали для улучшения работы.</div>
                 </div>
         </div>
 
@@ -10488,19 +10488,12 @@ window.openBPStyle4Editor = function() {
 
         let season = window.layerState.bpSeason || 50;
 
-        const uploadMode = window._currentUploadMode; 
-        if (window._uploadMode === 'ready_bg') {
-            window.layerState.isReadyBg = true;
-            window.layerState.isGeneratedBg = false;
-            rawBgImage = window._uploadedReadyBaseImg;
-        } else if (window._uploadMode === 'normal_bg') {
-            window.layerState.isReadyBg = false;
-            window.layerState.isGeneratedBg = false;
-            rawBgImage = window._uploadedBaseImg;
-        } else if (window.layerState.bgColorType) {
-            window.layerState.isReadyBg = false;
-            window.layerState.isGeneratedBg = true;
+        if (window.layerState.isReadyBg) {
+            rawBgImage = window._uploadedReadyBaseImg || rawBgImage;
+        } else if (window.layerState.isGeneratedBg && window.layerState.bgColorType) {
             if (!rawBgImage) rawBgImage = await createGradientBg(window.layerState.bgColorType);
+        } else {
+            rawBgImage = window._uploadedBaseImg || rawBgImage;
         }
 
         if (!globalAssets.s4Points)     globalAssets.s4Points     = await load('BP/bp_style2_points.png');
