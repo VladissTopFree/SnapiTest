@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(26)";
+  const APP_VERSION = "v2.4.1(27)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -1541,7 +1541,7 @@
         overflow-x: hidden; 
         touch-action: pan-y; 
         -webkit-overflow-scrolling: touch;
-        padding: 5px 12px 20px 12px; 
+        padding: 5px 20px 20px 20px; 
         height: 100%;
         box-sizing: border-box;
         width: 100%;
@@ -1551,7 +1551,7 @@
   .fankit-recommended-wrapper {
     background: var(--tg-theme-section-bg-color, #ffffff);
     border-radius: 16px;
-    padding: 12px;
+    padding: 12px 8px;
     margin: 0 20px 10px 20px;
   }
   
@@ -2687,7 +2687,7 @@ body.os-desktop #wizard-step3.dragover {
                     <span style="color: #00c6ff; font-size: 10px; font-weight: bold; text-align: center; padding: 4px; line-height: 1.2;">Стиль #4</span>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
-                    <div class="cat-name">Стиль #4 <span style="background: var(--tg-theme-button-color); color: #ffffff; font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 6px; margin-left: 4px; vertical-align: middle; position: relative; top: -1px;">НОВОЕ</span></div>
+                    <div class="cat-name">Стиль #4 <span style="background: var(--tg-theme-button-color); color: #ffffff; font-size: 11px; font-weight: 500; padding: 2px 5px 3px 5px; border-radius: 6px; margin-left: 4px; vertical-align: middle; position: relative; top: -1px;">НОВОЕ</span></div>
                     <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, кристаллы, пины и детали для улучшения работы.</div>
                 </div>
         </div>
@@ -3488,7 +3488,7 @@ if (window.Telegram && window.Telegram.WebApp) {
         });
         
         document.body.addEventListener('pointerdown', function(e) {
-            let target = e.target.closest('.ios-menu-item, .sp-row, .cat-card');
+            let target = e.target.closest('.ios-menu-item, .sp-row, .cat-card, .settings-header-btn');
             if (!target) return;
             
             let rect = target.getBoundingClientRect();
@@ -5750,6 +5750,17 @@ if (window.layerState.isBrawlPassMode) {
         `;
 
         if (window.layerState.isGeneratedBg || window.layerState.isReadyBg || window.layerState.bpStyleIndex === 'dop') {
+            let dopBg4EyeClass = window.layerState.dopBg4Visible !== false ? '' : 'hidden';
+            html += `
+                <div class="ios-layer-row">
+                    <div class="ios-icon-btn ios-eye-icon ${dopBg4EyeClass}" onclick="toggleCosmeticLayer('dopBg4')">
+                        ${getEyeSVG(window.layerState.dopBg4Visible !== false)}
+                    </div>
+                    <div class="ios-layer-name">Детализация</div>
+                    <div class="ios-layer-action-text">прозрачность</div>
+                    <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.dopBg4Opacity !== undefined ? window.layerState.dopBg4Opacity : 1}" oninput="changeOpacity('dopBg4', this.value)">
+                </div>
+            `;
             let pointsEyeClass = window.layerState.pointsVisible !== false ? '' : 'hidden';
             let currentPointsOpacity = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
             html += `
@@ -7948,9 +7959,15 @@ else if (window.layerState.bpStyleIndex === 4) {
             const H = persistentCanvas.height;
             const s = Math.min(W / 1280, H / 720);
 
-            // Фон
             if (rawBgImage) {
                 ctx.drawImage(rawBgImage, 0, 0, W, H);
+            }
+
+            if (window.layerState.dopBg4Visible !== false && globalAssets.dopBg4) {
+                ctx.save();
+                ctx.globalAlpha = window.layerState.dopBg4Opacity !== undefined ? window.layerState.dopBg4Opacity : 1;
+                ctx.drawImage(globalAssets.dopBg4, 0, 0, W, H);
+                ctx.restore();
             }
 
             ctx.save();
@@ -8072,12 +8089,7 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.save();
                 ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 0.5;
                 for (let a = 0; a < Math.PI*2; a += Math.PI/4) {
-                    ctx.shadowOffsetX = Math.cos(a)*5; ctx.shadowOffsetY = Math.sin(a)*5;
-                    ctx.drawImage(img, cx*s - dw/2, cy*s - dh/2, dw, dh);
-                }
-                ctx.shadowColor = '#000000'; ctx.shadowBlur = 0.5;
-                for (let a = 0; a < Math.PI*2; a += Math.PI/4) {
-                    ctx.shadowOffsetX = Math.cos(a)*3; ctx.shadowOffsetY = Math.sin(a)*3;
+                    ctx.shadowOffsetX = Math.cos(a)*6; ctx.shadowOffsetY = Math.sin(a)*6;
                     ctx.drawImage(img, cx*s - dw/2, cy*s - dh/2, dw, dh);
                 }
                 ctx.shadowColor = 'transparent'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
@@ -8195,7 +8207,7 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.restore();
 
             drawS4Icon(globalAssets.s4PinLeft, 158, 587, 90*1.05, 90*1.05);
-            drawS4PriceText(fmt4(9), 265, 584, 24 * 1.3 * s);
+            drawS4PriceText(fmt4(9), 265, 581, 28 * 1.3 * s);
 
             ctx.save();
             ctx.globalAlpha = 0.4;
@@ -8212,7 +8224,7 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.restore();
 
             drawS4Icon(globalAssets.s4PinRight, 429, 586, 90*1.3, 90*1.3);
-            drawS4PriceText(fmt4(10), 539, 588, 24 * 1.25 * s);
+            drawS4PriceText(fmt4(10), 539, 585, 30 * 1.25 * s);
 
             const drawS4Rect = (cx, cy, w, h, r, fillCol, rot, scl, inShadowCol, inShadowY) => {
                 ctx.save();
@@ -8283,7 +8295,7 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.rotate(5 * Math.PI/180);
             drawS4Icon(globalAssets.s4PassYellow, 0, 0, 170, 100);
             ctx.restore();
-            drawS4PriceText(fmt4(6), 1076, 84, 34 * 1.3 * s);
+            drawS4PriceText(fmt4(6), 1076, 87, 36 * 1.3 * s);
 
             ctx.save();
             ctx.shadowColor = 'rgba(0,0,0,0.35)';
@@ -8301,7 +8313,7 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.rotate(6 * Math.PI/180);
             drawS4Icon(globalAssets.s4PassBlue, 0, 0, 170, 100);
             ctx.restore();
-            drawS4PriceText(fmt4(7), 1080, 205, 34 * 1.25 * s);  // BP+ (-2px)
+            drawS4PriceText(fmt4(7), 1080, 208, 36 * 1.25 * s);  
 
             ctx.save();
             ctx.shadowColor = 'rgba(0,0,0,0.35)';
@@ -8319,12 +8331,12 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.rotate(1 * Math.PI/180);
             drawS4Icon(globalAssets.s4PassPro, 0, 0, 140*0.9, 140*0.9);
             ctx.restore();
-            drawS4PriceText(fmt4(8), 1026, 323, 34 * 1.3 * s);   
+            drawS4PriceText(fmt4(8), 1026, 326, 36 * 1.3 * s);   
 
 
             if (cachedTextCanvas && animText.alpha > 0.01) {
                 const s4tx = window.layerState.s4TextX !== undefined ? window.layerState.s4TextX : -241;
-                const s4ty = window.layerState.s4TextY !== undefined ? window.layerState.s4TextY : 483;
+                const s4ty = window.layerState.s4TextY !== undefined ? window.layerState.s4TextY : 485;
                 const s4ts = window.layerState.s4TextScale !== undefined ? window.layerState.s4TextScale : 0.65;
                 ctx.save();
                 ctx.globalAlpha = animText.alpha;
@@ -9189,9 +9201,9 @@ if (fankitGrid && fankitGrid.children.length === 0) {
     const recGrid = document.getElementById('fankit-rec-grid');
     
     const recBackgrounds = [
-        { src: 'bg/bg18_BP50.png', text: 'для 51 сезона BP' },
-        { src: 'bg/bg19_BP49.png', text: 'для 50 сезона BP' },
-        { src: 'bg/bg20_BP48.png', text: 'для 49 сезона BP' }
+        { src: 'bg/bg18_BP50.png', text: '51 сезон' },
+        { src: 'bg/bg19_BP49.png', text: '50 сезон' },
+        { src: 'bg/bg20_BP48.png', text: '49 сезон' }
     ];
 
     const handleFankitSelection = (itemElement, imgSrc) => {
@@ -10316,6 +10328,7 @@ window.openBPTestEditor = function() {
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
         
         if (!globalAssets.style2Gems) globalAssets.style2Gems = await load('BP/bp_gems.png');
+        if (!globalAssets.dopBg4) globalAssets.dopBg4 = await load('BP/bp_dop4style.png');
         if (!globalAssets.style2Points) globalAssets.style2Points = await load('BP/bp_style2_points.png');
         if (!globalAssets.style2Stars) globalAssets.style2Stars = await load('BP/bp_stars_style2.png');
         if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
