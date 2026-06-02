@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.1(27)";
+  const APP_VERSION = "v2.4.1(28)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -1467,7 +1467,9 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     
-    overflow-x: hidden; 
+    overflow-x: clip;
+    padding-right: 0;
+
   }
 
     #fankit-sheet {
@@ -1541,11 +1543,12 @@
         overflow-x: hidden; 
         touch-action: pan-y; 
         -webkit-overflow-scrolling: touch;
-        padding: 5px 20px 20px 20px; 
+        padding: 5px 12px 20px 12px; 
         height: 100%;
         box-sizing: border-box;
         width: 100%;
         max-width: 100%;
+        overflow-x: clip;
     }
 
   .fankit-recommended-wrapper {
@@ -2683,11 +2686,12 @@ body.os-desktop #wizard-step3.dragover {
             <div class="cat-radio" id="bp-radio-4">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-                <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: #0d1e3d; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    <span style="color: #00c6ff; font-size: 10px; font-weight: bold; text-align: center; padding: 4px; line-height: 1.2;">Стиль #4</span>
+                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP4_1.png", "demo_png/demo_png_osnBP4_2.png", "demo_png/demo_png_osnBP4_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                    <img src="demo_png/demo_png_osnBP4_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                    <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
-                    <div class="cat-name">Стиль #4 <span style="background: var(--tg-theme-button-color); color: #ffffff; font-size: 11px; font-weight: 500; padding: 2px 5px 3px 5px; border-radius: 6px; margin-left: 4px; vertical-align: middle; position: relative; top: -1px;">НОВОЕ</span></div>
+                    <div class="cat-name">Стиль #4 <span style="background: var(--tg-theme-button-color); color: #ffffff; font-size: 11px; font-weight: 500; padding: 2px 5px 3px 5px; border-radius: 6px; margin-left: 4px; vertical-align: middle; position: relative;">НОВОЕ</span></div>
                     <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, кристаллы, пины и детали для улучшения работы.</div>
                 </div>
         </div>
@@ -5749,7 +5753,7 @@ if (window.layerState.isBrawlPassMode) {
             </div>
         `;
 
-        if (window.layerState.isGeneratedBg || window.layerState.isReadyBg || window.layerState.bpStyleIndex === 'dop') {
+        if (window.layerState.isGeneratedBg || window.layerState.isReadyBg || window.layerState.bpStyleIndex === 'dop' || window.layerState.bpStyleIndex === 4) {
             let dopBg4EyeClass = window.layerState.dopBg4Visible !== false ? '' : 'hidden';
             html += `
                 <div class="ios-layer-row">
@@ -8089,7 +8093,12 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.save();
                 ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 0.5;
                 for (let a = 0; a < Math.PI*2; a += Math.PI/4) {
-                    ctx.shadowOffsetX = Math.cos(a)*6; ctx.shadowOffsetY = Math.sin(a)*6;
+                    ctx.shadowOffsetX = Math.cos(a)*5; ctx.shadowOffsetY = Math.sin(a)*5;
+                    ctx.drawImage(img, cx*s - dw/2, cy*s - dh/2, dw, dh);
+                }
+                ctx.shadowColor = '#000000'; ctx.shadowBlur = 0.5;
+                for (let a = 0; a < Math.PI*2; a += Math.PI/4) {
+                    ctx.shadowOffsetX = Math.cos(a)*3; ctx.shadowOffsetY = Math.sin(a)*3;
                     ctx.drawImage(img, cx*s - dw/2, cy*s - dh/2, dw, dh);
                 }
                 ctx.shadowColor = 'transparent'; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
@@ -10491,13 +10500,14 @@ window.openBPStyle4Editor = function() {
         }
 
         if (!globalAssets.s4Points)     globalAssets.s4Points     = await load('BP/bp_style2_points.png');
-        if (!globalAssets.s4Stars)      globalAssets.s4Stars      = await load('BP/style4_stars_bp.png');
         if (!globalAssets.s4Gems)       globalAssets.s4Gems       = await load('BP/bp_gems.png');
         if (!globalAssets.s4PinLeft)    globalAssets.s4PinLeft    = await load('BP/pin_4styleBP_left.png');
         if (!globalAssets.s4PinRight)   globalAssets.s4PinRight   = await load('BP/pin_4styleBP_right.png');
         if (!globalAssets.s4PassYellow) globalAssets.s4PassYellow = await load('BP/bp_icon_brawl_pass.png');
         if (!globalAssets.s4PassBlue)   globalAssets.s4PassBlue   = await load('BP/bp_icon_brawl_pass_plus.png');
         if (!globalAssets.s4PassPro)    globalAssets.s4PassPro    = await load('BP/bp_icon_pro_pass_icon.png');
+        if (!globalAssets.dopBg4)       globalAssets.dopBg4       = await load('BP/bp_dop4style.png'); 
+
         const season4 = window.layerState.bpSeason || 50;
         if (!globalAssets[`brawler_${season4}_1`]) globalAssets[`brawler_${season4}_1`] = await load(`BP/brawler_s${season4}_1.png`);
         if (!globalAssets[`brawler_${season4}_2`]) globalAssets[`brawler_${season4}_2`] = await load(`BP/brawler_s${season4}_2.png`);
