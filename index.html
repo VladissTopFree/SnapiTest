@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(7)";
+  const APP_VERSION = "v2.4.2(1)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2375,14 +2375,11 @@ body.os-desktop #wizard-step3.dragover {
   border-color: var(--tg-theme-button-color, #3390ec);
 }
 
-body.os-android .cat-name span[style*="НОВОЕ"] {
-    padding-top: 4px !important;
-    padding-bottom: 1px !important;
-}
-
 body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
-    padding-top: 2px !important;
-    padding-bottom: 3px !important;
+    background: transparent !important;
+    color: var(--tg-theme-button-color) !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
 }
 
 </style>
@@ -2701,7 +2698,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
                     <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
-                    <div class="cat-name" style="display: flex; align-items: center; gap: 6px;">Стиль #4 <span style="display: inline-flex; align-items: center; justify-content: center; background: var(--tg-theme-button-color); color: #ffffff; font-size: 11px; font-weight: 500; padding: 2px 5px 3px 5px; border-radius: 6px; line-height: 1; flex-shrink: 0;">НОВОЕ</span></div>
+                    <div class="cat-name" style="display: flex; align-items: center; gap: 6px;">Стиль #4 <span style="display: inline-flex; align-items: center; justify-content: center; background: var(--tg-theme-button-color); color: #ffffff; font-size: 11px; font-weight: 500; padding: 3px 5px 2px 5px; border-radius: 6px; line-height: 1; flex-shrink: 0;">НОВОЕ</span></div>
                     <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, кристаллы, пины и детали для улучшения работы.</div>
                 </div>
         </div>
@@ -2906,7 +2903,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">51 сезон</div>
-                <div class="cat-desc">Будущий сезон Brawl Pass.<br>Выйдет 4 июня.</div>
+                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 4 июня.</div>
             </div>
          </div>
          
@@ -2919,7 +2916,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 7 мая.</div>
+                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 7 мая.</div>
             </div>
          </div>
 
@@ -2932,7 +2929,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">49 сезон</div>
-                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 2 апреля.</div>
+                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 2 апреля.</div>
             </div>
          </div>
 
@@ -7083,7 +7080,29 @@ function setupPersistentCanvas() {
     hdBtn.onclick = (e) => {
         e.preventDefault();
         window.triggerHaptic();
-        window.openDownloadOverlay();
+        
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showPopup) {
+            window.Telegram.WebApp.showPopup({
+                title: 'Цветокоррекция',
+                message: 'Сделать цветокоррекцию работы?',
+                buttons: [
+                    { id: 'yes_cc', type: 'default', text: 'Да' },
+                    { id: 'no_cc', type: 'destructive', text: 'Нет' }
+                ]
+            }, (buttonId) => {
+                if (buttonId === 'yes_cc') {
+                    window.applyColorCorrection();
+                } else {
+                    window.openDownloadOverlay();
+                }
+            });
+        } else {
+            if (confirm('Сделать цветокоррекцию работы?')) {
+                window.applyColorCorrection();
+            } else {
+                window.openDownloadOverlay();
+            }
+        }
     };
         
     hdBtnWrap.appendChild(hdBtn);
@@ -7103,6 +7122,66 @@ function setupPersistentCanvas() {
     
     window.updateCachedTextCanvas();
 }
+
+window.applyColorCorrection = async function() {
+    if (!persistentCanvas || persistentCanvas.width === 0) {
+        window.openDownloadOverlay();
+        return;
+    }
+
+    // Показываем экран ожидания
+    const overlay = document.createElement('div');
+    overlay.id = 'cc-loading-overlay';
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: var(--tg-theme-secondary-bg-color, #F2F2F7);
+        z-index: 9999; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 20px;
+    `;
+    overlay.innerHTML = `
+        <img src="AnimatedSticker-ezgif.com-gif-maker-2.gif" style="width: 120px; height: 120px; object-fit: contain;">
+        <div style="font-size: 22px; font-weight: 600; color: var(--tg-theme-text-color, #000);">Цветокоррекция...</div>
+        <div style="font-size: 15px; color: var(--tg-theme-subtitle-text-color, #8E8E93);">Подождите немного.</div>
+    `;
+    document.body.appendChild(overlay);
+
+    await new Promise(resolve => setTimeout(resolve, 80));
+
+    try {
+        // Применяем цветокоррекцию
+        const w = persistentCanvas.width;
+        const h = persistentCanvas.height;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = w;
+        tempCanvas.height = h;
+        const tempCtx = tempCanvas.getContext('2d');
+
+        tempCtx.filter = 'saturate(140%) brightness(108%) contrast(110%)';
+        tempCtx.drawImage(persistentCanvas, 0, 0);
+
+        persistentCtx.clearRect(0, 0, w, h);
+        persistentCtx.drawImage(tempCanvas, 0, 0);
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+
+        document.body.removeChild(overlay);
+
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert) {
+            window.Telegram.WebApp.showAlert('Цветокоррекция готова! Можете скачивать работу.', () => {
+                window.openDownloadOverlay();
+            });
+        } else {
+            alert('Цветокоррекция готова! Можете скачивать работу.');
+            window.openDownloadOverlay();
+        }
+    } catch (err) {
+        if (document.getElementById('cc-loading-overlay')) {
+            document.body.removeChild(overlay);
+        }
+        window.openDownloadOverlay();
+    }
+};
 
 window.addCustomText = () => {
     if (!window.layerState.customTexts) window.layerState.customTexts = [];
