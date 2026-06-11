@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(2)";
+  const APP_VERSION = "v2.4.2(3)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2583,7 +2583,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
         </div>
     </div>
     
-    <div style="padding: 0; flex-grow: 1; overflow-y: auto;">
+    <div style="padding: 0 0 180px 0; flex-grow: 1; overflow-y: auto;">
         
         <div class="cat-card" onclick="selectCategory('action')">
             <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_akc1_1.png", "demo_png/demo_png_akc1_2.png", "demo_png/demo_png_akc1_3.png"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
@@ -2656,7 +2656,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
   <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); position: relative; height: 100%; display: flex; flex-direction: column;">
     <div class="cat-title-main">Выберите стиль BP</div>
     
-    <div style="padding: 0; flex-grow: 1; overflow-y: auto;">
+    <div style="padding: 0 0 180px 0; flex-grow: 1; overflow-y: auto;">
         
         <div class="cat-card" onclick="selectBPStyle(1)">
             <div class="cat-radio" id="bp-radio-1">
@@ -2726,7 +2726,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
   <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); position: relative; height: 100%; display: flex; flex-direction: column;">
     <div class="cat-title-main">Выберите вариант BP</div>
     
-    <div style="padding: 0; flex-grow: 1; overflow-y: auto;">
+    <div style="padding: 0 0 180px 0; flex-grow: 1; overflow-y: auto;">
         
         <div class="cat-card" onclick="selectBPVariant(1)">
             <div class="cat-radio" id="bp-variant-radio-1" style="margin-top: 13px;">
@@ -7174,7 +7174,6 @@ window.applyColorCorrection = async function() {
         return;
     }
 
-    // Показываем экран ожидания
     const overlay = document.createElement('div');
     overlay.id = 'cc-loading-overlay';
     overlay.style.cssText = `
@@ -7184,32 +7183,99 @@ window.applyColorCorrection = async function() {
         align-items: center; justify-content: center; gap: 20px;
     `;
     overlay.innerHTML = `
-        <img src="AnimatedSticker-ezgif.com-gif-maker-2.gif" style="width: 120px; height: 120px; object-fit: contain;">
+        <img src="telegram-animoji-ezgif.com-gif-maker.gif" style="width: 120px; height: 120px; object-fit: contain;">
         <div style="font-size: 22px; font-weight: 600; color: var(--tg-theme-text-color, #000);">Цветокоррекция...</div>
         <div style="font-size: 15px; color: var(--tg-theme-subtitle-text-color, #8E8E93);">Подождите немного.</div>
     `;
     document.body.appendChild(overlay);
 
+    // Даём оверлею прорисоваться перед тяжёлой обработкой
     await new Promise(resolve => setTimeout(resolve, 80));
 
     try {
-        // Применяем цветокоррекцию
         const w = persistentCanvas.width;
         const h = persistentCanvas.height;
+        const ctx = persistentCtx;
 
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = w;
-        tempCanvas.height = h;
-        const tempCtx = tempCanvas.getContext('2d');
+        // ===== ПАРАМЕТРЫ (крути под себя) =====
+        const sat = 1.38;            // насыщенность (1 = без изменений)
+        const contrast = 1.12;       // контраст
+        const brightness = 1.04;     // яркость
+        const vignetteStrength = 0.40; // сила тёмной виньетки по краям (0 = выкл)
+        const vignettePower = 2.3;   // насколько резко темнеет к краям
+        const grainAmount = 11;      // зерно/шум (0 = выкл)
+        const sharpenAmount = 0.55;  // резкость (0 = выкл, 0.3–0.8 норм)
+        // ======================================
 
-        tempCtx.filter = 'saturate(140%) brightness(108%) contrast(110%)';
-        tempCtx.drawImage(persistentCanvas, 0, 0);
+        // --- 1. Цвет + виньетка + зерно (один проход) ---
+        let imgData = ctx.getImageData(0, 0, w, h);
+        let d = imgData.data;
+        const cx = w / 2, cy = h / 2;
+        const maxDist = Math.sqrt(cx * cx + cy * cy);
 
-        persistentCtx.clearRect(0, 0, w, h);
-        persistentCtx.drawImage(tempCanvas, 0, 0);
+        for (let y = 0; y < h; y++) {
+            const dy = y - cy;
+            for (let x = 0; x < w; x++) {
+                const i = (y * w + x) * 4;
+                let r = d[i], g = d[i + 1], b = d[i + 2];
 
-        await new Promise(resolve => setTimeout(resolve, 600));
+                // яркость
+                r *= brightness; g *= brightness; b *= brightness;
+                // контраст
+                r = (r - 128) * contrast + 128;
+                g = (g - 128) * contrast + 128;
+                b = (b - 128) * contrast + 128;
+                // насыщенность
+                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                r = gray + (r - gray) * sat;
+                g = gray + (g - gray) * sat;
+                b = gray + (b - gray) * sat;
+                // виньетка
+                if (vignetteStrength > 0) {
+                    const dx = x - cx;
+                    const dist = Math.sqrt(dx * dx + dy * dy) / maxDist;
+                    const vig = 1 - vignetteStrength * Math.pow(dist, vignettePower);
+                    r *= vig; g *= vig; b *= vig;
+                }
+                // зерно
+                if (grainAmount > 0) {
+                    const noise = (Math.random() - 0.5) * grainAmount;
+                    r += noise; g += noise; b += noise;
+                }
 
+                d[i]     = r < 0 ? 0 : r > 255 ? 255 : r;
+                d[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
+                d[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
+            }
+        }
+
+        // --- 2. Резкость (unsharp через свёртку), отдельным проходом ---
+        if (sharpenAmount > 0) {
+            const src = d;                       // уже скорректированные пиксели
+            const out = new Uint8ClampedArray(src); // копия, в неё пишем
+            const a = sharpenAmount;
+            const center = 1 + 4 * a;
+            for (let y = 1; y < h - 1; y++) {
+                for (let x = 1; x < w - 1; x++) {
+                    const i = (y * w + x) * 4;
+                    for (let c = 0; c < 3; c++) {
+                        const p = i + c;
+                        const val =
+                            src[p] * center
+                            - a * src[p - 4]
+                            - a * src[p + 4]
+                            - a * src[p - w * 4]
+                            - a * src[p + w * 4];
+                        out[p] = val < 0 ? 0 : val > 255 ? 255 : val;
+                    }
+                }
+            }
+            imgData = new ImageData(out, w, h);
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+
+        await new Promise(resolve => setTimeout(resolve, 400));
         document.body.removeChild(overlay);
 
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert) {
