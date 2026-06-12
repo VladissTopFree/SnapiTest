@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(4)";
+  const APP_VERSION = "v2.4.2(5)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -8751,23 +8751,6 @@ else if (window.layerState.bpStyleIndex === 4) {
                 });
             }
 
-            if (window.layerState.bpVariantIndex === 4 && globalAssets.style2Text) {
-                let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
-                let tConf = seasonConf.dopText || { x: 500, y: 100, scale: 1, rot: 0 };
-                
-                let tx = window.layerState.dopTextX !== undefined ? window.layerState.dopTextX : tConf.x;
-                let ty = window.layerState.dopTextY !== undefined ? window.layerState.dopTextY : tConf.y;
-                let ts = window.layerState.dopTextScale !== undefined ? window.layerState.dopTextScale : tConf.scale;
-                let trot = window.layerState.dopTextRot !== undefined ? window.layerState.dopTextRot : (tConf.rot || 0);
-
-                ctx.save();
-                ctx.translate(tx * s, ty * s);
-                if (trot) ctx.rotate(trot * Math.PI / 180);
-                ctx.scale(ts * s, ts * s);
-                ctx.drawImage(globalAssets.style2Text, 0, 0);
-                ctx.restore();
-            }
-
             return; 
 
         }
@@ -10649,6 +10632,8 @@ window.openBPDopEditor = function() {
         } else if (window.layerState.bpVariantIndex === 2) {
             panelSrc = `BP/bp_panel_left${season}.png`;
             priceSrc = 'BP/bp_price_brawl_pass.png';
+        } else if (window.layerState.bpVariantIndex === 4) {
+            panelSrc = 'BP/bp_panel_right_improvement.png';
         }
         
         globalAssets.dopPanelL = await load(panelSrc); 
