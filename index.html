@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(3)";
+  const APP_VERSION = "v2.4.2(4)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2709,7 +2709,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
                     <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
-                    <div class="cat-name" style="display: flex; align-items: center; gap: 6px;">Стиль #4 <span style="display: inline-flex; align-items: center; justify-content: center; background: var(--tg-theme-button-color); color: #ffffff; font-size: 11px; font-weight: 500; padding: 3px 5px 2px 5px; border-radius: 6px; line-height: 1; flex-shrink: 0;">НОВОЕ</span></div>
+                    <div class="cat-name" style="display: flex; align-items: center; gap: 6px;">Стиль #4</div>
                     <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, кристаллы, пины и детали для улучшения работы.</div>
                 </div>
         </div>
@@ -5174,10 +5174,13 @@ if (window.layerState.isBrawlPassMode) {
         }
         else if (window.layerState.bpStyleIndex === 3) {
             const labels = ["Brawl Pass", "BP Plus", "Pro Pass"];
+            const visKeys = ["bp", "bpplus", "pro"];
             for(let i=0; i<3; i++) {
                 let val = (window.layerState.style3Prices && window.layerState.style3Prices[i]) ? window.layerState.style3Prices[i] : "";
+                let vis = window.layerState['priceVis_' + visKeys[i]] !== false;
                 html += `
                 <div class="ios-layer-row" ${i===2 && !window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
+                    <div class="ios-icon-btn ios-eye-icon ${vis ? '' : 'hidden'}" onclick="togglePriceVis('${visKeys[i]}')">${getEyeSVG(vis)}</div>
                     <div class="ios-layer-name" style="font-size:15px;">${labels[i]}</div>
                     <div class="ios-layer-action-text">значение</div>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${val}" maxlength="5" oninput="updateS3PriceLayer(${i}, this)" style="width:65px;">
@@ -5303,21 +5306,58 @@ if (window.layerState.isBrawlPassMode) {
                 if (window.layerState.bpVariantIndex === 3) panelLabel = "Brawl Pass +";
                 if (window.layerState.bpVariantIndex === 4) panelLabel = "Brawl Pass Plus (улучшение)";
                 if (window.layerState.bpVariantIndex === 2) panelLabel = "Brawl Pass (скидка)";
+
+                let dopSeasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
+                let dopBrawlerConf = (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2)
+                    ? (dopSeasonConf.dopBrawler1 || { x: 476, y: 16, scale: 1 })
+                    : (dopSeasonConf.dopBrawler  || { x: 476, y: 16, scale: 1 });
+                let dB2s = window.layerState.brawler2Scale !== undefined ? window.layerState.brawler2Scale : dopBrawlerConf.scale;
+                let dB2x = window.layerState.brawler2X     !== undefined ? window.layerState.brawler2X     : dopBrawlerConf.x;
+                let dB2y = window.layerState.brawler2Y     !== undefined ? window.layerState.brawler2Y     : dopBrawlerConf.y;
+
                 html += `
-                    <div class="ios-layer-row" style="border-bottom:none;">
+                    <div class="ios-layer-row">
+                        <div class="ios-icon-btn ios-eye-icon ${window.layerState.priceVis_bp !== false ? '' : 'hidden'}" onclick="togglePriceVis('bp')">${getEyeSVG(window.layerState.priceVis_bp !== false)}</div>
                         <div class="ios-layer-name">Brawl Pass</div>
                         <div class="ios-layer-action-text">значение</div>
                         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this)">
                     </div>
+
+                    <div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-top: 16px; margin-bottom: 4px; padding: 0;">Персонаж</div>
+
+                    <div class="ios-layer-row">
+                        <div class="ios-layer-name" style="flex-shrink:1; min-width:0; max-width:90px; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">Размер</div>
+                        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">меньше</div>
+                        <input type="range" class="ios-slider" min="0.1" max="2.5" step="0.01" value="${dB2s}" oninput="updateBrawlerParams('brawler2Scale', this.value)" style="flex-grow:1; flex-shrink:1; min-width:40px; margin:0;">
+                        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-left:8px; margin-right:0;">больше</div>
+                    </div>
+
+                    <div class="ios-layer-row">
+                        <div class="ios-layer-name" style="flex-shrink:1; min-width:0; max-width:90px; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">Позиция X</div>
+                        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">левее</div>
+                        <input type="range" class="ios-slider" min="-500" max="1500" step="1" value="${dB2x}" oninput="updateBrawlerParams('brawler2X', this.value)" style="flex-grow:1; flex-shrink:1; min-width:40px; margin:0;">
+                        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-left:8px; margin-right:0;">правее</div>
+                    </div>
+
+                    <div class="ios-layer-row" style="border-bottom:none;">
+                        <div class="ios-layer-name" style="flex-shrink:1; min-width:0; max-width:90px; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">Позиция Y</div>
+                        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">выше</div>
+                        <input type="range" class="ios-slider" min="-500" max="1000" step="1" value="${dB2y}" oninput="updateBrawlerParams('brawler2Y', this.value)" style="flex-grow:1; flex-shrink:1; min-width:40px; margin:0;">
+                        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-left:8px; margin-right:0;">ниже</div>
+                    </div>
                 `;
             } else {
+                let bpVis = window.layerState.priceVis_bp !== false;
+                let bppVis = window.layerState.priceVis_bpplus !== false;
                 html += `
                     <div class="ios-layer-row">
+                        <div class="ios-icon-btn ios-eye-icon ${bpVis ? '' : 'hidden'}" onclick="togglePriceVis('bp')">${getEyeSVG(bpVis)}</div>
                         <div class="ios-layer-name">Brawl Pass</div>
                         <div class="ios-layer-action-text">значение</div>
                         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft}" maxlength="5" oninput="updateBPPrice('left', this)">
                     </div>
                     <div class="ios-layer-row" ${!window.ENABLE_TEMP_EDITOR ? 'style="border-bottom:none;"' : ''}>
+                        <div class="ios-icon-btn ios-eye-icon ${bppVis ? '' : 'hidden'}" onclick="togglePriceVis('bpplus')">${getEyeSVG(bppVis)}</div>
                         <div class="ios-layer-name">Brawl Pass Plus</div>
                         <div class="ios-layer-action-text">значение</div>
                         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceRight}" maxlength="5" oninput="updateBPPrice('right', this)">
@@ -6111,6 +6151,15 @@ window.toggleCosmeticLayer = (layerName) => {
     window.layerState[layerName + 'Visible'] = !window.layerState[layerName + 'Visible'];
     renderLayerPanel();
     startAnimation(); 
+};
+
+window.togglePriceVis = (key) => {
+    let flag = 'priceVis_' + key;
+    let cur = window.layerState[flag] !== false; 
+    window.layerState[flag] = !cur;
+    if (window.triggerHaptic) window.triggerHaptic();
+    renderLayerPanel();
+    if (typeof startAnimation === 'function') startAnimation();
 };
 
 window.downloadCosmeticLayer = (layerName) => {
@@ -7129,7 +7178,7 @@ function setupPersistentCanvas() {
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showPopup) {
             window.Telegram.WebApp.showPopup({
                 title: 'Цветокоррекция',
-                message: 'Сделать цветокоррекцию работы?',
+                message: 'Сделать цветокоррекцию работы?\n\nСделает Вашу работу ярче и сочнее.',
                 buttons: [
                     { id: 'yes_cc', type: 'default', text: 'Да' },
                     { id: 'no_cc', type: 'destructive', text: 'Нет' }
@@ -7142,7 +7191,7 @@ function setupPersistentCanvas() {
                 }
             });
         } else {
-            if (confirm('Сделать цветокоррекцию работы?')) {
+            if (confirm('Сделать цветокоррекцию работы?\n\nСделает Вашу работу ярче и сочнее.')) {
                 window.applyColorCorrection();
             } else {
                 window.openDownloadOverlay();
@@ -7189,7 +7238,6 @@ window.applyColorCorrection = async function() {
     `;
     document.body.appendChild(overlay);
 
-    // Даём оверлею прорисоваться перед тяжёлой обработкой
     await new Promise(resolve => setTimeout(resolve, 80));
 
     try {
@@ -7197,17 +7245,14 @@ window.applyColorCorrection = async function() {
         const h = persistentCanvas.height;
         const ctx = persistentCtx;
 
-        // ===== ПАРАМЕТРЫ (крути под себя) =====
-        const sat = 1.38;            // насыщенность (1 = без изменений)
-        const contrast = 1.12;       // контраст
-        const brightness = 1.04;     // яркость
-        const vignetteStrength = 0.40; // сила тёмной виньетки по краям (0 = выкл)
-        const vignettePower = 2.3;   // насколько резко темнеет к краям
-        const grainAmount = 11;      // зерно/шум (0 = выкл)
-        const sharpenAmount = 0.55;  // резкость (0 = выкл, 0.3–0.8 норм)
-        // ======================================
+        const sat = 1.38;            
+        const contrast = 1.12;       
+        const brightness = 1.04;     
+        const vignetteStrength = 0.40; 
+        const vignettePower = 2.3;   
+        const grainAmount = 6;      
+        const sharpenAmount = 0.46;  
 
-        // --- 1. Цвет + виньетка + зерно (один проход) ---
         let imgData = ctx.getImageData(0, 0, w, h);
         let d = imgData.data;
         const cx = w / 2, cy = h / 2;
@@ -7219,25 +7264,20 @@ window.applyColorCorrection = async function() {
                 const i = (y * w + x) * 4;
                 let r = d[i], g = d[i + 1], b = d[i + 2];
 
-                // яркость
                 r *= brightness; g *= brightness; b *= brightness;
-                // контраст
                 r = (r - 128) * contrast + 128;
                 g = (g - 128) * contrast + 128;
                 b = (b - 128) * contrast + 128;
-                // насыщенность
                 const gray = 0.299 * r + 0.587 * g + 0.114 * b;
                 r = gray + (r - gray) * sat;
                 g = gray + (g - gray) * sat;
                 b = gray + (b - gray) * sat;
-                // виньетка
                 if (vignetteStrength > 0) {
                     const dx = x - cx;
                     const dist = Math.sqrt(dx * dx + dy * dy) / maxDist;
                     const vig = 1 - vignetteStrength * Math.pow(dist, vignettePower);
                     r *= vig; g *= vig; b *= vig;
                 }
-                // зерно
                 if (grainAmount > 0) {
                     const noise = (Math.random() - 0.5) * grainAmount;
                     r += noise; g += noise; b += noise;
@@ -7249,10 +7289,9 @@ window.applyColorCorrection = async function() {
             }
         }
 
-        // --- 2. Резкость (unsharp через свёртку), отдельным проходом ---
         if (sharpenAmount > 0) {
-            const src = d;                       // уже скорректированные пиксели
-            const out = new Uint8ClampedArray(src); // копия, в неё пишем
+            const src = d;                      
+            const out = new Uint8ClampedArray(src); 
             const a = sharpenAmount;
             const center = 1 + 4 * a;
             for (let y = 1; y < h - 1; y++) {
@@ -8116,10 +8155,10 @@ function drawScene() {
             }
 
             drawLayer(globalAssets.s3PanelL, 34, 33, 417, 520, 1, 1, 'source-over');
-            drawLayer(globalAssets.s3PriceL, 106, 494, 240, 85, 1, 1, 'source-over');
+            if (window.layerState.priceVis_bp !== false) drawLayer(globalAssets.s3PriceL, 106, 494, 240, 85, 1, 1, 'source-over');
             
             drawLayer(globalAssets.s3PanelM, 458, 34, 432, 517, 1, 1, 'source-over');
-            drawLayer(globalAssets.s3PriceM, 525, 490, 240, 83, 1.05, 1, 'source-over');
+            if (window.layerState.priceVis_bpplus !== false) drawLayer(globalAssets.s3PriceM, 525, 490, 240, 83, 1.05, 1, 'source-over');
             
             drawLayer(globalAssets.s3PanelR, 898, 2, 360, 549, 1, 1, 'source-over');
 
@@ -8128,9 +8167,9 @@ function drawScene() {
             }
 
             const p = window.layerState.style3Prices || ["899", "1249", "2999"];
-            drawTextObj(p[0] + ' ₽', '#ffffff', 126, 494, 202, 72, 1);
-            drawTextObj(p[1] + ' ₽', '#ffffff', 567, 494, 164, 67, 1.05);
-            drawTextObj(p[2] + ' ₽', '#ffffff', 988, 468, 184, 68, 1);
+            if (window.layerState.priceVis_bp !== false) drawTextObj(p[0] + ' ₽', '#ffffff', 126, 494, 202, 72, 1);
+            if (window.layerState.priceVis_bpplus !== false) drawTextObj(p[1] + ' ₽', '#ffffff', 567, 494, 164, 67, 1.05);
+            if (window.layerState.priceVis_pro !== false) drawTextObj(p[2] + ' ₽', '#ffffff', 988, 468, 184, 68, 1);
 
             ctx.save();
             ctx.filter = 'saturate(135%) brightness(110%) contrast(105%)';
@@ -8695,20 +8734,22 @@ else if (window.layerState.bpStyleIndex === 4) {
                 pricePlateY = 575; 
             }
 
-            drawLayerImg(globalAssets.dopPrice, pricePlateX, pricePlateY, pricePlateW, pricePlateH);
+            if (window.layerState.priceVis_bp !== false) {
+                drawLayerImg(globalAssets.dopPrice, pricePlateX, pricePlateY, pricePlateW, pricePlateH);
 
-            let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
-            
-            let textYPos = window.layerState.bpVariantIndex === 2 ? 624 : 646; 
-            let textXPos = pricePlateX + (pricePlateW / 2); 
-            
-            let textBoxHeight = window.layerState.bpVariantIndex === 2 ? 114 : 124; 
+                let pText = window.layerState.bpPriceLeft ? window.layerState.bpPriceLeft : "899";
+                
+                let textYPos = window.layerState.bpVariantIndex === 2 ? 624 : 646; 
+                let textXPos = pricePlateX + (pricePlateW / 2); 
+                
+                let textBoxHeight = window.layerState.bpVariantIndex === 2 ? 114 : 124; 
 
-            drawPriceText(ctx, W, H, pText, {
-                textX: offsetX + textXPos * s,
-                textY: offsetY + textYPos * s,
-                boxHeight: textBoxHeight * s
-            });
+                drawPriceText(ctx, W, H, pText, {
+                    textX: offsetX + textXPos * s,
+                    textY: offsetY + textYPos * s,
+                    boxHeight: textBoxHeight * s
+                });
+            }
 
             if (window.layerState.bpVariantIndex === 4 && globalAssets.style2Text) {
                 let seasonConf = BP_SEASON_CONFIG[window.layerState.bpSeason || 50] || BP_SEASON_CONFIG[50];
@@ -8815,11 +8856,11 @@ else if (window.layerState.bpStyleIndex === 4) {
             let tempH = globalAssets.bpPriceL ? globalAssets.bpPriceL.height * (priceW / globalAssets.bpPriceL.width) : h * 0.15;
             let priceY = h - tempH - (h * 0.04);
 
-            if (globalAssets.bpPriceL) {
+            if (globalAssets.bpPriceL && window.layerState.priceVis_bp !== false) {
                 drawBPPrice(persistentCtx, globalAssets.bpPriceL, window.layerState.bpPriceLeft, marginX, priceY, priceW, w, h);
             }
             
-            if (globalAssets.bpPriceR) {
+            if (globalAssets.bpPriceR && window.layerState.priceVis_bpplus !== false) {
                 let shiftLeft = 46 * (w / 1200); 
                 let rightX = w - marginX - priceW - shiftLeft;
                 drawBPPrice(persistentCtx, globalAssets.bpPriceR, window.layerState.bpPriceRight, rightX, priceY, priceW, w, h);
@@ -9347,8 +9388,9 @@ function drawBeautifulNick(ctx, text, w, h) {
         window.layerState.style4Prices = [];
         window.layerState.style2Prices = [];
         window.layerState.style3Prices = [];
-        window.layerState.bpPriceLeft = "999";
-        window.layerState.bpPriceRight = "9999";
+        window.layerState.priceVis_bp = true;
+        window.layerState.priceVis_bpplus = true;
+        window.layerState.priceVis_pro = true;
 
         for (let i = 1; i <= 4; i++) {
             let radio = document.getElementById(`bp-radio-${i}`);
