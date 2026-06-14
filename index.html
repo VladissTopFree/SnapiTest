@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(5)";
+  const APP_VERSION = "v2.4.2(6)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3632,6 +3632,9 @@ let isCurrentProjectSaved = false;
 
 function handleBackButtonClick() {
     try {
+        let genLoader = document.getElementById('gen-loading-overlay');
+        if (genLoader) { window._genLoading = false; genLoader.remove(); }
+
         let fankitOverlay = document.getElementById('fankit-overlay');
         if (fankitOverlay && fankitOverlay.classList.contains('show')) {
             fankitOverlay.classList.remove('show');
@@ -4578,6 +4581,7 @@ function processImages(filesParam) {
   document.getElementById('wizard-overlay').style.display = 'none';
   resultBox.style.display = 'block';
   window.scrollTo(0,0);
+  window.showGenLoader();
   
   cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
   layerPanel.style.display = 'flex';
@@ -5005,6 +5009,12 @@ window.updateS2PriceLayer = (idx, inputEl) => {
 };
 
 function renderLayerPanel(isInitialLoad = false) {
+    if (window._genLoading) {
+        window._genLoading = false;
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            if (window.hideGenLoader) window.hideGenLoader();
+        }));
+    }
     layerPanel.innerHTML = '';
     let html = '';
     let animCls = isInitialLoad ? 'fade-in-anim' : '';
@@ -6427,18 +6437,27 @@ function autoReplacePrice(ctx, w, h) {
   const imgData = ctx.getImageData(0, 0, w, h);
   const d = imgData.data;
 
-let isWide = (w / h) > 0.85; 
-let seedX = isWide ? Math.floor(w * 0.65) : Math.floor(w * 0.5);
-let seedY = h - Math.max(3, Math.floor(h * 0.02));
-
-while (seedY > 0) {
-  let i = (seedY * w + seedX) * 4;
-  if (d[i+3] > 200 && (d[i] > 60 || d[i+1] > 60 || d[i+2] > 60)) { 
-    seedY = Math.max(0, seedY - 15); 
-    break; 
+// Пробуем несколько колонок в нижне-центральной части и берём стабильный кандидат
+let seedCandidates = [];
+let scanCols = [0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70];
+for (let frac of scanCols) {
+  let sx = Math.floor(w * frac);
+  let sy = h - Math.max(3, Math.floor(h * 0.02));
+  // плашка цены всегда в нижней половине карточки — выше не лезем
+  while (sy > h * 0.55) {
+    let i = (sy * w + sx) * 4;
+    if (d[i+3] > 200 && (d[i] > 60 || d[i+1] > 60 || d[i+2] > 60)) {
+      seedCandidates.push({ x: sx, y: Math.max(0, sy - 15) });
+      break;
+    }
+    sy--;
   }
-  seedY--;
 }
+if (seedCandidates.length === 0) return; // плашку не нашли — оставляем как есть, FREE поставит fallback
+seedCandidates.sort((a, b) => a.y - b.y);
+let seed = seedCandidates[Math.floor(seedCandidates.length / 2)]; // медиана по высоте = самый надёжный
+let seedX = seed.x;
+let seedY = seed.y;
 
   let colors = {};
   for(let y = seedY - 20; y <= seedY + 20; y++) {
@@ -6523,6 +6542,10 @@ function isBg(x, y) {
     }
   }
   if (minBoxX === w) return; 
+
+  let _detW = maxBoxX - minBoxX;
+  let _detH = maxBoxY - minBoxY;
+  if (_detW < w * 0.25 || _detH < h * 0.04) return; 
 
   let outsideMask = new Uint8Array(w * h);
   let outStackX = []; let outStackY = [];
@@ -6780,11 +6803,17 @@ function runMagicLogic(img) {
         const isLeftUI = (centerX < w * 0.18); 
         const isTopUI = (centerY < h * 0.18);
 
+
+        const tooWide = compW > w * 0.72;
+        const tooBig  = comp.area > totalPixels * 0.45;
+
         if (comp.area > totalPixels * 0.015 && 
             compH > h * 0.25 &&          
             fillRatio > 0.40 &&
             !isLeftUI && 
-            !isTopUI)    
+            !isTopUI &&
+            !tooWide &&
+            !tooBig)    
         {
             validLabels[comp.label] = 1;
         }
@@ -10172,10 +10201,54 @@ document.getElementById('dl-btn-actual-download').onclick = (e) => {
   window.updateSavedCount();
 })();
 
+window._genLoading = false;
 
+window.showGenLoader = function() {
+    window._genLoading = true;
+    let ex = document.getElementById('gen-loading-overlay');
+    if (ex) ex.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'gen-loading-overlay';
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%;
+        height: var(--tg-viewport-stable-height, 100vh);
+        background: var(--tg-theme-secondary-bg-color, #F2F2F7);
+        z-index: 9998; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 12px;
+        box-sizing: border-box;
+    `;
+    overlay.innerHTML = `
+        <img src="telegram-animoji-ezgif.com-gif-maker.gif" alt="" style="width: 150px; height: 150px; object-fit: contain;">
+        <div style="font-size: 26px; font-weight: 700; color: var(--tg-theme-text-color, #000000); text-align: center;">Генерируется работа</div>
+        <div style="font-size: 16px; color: var(--tg-theme-subtitle-text-color, #8E8E93); text-align: center;">Подождите немного.</div>
+        <div class="bottom-fade-container">
+            <button class="ios-action-btn" style="margin: 0 auto;" onclick="window.cancelGeneration()">Отмена</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+};
+
+window.hideGenLoader = function() {
+    window._genLoading = false;
+    let overlay = document.getElementById('gen-loading-overlay');
+    if (!overlay) return;
+    overlay.style.transition = 'opacity 0.3s ease';
+    overlay.style.opacity = '0';
+    setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 300);
+};
+
+window.cancelGeneration = function() {
+    if (window.triggerHaptic) window.triggerHaptic();
+    window._genLoading = false;
+    let overlay = document.getElementById('gen-loading-overlay');
+    if (overlay) overlay.remove();
+    handleBackButtonClick();
+};
 
 async function generateBrawlPassTest() {
     if (window.triggerHaptic) window.triggerHaptic();
+    window.showGenLoader();
     
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
@@ -10544,6 +10617,7 @@ let y1, y2;
 
 window.openBPTestEditor = function() {
     window.triggerHaptic();
+    window.showGenLoader();
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
@@ -10586,6 +10660,7 @@ window.openBPTestEditor = function() {
 
 window.openBPDopEditor = function() {
     window.triggerHaptic();
+    window.showGenLoader();
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('bp-variant-overlay').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
