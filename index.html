@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="favicon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(18)";
+  const APP_VERSION = "v2.4.2(19)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -160,20 +160,20 @@
     scrollbar-width: none;
   }
 
-  @font-face { font-family: 'Font16103'; src: url('16103.otf') format('opentype'); }
-  @font-face { font-family: 'LilitaOneRus'; src: url('lilitaonerus.ttf') format('truetype'); }
-  @font-face { font-family: 'SupercellMagic'; src: url('Supercell-Magic.ttf') format('truetype'); }
-  @font-face { font-family: 'PusiaBold'; src: url('Pusia Bold.otf') format('opentype'); }
-  @font-face { font-family: 'BebasNeue'; src: url('bebasneuecyrillic.ttf') format('truetype'); }
-  @font-face { font-family: 'AmericanCaptain'; src: url('americancaptaincyrillic.ttf') format('truetype'); }
+@font-face { font-family: 'Font16103'; src: url('16103.otf') format('opentype'); font-display: swap; }
+  @font-face { font-family: 'LilitaOneRus'; src: url('lilitaonerus.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'SupercellMagic'; src: url('Supercell-Magic.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'PusiaBold'; src: url('Pusia Bold.otf') format('opentype'); font-display: swap; }
+  @font-face { font-family: 'BebasNeue'; src: url('bebasneuecyrillic.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'AmericanCaptain'; src: url('americancaptaincyrillic.ttf') format('truetype'); font-display: swap; }
   @font-face { font-family: 'ArialRoundedOld'; src: local('Arial Rounded MT Bold'), local('ArialRoundedMTBold'), url('Arial%20Rounded%20Old.ttf') format('truetype'); font-display: swap; }
 
-  @font-face { font-family: 'Molot'; src: url('Molot.otf') format('opentype'); }
-  @font-face { font-family: 'Nougat'; src: url('ofont.ru_Nougat.ttf') format('truetype'); }
-  @font-face { font-family: 'TTSupermolot'; src: url('TTSupermolotNeue-ExpXBoldIt.ttf') format('truetype'); }
-  @font-face { font-family: 'ArialBlackCustom'; src: local('Arial Black'), url('Arial Black.ttf') format('truetype'); }
-  @font-face { font-family: 'ImpactCustom'; src: local('Impact'), url('Impact.ttf') format('truetype'); }
-  @font-face { font-family: 'Font11246'; src: url('11246.ttf') format('truetype'); }
+  @font-face { font-family: 'Molot'; src: url('Molot.otf') format('opentype'); font-display: swap; }
+  @font-face { font-family: 'Nougat'; src: url('ofont.ru_Nougat.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'TTSupermolot'; src: url('TTSupermolotNeue-ExpXBoldIt.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'ArialBlackCustom'; src: local('Arial Black'), url('Arial Black.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'ImpactCustom'; src: local('Impact'), url('Impact.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'Font11246'; src: url('11246.ttf') format('truetype'); font-display: swap; }
 
   :root {
     --app-top-padding: 140px;
@@ -1910,7 +1910,6 @@
   }
 </style>
 
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
     .brawl-font {
         font-family: 'LilitaOneRus', 'Lilita One', sans-serif !important;
@@ -2552,22 +2551,6 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
           </button>
       </div>
   </div>
-</div>
-
-<div style="position: absolute; width: 0; height: 0; overflow: hidden; visibility: hidden;">
-    <span style="font-family: 'Font16103'">preload</span>
-    <span style="font-family: 'LilitaOneRus'">preload</span>
-    <span style="font-family: 'SupercellMagic'">preload</span>
-    <span style="font-family: 'PusiaBold'">preload</span>
-    <span style="font-family: 'BebasNeue'">preload</span>
-    <span style="font-family: 'AmericanCaptain'">preload</span>
-    <span style="font-family: 'ArialRoundedOld'">preload</span>
-    <span style="font-family: 'Molot'">preload</span>
-    <span style="font-family: 'Nougat'">preload</span>
-    <span style="font-family: 'TTSupermolot'">preload</span>
-    <span style="font-family: 'ArialBlackCustom'">preload</span>
-    <span style="font-family: 'ImpactCustom'">preload</span>
-    <span style="font-family: 'Font11246'">preload</span>
 </div>
 
 <div id="category-overlay">
@@ -6486,13 +6469,11 @@ function autoReplacePrice(ctx, w, h) {
   const imgData = ctx.getImageData(0, 0, w, h);
   const d = imgData.data;
 
-// Пробуем несколько колонок в нижне-центральной части и берём стабильный кандидат
 let seedCandidates = [];
 let scanCols = [0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70];
 for (let frac of scanCols) {
   let sx = Math.floor(w * frac);
   let sy = h - Math.max(3, Math.floor(h * 0.02));
-  // плашка цены всегда в нижней половине карточки — выше не лезем
   while (sy > h * 0.55) {
     let i = (sy * w + sx) * 4;
     if (d[i+3] > 200 && (d[i] > 60 || d[i+1] > 60 || d[i+2] > 60)) {
@@ -6502,9 +6483,9 @@ for (let frac of scanCols) {
     sy--;
   }
 }
-if (seedCandidates.length === 0) return; // плашку не нашли — оставляем как есть, FREE поставит fallback
+if (seedCandidates.length === 0) return; 
 seedCandidates.sort((a, b) => a.y - b.y);
-let seed = seedCandidates[Math.floor(seedCandidates.length / 2)]; // медиана по высоте = самый надёжный
+let seed = seedCandidates[Math.floor(seedCandidates.length / 2)]; 
 let seedX = seed.x;
 let seedY = seed.y;
 
@@ -6622,9 +6603,8 @@ function isBg(x, y) {
 
 let boxW = maxBoxX - minBoxX + 1;
 let boxH = maxBoxY - minBoxY + 1;
-let R = Math.max(4, Math.round(boxH * 0.18)); // размер "запечатывания" выемок
+let R = Math.max(4, Math.round(boxH * 0.18)); 
 
-// исходная маска заливки (плашка + внутренние дырки цифр), форма сохранена
 let fillMask = new Uint8Array(boxW * boxH);
 for (let y = 0; y < boxH; y++)
   for (let x = 0; x < boxW; x++)
@@ -6656,7 +6636,7 @@ const erode = (src) => {
 };
 
 let closed = erode(dilate(fillMask));
-for (let i=0;i<closed.length;i++) if (fillMask[i]) closed[i]=1; // не "съесть" края
+for (let i=0;i<closed.length;i++) if (fillMask[i]) closed[i]=1; 
 
 for (let y=0;y<boxH;y++) for (let x=0;x<boxW;x++)
   if (closed[y*boxW+x]) {
@@ -11807,6 +11787,17 @@ window.addEventListener('load', () => {
     } else {
         setTimeout(() => window.preloadAllImages(), 1000);
     }
+});
+
+window.warmUpFonts = function() {
+    ['Font16103','LilitaOneRus','SupercellMagic','PusiaBold','BebasNeue',
+     'AmericanCaptain','ArialRoundedOld','Molot','Nougat','TTSupermolot',
+     'ArialBlackCustom','ImpactCustom','Font11246']
+      .forEach(f => { try { document.fonts.load(`16px '${f}'`); } catch(e){} });
+};
+window.addEventListener('load', () => {
+    if ('requestIdleCallback' in window) requestIdleCallback(window.warmUpFonts, { timeout: 3000 });
+    else setTimeout(window.warmUpFonts, 1500);
 });
 </script>
 </body>
