@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(11)";
+  const APP_VERSION = "v2.4.2(12)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5845,6 +5845,23 @@ if (window.layerState.isBrawlPassMode) {
         `;
 
         if (window.layerState.isGeneratedBg || window.layerState.isReadyBg || window.layerState.bpStyleIndex === 'dop' || window.layerState.bpStyleIndex === 4) {
+            
+            if (window.layerState.bpStyleIndex === 'dop') {
+                let bigGlowVis = window.layerState.dopBigGlowVisible !== false;
+                html += `
+                    <div class="ios-layer-row">
+                        <div class="ios-icon-btn ios-eye-icon ${bigGlowVis ? '' : 'hidden'}" onclick="toggleCosmeticLayer('dopBigGlow')">
+                            ${getEyeSVG(bigGlowVis)}
+                        </div>
+                        <div class="ios-layer-name">Большой круг</div>
+                        <div class="ios-layer-action-text">размер</div>
+                        <input type="range" class="ios-slider" min="0.5" max="8" step="0.1" 
+                            value="${window.layerState.dopBigGlowSize !== undefined ? window.layerState.dopBigGlowSize : 3.2}" 
+                            oninput="window.layerState.dopBigGlowSize=parseFloat(this.value); startAnimation();">
+                    </div>
+                `;
+            }
+
             let dopBg4EyeClass = window.layerState.dopBg4Visible !== false ? '' : 'hidden';
             html += `
                 <div class="ios-layer-row">
@@ -8712,11 +8729,11 @@ else if (window.layerState.bpStyleIndex === 4) {
             }
             ctx.restore();
 
+            if (window.layerState.dopBigGlowVisible !== false) {
             ctx.save();
             const cxBig = offsetX + (599 + 609 / 2) * s;
             const cyBig = offsetY + (150 + 576 / 2) * s;
-            const rBig = Math.min(609, 576) / 2 * s * 1.6;
-
+            const rBig = Math.min(609, 576) / 2 * s * (window.layerState.dopBigGlowSize !== undefined ? window.layerState.dopBigGlowSize : 3.2);
             const colorMapDop = {
                 'green':  [94, 229, 104],
                 'blue':   [70, 179, 255],
@@ -8739,6 +8756,7 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.arc(cxBig, cyBig, rBig, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
+        }
 
             if (window.layerState.dopBg4Visible !== false && globalAssets.dopDetailing) {
                 ctx.save();
