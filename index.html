@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(17)";
+  const APP_VERSION = "v2.4.2(18)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -11776,6 +11776,38 @@ window.onSizeGenerateClick = function() {
     }
 };
 
+window.preloadAllImages = function() {
+    if (!window._preloadCache) window._preloadCache = [];
+    const seen = new Set();
+
+    const add = (src, cors) => {
+        if (!src || seen.has(src)) return;
+        seen.add(src);
+        const img = new Image();
+        if (cors) img.crossOrigin = "anonymous"; 
+        img.src = src;
+        window._preloadCache.push(img); 
+    };
+
+    ['bg/bg18_BP50.png','bg/bg19_BP49.png','bg/bg20_BP48.png'].forEach(s => add(s, true));
+    ['demo_png50s.png','demo_png49s.png','demo_png48s.png'].forEach(s => add(s, false));
+
+    document.querySelectorAll('[data-src]').forEach(el => add(el.getAttribute('data-src'), true));
+
+    document.querySelectorAll('.slider-wrapper[data-images]').forEach(el => {
+        try { JSON.parse(el.getAttribute('data-images')).forEach(s => add(s, false)); } catch (e) {}
+    });
+
+    document.querySelectorAll('img[src*="demo_png"]').forEach(img => add(img.getAttribute('src'), false));
+};
+
+window.addEventListener('load', () => {
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => window.preloadAllImages(), { timeout: 2000 });
+    } else {
+        setTimeout(() => window.preloadAllImages(), 1000);
+    }
+});
 </script>
 </body>
 </html>
