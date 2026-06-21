@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(13)";
+  const APP_VERSION = "v2.4.2(14)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -8765,27 +8765,38 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.restore();
 
             if (window.layerState.dopBigGlowVisible !== false) {
-                const bgSize    = window.layerState.dopBigGlowSize    !== undefined ? window.layerState.dopBigGlowSize    : 3.2;
-                const bgOpacity = window.layerState.dopBigGlowOpacity !== undefined ? window.layerState.dopBigGlowOpacity : 0.55;
-                const bgBlur    = window.layerState.dopBigGlowBlur    !== undefined ? window.layerState.dopBigGlowBlur    : 0;
+            const bgSize    = window.layerState.dopBigGlowSize    !== undefined ? window.layerState.dopBigGlowSize    : 3.2;
+            const bgOpacity = window.layerState.dopBigGlowOpacity !== undefined ? window.layerState.dopBigGlowOpacity : 0.55;
+            const bgBlur    = window.layerState.dopBigGlowBlur    !== undefined ? window.layerState.dopBigGlowBlur    : 0;
 
-                ctx.save();
-                if (bgBlur > 0) ctx.filter = `blur(${bgBlur * s}px)`;
-                const cxBig = offsetX + (599 + 609 / 2) * s;
-                const cyBig = offsetY + (150 + 576 / 2) * s;
-                const rBig  = Math.min(609, 576) / 2 * s * bgSize;
+            ctx.save();
+            if (bgBlur > 0) ctx.filter = `blur(${bgBlur * s}px)`;
+            const cxBig = offsetX + (599 + 609 / 2) * s;
+            const cyBig = offsetY + (150 + 576 / 2) * s;
+            const rBig  = Math.min(609, 576) / 2 * s * bgSize;
+            const colorMapDop = {
+                'green':  [94, 229, 104],
+                'blue':   [70, 179, 255],
+                'orange': [255, 204, 0],
+                'purple': [200, 97, 255],
+                'black':  [160, 160, 160]
+            };
+            const clrDop = (window.layerState.isGeneratedBg && window.layerState.bgColorType)
+                ? (colorMapDop[window.layerState.bgColorType] || [255, 255, 255])
+                : [255, 255, 255];
+            const [dr, dg, db] = clrDop;
 
-                const gradBig = ctx.createRadialGradient(cxBig, cyBig, 0, cxBig, cyBig, rBig);
-                gradBig.addColorStop(0,    `rgba(${dr}, ${dg}, ${db}, ${bgOpacity})`);
-                gradBig.addColorStop(0.45, `rgba(${dr}, ${dg}, ${db}, ${(bgOpacity * 0.55).toFixed(2)})`);
-                gradBig.addColorStop(0.75, `rgba(${dr}, ${dg}, ${db}, ${(bgOpacity * 0.18).toFixed(2)})`);
-                gradBig.addColorStop(1,    `rgba(${dr}, ${dg}, ${db}, 0)`);
-                ctx.fillStyle = gradBig;
-                ctx.beginPath();
-                ctx.arc(cxBig, cyBig, rBig, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
+            const gradBig = ctx.createRadialGradient(cxBig, cyBig, 0, cxBig, cyBig, rBig);
+            gradBig.addColorStop(0,    `rgba(${dr}, ${dg}, ${db}, ${bgOpacity})`);
+            gradBig.addColorStop(0.45, `rgba(${dr}, ${dg}, ${db}, ${(bgOpacity * 0.55).toFixed(2)})`);
+            gradBig.addColorStop(0.75, `rgba(${dr}, ${dg}, ${db}, ${(bgOpacity * 0.18).toFixed(2)})`);
+            gradBig.addColorStop(1,    `rgba(${dr}, ${dg}, ${db}, 0)`);
+            ctx.fillStyle = gradBig;
+            ctx.beginPath();
+            ctx.arc(cxBig, cyBig, rBig, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
 
             if (window.layerState.dopBg4Visible !== false && globalAssets.dopDetailing) {
                 ctx.save();
