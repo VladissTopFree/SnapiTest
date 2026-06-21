@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(12)";
+  const APP_VERSION = "v2.4.2(13)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5848,16 +5848,51 @@ if (window.layerState.isBrawlPassMode) {
             
             if (window.layerState.bpStyleIndex === 'dop') {
                 let bigGlowVis = window.layerState.dopBigGlowVisible !== false;
+                let bgSize    = window.layerState.dopBigGlowSize    !== undefined ? window.layerState.dopBigGlowSize    : 3.2;
+                let bgOpacity = window.layerState.dopBigGlowOpacity !== undefined ? window.layerState.dopBigGlowOpacity : 0.55;
+                let bgBlur    = window.layerState.dopBigGlowBlur    !== undefined ? window.layerState.dopBigGlowBlur    : 0;
+
                 html += `
                     <div class="ios-layer-row">
                         <div class="ios-icon-btn ios-eye-icon ${bigGlowVis ? '' : 'hidden'}" onclick="toggleCosmeticLayer('dopBigGlow')">
                             ${getEyeSVG(bigGlowVis)}
                         </div>
-                        <div class="ios-layer-name">Большой круг</div>
-                        <div class="ios-layer-action-text">размер</div>
-                        <input type="range" class="ios-slider" min="0.5" max="8" step="0.1" 
-                            value="${window.layerState.dopBigGlowSize !== undefined ? window.layerState.dopBigGlowSize : 3.2}" 
-                            oninput="window.layerState.dopBigGlowSize=parseFloat(this.value); startAnimation();">
+                        <div class="ios-layer-name" style="font-weight:600;">Большой круг</div>
+                    </div>
+
+                    <div class="ios-layer-row">
+                        <div class="ios-layer-name" style="min-width:80px;">Размер</div>
+                        <input type="range" class="ios-slider" min="0.5" max="10" step="0.1"
+                            value="${bgSize}"
+                            oninput="window.layerState.dopBigGlowSize=parseFloat(this.value); document.getElementById('v-bgl-size').innerText=parseFloat(this.value).toFixed(1); startAnimation();"
+                            style="flex-grow:1;">
+                        <div id="v-bgl-size" style="min-width:34px; text-align:right; font-size:13px; color:var(--tg-theme-subtitle-text-color,#8E8E93); margin-left:6px;">${bgSize.toFixed(1)}</div>
+                    </div>
+
+                    <div class="ios-layer-row">
+                        <div class="ios-layer-name" style="min-width:80px;">Прозрачность</div>
+                        <input type="range" class="ios-slider" min="0" max="1" step="0.01"
+                            value="${bgOpacity}"
+                            oninput="window.layerState.dopBigGlowOpacity=parseFloat(this.value); document.getElementById('v-bgl-opacity').innerText=parseFloat(this.value).toFixed(2); startAnimation();"
+                            style="flex-grow:1;">
+                        <div id="v-bgl-opacity" style="min-width:34px; text-align:right; font-size:13px; color:var(--tg-theme-subtitle-text-color,#8E8E93); margin-left:6px;">${bgOpacity.toFixed(2)}</div>
+                    </div>
+
+                    <div class="ios-layer-row">
+                        <div class="ios-layer-name" style="min-width:80px;">Размытие</div>
+                        <input type="range" class="ios-slider" min="0" max="80" step="1"
+                            value="${bgBlur}"
+                            oninput="window.layerState.dopBigGlowBlur=parseFloat(this.value); document.getElementById('v-bgl-blur').innerText=parseFloat(this.value).toFixed(0); startAnimation();"
+                            style="flex-grow:1;">
+                        <div id="v-bgl-blur" style="min-width:34px; text-align:right; font-size:13px; color:var(--tg-theme-subtitle-text-color,#8E8E93); margin-left:6px;">${bgBlur.toFixed(0)}</div>
+                    </div>
+
+                    <div class="ios-layer-row" style="border-bottom:none;">
+                        <div class="ios-layer-name" style="font-size:13px; color:var(--tg-theme-subtitle-text-color,#8E8E93);">Код для вставки</div>
+                        <button class="ios-pill-btn" onclick="
+                            let code = 'dopBigGlowSize: ' + (window.layerState.dopBigGlowSize||3.2).toFixed(1) + ', dopBigGlowOpacity: ' + (window.layerState.dopBigGlowOpacity||0.55).toFixed(2) + ', dopBigGlowBlur: ' + (window.layerState.dopBigGlowBlur||0).toFixed(0);
+                            navigator.clipboard.writeText(code).then(()=>alert('✅ Скопировано: ' + code));
+                        ">📋 Копировать</button>
                     </div>
                 `;
             }
@@ -8730,33 +8765,27 @@ else if (window.layerState.bpStyleIndex === 4) {
             ctx.restore();
 
             if (window.layerState.dopBigGlowVisible !== false) {
-            ctx.save();
-            const cxBig = offsetX + (599 + 609 / 2) * s;
-            const cyBig = offsetY + (150 + 576 / 2) * s;
-            const rBig = Math.min(609, 576) / 2 * s * (window.layerState.dopBigGlowSize !== undefined ? window.layerState.dopBigGlowSize : 3.2);
-            const colorMapDop = {
-                'green':  [94, 229, 104],
-                'blue':   [70, 179, 255],
-                'orange': [255, 204, 0],
-                'purple': [200, 97, 255],
-                'black':  [160, 160, 160]
-            };
-            const clrDop = (window.layerState.isGeneratedBg && window.layerState.bgColorType)
-                ? (colorMapDop[window.layerState.bgColorType] || [255, 255, 255])
-                : [255, 255, 255];
-            const [dr, dg, db] = clrDop;
+                const bgSize    = window.layerState.dopBigGlowSize    !== undefined ? window.layerState.dopBigGlowSize    : 3.2;
+                const bgOpacity = window.layerState.dopBigGlowOpacity !== undefined ? window.layerState.dopBigGlowOpacity : 0.55;
+                const bgBlur    = window.layerState.dopBigGlowBlur    !== undefined ? window.layerState.dopBigGlowBlur    : 0;
 
-            const gradBig = ctx.createRadialGradient(cxBig, cyBig, 0, cxBig, cyBig, rBig);
-            gradBig.addColorStop(0,   `rgba(${dr}, ${dg}, ${db}, 0.55)`);
-            gradBig.addColorStop(0.45, `rgba(${dr}, ${dg}, ${db}, 0.3)`);
-            gradBig.addColorStop(0.75, `rgba(${dr}, ${dg}, ${db}, 0.1)`);
-            gradBig.addColorStop(1,   `rgba(${dr}, ${dg}, ${db}, 0)`);
-            ctx.fillStyle = gradBig;
-            ctx.beginPath();
-            ctx.arc(cxBig, cyBig, rBig, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
+                ctx.save();
+                if (bgBlur > 0) ctx.filter = `blur(${bgBlur * s}px)`;
+                const cxBig = offsetX + (599 + 609 / 2) * s;
+                const cyBig = offsetY + (150 + 576 / 2) * s;
+                const rBig  = Math.min(609, 576) / 2 * s * bgSize;
+
+                const gradBig = ctx.createRadialGradient(cxBig, cyBig, 0, cxBig, cyBig, rBig);
+                gradBig.addColorStop(0,    `rgba(${dr}, ${dg}, ${db}, ${bgOpacity})`);
+                gradBig.addColorStop(0.45, `rgba(${dr}, ${dg}, ${db}, ${(bgOpacity * 0.55).toFixed(2)})`);
+                gradBig.addColorStop(0.75, `rgba(${dr}, ${dg}, ${db}, ${(bgOpacity * 0.18).toFixed(2)})`);
+                gradBig.addColorStop(1,    `rgba(${dr}, ${dg}, ${db}, 0)`);
+                ctx.fillStyle = gradBig;
+                ctx.beginPath();
+                ctx.arc(cxBig, cyBig, rBig, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
 
             if (window.layerState.dopBg4Visible !== false && globalAssets.dopDetailing) {
                 ctx.save();
