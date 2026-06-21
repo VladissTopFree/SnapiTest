@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(20)";
+  const APP_VERSION = "v2.4.2(21)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2416,22 +2416,42 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
   .app-splash-spinner {
     width: 36px;
     height: 36px;
-    color: var(--tg-theme-section-bg-color, #ffffff);
+    color: var(--tg-theme-subtitle-text-color, #ffffff);
     animation: appSplashSpin 0.9s linear infinite;
   }
   @keyframes appSplashSpin { to { transform: rotate(360deg); } }
 </style>
 <script>
   (function(){
-    function hideSplash(){
+    var START = Date.now();
+    var MIN_SHOW = 1000;   
+    var hidden = false;
+
+    function hideNow(){
+      if (hidden) return;
+      hidden = true;
       var s = document.getElementById('app-splash');
-      if (!s || s.dataset.hidden) return;
-      s.dataset.hidden = '1';
+      if (!s) return;
       s.classList.add('hide');
       setTimeout(function(){ if (s.parentNode) s.remove(); }, 450);
     }
-    window.addEventListener('load', hideSplash);
-    setTimeout(hideSplash, 8000); 
+
+    function hideWithMinTime(){
+      var left = MIN_SHOW - (Date.now() - START);
+      if (left > 0) setTimeout(hideNow, left); else hideNow();
+    }
+
+    function whenReady(){
+      var fonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+      fonts.then(function(){
+        requestAnimationFrame(function(){ requestAnimationFrame(hideWithMinTime); });
+      });
+    }
+
+    if (document.readyState === 'complete') whenReady();
+    else window.addEventListener('load', whenReady);
+
+    setTimeout(hideNow, 26000); 
   })();
 </script>
 
