@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(9)";
+  const APP_VERSION = "v2.4.2(10)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -8747,6 +8747,34 @@ else if (window.layerState.bpStyleIndex === 4) {
             }
 
             drawLayerImg(globalAssets.dopStar, 561, 61, 771, 675);
+
+            ctx.save();
+            const cxBig = offsetX + (599 + 609 / 2) * s;
+            const cyBig = offsetY + (150 + 576 / 2) * s;
+            const rBig = Math.min(609, 576) / 2 * s * 1.6;
+
+            const colorMapDop = {
+                'green':  [94, 229, 104],
+                'blue':   [70, 179, 255],
+                'orange': [255, 204, 0],
+                'purple': [200, 97, 255],
+                'black':  [160, 160, 160]
+            };
+            const clrDop = (window.layerState.isGeneratedBg && window.layerState.bgColorType)
+                ? (colorMapDop[window.layerState.bgColorType] || [255, 255, 255])
+                : [255, 255, 255];
+            const [dr, dg, db] = clrDop;
+
+            const gradBig = ctx.createRadialGradient(cxBig, cyBig, 0, cxBig, cyBig, rBig);
+            gradBig.addColorStop(0,   `rgba(${dr}, ${dg}, ${db}, 0.55)`);
+            gradBig.addColorStop(0.45, `rgba(${dr}, ${dg}, ${db}, 0.3)`);
+            gradBig.addColorStop(0.75, `rgba(${dr}, ${dg}, ${db}, 0.1)`);
+            gradBig.addColorStop(1,   `rgba(${dr}, ${dg}, ${db}, 0)`);
+            ctx.fillStyle = gradBig;
+            ctx.beginPath();
+            ctx.arc(cxBig, cyBig, rBig, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
 
             ctx.save();
             const cx = offsetX + (599 + 609 / 2) * s;
