@@ -7,7 +7,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(8)";
+  const APP_VERSION = "v2.4.2(9)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5710,6 +5710,27 @@ if (window.layerState.isBrawlPassMode) {
         </div>
         `;
 
+        html += `
+        <div class="ios-layer-row">
+            <div class="ios-layer-name" style="flex-grow: 1;">Цвет цены</div>
+            <div class="ios-layer-action-text" style="margin-right: 4px;">цвет</div>
+            <div style="position: relative; width: 26px; height: 26px; flex-shrink: 0; background: ${window.layerState.offerPriceColor || '#ffffff'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 1px; box-sizing: border-box; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);" id="offer-price-color-display">
+                <input type="color" value="${window.layerState.offerPriceColor || '#ffffff'}" style="position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer;" oninput="window.changeOfferPriceColor(this.value)">
+                <div style="width: 22px; height: 22px; background: transparent; border-radius: 50%; z-index: 2; pointer-events: none; display: flex; align-items: center; justify-content: center;">
+                    <svg id="offer-price-color-icon" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: ${((window.layerState.offerPriceColor || '#ffffff').toLowerCase() === '#ffffff') ? '#b7b7b7' : '#ffffff'};"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                </div>
+            </div>
+        </div>
+        `;
+
+        html += `<div class="ios-font-label">Шрифт цены</div>`;
+        html += `<div class="ios-font-grid">`;
+        FONT_OPTIONS.forEach((f) => {
+            let activeCls = (window.layerState.offerPriceFont || 'LilitaOneRus') === f.family ? 'active' : '';
+            html += `<div class="ios-font-item offer-price-font-item ${activeCls}" data-font="${f.family}" style="font-family: '${f.family}', sans-serif;" onclick="window.changeOfferPriceFont('${f.family}')">999</div>`;
+        });
+        html += `</div>`;
+
         html += `<div id="offers-sortable-list">`;
 
         window.layerState.offers.forEach((offer, idx) => {
@@ -6053,6 +6074,31 @@ window.changeGlobalPriceScale = (val) => {
         }
     });
     
+    if (typeof startAnimation === 'function') startAnimation();
+};
+
+window.changeOfferPriceFont = async (font) => {
+    window.layerState.offerPriceFont = font;
+    document.querySelectorAll('.offer-price-font-item').forEach(el => {
+        if (el.getAttribute('data-font') === font) el.classList.add('active');
+        else el.classList.remove('active');
+    });
+    await document.fonts.load(`16px '${font}'`);
+    window.layerState.offers.forEach(offer => {
+        if (offer.target && offer.target.w) generateOfferCache(offer, offer.target.w, offer.target.h);
+    });
+    if (typeof startAnimation === 'function') startAnimation();
+};
+
+window.changeOfferPriceColor = (color) => {
+    window.layerState.offerPriceColor = color;
+    let disp = document.getElementById('offer-price-color-display');
+    if (disp) disp.style.background = color;
+    let icon = document.getElementById('offer-price-color-icon');
+    if (icon) icon.style.fill = (color.toLowerCase() === '#ffffff') ? '#b7b7b7' : '#ffffff';
+    window.layerState.offers.forEach(offer => {
+        if (offer.target && offer.target.w) generateOfferCache(offer, offer.target.w, offer.target.h);
+    });
     if (typeof startAnimation === 'function') startAnimation();
 };
 
@@ -6649,8 +6695,10 @@ function drawPriceText(ctx, w, h, textStr, info) {
   let isNumber = !isNaN(textStr.trim()) && textStr.trim() !== '';
   let numStr = textStr.trim(); 
   let symStr = isNumber ? " ₽" : ""; 
-  let mainColor = isFree ? "#3bf83b" : "#fff";
-  let fontNum = `normal ${fontSize}px 'LilitaOneRus', 'Arial Black', Impact, sans-serif`;
+  let inOffers = !window.layerState.isBrawlPassMode;
+  let priceFontFamily = inOffers ? (window.layerState.offerPriceFont || 'LilitaOneRus') : 'LilitaOneRus';
+  let mainColor = isFree ? "#3bf83b" : (inOffers ? (window.layerState.offerPriceColor || "#ffffff") : "#fff");
+  let fontNum = `normal ${fontSize}px '${priceFontFamily}', 'Arial Black', Impact, sans-serif`;
   let fontSym = `normal ${Math.max(fontSize - 4, 16)}px 'Rockwell', serif`;
 
   ctx.font = fontNum; let wNum = ctx.measureText(numStr).width;
@@ -8666,7 +8714,7 @@ else if (window.layerState.bpStyleIndex === 4) {
             if (window.layerState.dopBg4Visible !== false && globalAssets.dopDetailing) {
                 ctx.save();
                 ctx.globalAlpha = window.layerState.dopBg4Opacity !== undefined ? window.layerState.dopBg4Opacity : 1;
-                ctx.drawImage(globalAssets.dopDetailing, 0, 0, W, H);
+                drawImageCover(ctx, globalAssets.dopDetailing, 0, 0, W, H);
                 ctx.restore();
             }
 
@@ -10707,8 +10755,8 @@ window.openBPDopEditor = function() {
         if (!globalAssets.dopPoints) globalAssets.dopPoints = await load('BP/bp_points_3style.png');
         if (!globalAssets.dopStarsEff) globalAssets.dopStarsEff = await load('BP/bp_dop_starsEFF.png');
         if (!globalAssets.dopStar) globalAssets.dopStar = await load('BP/bp_star.png');
-        if (!globalAssets.dopDetailing) globalAssets.dopDetailing = await load('BP/dop_styleBPdop.png');
-        
+        if (!globalAssets.dopDetailing) globalAssets.dopDetailing = await load('BP/dop_styleBPdop.png'); 
+
         if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
         if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
 
