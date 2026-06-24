@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.2(21)";
+  const APP_VERSION = "v2.4.3(1)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2424,7 +2424,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
 <script>
   (function(){
     var START = Date.now();
-    var MIN_SHOW = 1000;   
+    var MIN_SHOW = 400;   // минимальное время показа сплеша для плавности
     var hidden = false;
 
     function hideNow(){
@@ -2442,16 +2442,24 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
     }
 
     function whenReady(){
-      var fonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
-      fonts.then(function(){
-        requestAnimationFrame(function(){ requestAnimationFrame(hideWithMinTime); });
+      // прячем сплеш сразу после готовности разметки —
+      // не ждём картинки, видео, шрифты и внешние скрипты
+      requestAnimationFrame(function(){ requestAnimationFrame(hideWithMinTime); });
+    }
+
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      whenReady();
+    } else {
+      document.addEventListener('readystatechange', function onState(){
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+          document.removeEventListener('readystatechange', onState);
+          whenReady();
+        }
       });
     }
 
-    if (document.readyState === 'complete') whenReady();
-    else window.addEventListener('load', whenReady);
-
-    setTimeout(hideNow, 26000); 
+    // страховочный таймаут (было 26000)
+    setTimeout(hideNow, 8000);
   })();
 </script>
 
