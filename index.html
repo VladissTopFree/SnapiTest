@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="favicon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-<script defer src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(1)";
+  const APP_VERSION = "v2.4.3(2)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -102,8 +102,7 @@
 
 </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="telegram-animoji-ezgif.com-gif-maker.gif">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" media="print" onload="this.media='all'">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   body.os-android,
@@ -2529,7 +2528,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
         
         <div id="avatar-sparks-container" style="position: absolute; top: 50%; left: 50%; width: 0; height: 0; z-index: 0; pointer-events: none;"></div>
         
-        <video src="ava_Snapi.mp4" autoplay loop muted playsinline style="position: relative; z-index: 1; width: 74px; height: 74px; border-radius: 50%; object-fit: cover; background: var(--tg-theme-secondary-bg-color, #F2F2F7);"></video>
+        <video id="snapi-ava-video" data-src="ava_Snapi.mp4" loop muted playsinline preload="none" style="position: relative; z-index: 1; width: 74px; height: 74px; border-radius: 50%; object-fit: cover; background: var(--tg-theme-secondary-bg-color, #F2F2F7);"></video>
         
         <div class="ios-avatar loading" id="user-tg-avatar" style="position: absolute; bottom: -2px; right: -6px; z-index: 2; width: 32px; height: 32px; margin: 0; border: 2.5px solid var(--tg-theme-section-bg-color, #ffffff); box-sizing: content-box;"></div>
       </div>
@@ -11875,6 +11874,21 @@ window.addEventListener('load', () => {
     if ('requestIdleCallback' in window) requestIdleCallback(window.warmUpFonts, { timeout: 3000 });
     else setTimeout(window.warmUpFonts, 1500);
 });
+
+
+(function loadAvaVideo(){
+  function go(){
+    var v = document.getElementById('snapi-ava-video');
+    if (!v || v.src) return;
+    v.src = v.dataset.src;
+    v.load();
+    var p = v.play();
+    if (p && p.catch) p.catch(function(){});
+  }
+  if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1500 });
+  else setTimeout(go, 800);
+})();
+
 </script>
 </body>
 </html>
