@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(5)";
+  const APP_VERSION = "v2.4.3(6)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2224,6 +2224,22 @@
 
 .smooth-anim {
     animation: smoothSliderAnim 0.6s ease-out forwards;
+}
+
+@keyframes sliderCardIn {
+    0%   { transform: scale(0.82) translateY(12%); opacity: 0; filter: blur(4px); }
+    55%  { opacity: 1; filter: blur(0); }
+    100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
+}
+@keyframes sliderCardOut {
+    0%   { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
+    100% { transform: scale(1.14) translateY(-8%); opacity: 0; filter: blur(2px); }
+}
+.slider-anim-in {
+    animation: sliderCardIn 0.7s cubic-bezier(0.22, 0.8, 0.3, 1) forwards;
+}
+.slider-anim-out {
+    animation: sliderCardOut 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 body:not(.os-non-apple) .saved-works-icon {
@@ -5183,7 +5199,7 @@ function buildBrawlerColorSection(animCls) {
                     <div class="ios-icon-btn ios-eye-icon ${isVisible ? '' : 'hidden'}" onclick="selectBrawlerVariant(${ch.num}, ${v})">
                         ${getEyeSVG(isVisible)}
                     </div>
-                    <div class="ios-layer-name">${v} вариант</div>
+                    <div class="ios-layer-name">${v} вариант скина</div>
                     <div style="flex-grow:1;"></div>
                 </div>
             `;
@@ -11667,18 +11683,9 @@ window.openBPFromPromo = function() {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    function drawCover(ctx, img, w, h) {
-        if (!img.naturalWidth || !img.naturalHeight) return;
-        const r = Math.max(w / img.naturalWidth, h / img.naturalHeight);
-        const nw = img.naturalWidth * r, nh = img.naturalHeight * r;
-        const nx = (w - nw) / 2, ny = (h - nh) / 2;
-        ctx.drawImage(img, nx, ny, nw, nh);
-    }
-
     document.querySelectorAll('.slider-wrapper').forEach(wrapper => {
         const imgEl = wrapper.querySelector('.slider-img');
-        const canvas = wrapper.querySelector('.slider-canvas');
-        if (!imgEl || !canvas) return;
+        if (!imgEl) return;
 
         let images = [];
         try {
@@ -11687,23 +11694,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (images.length < 2) return;
 
-        images.forEach(src => {
-            const img = new Image();
-            img.src = src;
-        });
+        images.forEach(src => { const i = new Image(); i.src = src; });
+
+        wrapper.style.overflow = 'hidden'; 
 
         let currentIndex = 0;
+        let currentImg = imgEl;
+        currentImg.style.zIndex = '2';
+
+        const makeLayer = (src) => {
+            const layer = document.createElement('img');
+            layer.className = 'slider-img';
+            layer.src = src;
+            layer.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; will-change:transform,opacity,filter;';
+            return layer;
+        };
+
+        const SWAP_MS = 760; 
 
         setInterval(() => {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             currentIndex = (currentIndex + 1) % images.length;
-            imgEl.src = images[currentIndex];
-            imgEl.classList.remove('smooth-anim');
-            void imgEl.offsetWidth; 
-            imgEl.classList.add('smooth-anim');
-        }, 1500);
+
+            const incoming = makeLayer(images[currentIndex]);
+            incoming.style.zIndex = '1';
+            incoming.classList.add('slider-anim-in');
+            wrapper.insertBefore(incoming, wrapper.firstChild);
+
+            const outgoing = currentImg;
+            outgoing.style.zIndex = '2';
+            outgoing.classList.remove('slider-anim-in');
+            void outgoing.offsetWidth;
+            outgoing.classList.add('slider-anim-out');
+
+            setTimeout(() => {
+                if (outgoing && outgoing.parentNode) outgoing.remove();
+                incoming.classList.remove('slider-anim-in');
+                incoming.style.zIndex = '2';
+                currentImg = incoming;
+            }, SWAP_MS);
+        }, 2000);
     });
 });
 
