@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(4)";
+  const APP_VERSION = "v2.4.3(5)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4939,6 +4939,27 @@ window.getBrawlerImg = function(charNum, season) {
     return globalAssets[`brawler_${season}_${charNum}`] || null;
 };
 
+window.preloadBrawlerVariants = function(season) {
+    season = season || window.layerState.bpSeason || 50;
+    if (window.layerState.bpStyleIndex === 3) return Promise.resolve(); 
+
+    let charNums;
+    if (window.layerState.bpStyleIndex === 'dop') {
+        let dopCharNum = (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) ? 1 : 2;
+        charNums = [dopCharNum];
+    } else {
+        charNums = [1, 2];
+    }
+
+    let tasks = [];
+    charNums.forEach(charNum => {
+        for (let v = 1; v <= 3; v++) {
+            tasks.push(window.loadBrawlerVariant(charNum, v, season));
+        }
+    });
+    return Promise.all(tasks);
+};
+
 window.selectBrawlerVariant = async function(charNum, variant) {
     if (window.triggerHaptic) window.triggerHaptic();
     let stateKey = (charNum === 1) ? 'brawler1Variant' : 'brawler2Variant';
@@ -5135,7 +5156,7 @@ function buildBrawlerColorSection(animCls) {
 
     if (isDop) {
         let dopCharNum = (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) ? 1 : 2;
-        chars = [{ num: dopCharNum, label: 'первый персонаж' }];
+        chars = [{ num: dopCharNum, label: null }];
     } else {
         chars = [
             { num: 1, label: 'первый персонаж' },
@@ -5150,7 +5171,9 @@ function buildBrawlerColorSection(animCls) {
         let stateKey = (ch.num === 1) ? 'brawler1Variant' : 'brawler2Variant';
         let curVariant = window.layerState[stateKey] || 1;
 
-        html += `<div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-top: ${ci === 0 ? '14' : '20'}px; margin-bottom: 4px; padding: 0;">${ch.label}</div>`;
+        if (ch.label) {
+            html += `<div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-top: ${ci === 0 ? '14' : '20'}px; margin-bottom: 4px; padding: 0;">${ch.label}</div>`;
+        }
 
         for (let v = 1; v <= 3; v++) {
             let isVisible = curVariant === v;
@@ -9719,9 +9742,9 @@ if (fankitGrid && fankitGrid.children.length === 0) {
     const recGrid = document.getElementById('fankit-rec-grid');
     
     const recBackgrounds = [
-        { src: 'bg/bg18_BP50.png', text: '51 сезон' },
-        { src: 'bg/bg19_BP49.png', text: '50 сезон' },
-        { src: 'bg/bg20_BP48.png', text: '49 сезон' }
+        { src: 'bg/bg18_BP50.png', text: '52 сезон' },
+        { src: 'bg/bg19_BP49.png', text: '51 сезон' },
+        { src: 'bg/bg20_BP48.png', text: '50 сезон' }
     ];
 
     const handleFankitSelection = (itemElement, imgSrc) => {
@@ -9806,6 +9829,8 @@ if (fankitGrid && fankitGrid.children.length === 0) {
         });
     }, { rootMargin: '250px' }); 
 
+    window._fankitImageObserver = imageObserver; 
+
     recBackgrounds.forEach((bg) => {
         let item = document.createElement('div');
         item.className = 'fankit-rec-item loading';
@@ -9834,11 +9859,36 @@ if (fankitGrid && fankitGrid.children.length === 0) {
     });
 }
 
-  window.fankitContext = 'wizard'; 
-  
+    window.fankitContext = 'wizard'; 
+
+  window.preloadFankitImages = function() {
+      let items = document.querySelectorAll('#fankit-overlay .fankit-item[data-src], #fankit-overlay .fankit-rec-item[data-src]');
+      items.forEach(item => {
+          if (!item.classList.contains('loading')) return; 
+          let src = item.getAttribute('data-src');
+          if (!src) return;
+
+          if (window._fankitImageObserver) window._fankitImageObserver.unobserve(item);
+
+          let img = new Image();
+          img.crossOrigin = "anonymous";
+          img.src = src;
+          const apply = () => {
+              item.classList.remove('loading');
+              item.style.backgroundImage = `url('${src}')`;
+          };
+          if (img.decode) {
+              img.decode().then(apply).catch(() => { img.onload = apply; });
+          } else {
+              img.onload = apply;
+          }
+      });
+  };
+
   window.openFankitGlobal = function() {
       window.triggerHaptic();
       fankitOverlay.style.display = 'flex';
+      window.preloadFankitImages();
       setTimeout(() => fankitOverlay.classList.add('show'), 10);
   };
 
@@ -10681,6 +10731,9 @@ async function generateBrawlPassTest() {
         setupPersistentCanvas();
         renderLayerPanel();
         calculateLayoutTarget();
+        window.preloadBrawlerVariants(season).then(() => {
+            if (typeof startAnimation === 'function') startAnimation();
+        });
     };
     window.bpForegroundImage.src = c.toDataURL('image/png');
 }
@@ -10913,6 +10966,9 @@ window.openBPTestEditor = function() {
         renderLayerPanel(true);
         window.updateCachedTextCanvas();
         startAnimation();
+        window.preloadBrawlerVariants(season).then(() => {
+            if (typeof startAnimation === 'function') startAnimation();
+        });
     }, 100);
 };
 
@@ -10979,6 +11035,9 @@ window.openBPDopEditor = function() {
         renderLayerPanel(true);
         window.updateCachedTextCanvas();
         startAnimation();
+        window.preloadBrawlerVariants(season).then(() => {
+            if (typeof startAnimation === 'function') startAnimation();
+        });
     }, 100);
 };
 
@@ -11074,6 +11133,8 @@ window.openBPStyle4Editor = function() {
         const season4 = window.layerState.bpSeason || 50;
         if (!globalAssets[`brawler_${season4}_1`]) globalAssets[`brawler_${season4}_1`] = await load(`BP/brawler_s${season4}_1.png`);
         if (!globalAssets[`brawler_${season4}_2`]) globalAssets[`brawler_${season4}_2`] = await load(`BP/brawler_s${season4}_2.png`);
+
+        await window.preloadBrawlerVariants(season4);
 
         setupPersistentCanvas();
 
