@@ -8,11 +8,11 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(2)";
+  const APP_VERSION = "v2.4.3(3)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = false; 
+  const SHOW_PROMO_BANNER = true; 
   const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
@@ -57,6 +57,29 @@
         }
       },
       49: {
+          lineColor: '#00fff0', 
+          gradientLeft: ['#6aff0055', '#6aff0055'], 
+          gradientRight: ['#0037ff50', '#0037ff50'],
+          style2Brawlers: { // yes
+              brawler2: { x: 1029, y: 23, scale: 0.27, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
+              brawler1: { x: 917, y: 399, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
+        
+
+          },
+          style1Brawlers: { // yes
+              brawler2: { x: 484, y: 512, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
+              brawler1: { x: 703, y: 517, scale: 0.49, flipH: false }  // Верхний (x: 1200*0.58-30)
+          },
+          dopBrawler: { x: 569, y: 96, scale: 0.88, scaleX: 0.86, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 392, y: 76, scale: 0.89, scaleX: 1.37, scaleY: 1, rot: 0, flipH: true },
+          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
+
+        style4Brawlers: {
+        brawlerL: { x: 885, y: 611, scale: 400, flipH: false },
+        brawlerR: { x: 1133, y: 580, scale: 450, flipH: false }
+        }
+      },
+      48: {
           lineColor: '#b2beff', 
           gradientLeft: ['#90c4c486', '#90c4c486'], 
           gradientRight: ['#7084f4', '#7084f4'],
@@ -76,26 +99,6 @@
                   style4Brawlers: {
             brawlerL: { x: 855, y: 628, scale: 490, flipH: false },
             brawlerR: { x: 1109, y: 583, scale: 415, flipH: false }
-        }
-      },
-      48: {
-          lineColor: '#ffa800', 
-          gradientLeft: ['#ff5e00', '#ff5e00'], 
-          gradientRight: ['#7b00d9', '#7b00d9'],
-          style2Brawlers: { // yes
-              brawler1: { x: 1017, y: 381, scale: 0.27, scaleX: 1, scaleY: 1, rot: 0, flipH: true }, 
-              brawler2: { x: 950, y: 4, scale: 0.31, scaleX: 1, scaleY: 1, rot: 0 } 
-          },
-          style1Brawlers: { // yes
-              brawler2: { x: 474, y: 511, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler1: { x: 666, y: 511, scale: 0.48, flipH: false }  // Верхний (x: 1200*0.58-30)
-          },
-          dopBrawler: { x: 492, y: 64, scale: 0.81, scaleX: 1.16, scaleY: 1.07, rot: 0 },
-          dopBrawler1: { x: 618, y: 93, scale: 0.76, scaleX: 1, scaleY: 1.07, rot: 0, flipH: true },
-          dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
-                  style4Brawlers: {
-            brawlerL: { x: 855, y: 592, scale: 430, flipH: false },
-            brawlerR: { x: 1112, y: 588, scale: 350, flipH: false }
         }    
         },
   };
@@ -2559,7 +2562,7 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
   </div>
 
 <div class="promo-content">
-    <div class="promo-subtitle">Новый 51 сезон</div>
+    <div class="promo-subtitle">Новый 52 сезон</div>
     <div class="promo-timer-box" id="promo-timer-container">
       через <span id="promo-timer">00:00:00</span>
     </div>
@@ -2973,8 +2976,8 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
                 <img src="demo_png50s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">51 сезон</div>
-                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 4 июня.</div>
+                <div class="cat-name" style="width: 100%;">52 сезон</div>
+                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 2 июля.</div> <!--Текущий-->
             </div>
          </div>
          
@@ -2986,8 +2989,8 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
                 <img src="demo_png49s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 7 мая.</div>
+                <div class="cat-name" style="width: 100%;">51 сезон</div>
+                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 4 июня.</div> <!--Прошлый-->
             </div>
          </div>
 
@@ -2999,8 +3002,8 @@ body:not(.os-android) .cat-name span[style*="НОВОЕ"] {
                 <img src="demo_png48s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">49 сезон</div>
-                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 2 апреля.</div>
+                <div class="cat-name" style="width: 100%;">50 сезон</div>
+                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 7 мая.</div> <!--Старый-->
             </div>
          </div>
 
@@ -4364,7 +4367,9 @@ window.layerState = {
     watermarksFont: 'Font16103',
     pointsVisible: true,
     isGeneratedBg: false,
-    isReadyBg: false
+    isReadyBg: false,
+    brawler1Variant: 1,
+    brawler2Variant: 1
 };
 
 const FONT_OPTIONS = [
@@ -4889,7 +4894,60 @@ window.clearBrawlerCache = function() {
     delete window.layerState.dopTextRot;
     delete window.layerState.s3TextX;
     delete window.layerState.s3TextY;
+delete window.layerState.s3TextX;
+    delete window.layerState.s3TextY;
     delete window.layerState.s3TextScale;
+
+    window.layerState.brawler1Variant = 1;
+    window.layerState.brawler2Variant = 1;
+};
+
+window._brawlerVarLoading = window._brawlerVarLoading || {};
+
+window.loadBrawlerVariant = function(charNum, variant, season) {
+    season = season || window.layerState.bpSeason || 50;
+    let key = `brawler_${season}_${charNum}_v${variant}`;
+    if (globalAssets[key]) return Promise.resolve(globalAssets[key]);
+    if (window._brawlerVarLoading[key]) return window._brawlerVarLoading[key];
+
+    const SUFFIX = { 1: '_1 var', 2: '_2var', 3: '_3 var' };
+    let src = `BP/brawler_s${season}_${charNum}${SUFFIX[variant]}.png`;
+
+    let p = loadImage(src).then(img => {
+        globalAssets[key] = img || globalAssets[`brawler_${season}_${charNum}`] || null;
+        delete window._brawlerVarLoading[key];
+        return globalAssets[key];
+    });
+    window._brawlerVarLoading[key] = p;
+    return p;
+};
+
+window.getBrawlerImg = function(charNum, season) {
+    season = season || window.layerState.bpSeason || 50;
+    let variant = (charNum === 1)
+        ? (window.layerState.brawler1Variant || 1)
+        : (window.layerState.brawler2Variant || 1);
+    let key = `brawler_${season}_${charNum}_v${variant}`;
+
+    if (globalAssets[key]) return globalAssets[key];
+
+    if (!window._brawlerVarLoading[key]) {
+        window.loadBrawlerVariant(charNum, variant, season).then(() => {
+            if (typeof startAnimation === 'function') startAnimation();
+        });
+    }
+    return globalAssets[`brawler_${season}_${charNum}`] || null;
+};
+
+window.selectBrawlerVariant = async function(charNum, variant) {
+    if (window.triggerHaptic) window.triggerHaptic();
+    let stateKey = (charNum === 1) ? 'brawler1Variant' : 'brawler2Variant';
+    if (window.layerState[stateKey] === variant) return; 
+
+    window.layerState[stateKey] = variant;
+    renderLayerPanel();
+    await window.loadBrawlerVariant(charNum, variant);
+    if (typeof startAnimation === 'function') startAnimation();
 };
 
 window.toggleBrawlerFlip = (brawlerKey) => {
@@ -5067,6 +5125,51 @@ window.updateS2PriceLayer = (idx, inputEl) => {
     if (wsInp) wsInp.value = val;
     window.requestRender();
 };
+
+function buildBrawlerColorSection(animCls) {
+    if (!window.layerState.isBrawlPassMode) return '';
+    if (window.layerState.bpStyleIndex === 3) return ''; 
+
+    let isDop = window.layerState.bpStyleIndex === 'dop';
+    let chars;
+
+    if (isDop) {
+        let dopCharNum = (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) ? 1 : 2;
+        chars = [{ num: dopCharNum, label: 'первый персонаж' }];
+    } else {
+        chars = [
+            { num: 1, label: 'первый персонаж' },
+            { num: 2, label: 'второй персонаж' }
+        ];
+    }
+
+    let html = `<div class="ios-section-title ${animCls}">ЦВЕТ ПЕРСОНАЖА</div>`;
+    html += `<div class="ios-layer-group ${animCls}">`;
+
+    chars.forEach((ch, ci) => {
+        let stateKey = (ch.num === 1) ? 'brawler1Variant' : 'brawler2Variant';
+        let curVariant = window.layerState[stateKey] || 1;
+
+        html += `<div style="font-size: 13px; color: var(--tg-theme-subtitle-text-color, #8E8E93); margin-top: ${ci === 0 ? '14' : '20'}px; margin-bottom: 4px; padding: 0;">${ch.label}</div>`;
+
+        for (let v = 1; v <= 3; v++) {
+            let isVisible = curVariant === v;
+            let isLastRow = (ci === chars.length - 1) && (v === 3);
+            html += `
+                <div class="ios-layer-row" ${isLastRow ? 'style="border-bottom:none;"' : ''}>
+                    <div class="ios-icon-btn ios-eye-icon ${isVisible ? '' : 'hidden'}" onclick="selectBrawlerVariant(${ch.num}, ${v})">
+                        ${getEyeSVG(isVisible)}
+                    </div>
+                    <div class="ios-layer-name">${v} вариант</div>
+                    <div style="flex-grow:1;"></div>
+                </div>
+            `;
+        }
+    });
+
+    html += `</div>`;
+    return html;
+}
 
 function renderLayerPanel(isInitialLoad = false) {
     if (window._genLoading) {
@@ -5831,6 +5934,8 @@ if (window.layerState.isBrawlPassMode) {
         html += `</div>`;
         html += `</div>`;
     }
+
+    html += buildBrawlerColorSection(animCls);
 
     html += `<div class="ios-layer-group ${animCls}">`;
 
@@ -8081,7 +8186,7 @@ function drawScene() {
             ctx.beginPath();
             ctx.rect(0, 0, W, H/2 - 8*s); 
             ctx.clip();
-            drawBrawler(globalAssets[`brawler_${season}_2`], C.brawler2); 
+            drawBrawler(window.getBrawlerImg(2, season), C.brawler2); 
             ctx.restore();
             
             drawItem(globalAssets.style2BPP, C.bppIcon, 15);
@@ -8093,7 +8198,7 @@ function drawScene() {
             ctx.beginPath();
             ctx.rect(0, H/2 + 8*s, W, H/2); 
             ctx.clip();
-            drawBrawler(globalAssets[`brawler_${season}_1`], C.brawler1);
+            drawBrawler(window.getBrawlerImg(1, season), C.brawler1);
             ctx.restore();
             
             drawItem(globalAssets.style2BP, C.bpIcon, 15);
@@ -8497,8 +8602,8 @@ else if (window.layerState.bpStyleIndex === 4) {
                 const s4BL_scale = window.layerState.s4BrawlerL_scale !== undefined ? window.layerState.s4BrawlerL_scale : s4Conf.brawlerL.scale;
                 const s4BL_flip  = window.layerState.s4BrawlerL_flip  !== undefined ? window.layerState.s4BrawlerL_flip  : s4Conf.brawlerL.flipH;
 
-                if (globalAssets[`brawler_${season4}_1`] || globalAssets.s4BrawlerR) {
-                    const brawlerR = globalAssets[`brawler_${season4}_1`] || globalAssets.s4BrawlerR;
+                if (window.getBrawlerImg(1, season4) || globalAssets.s4BrawlerR) {
+                    const brawlerR = window.getBrawlerImg(1, season4) || globalAssets.s4BrawlerR;
                     ctx.save();
                     ctx.shadowColor = 'rgba(255,255,255,1)';
                     ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
@@ -8514,8 +8619,8 @@ else if (window.layerState.bpStyleIndex === 4) {
                     ctx.restore();
                 }
 
-                if (globalAssets[`brawler_${season4}_2`] || globalAssets.s4BrawlerL) {
-                    const brawlerL = globalAssets[`brawler_${season4}_2`] || globalAssets.s4BrawlerL;
+                if (window.getBrawlerImg(2, season4) || globalAssets.s4BrawlerL) {
+                    const brawlerL = window.getBrawlerImg(2, season4) || globalAssets.s4BrawlerL;
                     ctx.save();
                     ctx.shadowColor = 'rgba(255,255,255,1)';
                     ctx.shadowOffsetX = 0; ctx.shadowOffsetY = -6*s; ctx.shadowBlur = 0;
@@ -8859,10 +8964,10 @@ else if (window.layerState.bpStyleIndex === 4) {
             let dopConf;
 
             if (window.layerState.bpVariantIndex === 1 || window.layerState.bpVariantIndex === 2) {
-                brawler = globalAssets[`brawler_${season}_1`];
+                brawler = window.getBrawlerImg(1, season);
                 dopConf = (BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50]).dopBrawler1 || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
             } else {
-                brawler = globalAssets[`brawler_${season}_2`];
+                brawler = window.getBrawlerImg(2, season);
                 dopConf = (BP_SEASON_CONFIG[season] || BP_SEASON_CONFIG[50]).dopBrawler || { x: 476, y: 16, scale: 1, scaleX: 1, scaleY: 1, rot: 0 };
             }
 
@@ -9008,8 +9113,8 @@ else if (window.layerState.bpStyleIndex === 4) {
                 persistentCtx.restore();
             };
 
-            drawBrawlerS1(globalAssets[`brawler_${currentSeason}_1`], b1x, b1y, b1s, b1f);
-            drawBrawlerS1(globalAssets[`brawler_${currentSeason}_2`], b2x, b2y, b2s, b2f);
+            drawBrawlerS1(window.getBrawlerImg(1, currentSeason), b1x, b1y, b1s, b1f);
+            drawBrawlerS1(window.getBrawlerImg(2, currentSeason), b2x, b2y, b2s, b2f);
 
             let priceW = w * 0.24;
             let marginX = w * 0.02;
@@ -11414,7 +11519,7 @@ window.initPromoTimer = function() {
     const container = document.getElementById('promo-timer-container');
     if (!timerEl || !container) return;
 
-    const targetTime = new Date("2026-06-04T11:00:00+03:00").getTime();
+    const targetTime = new Date("2026-07-02T11:00:00+03:00").getTime();
     let timeOffset = 0; 
     let timerInterval;
 
