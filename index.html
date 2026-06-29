@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(11)";
+  const APP_VERSION = "v2.4.3(12)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5334,13 +5334,15 @@ if (window.layerState.isBrawlPassMode) {
         
         if (window.layerState.bpStyleIndex === 2) {
             let detS2EyeClass = window.layerState.detailsS2Visible !== false ? '' : 'hidden';
+            let detS2Opacity = window.layerState.detailsS2Opacity !== undefined ? window.layerState.detailsS2Opacity : 1;
             html += `
                 <div class="ios-layer-row">
                     <div class="ios-icon-btn ios-eye-icon ${detS2EyeClass}" onclick="toggleCosmeticLayer('detailsS2')">
                         ${getEyeSVG(window.layerState.detailsS2Visible !== false)}
                     </div>
                     <div class="ios-layer-name">Детали взади</div>
-                    <div style="flex-grow:1;"></div>
+                    <div class="ios-layer-action-text">прозрачность</div>
+                    <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${detS2Opacity}" oninput="changeOpacity('detailsS2', this.value)">
                 </div>
             `;
 
@@ -8045,8 +8047,21 @@ function drawScene() {
             }
 
             if (window.layerState.detailsS2Visible !== false && globalAssets.style2Details) {
+                let detA2 = window.layerState.detailsS2Opacity !== undefined ? window.layerState.detailsS2Opacity : 1;
                 ctx.save();
+
+                ctx.globalCompositeOperation = 'soft-light';
+                ctx.globalAlpha = detA2;
                 ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
+
+                ctx.globalCompositeOperation = 'overlay';
+                ctx.globalAlpha = detA2 * 0.55;
+                ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
+
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = detA2 * 0.35;
+                ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
+
                 ctx.restore();
             }
 
@@ -8957,6 +8972,10 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
                 ctx.drawImage(globalAssets.dopPoints, 0, 0, W, H);
             }
+            if (window.layerState.starsVisible !== false && globalAssets.dopStarsEff) {
+                ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
+                ctx.drawImage(globalAssets.dopStarsEff, 0, 0, W, W * (960 / 1280));
+            }
             ctx.restore();
 
             if (window.layerState.dopBigGlowVisible !== false) {
@@ -9122,16 +9141,6 @@ else if (window.layerState.bpStyleIndex === 4) {
                     textY: offsetY + textYPos * s,
                     boxHeight: textBoxHeight * s
                 });
-            }
-
-            if (window.layerState.starsVisible !== false && globalAssets.dopStarsEff) {
-                ctx.save();
-                ctx.globalCompositeOperation = 'overlay';
-                ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
-                let starsW = W;
-                let starsH = W * (960 / 1280); 
-                ctx.drawImage(globalAssets.dopStarsEff, 0, 0, starsW, starsH);
-                ctx.restore();
             }
 
             return; 
