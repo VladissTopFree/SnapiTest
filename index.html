@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(8)";
+  const APP_VERSION = "v2.4.3(9)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4845,7 +4845,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.needsTextCacheUpdate = false;
@@ -11099,6 +11099,26 @@ window.openBPDopEditor = function() {
         if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
         setupPersistentCanvas();
+
+        window.layerState.customWatermarks = [
+            { "x": 1093, "y": 647,  "scale": 0.37, "skewX": -10 },
+            { "x": 515,  "y": 704,  "scale": 0.29, "skewX": -10 },
+            { "x": 689,  "y": 61,   "scale": 0.5,  "skewX": -10 },
+            { "x": 1080, "y": 129,  "scale": 0.28, "skewX": -10 },
+            { "x": 515,  "y": -94,  "scale": 0.66, "skewX": -10 },
+            { "x": 868,  "y": -74,  "scale": 0.24, "skewX": -10 },
+            { "x": 600,  "y": 776,  "scale": 0.5,  "skewX": -10 },
+            { "x": 160,  "y": -46,  "scale": 0.28, "skewX": -10 },
+            { "x": 1016, "y": 30,   "scale": 0.16, "skewX": -10 },
+            { "x": 892,  "y": 801,  "scale": 1.09, "skewX": -10 },
+            { "x": 51,   "y": 162,  "scale": 0.29, "skewX": -10 },
+            { "x": 1192, "y": -140, "scale": 1.17, "skewX": -10 },
+            { "x": 36,   "y": 421,  "scale": 0.19, "skewX": -10 },
+            { "x": 189,  "y": 727,  "scale": 0.49, "skewX": -10 },
+            { "x": 127,  "y": 812,  "scale": 0.83, "skewX": -10 },
+            { "x": 461,  "y": -3,   "scale": 0.15, "skewX": -10 }
+        ];
+
         renderLayerPanel(true);
         window.updateCachedTextCanvas();
         startAnimation();
