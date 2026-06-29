@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(14)";
+  const APP_VERSION = "v2.4.3(15)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2483,6 +2483,24 @@ body:not(.os-non-apple) #ios-btn-create > * {
     z-index: 4;
 }
 
+.sp-badge {
+    display: inline-flex; align-items: center;
+    background: #00ff591f; color: #16a34a;
+    font-size: 13px; font-weight: 600;
+    padding: 2px 9px; border-radius: 8px;
+    white-space: nowrap; flex-shrink: 0;
+}
+.sp-row.sp-removing {
+    pointer-events: none;
+    animation: spRowBlurRemove 0.46s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes spRowBlurRemove {
+    0%   { opacity: 1; filter: blur(0px); transform: scale(1);   max-height: 130px; }
+    55%  { opacity: 0; filter: blur(9px); transform: scale(0.9); max-height: 130px; }
+    100% { opacity: 0; filter: blur(9px); transform: scale(0.9); max-height: 0; padding-top: 0; padding-bottom: 0; margin-top: 0; margin-bottom: 0; }
+}
+.sp-row.sp-removing::after { background-color: transparent !important; }
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -3376,7 +3394,7 @@ window.checkBPStyle4Ready = function() {
   
   <div class="dl-buttons-container">
      <div class="save-btn-wrapper" id="save-btn-wrapper">
-       <button class="ios-btn-secondary" id="dl-btn-save-project" onclick="alert('Данная функция пока недоступна!');">
+       <button class="ios-btn-secondary" id="dl-btn-save-project">
           <div class="btn-crossfade-wrap">
             <span class="btn-text-layer btn-text-default">
               Сохранить проект 
@@ -3849,13 +3867,230 @@ document.addEventListener('pointerdown', (e) => {
     }
 });
 
+const SP_MAX_PROJECTS = 12;
+const SP_DB_NAME = 'snapi_projects';
+const SP_STORE = 'projects';
+
+window.currentProjectId = null;
+window._spCreatedAt = null;
+window._spDB = null;
+
+function spOpenDB() {
+    return new Promise((resolve, reject) => {
+        if (window._spDB) return resolve(window._spDB);
+        if (!('indexedDB' in window)) return reject(new Error('IndexedDB недоступен'));
+        let req = indexedDB.open(SP_DB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+            let db = e.target.result;
+            if (!db.objectStoreNames.contains(SP_STORE)) db.createObjectStore(SP_STORE, { keyPath: 'id' });
+        };
+        req.onsuccess = (e) => { window._spDB = e.target.result; resolve(window._spDB); };
+        req.onerror = (e) => reject(e.target.error);
+    });
+}
+function spStore(mode) {
+    return spOpenDB().then(db => db.transaction(SP_STORE, mode).objectStore(SP_STORE));
+}
+window.spGetAll = () => spStore('readonly').then(s => new Promise((res, rej) => { let r = s.getAll(); r.onsuccess = () => res(r.result || []); r.onerror = () => rej(r.error); }));
+window.spGet    = (id) => spStore('readonly').then(s => new Promise((res, rej) => { let r = s.get(id); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+window.spPut    = (rec) => spStore('readwrite').then(s => new Promise((res, rej) => { let r = s.put(rec); r.onsuccess = () => res(); r.onerror = () => rej(r.error); }));
+window.spDelete = (id) => spStore('readwrite').then(s => new Promise((res, rej) => { let r = s.delete(id); r.onsuccess = () => res(); r.onerror = () => rej(r.error); }));
+window.spCount  = () => spStore('readonly').then(s => new Promise((res, rej) => { let r = s.count(); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+
+window._spImgToData = function(img, mime, q) {
+    if (!img || !img.width || !img.height) return null;
+    try {
+        let c = document.createElement('canvas');
+        c.width = img.width; c.height = img.height;
+        c.getContext('2d').drawImage(img, 0, 0);
+        return (q !== undefined) ? c.toDataURL(mime, q) : c.toDataURL(mime);
+    } catch (e) { return null; }
+};
+
+window._spSerializeOffers = function() {
+    return (window.layerState.offers || []).map(o => {
+        let item = o.ref;
+        let cw = item.canvas.width, ch = item.canvas.height;
+        let bc = document.createElement('canvas'); bc.width = cw; bc.height = ch;
+        let bcx = bc.getContext('2d');
+        if (item.info && item.info.blankedImgData) bcx.putImageData(item.info.blankedImgData, 0, 0);
+        else bcx.drawImage(item.canvas, 0, 0);
+        return {
+            price: o.price, visible: o.visible !== false, hasStroke: o.hasStroke !== false,
+            x: item.x, y: item.y, cw, ch,
+            textX: item.info ? item.info.textX : cw / 2,
+            textY: item.info ? item.info.textY : ch * 0.9,
+            boxHeight: item.info ? item.info.boxHeight : Math.max(20, ch * 0.15),
+            blanked: bc.toDataURL('image/png')
+        };
+    });
+};
+
+window._spRestoreOffers = async function(saved) {
+    window.layerState.offers = [];
+    allGeneratedCards = [];
+    for (let so of (saved || [])) {
+        let img = await loadImage(so.blanked);
+        let c = document.createElement('canvas'); c.width = so.cw; c.height = so.ch;
+        let cx = c.getContext('2d', { willReadFrequently: true });
+        if (img) cx.drawImage(img, 0, 0);
+        let blankedImgData = cx.getImageData(0, 0, so.cw, so.ch);
+        let info = { blankedImgData, textX: so.textX, textY: so.textY, boxHeight: so.boxHeight };
+        cx.putImageData(blankedImgData, 0, 0);
+        drawPriceText(cx, so.cw, so.ch, so.price, info);
+        let offerObj = { canvas: c, x: so.x, y: so.y, info };
+        allGeneratedCards.push(offerObj);
+        window.layerState.offers.push({
+            id: allGeneratedCards.length - 1, visible: so.visible !== false, hasStroke: so.hasStroke !== false,
+            price: so.price, ref: offerObj,
+            anim: { x: null, y: null, w: null, h: null, scale: 0, alpha: 0 },
+            target: { x: null, y: null, w: null, h: null, scale: 1, alpha: 1 },
+            cache: null
+        });
+    }
+};
+
+window.saveCurrentProject = async function() {
+    let isUpdate = !!window.currentProjectId;
+
+    if (!isUpdate) {
+        let cnt = 0;
+        try { cnt = await window.spCount(); } catch (e) {}
+        if (cnt >= SP_MAX_PROJECTS) {
+            alert('Вы достигли максимального количества сохранения проектов работ. Удалите, что бы добавлять новые.');
+            return false;
+        }
+    }
+
+    let id = window.currentProjectId || ('p_' + Date.now() + '_' + Math.floor(Math.random() * 1e6));
+    let now = Date.now();
+    let createdAt = now;
+    if (isUpdate) {
+        try { let old = await window.spGet(id); if (old && old.createdAt) createdAt = old.createdAt; } catch (e) {}
+    }
+
+    let thumb = '';
+    try {
+        let tw = 240, th = 135;
+        if (persistentCanvas && persistentCanvas.width > 0) th = Math.round(persistentCanvas.height / persistentCanvas.width * tw);
+        let tc = document.createElement('canvas'); tc.width = tw; tc.height = th;
+        let tcx = tc.getContext('2d'); tcx.imageSmoothingQuality = 'high';
+        if (persistentCanvas && persistentCanvas.width > 0) tcx.drawImage(persistentCanvas, 0, 0, tw, th);
+        thumb = tc.toDataURL('image/jpeg', 0.7);
+    } catch (e) {}
+
+    let state = {};
+    try {
+        let raw = {};
+        for (let k in window.layerState) {
+            if (k === 'offers') continue;
+            if (typeof window.layerState[k] === 'function') continue;
+            raw[k] = window.layerState[k];
+        }
+        state = JSON.parse(JSON.stringify(raw));
+    } catch (e) { state = {}; }
+
+    let rawBg = window._spImgToData(rawBgImage, 'image/jpeg', 0.85);
+    let fgImage = null, offers = null;
+    if (state.isBrawlPassMode && (state.bpStyleIndex === 1 || state.bpStyleIndex === undefined) && window.bpForegroundImage) {
+        fgImage = window._spImgToData(window.bpForegroundImage, 'image/png');
+    }
+    if (!state.isBrawlPassMode) offers = window._spSerializeOffers();
+
+    let rec = { id, createdAt, updatedAt: now, thumb, state, rawBg, fgImage, offers };
+
+    try { await window.spPut(rec); }
+    catch (e) { alert('Не удалось сохранить проект: ' + (e && e.message ? e.message : e)); return false; }
+
+    window.currentProjectId = id;
+    window._spCreatedAt = createdAt;
+    return true;
+};
+
+window.restoreProject = async function(rec) {
+    if (animReq) { cancelAnimationFrame(animReq); animReq = null; }
+    window.renderThrottle = false;
+    window.pendingRenderCache = false;
+
+    let st;
+    try { st = JSON.parse(JSON.stringify(rec.state || {})); } catch (e) { st = {}; }
+    window.layerState = st;
+    window.layerState.offers = [];
+
+    window.currentProjectId = rec.id;
+    window._spCreatedAt = rec.createdAt || Date.now();
+    isCurrentProjectSaved = true; 
+
+    rawBgImage = rec.rawBg ? await loadImage(rec.rawBg) : null;
+    if (rec.fgImage) window.bpForegroundImage = await loadImage(rec.fgImage);
+
+    window._uploadMode = null; window._uploadedBaseImg = null;
+    window._uploadedReadyBaseImg = null; window._selectedColor = null;
+
+    document.getElementById('saved-projects-overlay').style.display = 'none';
+
+    let si = st.bpStyleIndex;
+
+    if (st.isBrawlPassMode && (si === 2 || si === 3 || si === 4 || si === 'dop')) {
+        window._spRestoring = true;
+        if (si === 2) window.openBPTestEditor();
+        else if (si === 3) window.openBPStyle3Editor();
+        else if (si === 4) window.openBPStyle4Editor();
+        else window.openBPDopEditor();
+        setTimeout(() => { window._spRestoring = false; }, 600);
+        return;
+    }
+
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+    window.scrollTo(0, 0);
+    if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+
+    cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+    layerPanel.style.display = 'flex';
+    layerPanel.innerHTML = '<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
+
+    setTimeout(async () => {
+        if (st.isBrawlPassMode) {
+            let season = st.bpSeason || 50;
+            globalAssets.luchImg     = globalAssets.luchImg     || await loadImage('BP/Luch.png');
+            globalAssets.starsEff    = globalAssets.starsEff    || await loadImage('BP/bp_starsEff.png');
+            globalAssets.bpPointsImg = globalAssets.bpPointsImg || await loadImage('BP/bp_pointEff.png');
+            globalAssets.bpPriceL    = globalAssets.bpPriceL    || await loadImage('BP/bp_price_bg_left.png');
+            globalAssets.bpPriceR    = globalAssets.bpPriceR    || await loadImage('BP/bp_price_bg_right.png');
+            globalAssets[`brawler_${season}_1`] = globalAssets[`brawler_${season}_1`] || await loadImage(`BP/brawler_s${season}_1.png`);
+            globalAssets[`brawler_${season}_2`] = globalAssets[`brawler_${season}_2`] || await loadImage(`BP/brawler_s${season}_2.png`);
+            window.layerState.isBrawlPassMode = true;
+            setupPersistentCanvas();
+            renderLayerPanel(true);
+            window.updateCachedTextCanvas();
+            startAnimation();
+            if (window.preloadBrawlerVariants) window.preloadBrawlerVariants(season);
+        } else {
+            globalAssets.luchImg   = globalAssets.luchImg   || await loadImage('Luch.png');
+            globalAssets.starImg   = globalAssets.starImg   || await loadImage('Star.png');
+            globalAssets.pointsImg = globalAssets.pointsImg || await loadImage('points.png');
+            await window._spRestoreOffers(rec.offers || []);
+            setupPersistentCanvas();
+            renderLayerPanel(true);
+            calculateLayoutTarget();
+        }
+    }, 50);
+};
+
 window.updateSavedCount = async () => {
     let countEl = document.getElementById('saved-count-val');
-    if (countEl) countEl.innerText = '0';
+    try { let c = await window.spCount(); if (countEl) countEl.innerText = String(c); }
+    catch (e) { if (countEl) countEl.innerText = '0'; }
 };
 
 window.openSavedProjects = () => {
-    alert("Данная функция пока недоступна!");
+    window.triggerHaptic();
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('saved-projects-overlay').style.display = 'flex';
+    window.scrollTo(0, 0);
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+    window.renderSavedProjects();
 };
 
 window.openSettings = () => {
@@ -4034,19 +4269,94 @@ window.closeDownloadOverlay = () => {
     window.scrollTo(0,0);
 };
 
+function spProjectMeta(st, seq) {
+    if (!st || !st.isBrawlPassMode) {
+        seq.akcia = (seq.akcia || 0) + 1;
+        return { title: 'Акция', badge: '#' + seq.akcia };
+    }
+    if (st.bpStyleIndex === 'dop') return { title: 'Brawl Pass', badge: 'dop #' + (st.bpVariantIndex || 1) };
+    return { title: 'Brawl Pass', badge: '#' + (st.bpStyleIndex || 1) };
+}
+
+function spFmtDate(ts) {
+    if (!ts) return '';
+    let d = new Date(ts), p = n => String(n).padStart(2, '0');
+    return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+window.onSavedRowClick = async (id) => {
+    window.triggerHaptic();
+    let rec = null;
+    try { rec = await window.spGet(id); } catch (e) {}
+    if (!rec) { alert('Проект не найден.'); return; }
+    window.restoreProject(rec);
+};
+
 window.deleteProject = async (id, btnEl) => {
-    console.log("Функция удаления отключена");
+    window.triggerHaptic();
+    let row = btnEl ? btnEl.closest('.sp-row') : null;
+    const finalize = async () => {
+        try { await window.spDelete(id); } catch (e) {}
+        if (window.currentProjectId === id) window.currentProjectId = null;
+        await window.updateSavedCount();
+        if (row && row.parentNode) row.remove();
+        if (document.querySelectorAll('#sp-list .sp-row').length === 0) window.renderSavedProjects();
+    };
+    if (row) {
+        row.classList.add('sp-removing');
+        setTimeout(finalize, 460);
+    } else {
+        await finalize();
+        window.renderSavedProjects();
+    }
 };
 
 window.renderSavedProjects = async () => {
     let emptyState = document.getElementById('sp-empty-state');
     let contentState = document.getElementById('sp-content-state');
     let container = document.getElementById('sp-list');
-    
-    emptyState.style.display = 'flex';
-    emptyState.classList.add('show');
-    contentState.style.display = 'none';
-    if (container) container.innerHTML = '';
+
+    let projects = [];
+    try { projects = await window.spGetAll(); } catch (e) {}
+    projects.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+    if (!projects.length) {
+        emptyState.style.display = 'flex';
+        emptyState.classList.add('show');
+        contentState.style.display = 'none';
+        if (container) container.innerHTML = '';
+        return;
+    }
+
+    emptyState.style.display = 'none';
+    contentState.style.display = 'block';
+
+    let seq = {};
+    let html = '';
+    projects.forEach(p => {
+        let meta = spProjectMeta(p.state, seq);
+        html += `
+        <div class="sp-row" data-id="${p.id}">
+            <img class="sp-img" src="${p.thumb || ''}" alt="">
+            <div style="flex-grow:1; min-width:0; display:flex; flex-direction:column; gap:5px;">
+                <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                    <span class="sp-title" style="flex-grow:0;">${meta.title}</span>
+                    <span class="sp-badge">${meta.badge}</span>
+                </div>
+                <span style="font-size:13px; color: var(--tg-theme-subtitle-text-color, #8E8E93);">${spFmtDate(p.updatedAt)}</span>
+            </div>
+            <button class="sp-del-btn" data-del="${p.id}">удалить</button>
+            <div class="ios-chevron"><svg viewBox="0 0 8 14" width="8" height="14"><path d="M1 1l6 6-6 6" fill="none" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>`;
+    });
+    container.innerHTML = html;
+
+    container.onclick = (e) => {
+        let del = e.target.closest('.sp-del-btn');
+        if (del) { e.stopPropagation(); window.deleteProject(del.getAttribute('data-del'), del); return; }
+        let row = e.target.closest('.sp-row');
+        if (row) window.onSavedRowClick(row.getAttribute('data-id'));
+    };
 };
 
 const loadImage = (src) => new Promise((resolve) => {
@@ -4059,9 +4369,7 @@ const loadImage = (src) => new Promise((resolve) => {
   img.src = src;
 });
 
-window.loadProject = async (id) => {
-    console.log("Функция загрузки проектов отключена");
-};
+window.loadProject = (id) => window.onSavedRowClick(id);
 
 let selectedCategory = null; 
 let selectedBPStyle = null;
@@ -9751,7 +10059,11 @@ function drawBeautifulNick(ctx, text, w, h) {
       wizardInsertBtn.style.display = 'flex';
   }
 
-  window.resetWizardState = () => {
+window.resetWizardState = () => {
+
+      window.currentProjectId = null;
+      window._spCreatedAt = null;
+      isCurrentProjectSaved = false;
 
       selectedCategory = null;
       selectedBPSub = null;
@@ -10593,25 +10905,35 @@ document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     }, 50);
 };
 
-document.getElementById('dl-btn-save-project').onclick = (e) => {
+document.getElementById('dl-btn-save-project').onclick = async (e) => {
     e.preventDefault();
     window.triggerHaptic();
     let btn = e.currentTarget;
-    if (btn.classList.contains('is-loading')) return; 
-    
+    if (btn.classList.contains('is-loading')) return;
+
     btn.classList.add('is-loading');
     btn.style.pointerEvents = 'none';
+
+    let ok = await window.saveCurrentProject();
+
+    if (!ok) {
+        btn.classList.remove('is-loading');
+        btn.style.pointerEvents = 'auto';
+        return;
+    }
+
+    isCurrentProjectSaved = true;
+    await window.updateSavedCount();
 
     setTimeout(() => {
         let wrapper = document.getElementById('save-btn-wrapper');
         wrapper.classList.add('hidden-animated');
-
         setTimeout(() => {
             wrapper.style.display = 'none';
             btn.classList.remove('is-loading');
             btn.style.pointerEvents = 'auto';
-        }, 500); 
-    }, 800);
+        }, 500);
+    }, 600);
 };
 
 document.getElementById('dl-btn-actual-download').onclick = (e) => {
@@ -11160,12 +11482,14 @@ window.openBPDopEditor = function() {
     window.layerState.isBrawlPassMode = true;
     window.layerState.bpStyleIndex = 'dop'; 
 
-    window.layerState.starsVisible = true;
-    window.layerState.pointsVisible = true;
-    window.layerState.watermarksVisible = true;
-    window.layerState.starsOpacity = 1.0;
-    window.layerState.pointsOpacity = 1.0;
-    window.layerState.watermarksOpacity = 0.15;
+    if (!window._spRestoring) {
+        window.layerState.starsVisible = true;
+        window.layerState.pointsVisible = true;
+        window.layerState.watermarksVisible = true;
+        window.layerState.starsOpacity = 1.0;
+        window.layerState.pointsOpacity = 1.0;
+        window.layerState.watermarksOpacity = 0.15;
+    }
 
     setTimeout(async () => {
         const load = (src) => new Promise(r => { const i = new Image(); i.crossOrigin="anonymous"; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; });
@@ -11206,7 +11530,7 @@ window.openBPDopEditor = function() {
 
         setupPersistentCanvas();
 
-        window.layerState.customWatermarks = [
+        if (!window._spRestoring) window.layerState.customWatermarks = [
             { "x": 1093, "y": 647,  "scale": 0.37, "skewX": -10 },
             { "x": 515,  "y": 704,  "scale": 0.29, "skewX": -10 },
             { "x": 689,  "y": 61,   "scale": 0.5,  "skewX": -10 },
@@ -11331,7 +11655,7 @@ window.openBPStyle4Editor = function() {
 
         setupPersistentCanvas();
 
-        window.layerState.customWatermarks = [
+        if (!window._spRestoring) window.layerState.customWatermarks = [
         {
             "x": 1206,
             "y": 138,
