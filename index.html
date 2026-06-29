@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(10)";
+  const APP_VERSION = "v2.4.3(11)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -8957,10 +8957,6 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
                 ctx.drawImage(globalAssets.dopPoints, 0, 0, W, H);
             }
-            if (window.layerState.starsVisible !== false && globalAssets.dopStarsEff) {
-                ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
-                ctx.drawImage(globalAssets.dopStarsEff, offsetX, offsetY, 1280 * s, 960 * s);
-            }
             ctx.restore();
 
             if (window.layerState.dopBigGlowVisible !== false) {
@@ -9126,6 +9122,16 @@ else if (window.layerState.bpStyleIndex === 4) {
                     textY: offsetY + textYPos * s,
                     boxHeight: textBoxHeight * s
                 });
+            }
+
+            if (window.layerState.starsVisible !== false && globalAssets.dopStarsEff) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'overlay';
+                ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
+                let starsW = W;
+                let starsH = W * (960 / 1280); 
+                ctx.drawImage(globalAssets.dopStarsEff, 0, 0, starsW, starsH);
+                ctx.restore();
             }
 
             return; 
