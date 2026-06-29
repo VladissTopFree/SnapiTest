@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(7)";
+  const APP_VERSION = "v2.4.3(8)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4845,7 +4845,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -4985,6 +4985,25 @@ window.selectBrawlerVariant = async function(charNum, variant) {
     renderLayerPanel();
     await window.loadBrawlerVariant(charNum, variant);
     if (typeof startAnimation === 'function') startAnimation();
+};
+
+window.copyWatermarksCode = function() {
+    let arr = window.layerState.customWatermarks || [];
+    let code = 'window.layerState.customWatermarks = ' + JSON.stringify(arr, null, 4) + ';';
+    let done = () => {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert) {
+            window.Telegram.WebApp.showAlert('✅ Код ников скопирован! Вставь его в нужный редактор после setupPersistentCanvas().');
+        } else {
+            alert('✅ Код ников скопирован!');
+        }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(done).catch(() => {
+            prompt('Скопируй код вручную:', code);
+        });
+    } else {
+        prompt('Скопируй код вручную:', code);
+    }
 };
 
 window.toggleBrawlerFlip = (brawlerKey) => {
@@ -6127,6 +6146,10 @@ if (window.layerState.isBrawlPassMode) {
                     {x: 887,  y: 7,   scale: 0.39, skewX: -12},
                     {x: 1242, y: 476, scale: 0.21, skewX: -12}
                 ];
+            } else if (window.layerState.bpStyleIndex === 'dop') {
+                if (!window.layerState.customWatermarks) {
+                    window.layerState.customWatermarks = [];
+                }
             } else {
                 window.layerState.customWatermarks = [
                     { x: 514, y: -31, scale: 0.74, skewX: -12 },
@@ -6207,7 +6230,7 @@ if (window.layerState.isBrawlPassMode) {
                             window.layerState.customWatermarks[window.layerState.activeWmIndex].x = parseFloat(this.value); 
                             startAnimation();">
             </div>
-            <div class="ios-layer-row" style="border-bottom:none;">
+                <div class="ios-layer-row">
                 <div class="ios-layer-name" style="font-size:14px;">Позиция Y</div>
                 <div id="v-wm-y" style="margin-right:10px; color:#8E8E93; font-size:14px; width:35px; text-align:right;">${activeWm.y}</div>
                 <input type="range" class="ios-slider" min="-200" max="1500" step="1" value="${activeWm.y}" 
@@ -6217,6 +6240,15 @@ if (window.layerState.isBrawlPassMode) {
             </div>
             `;
         }
+
+        html += `
+            <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
+                <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;"
+                    onclick="window.copyWatermarksCode()">
+                    📋 Скопировать код ников
+                </button>
+            </div>
+        `;
 
         html += `</div>`;
     }
@@ -8976,19 +9008,26 @@ else if (window.layerState.bpStyleIndex === 4) {
                 ctx.globalAlpha = wmAlpha; 
                 ctx.fillStyle = '#ffffff'; 
                 ctx.textBaseline = 'top';
-                
-                const wms = [
+
+                const DOP_BASE_FONT = 56;
+                let wmArray = window.layerState.customWatermarks || [
                     {x: 637, y: 40, h: 8}, {x: 1035, y: 13, h: 21}, {x: 889, y: 517, h: 21},
                     {x: 1114, y: 128, h: 15}, {x: 659, y: 274, h: 20}, {x: 665, y: 61, h: 18},
                     {x: 1049, y: 80, h: 9}, {x: 1115, y: 623, h: 19}, {x: 1031, y: 696, h: 32},
                     {x: 1167, y: 668, h: 8}, {x: 606, y: 627, h: 12}, {x: 638, y: 660, h: 19},
                     {x: 455, y: 699, h: 28}, {x: -155, y: 69, h: 29}, {x: 30, y: 204, h: 10},
                     {x: 5, y: 343, h: 7}, {x: 23, y: 420, h: 15}, 
-                ];
-                
-                wms.forEach(wm => {
-                    ctx.font = `italic 900 ${wm.h * s}px "${wmFont}", Impact, sans-serif`;
-                    ctx.fillText(wmText, offsetX + wm.x * s, offsetY + wm.y * s);
+                ].map(wm => ({ x: wm.x, y: wm.y, scale: wm.h / DOP_BASE_FONT, skewX: 0 }));
+
+                window.layerState.customWatermarks = wmArray;
+
+                wmArray.forEach(wm => {
+                    ctx.save();
+                    ctx.translate(offsetX + wm.x * s, offsetY + wm.y * s);
+                    if (wm.skewX) ctx.transform(1, 0, Math.tan(wm.skewX * Math.PI / 180), 1, 0, 0);
+                    ctx.font = `italic 900 ${DOP_BASE_FONT * wm.scale * s}px "${wmFont}", Impact, sans-serif`;
+                    ctx.fillText(wmText, 0, 0);
+                    ctx.restore();
                 });
                 ctx.restore();
             }
@@ -8996,6 +9035,7 @@ else if (window.layerState.bpStyleIndex === 4) {
             drawLayerImg(globalAssets.dopStar, 561, 61, 771, 675);
 
             ctx.save();
+            ctx.globalCompositeOperation = 'overlay';
             const cx = offsetX + (599 + 609 / 2) * s;
             const cy = offsetY + (150 + 576 / 2) * s;
             const r = Math.min(609, 576) / 2 * s;
