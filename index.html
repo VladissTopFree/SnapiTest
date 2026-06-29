@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(15)";
+  const APP_VERSION = "v2.4.3(16)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -956,10 +956,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; 
+    justify-content: center; 
     flex-grow: 1;
     width: 100%;
+    height: 100%;
     padding-top: var(--app-top-padding-sm);
+    padding-bottom: 80px;
     padding-left: 20px;
     padding-right: 20px;
     cursor: default; 
@@ -3432,6 +3434,7 @@ window.checkBPStyle4Ready = function() {
 <div id="saved-projects-overlay">
   
   <div id="sp-empty-state" class="sp-empty-wrap" style="display: none;">
+     <img src="saved_works.gif" alt="" draggable="false" style="width: 180px; height: 180px; object-fit: contain; margin-bottom: 10px; user-select: none; -webkit-user-drag: none;">
      <div class="sp-empty-title">Сохранённые работы</div>
      <div class="sp-empty-subtitle">У Вас ещё нет сохранённых работ<br>для изменений.</div>
   </div>
@@ -4017,6 +4020,13 @@ window.restoreProject = async function(rec) {
     window.layerState = st;
     window.layerState.offers = [];
 
+    if (window.layerState.textFont === undefined) window.layerState.textFont = 'Font16103';
+    if (window.layerState.textStyleIndex === undefined) window.layerState.textStyleIndex = 0;
+    if (window.layerState.watermarksFont === undefined) window.layerState.watermarksFont = 'Font16103';
+    if (!window.layerState.isBrawlPassMode && window.layerState.offerPriceFont === undefined) {
+        window.layerState.offerPriceFont = 'LilitaOneRus';
+    }
+
     window.currentProjectId = rec.id;
     window._spCreatedAt = rec.createdAt || Date.now();
     isCurrentProjectSaved = true; 
@@ -4070,6 +4080,13 @@ window.restoreProject = async function(rec) {
             globalAssets.luchImg   = globalAssets.luchImg   || await loadImage('Luch.png');
             globalAssets.starImg   = globalAssets.starImg   || await loadImage('Star.png');
             globalAssets.pointsImg = globalAssets.pointsImg || await loadImage('points.png');
+
+            try {
+                await document.fonts.load(`16px '${window.layerState.textFont || 'Font16103'}'`);
+                await document.fonts.load(`16px '${window.layerState.offerPriceFont || 'LilitaOneRus'}'`);
+                await document.fonts.ready;
+            } catch (e) {}
+
             await window._spRestoreOffers(rec.offers || []);
             setupPersistentCanvas();
             renderLayerPanel(true);
@@ -7829,6 +7846,10 @@ function checkBatchCompletion() {
 function setupPersistentCanvas() {
     cardsContainer.innerHTML = ''; 
 
+    if (!window._spRestoring) {
+        isCurrentProjectSaved = false;
+    }
+
     if (!persistentCanvas) {
         persistentCanvas = document.createElement('canvas');
         persistentCtx = persistentCanvas.getContext('2d');
@@ -10243,6 +10264,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
                 window.layerState.isGeneratedBg = false;
                 window.layerState.bgColorType = null;
                 window.layerState.isReadyBg = false;
+                isCurrentProjectSaved = false; 
                 
                 if (window.layerState.isBrawlPassMode) {
                 if (window.layerState.isBrawlPassMode) {
