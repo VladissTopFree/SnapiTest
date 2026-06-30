@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(28)";
+  const APP_VERSION = "v2.4.3(29)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4909,7 +4909,9 @@ window.layerState = {
     isGeneratedBg: false,
     isReadyBg: false,
     brawler1Variant: 1,
-    brawler2Variant: 1
+    brawler2Variant: 1,
+    style4StarsVisible: true,
+    style4StarsOpacity: 1.0
 };
 
 const FONT_OPTIONS = [
@@ -6589,6 +6591,19 @@ if (window.layerState.isBrawlPassMode) {
                     <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('stars')">
                         ${downloadIconSVG}
                     </div>
+                </div>
+            `;
+        } else {
+            let style4StarsEyeClass = window.layerState.style4StarsVisible !== false ? '' : 'hidden';
+            let style4StarsOpacity = window.layerState.style4StarsOpacity !== undefined ? window.layerState.style4StarsOpacity : 1;
+            html += `
+                <div class="ios-layer-row">
+                    <div class="ios-icon-btn ios-eye-icon ${style4StarsEyeClass}" onclick="toggleCosmeticLayer('style4Stars')">
+                        ${getEyeSVG(window.layerState.style4StarsVisible !== false)}
+                    </div>
+                    <div class="ios-layer-name">Звёзды</div>
+                    <div class="ios-layer-action-text">прозрачность</div>
+                    <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${style4StarsOpacity}" oninput="changeOpacity('style4Stars', this.value)">
                 </div>
             `;
         }
@@ -9143,6 +9158,14 @@ function drawScene() {
                 ctx.save();
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
                 ctx.drawImage(globalAssets.s4Points, 0, 0, W, H);
+                ctx.restore();
+            }
+
+            if (window.layerState.style4StarsVisible !== false && globalAssets.s4Stars) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'overlay';
+                ctx.globalAlpha = window.layerState.style4StarsOpacity !== undefined ? window.layerState.style4StarsOpacity : 1;
+                ctx.drawImage(globalAssets.s4Stars, 0, 0, W, H);
                 ctx.restore();
             }
 
@@ -11797,6 +11820,7 @@ window.openBPStyle4Editor = function() {
         }
 
         if (!globalAssets.s4Points)     globalAssets.s4Points     = await load('BP/bp_style2_points.png');
+        if (!globalAssets.s4Stars)      globalAssets.s4Stars      = await load('BP/style4_stars_bp.png');
         if (!globalAssets.s4Gems)       globalAssets.s4Gems       = await load('BP/bp_gems.png');
         if (!globalAssets.s4PinLeft)    globalAssets.s4PinLeft    = await load('BP/pin_4styleBP_left.png');
         if (!globalAssets.s4PinRight)   globalAssets.s4PinRight   = await load('BP/pin_4styleBP_right.png');
