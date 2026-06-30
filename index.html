@@ -8,12 +8,12 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(20)";
+  const APP_VERSION = "v2.4.3(21)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = true; 
-  const REQUIRE_TELEGRAM_APP = false; 
+  const REQUIRE_TELEGRAM_APP = true; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -831,6 +831,7 @@
   }
 
   .save-btn-wrapper {
+    position: relative;
     width: 100%;
     height: 54px;
     margin-bottom: 16px; 
@@ -838,10 +839,12 @@
     opacity: 1;
     transform: scale(1);
     transform-origin: center;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     justify-content: center;
   }
+
+  
   .save-btn-wrapper.hidden-animated {
     height: 0;
     margin-bottom: 0;
@@ -2536,6 +2539,51 @@ body:not(.os-non-apple) .ios-icon-box > * {
     z-index: 2;
 }
 
+.save-hint-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 14px);
+  transform: translateX(-50%) translateY(6px) scale(0.95);
+  background: color-mix(in srgb, var(--tg-theme-bg-color, #ffffff) 80%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: var(--tg-theme-text-color, #000000);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  padding: 12px 16px;
+  border-radius: 16px;
+  max-width: 260px;
+  width: max-content;
+  text-align: center;
+  opacity: 0;
+  filter: blur(8px);
+  pointer-events: none;
+  z-index: 30;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1), filter 0.35s cubic-bezier(0.4,0,0.2,1), transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.save-hint-bubble.show {
+  opacity: 1;
+  filter: blur(0px);
+  transform: translateX(-50%) translateY(0) scale(1);
+  pointer-events: auto;
+}
+.save-hint-bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  background: color-mix(in srgb, var(--tg-theme-bg-color, #ffffff) 80%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-radius: 0 0 5px 0;
+  transform: translateX(-50%) translateY(-65%) rotate(45deg);
+  z-index: -1;
+}
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -2577,7 +2625,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
 <script>
   (function(){
     var START = Date.now();
-    var MIN_SHOW = 400;   // минимальное время показа сплеша для плавности
+    var MIN_SHOW = 400;   
     var hidden = false;
 
     function hideNow(){
@@ -2595,8 +2643,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
     }
 
     function whenReady(){
-      // прячем сплеш сразу после готовности разметки —
-      // не ждём картинки, видео, шрифты и внешние скрипты
+
       requestAnimationFrame(function(){ requestAnimationFrame(hideWithMinTime); });
     }
 
@@ -2611,7 +2658,6 @@ body:not(.os-non-apple) .ios-icon-box > * {
       });
     }
 
-    // страховочный таймаут (было 26000)
     setTimeout(hideNow, 8000);
   })();
 </script>
@@ -2800,8 +2846,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
     <div style="padding: 0 0 180px 0; flex-grow: 1; overflow-y: auto;">
         
         <div class="cat-card" onclick="selectCategory('action')">
-            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_akc1_1.png", "demo_png/demo_png_akc1_2.png", "demo_png/demo_png_akc1_3.png"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
-                <img src="demo_png/demo_png_akc1_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_akc1_1.jpg", "demo_png/demo_png_akc1_2.jpg", "demo_png/demo_png_akc1_3.jpg"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_akc1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
             <div class="cat-info">
@@ -2816,8 +2862,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
         </div>
         
         <div class="cat-card" id="bp-main-card" onclick="selectCategory('bp')" style="border-bottom-color: transparent; transition: border-bottom-color 0.3s ease;">            
-            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_bp2_1.png", "demo_png/demo_png_dop_bp4_3.png", "demo_png/demo_png_osnBP4_2.png"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
-                <img src="demo_png/demo_png_bp2_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_bp2_1.jpg", "demo_png/demo_png_dop_bp4_3.jpg", "demo_png/demo_png_osnBP4_2.jpg"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_bp2_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
             <div class="cat-info">
@@ -2832,8 +2878,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
                     <div class="cat-radio" id="bp-sub-radio-normal" style="margin-top: 10px;">
                         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
-                    <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP1_1.png", "demo_png/demo_png_bp2_2.png", "demo_png/demo_png_osnBP4_1.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                        <img src="demo_png/demo_png_osnBP1_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                    <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP1_1.jpg", "demo_png/demo_png_bp2_2.jpg", "demo_png/demo_png_osnBP4_1.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                        <img src="demo_png/demo_png_osnBP1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                         <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                     </div>
                     <div class="cat-info" style="justify-content: center; min-height: 48px;">
@@ -2846,8 +2892,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
                     <div class="cat-radio" id="bp-sub-radio-additional" style="margin-top: 10px;">
                         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </div>
-                    <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dop_bp4_1.png", "demo_png/demo_png_dopBP_bp2_2.png", "demo_png/demo_png_dopBP_bp3_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                        <img src="demo_png/demo_png_dop_bp4_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                    <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dop_bp4_1.jpg", "demo_png/demo_png_dopBP_bp2_2.jpg", "demo_png/demo_png_dopBP_bp3_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                        <img src="demo_png/demo_png_dop_bp4_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                         <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                     </div>
                     <div class="cat-info" style="justify-content: center; min-height: 48px;">
@@ -2876,8 +2922,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="bp-radio-1">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP1_1.png", "demo_png/demo_png_osnBP1_2.png", "demo_png/demo_png_osnBP1_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                    <img src="demo_png/demo_png_osnBP1_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP1_1.jpg", "demo_png/demo_png_osnBP1_2.jpg", "demo_png/demo_png_osnBP1_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                    <img src="demo_png/demo_png_osnBP1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                     <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
@@ -2890,8 +2936,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="bp-radio-2">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP2_1.png", "demo_png/demo_png_osnBP2_2.png", "demo_png/demo_png_osnBP2_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                    <img src="demo_png/demo_png_osnBP2_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP2_1.jpg", "demo_png/demo_png_osnBP2_2.jpg", "demo_png/demo_png_osnBP2_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                    <img src="demo_png/demo_png_osnBP2_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                     <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
@@ -2904,8 +2950,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="bp-radio-3">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP3_1.png", "demo_png/demo_png_osnBP3_2.png", "demo_png/demo_png_osnBP3_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                    <img src="demo_png/demo_png_osnBP3_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP3_1.jpg", "demo_png/demo_png_osnBP3_2.jpg", "demo_png/demo_png_osnBP3_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                    <img src="demo_png/demo_png_osnBP3_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                     <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
@@ -2918,8 +2964,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="bp-radio-4">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP4_1.png", "demo_png/demo_png_osnBP4_2.png", "demo_png/demo_png_osnBP4_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                    <img src="demo_png/demo_png_osnBP4_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP4_1.jpg", "demo_png/demo_png_osnBP4_2.jpg", "demo_png/demo_png_osnBP4_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                    <img src="demo_png/demo_png_osnBP4_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                     <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
@@ -2946,8 +2992,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="bp-variant-radio-1" style="margin-top: 13px;">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp1_1.png", "demo_png/demo_png_dopBP_bp1_2.png", "demo_png/demo_png_dopBP_bp1_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                <img src="demo_png/demo_png_dopBP_bp1_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp1_1.jpg", "demo_png/demo_png_dopBP_bp1_2.jpg", "demo_png/demo_png_dopBP_bp1_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_dopBP_bp1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
@@ -2960,8 +3006,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="bp-variant-radio-2" style="margin-top: 13px;">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp2_1.png", "demo_png/demo_png_dopBP_bp2_2.png", "demo_png/demo_png_dopBP_bp2_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                <img src="demo_png/demo_png_dopBP_bp2_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp2_1.jpg", "demo_png/demo_png_dopBP_bp2_2.jpg", "demo_png/demo_png_dopBP_bp2_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_dopBP_bp2_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
@@ -2974,8 +3020,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="bp-variant-radio-3" style="margin-top: 13px;">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp3_1.png", "demo_png/demo_png_dopBP_bp3_2.png", "demo_png/demo_png_dopBP_bp3_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                <img src="demo_png/demo_png_dopBP_bp3_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp3_1.jpg", "demo_png/demo_png_dopBP_bp3_2.jpg", "demo_png/demo_png_dopBP_bp3_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_dopBP_bp3_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
@@ -2988,8 +3034,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="bp-variant-radio-4" style="margin-top: 13px;">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp4_1.png", "demo_png/demo_png_dopBP_bp4_2.png", "demo_png/demo_png_dopBP_bp4_3.png"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
-                <img src="demo_png/demo_png_dopBP_bp4_1.png" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp4_1.jpg", "demo_png/demo_png_dopBP_bp4_2.jpg", "demo_png/demo_png_dopBP_bp4_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_dopBP_bp4_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
@@ -3124,7 +3170,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
-                <img src="demo_png50s.png" class="cat-img loaded" style="object-fit: cover;">
+                <img src="demo_png50s.jpg" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">52 сезон</div>
@@ -3137,7 +3183,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
-                <img src="demo_png49s.png" class="cat-img loaded" style="object-fit: cover;">
+                <img src="demo_png49s.jpg" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">51 сезон</div>
@@ -3150,7 +3196,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 12px;">
-                <img src="demo_png48s.png" class="cat-img loaded" style="object-fit: cover;">
+                <img src="demo_png48s.jpg" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
@@ -3428,7 +3474,8 @@ window.checkBPStyle4Ready = function() {
   <img id="dl-preview-img" class="dl-preview" src="">
   
   <div class="dl-buttons-container">
-     <div class="save-btn-wrapper" id="save-btn-wrapper">
+    <div class="save-btn-wrapper" id="save-btn-wrapper">
+       <div class="save-hint-bubble" id="save-hint-bubble">Чтобы вносить изменения в эту работу, сохраните её проект.</div>
        <button class="ios-btn-secondary" id="dl-btn-save-project">
           <div class="btn-crossfade-wrap">
             <span class="btn-text-layer btn-text-default">
@@ -4043,6 +4090,35 @@ window.saveCurrentProject = async function() {
     return true;
 };
 
+window.SAVE_HINT_THRESHOLD = 3; 
+
+window.getSaveClickCount = function() {
+    return parseInt(localStorage.getItem('Snapi_save_click_count') || '0', 10);
+};
+
+window.shouldShowSaveHint = function() {
+    if (localStorage.getItem('Snapi_save_hint_disabled') === 'true') return false;
+    return window.getSaveClickCount() < window.SAVE_HINT_THRESHOLD;
+};
+
+window.showSaveHint = function() {
+    let bubble = document.getElementById('save-hint-bubble');
+    if (bubble) bubble.classList.add('show');
+};
+
+window.hideSaveHint = function() {
+    let bubble = document.getElementById('save-hint-bubble');
+    if (bubble) bubble.classList.remove('show');
+};
+
+window.registerSaveClick = function() {
+    let count = window.getSaveClickCount() + 1;
+    localStorage.setItem('Snapi_save_click_count', String(count));
+    if (count >= window.SAVE_HINT_THRESHOLD) {
+        localStorage.setItem('Snapi_save_hint_disabled', 'true');
+    }
+};
+
 window.restoreProject = async function(rec) {
     if (animReq) { cancelAnimationFrame(animReq); animReq = null; }
     window.renderThrottle = false;
@@ -4267,6 +4343,14 @@ window.openDownloadOverlay = () => {
     
     saveWrapper.classList.remove('hidden-animated');
     saveWrapper.style.display = isCurrentProjectSaved ? 'none' : 'flex'; 
+
+    let hintBubble = document.getElementById('save-hint-bubble');
+    if (hintBubble) {
+        hintBubble.classList.remove('show');
+        if (!isCurrentProjectSaved && window.shouldShowSaveHint()) {
+            setTimeout(() => { window.showSaveHint(); }, 500);
+        }
+    }
     
     let saveBtn = document.getElementById('dl-btn-save-project');
     saveBtn.classList.remove('is-loading');
@@ -5285,7 +5369,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -10277,9 +10361,9 @@ if (fankitGrid && fankitGrid.children.length === 0) {
     const recGrid = document.getElementById('fankit-rec-grid');
     
     const recBackgrounds = [
-        { src: 'bg/bg18_BP50.png', text: '52 сезон' },
-        { src: 'bg/bg19_BP49.png', text: '51 сезон' },
-        { src: 'bg/bg20_BP48.png', text: '50 сезон' }
+        { src: 'bg/bg18_BP50.jpg', text: '51 сезон' },
+        { src: 'bg/bg19_BP49.jpg', text: '50 сезон' },
+        { src: 'bg/bg20_BP48.jpg', text: '49 сезон' }
     ];
 
     const handleFankitSelection = (itemElement, imgSrc) => {
@@ -10292,8 +10376,12 @@ if (fankitGrid && fankitGrid.children.length === 0) {
         if (window.fankitContext === 'editor') {
             let img = new Image();
             img.crossOrigin = "anonymous";
+            img.onerror = () => {
+                let pngSrc = imgSrc.replace(/\.jpg$/i, '.png');
+                if (pngSrc !== imgSrc) { img.onerror = null; img.src = pngSrc; }
+            };
             img.onload = () => {
-                rawBgImage = img; 
+                rawBgImage = img;
                 window.layerState.isGeneratedBg = false;
                 window.layerState.bgColorType = null;
                 window.layerState.isReadyBg = false;
@@ -10331,6 +10419,10 @@ if (fankitGrid && fankitGrid.children.length === 0) {
         
         document.getElementById('wizard-upload-ready-text').innerText = "Загрузить готовый фон";
 
+        uploadedBaseImg.onerror = () => {
+            let pngSrc = imgSrc.replace(/\.jpg$/i, '.png');
+            if (pngSrc !== imgSrc) { uploadedBaseImg.onerror = null; uploadedBaseImg.src = pngSrc; }
+        };
         uploadedBaseImg.onload = () => {
             document.getElementById('wizard-upload-text').innerText = "Фон с Fankit выбран";
             checkStep1Ready();
@@ -10348,19 +10440,26 @@ if (fankitGrid && fankitGrid.children.length === 0) {
 
                 let img = new Image();
                 img.crossOrigin = "anonymous";
+
+                const applyBg = (finalSrc) => {
+                    item.classList.remove('loading');
+                    item.style.backgroundImage = `url('${finalSrc}')`;
+                    item.setAttribute('data-src', finalSrc);
+                };
+
+                img.onload = () => applyBg(imgSrc);
+                img.onerror = () => {
+                    let pngSrc = imgSrc.replace(/\.jpg$/i, '.png');
+                    if (pngSrc !== imgSrc) {
+                        let img2 = new Image();
+                        img2.crossOrigin = "anonymous";
+                        img2.onload = () => applyBg(pngSrc);
+                        img2.src = pngSrc;
+                    }
+                };
                 img.src = imgSrc;
 
-                img.decode().then(() => {
-                    item.classList.remove('loading');
-                    item.style.backgroundImage = `url('${imgSrc}')`;
-                }).catch(() => {
-                    img.onload = () => {
-                        item.classList.remove('loading');
-                        item.style.backgroundImage = `url('${imgSrc}')`;
-                    };
-                });
-
-                observer.unobserve(item); 
+                observer.unobserve(item);
             }
         });
     }, { rootMargin: '250px' }); 
@@ -10379,20 +10478,26 @@ if (fankitGrid && fankitGrid.children.length === 0) {
         imageObserver.observe(item); 
     });
 
-    const standardBackgrounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21];
-    
-    standardBackgrounds.forEach((num) => {
-        let item = document.createElement('div');
-        item.className = 'fankit-item loading';
-        fankitGrid.appendChild(item);
+        const standardBackgrounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21, 22, 23];
 
-        let originalSrc = `bg/bg${num}.png`;
-        
-        item.setAttribute('data-src', originalSrc); 
-        item.onclick = () => handleFankitSelection(item, originalSrc);
+        standardBackgrounds.forEach((num) => {
+            let item = document.createElement('div');
+            item.className = 'fankit-item loading';
 
-        imageObserver.observe(item); 
-    });
+            if (num === 1 || num === 2) {
+                item.style.position = 'relative';
+                item.innerHTML = '<div class="fankit-rec-badge" style="z-index: 6;">НОВОЕ</div>';
+            }
+
+            fankitGrid.appendChild(item);
+
+            let originalSrc = (num === 22 || num === 23) ? `bg/bg${num}.png` : `bg/bg${num}.jpg`; 
+                       
+            item.setAttribute('data-src', originalSrc); 
+            item.onclick = () => handleFankitSelection(item, originalSrc);
+
+            imageObserver.observe(item); 
+        });
 }
 
     window.fankitContext = 'wizard'; 
@@ -10965,6 +11070,9 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
     window.triggerHaptic();
     let btn = e.currentTarget;
     if (btn.classList.contains('is-loading')) return;
+
+    window.hideSaveHint();
+    window.registerSaveClick();
 
     btn.classList.add('is-loading');
     btn.style.pointerEvents = 'none';
@@ -12595,8 +12703,8 @@ window.preloadAllImages = function() {
         window._preloadCache.push(img); 
     };
 
-    ['bg/bg18_BP50.png','bg/bg19_BP49.png','bg/bg20_BP48.png'].forEach(s => add(s, true));
-    ['demo_png50s.png','demo_png49s.png','demo_png48s.png'].forEach(s => add(s, false));
+    ['bg/bg18_BP50.jpg','bg/bg19_BP49.jpg','bg/bg20_BP48.jpg'].forEach(s => add(s, true));
+    ['demo_png50s.jpg','demo_png49s.jpg','demo_png48s.jpg'].forEach(s => add(s, false));
 
     document.querySelectorAll('[data-src]').forEach(el => add(el.getAttribute('data-src'), true));
 
