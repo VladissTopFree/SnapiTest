@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(24)";
+  const APP_VERSION = "v2.4.3(25)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -52,8 +52,8 @@
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
 
         style4Brawlers: {
-        brawlerL: { x: 885, y: 611, scale: 400, flipH: false },
-        brawlerR: { x: 1133, y: 580, scale: 450, flipH: false }
+        brawlerL: { x: 918, y: 589, scale: 365, flipH: false },
+        brawlerR: { x: 1146, y: 580, scale: 415, flipH: false }
         }
       },
       49: {
@@ -2549,7 +2549,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
   backdrop-filter: blur(14px);
   color: var(--tg-theme-text-color, #000000);
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1.35;
   padding: 12px 16px;
   border-radius: 16px;
@@ -5369,7 +5369,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.needsTextCacheUpdate = false;
@@ -11808,7 +11808,8 @@ window.openBPStyle4Editor = function() {
         if (!globalAssets.s4PassYellow) globalAssets.s4PassYellow = await load('BP/bp_icon_brawl_pass.png');
         if (!globalAssets.s4PassBlue)   globalAssets.s4PassBlue   = await load('BP/bp_icon_brawl_pass_plus.png');
         if (!globalAssets.s4PassPro)    globalAssets.s4PassPro    = await load('BP/bp_icon_pro_pass_icon.png');
-        if (!globalAssets.dopBg4)       globalAssets.dopBg4       = await load('BP/bp_dop4style.png'); 
+        globalAssets.dopBg4 = await load('BP/bp_style4_det.png');
+        if (!globalAssets.s4Stars)      globalAssets.s4Stars      = await load('BP/stars_bp_style4.png');
 
         const season4 = window.layerState.bpSeason || 50;
         if (!globalAssets[`brawler_${season4}_1`]) globalAssets[`brawler_${season4}_1`] = await load(`BP/brawler_s${season4}_1.png`);
