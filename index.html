@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(26)";
+  const APP_VERSION = "v2.4.3(27)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -6523,7 +6523,7 @@ if (window.layerState.isBrawlPassMode) {
 
     html += `<div class="ios-layer-group ${animCls}">`;
 
-        if (window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 'dop') {
+        if (window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 'dop' && window.layerState.bpStyleIndex !== 4) {
             let luchEyeClass = window.layerState.luchVisible ? '' : 'hidden';
             html += `
                 <div class="ios-layer-row">
@@ -6576,20 +6576,22 @@ if (window.layerState.isBrawlPassMode) {
         });
         html += `</div>`;
 
-        let starsEyeClass = window.layerState.starsVisible ? '' : 'hidden';
-        html += `
-            <div class="ios-layer-row">
-                <div class="ios-icon-btn ios-eye-icon ${starsEyeClass}" onclick="toggleCosmeticLayer('stars')">
-                    ${getEyeSVG(window.layerState.starsVisible)}
+        if (window.layerState.bpStyleIndex !== 4) {
+            let starsEyeClass = window.layerState.starsVisible ? '' : 'hidden';
+            html += `
+                <div class="ios-layer-row">
+                    <div class="ios-icon-btn ios-eye-icon ${starsEyeClass}" onclick="toggleCosmeticLayer('stars')">
+                        ${getEyeSVG(window.layerState.starsVisible)}
+                    </div>
+                    <div class="ios-layer-name">Звёзды</div>
+                    <div class="ios-layer-action-text">прозрачность</div>
+                    <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.starsOpacity}" oninput="changeOpacity('stars', this.value)">
+                    <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('stars')">
+                        ${downloadIconSVG}
+                    </div>
                 </div>
-                <div class="ios-layer-name">Звёзды</div>
-                <div class="ios-layer-action-text">прозрачность</div>
-                <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${window.layerState.starsOpacity}" oninput="changeOpacity('stars', this.value)">
-                <div class="ios-icon-btn" style="margin-left: 10px; color: var(--tg-theme-section-header-text-color);" onclick="downloadCosmeticLayer('stars')">
-                    ${downloadIconSVG}
-                </div>
-            </div>
-        `;
+            `;
+        }
 
         if (window.layerState.isGeneratedBg || window.layerState.isReadyBg || window.layerState.bpStyleIndex === 'dop' || window.layerState.bpStyleIndex === 4) {
 
@@ -9141,14 +9143,6 @@ function drawScene() {
                 ctx.save();
                 ctx.globalAlpha = window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : 1;
                 ctx.drawImage(globalAssets.s4Points, 0, 0, W, H);
-                ctx.restore();
-            }
-
-            if (window.layerState.starsVisible !== false && globalAssets.s4Stars) {
-                ctx.save();
-                ctx.globalCompositeOperation = 'overlay';
-                ctx.globalAlpha = window.layerState.starsOpacity !== undefined ? window.layerState.starsOpacity : 1;
-                ctx.drawImage(globalAssets.s4Stars, 0, 0, W, H);
                 ctx.restore();
             }
 
@@ -11810,7 +11804,6 @@ window.openBPStyle4Editor = function() {
         if (!globalAssets.s4PassBlue)   globalAssets.s4PassBlue   = await load('BP/bp_icon_brawl_pass_plus.png');
         if (!globalAssets.s4PassPro)    globalAssets.s4PassPro    = await load('BP/bp_icon_pro_pass_icon.png');
         globalAssets.dopBg4 = await load('BP/bp_style4_det.png');
-        if (!globalAssets.s4Stars)      globalAssets.s4Stars      = await load('BP/stars_bp_style4.png');
 
         const season4 = window.layerState.bpSeason || 50;
         if (!globalAssets[`brawler_${season4}_1`]) globalAssets[`brawler_${season4}_1`] = await load(`BP/brawler_s${season4}_1.png`);
