@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(27)";
+  const APP_VERSION = "v2.4.3(28)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -9064,7 +9064,7 @@ function drawScene() {
 
             if (window.layerState.dopBg4Visible !== false && globalAssets.dopBg4) {
                 ctx.save();
-                ctx.globalCompositeOperation = 'overlay';
+                ctx.globalCompositeOperation = 'screen';
                 ctx.globalAlpha = window.layerState.dopBg4Opacity !== undefined ? window.layerState.dopBg4Opacity : 1;
                 ctx.drawImage(globalAssets.dopBg4, 0, 0, W, H);
                 ctx.restore();
