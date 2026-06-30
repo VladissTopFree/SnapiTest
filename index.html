@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.3(22)";
+  const APP_VERSION = "v2.4.3(23)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -34,21 +34,21 @@
 
   const BP_SEASON_CONFIG = {
       50: {
-          lineColor: '#00fff0', 
-          gradientLeft: ['#6aff0055', '#6aff0055'], 
-          gradientRight: ['#0037ff50', '#0037ff50'],
+          lineColor: '#cc7cfa', 
+          gradientLeft: ['#bb4cb2ad', '#bb4cb2ad'], 
+          gradientRight: ['#924affb5', '#924affb5'],
           style2Brawlers: { // yes
-              brawler2: { x: 1029, y: 23, scale: 0.27, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
-              brawler1: { x: 917, y: 399, scale: 0.36, scaleX: 1, scaleY: 1, rot: 0, flipH: true }// Нижний
+              brawler2: { x: 1030, y: 3, scale: 0.28, scaleX: 1, scaleY: 1, rot: 0}, // Верхний
+              brawler1: { x: 940, y: 327, scale: 0.35, scaleX: 1, scaleY: 1, rot: 0, flipH: false }// Нижний
         
 
           },
           style1Brawlers: { // yes
-              brawler2: { x: 484, y: 512, scale: 0.55, flipH: false }, // Нижний (x: 1200*0.42-30)
-              brawler1: { x: 703, y: 517, scale: 0.49, flipH: false }  // Верхний (x: 1200*0.58-30)
+              brawler2: { x: 479, y: 512, scale: 0.53, flipH: false }, // Верхний (x: 1200*0.42-30)
+              brawler1: { x: 688, y: 517, scale: 0.62, flipH: false }  // Нижний (x: 1200*0.58-30)
           },
-          dopBrawler: { x: 569, y: 96, scale: 0.88, scaleX: 0.86, scaleY: 1, rot: 0 },
-          dopBrawler1: { x: 392, y: 76, scale: 0.89, scaleX: 1.37, scaleY: 1, rot: 0, flipH: true },
+          dopBrawler: { x: 619, y: 83, scale: 0.85, scaleX: 1, scaleY: 1, rot: 0 },
+          dopBrawler1: { x: 441, y: 39, scale: 0.93, scaleX: 1, scaleY: 1, rot: 0, flipH: false },
           dopText: { x: 237, y: 678, scale: 0.16, rot: 0 },
 
         style4Brawlers: {
@@ -3475,7 +3475,7 @@ window.checkBPStyle4Ready = function() {
   
   <div class="dl-buttons-container">
     <div class="save-btn-wrapper" id="save-btn-wrapper">
-       <div class="save-hint-bubble" id="save-hint-bubble">Чтобы вносить изменения в эту работу, сохраните её проект.</div>
+       <div class="save-hint-bubble" id="save-hint-bubble">Чтобы вносить изменения в эту работу, сохраните её проект</div>
        <button class="ios-btn-secondary" id="dl-btn-save-project">
           <div class="btn-crossfade-wrap">
             <span class="btn-text-layer btn-text-default">
@@ -5369,7 +5369,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.needsTextCacheUpdate = false;
@@ -8574,25 +8574,6 @@ function drawScene() {
                 ctx.restore();
             }
 
-            if (window.layerState.detailsS2Visible !== false && globalAssets.style2Details) {
-                let detA2 = window.layerState.detailsS2Opacity !== undefined ? window.layerState.detailsS2Opacity : 1;
-                ctx.save();
-
-                ctx.globalCompositeOperation = 'soft-light';
-                ctx.globalAlpha = detA2;
-                ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
-
-                ctx.globalCompositeOperation = 'overlay';
-                ctx.globalAlpha = detA2 * 0.55;
-                ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
-
-                ctx.globalCompositeOperation = 'source-over';
-                ctx.globalAlpha = detA2 * 0.35;
-                ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
-
-                ctx.restore();
-            }
-
             ctx.save();
             const colorsMap = {
                 'green': {r: 94, g: 229, b: 104}, 
@@ -8619,7 +8600,7 @@ function drawScene() {
                 let cy = light.y * s;
                 let radius = (light.size + light.blur) * s; 
                 
-                ctx.globalCompositeOperation = 'screen';
+                ctx.globalCompositeOperation = 'overlay';
                 
                 let op = isCustomBg ? Math.min(1, light.opacity * 1.5) : light.opacity;
                 let midPoint = isCustomBg ? 0.5 : 0.3; 
@@ -8668,6 +8649,25 @@ function drawScene() {
                     ctx.fillText(wmText, 0, 0);
                     ctx.restore();
                 });
+                ctx.restore();
+            }
+
+            if (window.layerState.detailsS2Visible !== false && globalAssets.style2Details) {
+                let detA2 = window.layerState.detailsS2Opacity !== undefined ? window.layerState.detailsS2Opacity : 1;
+                ctx.save();
+
+                ctx.globalCompositeOperation = 'soft-light';
+                ctx.globalAlpha = detA2;
+                ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
+
+                ctx.globalCompositeOperation = 'overlay';
+                ctx.globalAlpha = detA2 * 0.55;
+                ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
+
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = detA2 * 0.35;
+                ctx.drawImage(globalAssets.style2Details, 0, 0, W, H);
+
                 ctx.restore();
             }
 
@@ -9732,7 +9732,7 @@ else if (window.layerState.bpStyleIndex === 4) {
                 persistentCtx.shadowColor = '#000';
                 persistentCtx.shadowBlur = 0;
                 
-                let strokeSize = 6 * (w / 3840);
+                let strokeSize = 12 * (w / 3840);
                 let diag = strokeSize * 0.375;
                 
                 const offsets = [
@@ -10491,7 +10491,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
 
             fankitGrid.appendChild(item);
 
-            let originalSrc = (num === 22 || num === 23) ? `bg/bg${num}.png` : `bg/bg${num}.jpg`; 
+            let originalSrc = `bg/bg${num}.jpg`; 
                        
             item.setAttribute('data-src', originalSrc); 
             item.onclick = () => handleFankitSelection(item, originalSrc);
