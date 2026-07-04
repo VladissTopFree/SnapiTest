@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(2)";
+  const APP_VERSION = "v2.4.4(3)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5687,17 +5687,14 @@ window.rebuildStyle1Background = () => {
         ctx.drawImage(globalAssets.bpStar, WIDTH / 2 - sw / 2, starY - starH, sw, starH);
     }
 
-    let panelExtraBP  = (window.layerState.priceVis_bp === false)     ? 150 : 0;
-    let panelExtraBPP = (window.layerState.priceVis_bpplus === false) ? 150 : 0;
-
     if (globalAssets.bpPanelL) {
-        let ph = HEIGHT - 210 + panelExtraBP;
-        let pw = globalAssets.bpPanelL.width * ((HEIGHT - 210) / globalAssets.bpPanelL.height);
+        let ph = HEIGHT - 210;
+        let pw = globalAssets.bpPanelL.width * (ph / globalAssets.bpPanelL.height);
         ctx.drawImage(globalAssets.bpPanelL, 14, 50, pw, ph);
     }
     if (globalAssets.bpPanelR) {
-        let ph = HEIGHT - 210 + panelExtraBPP;
-        let pw = globalAssets.bpPanelR.width * ((HEIGHT - 210) / globalAssets.bpPanelR.height);
+        let ph = HEIGHT - 210;
+        let pw = globalAssets.bpPanelR.width * (ph / globalAssets.bpPanelR.height);
         ctx.drawImage(globalAssets.bpPanelR, WIDTH - 14 - pw, 50, pw, ph);
     }
     
@@ -7042,14 +7039,6 @@ window.togglePriceVis = (key) => {
     window.layerState[flag] = !cur;
     if (window.triggerHaptic) window.triggerHaptic();
     renderLayerPanel();
-
-    if (window.layerState.isBrawlPassMode &&
-        (window.layerState.bpStyleIndex === 1 || window.layerState.bpStyleIndex === undefined) &&
-        typeof window.rebuildStyle1Background === 'function') {
-        window.rebuildStyle1Background();
-        return;
-    }
-
     if (typeof startAnimation === 'function') startAnimation();
 };
 
@@ -9754,8 +9743,7 @@ function drawScene() {
                 globalAssets.dopPanelLOffer) {
                 dopPanelImg = globalAssets.dopPanelLOffer;
             }
-            let dopPanelExtra = (window.layerState.priceVis_bp === false && window.layerState.bpVariantIndex !== 2) ? 70 : 0;
-            drawLayerImg(dopPanelImg, 82, 21, 546, 649 + dopPanelExtra);
+            drawLayerImg(dopPanelImg, 82, 21, 546, 649);
             
             let pricePlateX = 158;
             let pricePlateY = 589;
