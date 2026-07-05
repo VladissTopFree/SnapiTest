@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(10)";
+  const APP_VERSION = "v2.4.4(11)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5529,7 +5529,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.needsTextCacheUpdate = false;
@@ -11282,8 +11282,9 @@ document.getElementById('wizard-next-btn3-propass').onclick = async () => {
 
         btn.style.pointerEvents = 'auto';
         btn.innerHTML = orig;
+        window._sizeContext = 'propass';
         document.getElementById('wizard-overlay').style.display = 'none';
-        window.openProPassEditor();
+        window.openSizeOverlay();
     }, 50);
   };
 
@@ -13010,6 +13011,12 @@ window.onSizeGenerateClick = function() {
         return;
     }
 
+    if (window._sizeContext === 'propass') {
+        window._sizeContext = null;
+        window.openProPassEditor();
+        return;
+    }
+
     const si = window.layerState.bpStyleIndex;
     if (si === 1) {
         generateBrawlPassTest();
@@ -13182,8 +13189,8 @@ const PROPASS_STYLE1_LAYERS = [
 const PROPASS_ICON_CIRCLES = ['circle_mr7uqut7','circle_mr7v20n6','circle_mr7v2g6d','circle_mr7v2j8m','circle_mr7v2zxf'];
 const PROPASS_GREEN_CIRCLES = ['circle_mr7v3sw8','circle_mr7v49d6','circle_mr7v4bez'];
 window.PP_ICON_BOOST = { scale: 1.21, offY: 10.5 };  
-window.PP_BG_BLUR_ALPHA = 0.30; 
-window.PP_BG_BLUR_PX = 12; 
+window.PP_BG_BLUR_ALPHA = 0.16; 
+window.PP_BG_BLUR_PX = 26; 
 
 window.selectProPassStyle = function(styleId){
   if (styleId !== 1){
@@ -13319,7 +13326,7 @@ function drawProPassLayer(ctx, L, W, H){
       let outlineColor = isBlack ? (L.stroke || '#a4de35') : '#000000';
       let shadowColor  = isBlack ? (L.shadowColor || '#a4de35') : '#000000';
 
-      let symYoff = fs * 0.14; 
+      let symYoff = fs * 0.16; 
       const drawParts=(offX,offY,isStroke,color)=>{
         ctx.font=fontNum;
         if(isStroke){ctx.strokeText(numStr,startX+offX,offY);} else {ctx.fillStyle=color; ctx.fillText(numStr,startX+offX,offY);}
@@ -13347,38 +13354,67 @@ function drawProPassLayer(ctx, L, W, H){
   }
   ctx.restore();
 }
-function drawProPassContent(ctx, W, H){
+function drawProPassContent(ctx, Wc, Hc){
+  const BASE_W = 1280, BASE_H = 720;
+
   let isColorBg = window.layerState.isGeneratedBg && !!window.layerState.bgColorType;
   let isFankitOrReady = !!rawBgImage && !isColorBg;
 
   if (isFankitOrReady){
-    ctx.save();
     ctx.fillStyle = '#a100fa';
-    ctx.fillRect(0, 0, W, H);
-    ctx.restore();
-
-    ctx.save();
-    ctx.globalAlpha = 0.46;
-    ctx.filter = 'blur(12px)';
-    let ov = 24;
-    ctx.drawImage(rawBgImage, -ov, -ov, W + ov*2, H + ov*2);
-    ctx.restore();
-    ctx.filter = 'none';
+    ctx.fillRect(0, 0, Wc, Hc);
   } else if (isColorBg && rawBgImage){
-    ctx.drawImage(rawBgImage, 0, 0, W, H);
+    ctx.drawImage(rawBgImage, 0, 0, Wc, Hc);
   } else {
     ctx.save();
-    let ccx=0.5*W, ccy=0.42*H, rx=1.2*W, k=(0.9*H)/rx;
+    let ccx=0.5*Wc, ccy=0.42*Hc, rx=1.2*Wc, k=(0.9*Hc)/rx;
     ctx.translate(ccx,ccy); ctx.scale(1,k);
     let g=ctx.createRadialGradient(0,0,0,0,0,rx);
     g.addColorStop(0,'#c65cff'); g.addColorStop(0.34,'#a136ef'); g.addColorStop(0.62,'#7d1fce'); g.addColorStop(1,'#5a13a6');
     ctx.fillStyle=g; ctx.fillRect(-4000,-8000,8000,16000); ctx.restore();
   }
+
+  let uni = Math.min(Wc / BASE_W, Hc / BASE_H);
+  ctx.save();
+  ctx.translate(Wc/2, Hc/2);
+  ctx.scale(uni, uni);
+  ctx.translate(-BASE_W/2, -BASE_H/2);
+
+  let W = BASE_W, H = BASE_H;
+
+  if (isFankitOrReady){
+    let blurPx = window.PP_BG_BLUR_PX !== undefined ? window.PP_BG_BLUR_PX : 12;
+    let blurA  = window.PP_BG_BLUR_ALPHA !== undefined ? window.PP_BG_BLUR_ALPHA : 0.3;
+    if (!window._ppBlurCanvas){ window._ppBlurCanvas = document.createElement('canvas'); }
+    let bc = window._ppBlurCanvas, bcx = bc.getContext('2d');
+    if (bc.width !== W || bc.height !== H){ bc.width = W; bc.height = H; }
+    bcx.clearRect(0,0,W,H);
+    bcx.save();
+    if ('filter' in bcx) bcx.filter = `blur(${blurPx}px)`;
+    let ov = blurPx * 3;
+    bcx.drawImage(rawBgImage, -ov, -ov, W + ov*2, H + ov*2);
+    bcx.restore();
+    bcx.filter = 'none';
+    if (!('filter' in bcx)){
+      bcx.clearRect(0,0,W,H);
+      for (let i=0;i<6;i++){
+        let e = (i+1) * (blurPx/2);
+        bcx.globalAlpha = 0.5;
+        bcx.drawImage(rawBgImage, -e, -e, W + e*2, H + e*2);
+      }
+      bcx.globalAlpha = 1;
+    }
+    ctx.save();
+    ctx.globalAlpha = blurA;
+    ctx.drawImage(bc, 0, 0, W, H);
+    ctx.restore();
+  }
+
   let priceOff = window.layerState.priceVis_propass === false;
   let boost = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
 
-    PROPASS_STYLE1_LAYERS.forEach(L=>{
-    if (L.id==='brawler' && isFankitOrReady) return; 
+  PROPASS_STYLE1_LAYERS.forEach(L=>{
+    if (L.id==='brawler' && isFankitOrReady) return;
     if (L.id==='rays'   && window.layerState.luchVisible===false) return;
     if (L.id==='stars'  && window.layerState.starsVisible===false) return;
     if (L.id==='points' && window.layerState.pointsVisible===false) return;
@@ -13394,9 +13430,9 @@ function drawProPassContent(ctx, W, H){
           if (N.type==='text' && String(N.id).indexOf('nick_')===0) drawProPassLayer(ctx, N, W, H);
         });
       }
-      if (window.layerState.textVisible!==false && cachedTextCanvas){
+    if (window.layerState.textVisible!==false && cachedTextCanvas){
         ctx.save();
-        ctx.drawImage(cachedTextCanvas, 0, 0, W, H);
+        ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, W, H);
         ctx.restore();
       }
     }
@@ -13411,6 +13447,8 @@ function drawProPassContent(ctx, W, H){
 
     drawProPassLayer(ctx, L, W, H);
   });
+
+  ctx.restore();
 }
 
 function ppRow(key,name,vis,op,isLast){
@@ -13551,8 +13589,8 @@ window.openProPassEditor = function(){
   window.layerState.isProPassMode=true;
   window.layerState.isBrawlPassMode=false;
   window.layerState.propassStyleIndex=1;
-  window.layerState.outputW=1280;
-  window.layerState.outputH=720;
+  if (!window.layerState.outputW) window.layerState.outputW=1280;
+  if (!window.layerState.outputH) window.layerState.outputH=720;
   if (!window._spRestoring) {
     if (window.layerState.textVisible === undefined) window.layerState.textVisible = true;
     window.layerState.textPosition = 'top';
