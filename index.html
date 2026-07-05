@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(6)";
+  const APP_VERSION = "v2.4.4(7)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -1856,11 +1856,11 @@
     transform: scale(1);
   }
 
-  #bp-style-btn-next, #bp-variant-btn-next {
+  #bp-style-btn-next, #bp-variant-btn-next, #propass-style-btn-next {
     display: none; 
     margin: 0 auto;
   }
-  #bp-style-btn-next.show, #bp-variant-btn-next.show {
+  #bp-style-btn-next.show, #bp-variant-btn-next.show, #propass-style-btn-next.show {
     display: flex;
     animation: slideUpFade 0.3s ease-out forwards;
   }
@@ -3041,7 +3041,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
 
 <div id="propass-style-overlay" style="display: none; width: 100%; height: var(--tg-viewport-stable-height, 100vh); overflow: hidden; background: var(--tg-theme-secondary-bg-color, #F2F2F7); flex-direction: column; box-sizing: border-box; position: relative;">
   <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); position: relative; height: 100%; display: flex; flex-direction: column;">
-    <div class="cat-title-main">Выберите стиль Pro Pass</div>
+    <div class="cat-title-main">Выберите стиль PP</div>
     <div style="padding: 0 0 180px 0; flex-grow: 1; overflow-y: auto;">
 
         <div class="cat-card" onclick="selectProPassStyle(1)">
@@ -7082,6 +7082,7 @@ window.changeOffersOffsetY = (val) => {
 window.toggleTextLayer = () => {
     window.layerState.textVisible = !window.layerState.textVisible;
     renderLayerPanel();
+    if (window.layerState.isProPassMode) { if (typeof startAnimation === 'function') startAnimation(); return; }
     calculateLayoutTarget(); 
 };
 
@@ -8499,8 +8500,8 @@ let tempCanvas = window._sharedTempCanvas;
 
 window.updateCachedTextCanvas = () => {
 if (!persistentCanvas) return;
-    let tw = window.layerState.isBrawlPassMode ? persistentCanvas.width  : (window.actionBaseW || persistentCanvas.width);
-    let th = window.layerState.isBrawlPassMode ? persistentCanvas.height : (window.actionBaseH || persistentCanvas.height);
+    let tw = (window.layerState.isBrawlPassMode || window.layerState.isProPassMode) ? persistentCanvas.width  : (window.actionBaseW || persistentCanvas.width);
+    let th = (window.layerState.isBrawlPassMode || window.layerState.isProPassMode) ? persistentCanvas.height : (window.actionBaseH || persistentCanvas.height);
 
     cachedTextCanvas = document.createElement('canvas');
     cachedTextCanvas.width = tw; 
@@ -8514,6 +8515,8 @@ if (!persistentCanvas) return;
     
     if (window.layerState.isBrawlPassMode && window.layerState.bpStyleIndex !== 2 && window.layerState.bpStyleIndex !== 3 && window.layerState.bpStyleIndex !== 4) {
         drawBPNickText(ctx, window.layerState.textValue || "SNAPI", tw, th);
+    } else if (window.layerState.isProPassMode) {
+        drawBeautifulNick(ctx, window.layerState.textValue, tw, th);
     } else {
         drawBeautifulNick(ctx, window.layerState.textValue, tw, th);
         
@@ -13189,8 +13192,13 @@ document.getElementById('propass-style-btn-next').addEventListener('click', func
   document.getElementById('propass-style-overlay').style.display='none';
   window.layerState.propassStyleIndex = window._ppStyle;
   wizardMode = 'propass';
-  document.getElementById('wizard-title-step1').innerText='Создание Pro Pass';
-  document.getElementById('wizard-title-step2').innerText='Создание Pro Pass';
+
+  let ppTitleHtml = `Создание Pro <span style="white-space: nowrap;">Pass <span class="bp-style-badge">#${window._ppStyle}</span></span>`;
+  document.getElementById('wizard-title-step1').innerHTML = ppTitleHtml;
+  document.getElementById('wizard-title-step2').innerHTML = ppTitleHtml;
+  let ppStep3Title = document.querySelector('#wizard-step3-propass .ios-wizard-title');
+  if (ppStep3Title) ppStep3Title.innerHTML = ppTitleHtml;
+
   document.getElementById('result-box').style.display='none';
   document.getElementById('prog-line3').style.display='none';
   document.getElementById('prog-step4').style.display='none';
@@ -13221,6 +13229,16 @@ window.updateProPassPrice = function(el){
   el.value=v; window.layerState.bpPriceLeft=v; window.requestRender();
 };
 
+window.updateProPassText = function(val){
+  window.layerState.textValue = val;
+  let mainPreview = val.trim()!=='' ? val : 'TEXT';
+  let wmPreview = mainPreview.substring(0,6);
+  document.querySelectorAll('.main-font-item').forEach(el=> el.innerText = mainPreview);
+  document.querySelectorAll('.wm-font-item').forEach(el=> el.innerText = wmPreview);
+  window.updateCachedTextCanvas();
+  if (typeof startAnimation === 'function') startAnimation();
+};
+
 function ppOpacity(L){
   if (L.id==='rays')   return window.layerState.luchOpacity   !== undefined ? window.layerState.luchOpacity   : L.opacity/100;
   if (L.id==='stars')  return window.layerState.starsOpacity  !== undefined ? window.layerState.starsOpacity  : L.opacity/100;
@@ -13245,22 +13263,57 @@ function drawProPassLayer(ctx, L, W, H){
     let img=globalAssets['pp_'+L.id];
     if (img){ let w=(L.size/100)*W, h=w*(img.height/img.width); ctx.drawImage(img,-w/2,-h/2,w,h); }
   } else if (L.type==='circle'){
-    let r=((L.size/100)*W)/2;
-    if (L.blur) ctx.filter=`blur(${L.blur*s}px)`;
-    ctx.fillStyle=L.color||'#fff'; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+    let coreR=((L.size/100)*W)/2;
+    let totalR=coreR + (L.blur||0)*s;
+    let c=(L.color||'#ffffff').replace('#','');
+    let cr=parseInt(c.slice(0,2),16), cg=parseInt(c.slice(2,4),16), cb=parseInt(c.slice(4,6),16);
+    let g=ctx.createRadialGradient(0,0,0,0,0,totalR);
+    g.addColorStop(0,   `rgba(${cr},${cg},${cb},1)`);
+    g.addColorStop(0.5, `rgba(${cr},${cg},${cb},0.4)`);
+    g.addColorStop(1,   `rgba(${cr},${cg},${cb},0)`);
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,totalR,0,Math.PI*2); ctx.fill();
   } else if (L.type==='text'){
     ctx.transform(1,0,Math.tan(-8*Math.PI/180),1,0,0);
-    let text=ppText(L);
-    let fam=(L.font==='lilita')?'LilitaOneRus':(window.layerState.watermarksFont||'Font16103');
-    ctx.font=`${L.size*s}px '${fam}', sans-serif`;
-    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round';
-    if (L.shadowColor){
-      ctx.save(); ctx.fillStyle=L.shadowColor;
-      if (L.strokeWidth){ ctx.strokeStyle=L.shadowColor; ctx.lineWidth=L.strokeWidth*s; ctx.strokeText(text,(L.shadowX||0)*s,(L.shadowY||0)*s); }
-      ctx.fillText(text,(L.shadowX||0)*s,(L.shadowY||0)*s); ctx.restore();
+    ctx.textBaseline='middle'; ctx.lineJoin='round';
+
+    if (L.id==='price2888'){
+      ctx.textAlign='left';
+      let numStr=(window.layerState.bpPriceLeft||'2888');
+      let symStr=' ₽';
+      let fs=L.size*s;
+      let fontNum=`${fs}px 'LilitaOneRus', 'Arial Black', sans-serif`;
+      let fontSym=`${Math.max(fs-4,16)}px 'Rockwell', serif`;
+      ctx.font=fontNum; let wNum=ctx.measureText(numStr).width;
+      ctx.font=fontSym; let wSym=ctx.measureText(symStr).width;
+      let totalW=wNum+wSym, startX=-totalW/2, symX=startX+wNum;
+
+      let symYoff = fs * 0.19; 
+      const drawParts=(offX,offY,isStroke,color)=>{
+        ctx.font=fontNum;
+        if(isStroke){ctx.strokeText(numStr,startX+offX,offY);} else {ctx.fillStyle=color; ctx.fillText(numStr,startX+offX,offY);}
+        ctx.font=fontSym;
+        if(isStroke){ctx.strokeText(symStr,symX+offX,offY+symYoff);} else {ctx.fillStyle=color; ctx.fillText(symStr,symX+offX,offY+symYoff);}
+      };
+
+      if (L.shadowColor){
+        if (L.strokeWidth){ ctx.strokeStyle=L.shadowColor; ctx.lineWidth=L.strokeWidth*s; drawParts((L.shadowX||0)*s,(L.shadowY||0)*s,true); }
+        drawParts((L.shadowX||0)*s,(L.shadowY||0)*s,false,L.shadowColor);
+      }
+      if (L.stroke && L.strokeWidth){ ctx.strokeStyle=L.stroke; ctx.lineWidth=L.strokeWidth*s; drawParts(0,0,true); }
+      drawParts(0,0,false,L.color||'#fff');
+    } else {
+      ctx.textAlign='center';
+      let text=ppText(L);
+      let fam=(L.font==='lilita')?'LilitaOneRus':(window.layerState.watermarksFont||'Font16103');
+      ctx.font=`${L.size*s}px '${fam}', sans-serif`;
+      if (L.shadowColor){
+        ctx.save(); ctx.fillStyle=L.shadowColor;
+        if (L.strokeWidth){ ctx.strokeStyle=L.shadowColor; ctx.lineWidth=L.strokeWidth*s; ctx.strokeText(text,(L.shadowX||0)*s,(L.shadowY||0)*s); }
+        ctx.fillText(text,(L.shadowX||0)*s,(L.shadowY||0)*s); ctx.restore();
+      }
+      if (L.stroke && L.strokeWidth){ ctx.strokeStyle=L.stroke; ctx.lineWidth=L.strokeWidth*s; ctx.strokeText(text,0,0); }
+      ctx.fillStyle=L.color||'#fff'; ctx.fillText(text,0,0);
     }
-    if (L.stroke && L.strokeWidth){ ctx.strokeStyle=L.stroke; ctx.lineWidth=L.strokeWidth*s; ctx.strokeText(text,0,0); }
-    ctx.fillStyle=L.color||'#fff'; ctx.fillText(text,0,0);
   }
   ctx.restore();
 }
@@ -13273,11 +13326,18 @@ function drawProPassContent(ctx, W, H){
     g.addColorStop(0,'#c65cff'); g.addColorStop(0.34,'#a136ef'); g.addColorStop(0.62,'#7d1fce'); g.addColorStop(1,'#5a13a6');
     ctx.fillStyle=g; ctx.fillRect(-4000,-8000,8000,16000); ctx.restore();
   }
-  PROPASS_STYLE1_LAYERS.forEach(L=>{
+PROPASS_STYLE1_LAYERS.forEach(L=>{
     if (L.id==='rays'   && window.layerState.luchVisible===false) return;
     if (L.id==='stars'  && window.layerState.starsVisible===false) return;
     if (L.id==='points' && window.layerState.pointsVisible===false) return;
     if (L.type==='text' && String(L.id).indexOf('nick_')===0 && window.layerState.watermarksVisible===false) return;
+
+    if (L.id==='icon' && window.layerState.textVisible!==false && cachedTextCanvas){
+      ctx.save();
+      ctx.drawImage(cachedTextCanvas, 0, 0, W, H);
+      ctx.restore();
+    }
+
     drawProPassLayer(ctx, L, W, H);
   });
 }
@@ -13293,6 +13353,53 @@ function ppRow(key,name,vis,op,isLast){
 function renderProPassLayerPanel(isInitialLoad){
   let a=isInitialLoad?'fade-in-anim':'', html='';
   html += `<div class="ios-section-title ${a}">СЛОИ ДЛЯ РЕДАКТИРОВАНИЯ</div>`;
+
+  html += `<div class="ios-layer-group ${a}">
+      <div class="ios-layer-row" style="border-bottom:none; padding-bottom:0;">
+        <div class="ios-icon-btn ios-eye-icon ${window.layerState.textVisible!==false?'':'hidden'}" onclick="toggleTextLayer()">${getEyeSVG(window.layerState.textVisible!==false)}</div>
+        <div class="ios-layer-name" style="flex-grow:0; margin-right:12px; font-size:15px;">Текст</div>
+        <div style="position:relative; flex-grow:1; display:flex; align-items:center;" id="pp-nick-wrap">
+          <input type="text" id="pp-nick-input" maxlength="16" placeholder="SNAPI" value="${window.layerState.textValue||''}"
+            style="width:100%; background:var(--tg-theme-secondary-bg-color, #F2F2F7); border:none; border-radius:12px; padding:8px 14px; font-size:16px; color:var(--tg-theme-text-color, #000); outline:none; font-family:-apple-system, sans-serif;"
+            oninput="updateProPassText(this.value);">
+        </div>
+      </div>
+      <div class="ios-layer-row">
+        <div class="ios-layer-name" style="flex-shrink:1; min-width:0; max-width:75px; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">Высота</div>
+        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">вверх</div>
+        <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.mainTextOffsetY||0}" oninput="window.changeMainTextOffsetY(this.value)" style="flex-grow:1; flex-shrink:1; min-width:40px; margin:0;">
+        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-left:8px; margin-right:0;">вниз</div>
+      </div>
+      <div class="ios-layer-row">
+        <div class="ios-layer-name" style="flex-shrink:1; min-width:0; max-width:75px; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">Размер</div>
+        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">меньше</div>
+        <input type="range" class="ios-slider" min="0.1" max="3" step="0.01" value="${window.layerState.mainTextScale||1}" oninput="window.changeMainTextScale(this.value)" style="flex-grow:1; flex-shrink:1; min-width:40px; margin:0;">
+        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-left:8px; margin-right:0;">больше</div>
+      </div>
+      <div class="ios-layer-row" style="border-bottom:none; padding-bottom:0;">
+        <div class="ios-layer-name" style="flex-shrink:1; min-width:0; max-width:85px; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">Интервал</div>
+        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-right:8px;">уже</div>
+        <input type="range" class="ios-slider" min="-15" max="50" step="1" value="${window.layerState.mainTextLetterSpacing||0}" oninput="window.changeMainTextLetterSpacing(this.value)" style="flex-grow:1; flex-shrink:1; min-width:40px; margin:0;">
+        <div class="ios-layer-action-text" style="flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; margin-left:8px; margin-right:4px;">шире</div>
+        <div style="width:1px; height:20px; background-color:color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent); margin:0 8px; flex-shrink:0;"></div>
+        <div class="ios-icon-btn" onclick="window.toggleMainTextItalic()" style="flex-shrink:0; width:28px; height:28px; background:${window.layerState.mainTextItalic?'var(--tg-theme-button-color, #3390ec)':'transparent'}; color:${window.layerState.mainTextItalic?'#ffffff':'var(--tg-theme-text-color, #000000)'}; border-radius:6px; transition:0.2s;">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"></line><line x1="14" y1="20" x2="5" y2="20"></line><line x1="15" y1="4" x2="9" y2="20"></line></svg>
+        </div>
+      </div>`;
+  html += `<div class="ios-font-label">Изменить шрифт</div><div class="ios-font-grid">`;
+  FONT_OPTIONS.forEach(f=>{
+    let act=window.layerState.textFont===f.family?'active':'';
+    html+=`<div class="ios-font-item main-font-item ${act}" data-font="${f.family}" style="font-family:'${f.family}',sans-serif;" onclick="setFont('${f.family}')">${window.layerState.textValue||'TEXT'}</div>`;
+  });
+  html += `</div>`;
+  html += `<div class="ios-font-label">Изменить стиль</div><div class="ios-style-grid">`;
+  TEXT_STYLES.forEach((st,sIdx)=>{
+    let act=window.layerState.textStyleIndex===sIdx?'active':'';
+    let prev=createStylePreviewURL(st, window.layerState.textFont);
+    html+=`<div class="ios-style-item main-style-item ${act}" data-style="${sIdx}" style="background-image:url(${prev});" onclick="setStyle(${sIdx})"></div>`;
+  });
+  html += `</div></div>`;
+
   html += `<div class="ios-layer-group ${a}">
       <div class="ios-layer-row" style="border-bottom:none;">
         <div class="ios-layer-name">Pro Pass</div>
@@ -13304,8 +13411,8 @@ function renderProPassLayerPanel(isInitialLoad){
   html += ppRow('luch','Лучи', window.layerState.luchVisible!==false, window.layerState.luchOpacity!==undefined?window.layerState.luchOpacity:1, false);
   html += ppRow('stars','Звёзды', window.layerState.starsVisible!==false, window.layerState.starsOpacity!==undefined?window.layerState.starsOpacity:1, false);
   html += ppRow('points','Точки', window.layerState.pointsVisible!==false, window.layerState.pointsOpacity!==undefined?window.layerState.pointsOpacity:1, false);
-  html += ppRow('watermarks','Маленькие ники', window.layerState.watermarksVisible!==false, window.layerState.watermarksOpacity!==undefined?window.layerState.watermarksOpacity:0.36, true);
-  html += `<div class="ios-font-label">Шрифт маленьких ников</div><div class="ios-font-grid">`;
+  html += ppRow('watermarks','Текст min', window.layerState.watermarksVisible!==false, window.layerState.watermarksOpacity!==undefined?window.layerState.watermarksOpacity:0.36, true);
+  html += `<div class="ios-font-label">Шрифт Текст min</div><div class="ios-font-grid">`;
   FONT_OPTIONS.forEach(f=>{
     let act=(window.layerState.watermarksFont||'Font16103')===f.family?'active':'';
     let t=(window.layerState.textValue||'TEXT').substring(0,6);
@@ -13331,11 +13438,25 @@ window.openProPassEditor = function(){
   window.layerState.propassStyleIndex=1;
   window.layerState.outputW=1280;
   window.layerState.outputH=720;
+  if (!window._spRestoring) {
+    if (window.layerState.textVisible === undefined) window.layerState.textVisible = true;
+    window.layerState.textPosition = 'top';
+    if (window.layerState.textFont === undefined) window.layerState.textFont = 'Font16103';
+    if (window.layerState.textStyleIndex === undefined) window.layerState.textStyleIndex = 0;
+    if (window.layerState.mainTextOffsetY === undefined) window.layerState.mainTextOffsetY = -16;
+    if (window.layerState.mainTextScale === undefined) window.layerState.mainTextScale = 0.7;
+  }
   setTimeout(async ()=>{
     const load=(src)=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});
     for (let id in PROPASS_IMG_SRC){ if(!globalAssets['pp_'+id]) globalAssets['pp_'+id]=await load(PROPASS_IMG_SRC[id]); }
-    try{ await document.fonts.load("16px 'LilitaOneRus'"); await document.fonts.load(`16px '${window.layerState.watermarksFont||'Font16103'}'`); await document.fonts.ready; }catch(e){}
+  try{
+      await document.fonts.load("16px 'LilitaOneRus'");
+      await document.fonts.load(`16px '${window.layerState.watermarksFont||'Font16103'}'`);
+      await document.fonts.load(`16px '${window.layerState.textFont||'Font16103'}'`);
+      await document.fonts.ready;
+    }catch(e){}
     setupPersistentCanvas();
+    window.updateCachedTextCanvas();
     renderLayerPanel(true);
     startAnimation();
   },100);
