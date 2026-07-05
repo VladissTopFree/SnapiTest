@@ -8,12 +8,12 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(3)";
+  const APP_VERSION = "v2.4.4(4)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = false; 
-  const REQUIRE_TELEGRAM_APP = true; 
+  const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
 
@@ -578,13 +578,14 @@
   .ios-font-item {
     font-size: 14px;
     text-align: center;
-    padding: 6px 0;
+    padding: 6px 8px;
     color: var(--tg-theme-text-color, #000000);
     cursor: pointer;
     border: 1.5px solid transparent;
     border-radius: 12px;
     white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
     transition: border-color 0.4s ease-in-out; 
   }
   .ios-font-item.active {
@@ -2046,19 +2047,23 @@
       gap: 8px;
   }
   .resize-badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      z-index: 6; 
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 26px !important;
-      height: 26px !important;
-      border-radius: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
       background: linear-gradient(180deg, #ffd84a 0%, #ffb800 100%);
       box-shadow: 0 2px 6px rgba(255, 184, 0, 0.35), inset 0 1px 0.5px rgba(255,255,255,0.5);
       flex-shrink: 0;
   }
   .resize-badge svg {
-      width: 15px !important;
-      height: 15px !important;
+      width: 14px;
+      height: 14px;
       fill: #fff;
       display: block;
   }
@@ -2884,11 +2889,10 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_akc1_1.jpg", "demo_png/demo_png_akc1_2.jpg", "demo_png/demo_png_akc1_3.jpg"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_akc1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+               <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info">
-                <div class="cat-name cat-name-with-badge">Создание акции
-                    <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
-                </div>
+                <div class="cat-name">Создание акции</div>
                 <div class="cat-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
                 <div id="cat-badge-wrap-action" class="cat-badge-wrap">
                     <div class="cat-badge-inner">
@@ -2918,11 +2922,10 @@ body:not(.os-non-apple) .ios-icon-box > * {
                     <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP1_1.jpg", "demo_png/demo_png_bp2_2.jpg", "demo_png/demo_png_osnBP4_1.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
                         <img src="demo_png/demo_png_osnBP1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                         <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                       <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
                     </div>
                     <div class="cat-info" style="justify-content: center; min-height: 48px;">
-                        <div class="cat-name cat-name-with-badge" style="font-size: 16px;">Обычный
-                            <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
-                        </div>
+                        <div class="cat-name" style="font-size: 16px;">Обычный</div>
                         <div class="cat-desc" style="font-size: 12px;">Классическая работа для Brawl Pass.</div>
                     </div>
                 </div>
@@ -2934,11 +2937,10 @@ body:not(.os-non-apple) .ios-icon-box > * {
                     <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dop_bp4_1.jpg", "demo_png/demo_png_dopBP_bp2_2.jpg", "demo_png/demo_png_dopBP_bp3_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
                         <img src="demo_png/demo_png_dop_bp4_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                         <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                       <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
                     </div>
                     <div class="cat-info" style="justify-content: center; min-height: 48px;">
-                        <div class="cat-name cat-name-with-badge" style="font-size: 16px;">Дополнительный
-                            <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
-                        </div>
+                        <div class="cat-name" style="font-size: 16px;">Дополнительный</div>
                                                 <div class="cat-desc" style="font-size: 12px;">Дополнительная работа для Brawl Pass.</div>
                     </div>
                 </div>
@@ -2966,11 +2968,10 @@ body:not(.os-non-apple) .ios-icon-box > * {
                 <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_osnBP1_1.jpg", "demo_png/demo_png_osnBP1_2.jpg", "demo_png/demo_png_osnBP1_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
                     <img src="demo_png/demo_png_osnBP1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                     <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                   <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
                 </div>
                 <div class="cat-info" style="justify-content: center; min-height: 78px;">
-                    <div class="cat-name cat-name-with-badge">Стиль #1
-                        <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
-                    </div>
+                    <div class="cat-name">Стиль #1</div>
                     <div class="cat-desc">Включает в себя BP, BP+ и детали для улучшения работы.</div>
                 </div>
         </div>
@@ -5232,6 +5233,7 @@ function processImages(filesParam) {
   document.getElementById('wizard-overlay').style.display = 'none';
   resultBox.style.display = 'block';
   window.scrollTo(0,0);
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
   window.showGenLoader();
   
   cardsContainer.innerHTML = '<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
@@ -11532,14 +11534,13 @@ async function generateBrawlPassTest() {
     drawShadow(cxL, starY - 10 + 12.5);
 
     window.bpForegroundImage = new Image();
-    window.bpForegroundImage.onload = () => {
+    window.bpForegroundImage.onload = async () => {
         window.layerState.isBrawlPassMode = true;
+        await window.preloadBrawlerVariants(season);
         setupPersistentCanvas();
         renderLayerPanel();
         calculateLayoutTarget();
-        window.preloadBrawlerVariants(season).then(() => {
-            if (typeof startAnimation === 'function') startAnimation();
-        });
+        if (typeof startAnimation === 'function') startAnimation();
     };
     window.bpForegroundImage.src = c.toDataURL('image/png');
 }
@@ -11768,13 +11769,11 @@ window.openBPTestEditor = function() {
         if (!globalAssets[`brawler_${season}_1`]) globalAssets[`brawler_${season}_1`] = await load(`BP/brawler_s${season}_1.png`);
         if (!globalAssets[`brawler_${season}_2`]) globalAssets[`brawler_${season}_2`] = await load(`BP/brawler_s${season}_2.png`);
 
+        await window.preloadBrawlerVariants(season);
         setupPersistentCanvas();
         renderLayerPanel(true);
         window.updateCachedTextCanvas();
         startAnimation();
-        window.preloadBrawlerVariants(season).then(() => {
-            if (typeof startAnimation === 'function') startAnimation();
-        });
     }, 100);
 };
 
@@ -11843,6 +11842,7 @@ window.openBPDopEditor = function() {
 
         if (!globalAssets.style2Text) globalAssets.style2Text = await load('BP/bp_text_style2.png');
 
+        await window.preloadBrawlerVariants(season);
         setupPersistentCanvas();
 
         if (!window._spRestoring) window.layerState.customWatermarks = [
@@ -11867,9 +11867,6 @@ window.openBPDopEditor = function() {
         renderLayerPanel(true);
         window.updateCachedTextCanvas();
         startAnimation();
-        window.preloadBrawlerVariants(season).then(() => {
-            if (typeof startAnimation === 'function') startAnimation();
-        });
     }, 100);
 };
 
