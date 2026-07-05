@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(11)";
+  const APP_VERSION = "v2.4.4(12)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -8506,8 +8506,16 @@ let tempCanvas = window._sharedTempCanvas;
 
 window.updateCachedTextCanvas = () => {
 if (!persistentCanvas) return;
-    let tw = (window.layerState.isBrawlPassMode || window.layerState.isProPassMode) ? persistentCanvas.width  : (window.actionBaseW || persistentCanvas.width);
-    let th = (window.layerState.isBrawlPassMode || window.layerState.isProPassMode) ? persistentCanvas.height : (window.actionBaseH || persistentCanvas.height);
+let tw, th;
+    if (window.layerState.isProPassMode) {
+        tw = 1280; th = 720; 
+    } else if (window.layerState.isBrawlPassMode) {
+        tw = persistentCanvas.width;
+        th = persistentCanvas.height;
+    } else {
+        tw = window.actionBaseW || persistentCanvas.width;
+        th = window.actionBaseH || persistentCanvas.height;
+    }
 
     cachedTextCanvas = document.createElement('canvas');
     cachedTextCanvas.width = tw; 
@@ -10528,6 +10536,13 @@ window.resetWizardState = () => {
       let bpNextBtn3Dop = document.getElementById('wizard-next-btn3-bp-dop');
       if (bpNextBtn3Dop) bpNextBtn3Dop.classList.remove('show');
 
+      let ppPrice = document.getElementById('ws-propass-p0');
+      if (ppPrice) ppPrice.value = '';
+      let ppNextBtn = document.getElementById('wizard-next-btn3-propass');
+      if (ppNextBtn) ppNextBtn.classList.remove('show');
+      window._ppStyle = null;
+      window.layerState.propassPriceColor = undefined;
+
       let bpPlusPrice = document.getElementById('wizard-bpplus-price');
       if(bpPrice) bpPrice.value = '';
       if(bpPlusPrice) bpPlusPrice.value = '';
@@ -10563,6 +10578,7 @@ window.resetWizardState = () => {
       window.layerState.isProPassMode = false;
       window._ppStyle = null;
       window.layerState.bpStyleIndex = null;
+      window.layerState.bpPriceLeft = "";
 
         selectedBPStyle = null;
         window.layerState.style4Prices = [];
@@ -13189,7 +13205,7 @@ const PROPASS_STYLE1_LAYERS = [
 const PROPASS_ICON_CIRCLES = ['circle_mr7uqut7','circle_mr7v20n6','circle_mr7v2g6d','circle_mr7v2j8m','circle_mr7v2zxf'];
 const PROPASS_GREEN_CIRCLES = ['circle_mr7v3sw8','circle_mr7v49d6','circle_mr7v4bez'];
 window.PP_ICON_BOOST = { scale: 1.21, offY: 10.5 };  
-window.PP_BG_BLUR_ALPHA = 0.16; 
+window.PP_BG_BLUR_ALPHA = 0.21; 
 window.PP_BG_BLUR_PX = 26; 
 
 window.selectProPassStyle = function(styleId){
@@ -13374,7 +13390,7 @@ function drawProPassContent(ctx, Wc, Hc){
     ctx.fillStyle=g; ctx.fillRect(-4000,-8000,8000,16000); ctx.restore();
   }
 
-  let uni = Math.min(Wc / BASE_W, Hc / BASE_H);
+  let uni = Hc / BASE_H;
   ctx.save();
   ctx.translate(Wc/2, Hc/2);
   ctx.scale(uni, uni);
