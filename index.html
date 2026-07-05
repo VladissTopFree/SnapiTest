@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(9)";
+  const APP_VERSION = "v2.4.4(10)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -176,6 +176,9 @@
   @font-face { font-family: 'ArialBlackCustom'; src: local('Arial Black'), url('Arial Black.ttf') format('truetype'); font-display: swap; }
   @font-face { font-family: 'ImpactCustom'; src: local('Impact'), url('Impact.ttf') format('truetype'); font-display: swap; }
   @font-face { font-family: 'Font11246'; src: url('11246.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'AlegreyaSansSC'; src: url('AlegreyaSansSC-Black.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'HackedCyr'; src: url('Hacked Cyr.ttf') format('truetype'); font-display: swap; }
+  @font-face { font-family: 'NunitoBlack'; src: url('Nunito-Black.ttf') format('truetype'); font-display: swap; }
 
   :root {
     --app-top-padding: 140px;
@@ -5077,7 +5080,10 @@ const FONT_OPTIONS = [
     { family: 'TTSupermolot' },
     { family: 'ArialBlackCustom' },
     { family: 'ImpactCustom' },
-    { family: 'Font11246' }
+    { family: 'Font11246' },
+    { family: 'AlegreyaSansSC' },
+    { family: 'HackedCyr' },
+    { family: 'NunitoBlack' }
 ];
 
 const TEXT_STYLES = [
@@ -13048,7 +13054,8 @@ window.addEventListener('load', () => {
 window.warmUpFonts = function() {
     ['Font16103','LilitaOneRus','SupercellMagic','PusiaBold','BebasNeue',
      'AmericanCaptain','ArialRoundedOld','Molot','Nougat','TTSupermolot',
-     'ArialBlackCustom','ImpactCustom','Font11246']
+     'ArialBlackCustom','ImpactCustom','Font11246',
+     'AlegreyaSansSC','HackedCyr','NunitoBlack']
       .forEach(f => { try { document.fonts.load(`16px '${f}'`); } catch(e){} });
 };
 window.addEventListener('load', () => {
@@ -13175,6 +13182,8 @@ const PROPASS_STYLE1_LAYERS = [
 const PROPASS_ICON_CIRCLES = ['circle_mr7uqut7','circle_mr7v20n6','circle_mr7v2g6d','circle_mr7v2j8m','circle_mr7v2zxf'];
 const PROPASS_GREEN_CIRCLES = ['circle_mr7v3sw8','circle_mr7v49d6','circle_mr7v4bez'];
 window.PP_ICON_BOOST = { scale: 1.21, offY: 10.5 };  
+window.PP_BG_BLUR_ALPHA = 0.30; 
+window.PP_BG_BLUR_PX = 12; 
 
 window.selectProPassStyle = function(styleId){
   if (styleId !== 1){
@@ -13243,6 +13252,15 @@ window.updateProPassText = function(val){
   if (typeof startAnimation === 'function') startAnimation();
 };
 
+window.changeProPassPriceColor = function(color){
+  window.layerState.propassPriceColor = color;
+  let disp = document.getElementById('pp-price-color-display');
+  if (disp) disp.style.background = color;
+  let icon = document.getElementById('pp-price-color-icon');
+  if (icon) icon.style.fill = (color.toLowerCase()==='#ffffff') ? '#b7b7b7' : '#ffffff';
+  window.requestRender();
+};
+
 function ppOpacity(L){
   if (L.id==='rays')   return window.layerState.luchOpacity   !== undefined ? window.layerState.luchOpacity   : L.opacity/100;
   if (L.id==='stars')  return window.layerState.starsOpacity  !== undefined ? window.layerState.starsOpacity  : L.opacity/100;
@@ -13287,7 +13305,7 @@ function drawProPassLayer(ctx, L, W, H){
 
     if (L.id==='price2888'){
       ctx.textAlign='left';
-      let numStr=(window.layerState.bpPriceLeft||'2888');
+      let numStr=(window.layerState.bpPriceLeft||'9999');
       let symStr=' ₽';
       let fs=L.size*s;
       let fontNum=`${fs}px 'LilitaOneRus', 'Arial Black', sans-serif`;
@@ -13296,7 +13314,12 @@ function drawProPassLayer(ctx, L, W, H){
       ctx.font=fontSym; let wSym=ctx.measureText(symStr).width;
       let totalW=wNum+wSym, startX=-totalW/2, symX=startX+wNum;
 
-      let symYoff = fs * 0.19; 
+      let priceColor = window.layerState.propassPriceColor || L.color || '#000000';
+      let isBlack = priceColor.toLowerCase() === '#000000' || priceColor.toLowerCase() === '#000';
+      let outlineColor = isBlack ? (L.stroke || '#a4de35') : '#000000';
+      let shadowColor  = isBlack ? (L.shadowColor || '#a4de35') : '#000000';
+
+      let symYoff = fs * 0.14; 
       const drawParts=(offX,offY,isStroke,color)=>{
         ctx.font=fontNum;
         if(isStroke){ctx.strokeText(numStr,startX+offX,offY);} else {ctx.fillStyle=color; ctx.fillText(numStr,startX+offX,offY);}
@@ -13304,12 +13327,10 @@ function drawProPassLayer(ctx, L, W, H){
         if(isStroke){ctx.strokeText(symStr,symX+offX,offY+symYoff);} else {ctx.fillStyle=color; ctx.fillText(symStr,symX+offX,offY+symYoff);}
       };
 
-      if (L.shadowColor){
-        if (L.strokeWidth){ ctx.strokeStyle=L.shadowColor; ctx.lineWidth=L.strokeWidth*s; drawParts((L.shadowX||0)*s,(L.shadowY||0)*s,true); }
-        drawParts((L.shadowX||0)*s,(L.shadowY||0)*s,false,L.shadowColor);
-      }
-      if (L.stroke && L.strokeWidth){ ctx.strokeStyle=L.stroke; ctx.lineWidth=L.strokeWidth*s; drawParts(0,0,true); }
-      drawParts(0,0,false,L.color||'#fff');
+      if (L.strokeWidth){ ctx.strokeStyle=shadowColor; ctx.lineWidth=L.strokeWidth*s; drawParts((L.shadowX||0)*s,(L.shadowY||0)*s,true); }
+      drawParts((L.shadowX||0)*s,(L.shadowY||0)*s,false,shadowColor);
+      if (L.strokeWidth){ ctx.strokeStyle=outlineColor; ctx.lineWidth=L.strokeWidth*s; drawParts(0,0,true); }
+      drawParts(0,0,false,priceColor);
     } else {
       ctx.textAlign='center';
       let text=ppText(L);
@@ -13451,12 +13472,23 @@ function renderProPassLayerPanel(isInitialLoad){
   html += `</div></div>`;
 
   let ppPriceVis = window.layerState.priceVis_propass !== false;
+  let ppPriceColor = window.layerState.propassPriceColor || '#000000';
   html += `<div class="ios-layer-group ${a}">
-      <div class="ios-layer-row" style="border-bottom:none;">
+      <div class="ios-layer-row">
         <div class="ios-icon-btn ios-eye-icon ${ppPriceVis?'':'hidden'}" onclick="togglePriceVis('propass')">${getEyeSVG(ppPriceVis)}</div>
         <div class="ios-layer-name">Pro Pass</div>
         <div class="ios-layer-action-text">значение</div>
         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft||''}" maxlength="5" oninput="updateProPassPrice(this)" style="width:65px;">
+      </div>
+      <div class="ios-layer-row" style="border-bottom:none;">
+        <div class="ios-layer-name" style="flex-grow:1;">Цвет цены</div>
+        <div class="ios-layer-action-text" style="margin-right:4px;">цвет</div>
+        <div style="position:relative; width:26px; height:26px; flex-shrink:0; background:${ppPriceColor}; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:1px; box-sizing:border-box; box-shadow:0 1px 4px rgba(0,0,0,0.15);" id="pp-price-color-display">
+          <input type="color" value="${ppPriceColor}" style="position:absolute; opacity:0; width:100%; height:100%; left:0; top:0; cursor:pointer;" oninput="window.changeProPassPriceColor(this.value)">
+          <div style="width:22px; height:22px; background:transparent; border-radius:50%; z-index:2; pointer-events:none; display:flex; align-items:center; justify-content:center;">
+            <svg id="pp-price-color-icon" viewBox="0 0 24 24" style="width:12px; height:12px; fill:${(ppPriceColor.toLowerCase()==='#ffffff')?'#b7b7b7':'#ffffff'};"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </div>
+        </div>
       </div>
     </div>`;
 
