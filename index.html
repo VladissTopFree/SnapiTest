@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(8)";
+  const APP_VERSION = "v2.4.4(9)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -8677,7 +8677,7 @@ function drawScene() {
     persistentCtx.imageSmoothingEnabled = true;
     persistentCtx.imageSmoothingQuality = 'high';
 
-    if (rawBgImage) {
+    if (rawBgImage && !window.layerState.isProPassMode) {
         persistentCtx.drawImage(rawBgImage, 0, 0, w, h);
     }
 
@@ -13174,7 +13174,7 @@ const PROPASS_STYLE1_LAYERS = [
 
 const PROPASS_ICON_CIRCLES = ['circle_mr7uqut7','circle_mr7v20n6','circle_mr7v2g6d','circle_mr7v2j8m','circle_mr7v2zxf'];
 const PROPASS_GREEN_CIRCLES = ['circle_mr7v3sw8','circle_mr7v49d6','circle_mr7v4bez'];
-window.PP_ICON_BOOST = { scale: 1.35, offY: 8 }; 
+window.PP_ICON_BOOST = { scale: 1.21, offY: 10.5 };  
 
 window.selectProPassStyle = function(styleId){
   if (styleId !== 1){
@@ -13269,7 +13269,12 @@ function drawProPassLayer(ctx, L, W, H){
   } else if (L.type==='circle'){
     let coreR=((L.size/100)*W)/2;
     let totalR=coreR + (L.blur||0)*s;
-    let c=(L.color||'#ffffff').replace('#','');
+    let baseColor = L.color || '#ffffff';
+    if (L.id==='circle_mr7uqut7' && window.layerState.isGeneratedBg && window.layerState.bgColorType){
+      const ppCircleColors = { green:'#168625', blue:'#004d9c', orange:'#b35900', purple:'#510087', black:'#050505' };
+      baseColor = ppCircleColors[window.layerState.bgColorType] || baseColor;
+    }
+    let c=baseColor.replace('#','');
     let cr=parseInt(c.slice(0,2),16), cg=parseInt(c.slice(2,4),16), cb=parseInt(c.slice(4,6),16);
     let g=ctx.createRadialGradient(0,0,0,0,0,totalR);
     g.addColorStop(0,   `rgba(${cr},${cg},${cb},1)`);
@@ -13322,7 +13327,25 @@ function drawProPassLayer(ctx, L, W, H){
   ctx.restore();
 }
 function drawProPassContent(ctx, W, H){
-  if (!rawBgImage){
+  let isColorBg = window.layerState.isGeneratedBg && !!window.layerState.bgColorType;
+  let isFankitOrReady = !!rawBgImage && !isColorBg;
+
+  if (isFankitOrReady){
+    ctx.save();
+    ctx.fillStyle = '#a100fa';
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = 0.46;
+    ctx.filter = 'blur(12px)';
+    let ov = 24;
+    ctx.drawImage(rawBgImage, -ov, -ov, W + ov*2, H + ov*2);
+    ctx.restore();
+    ctx.filter = 'none';
+  } else if (isColorBg && rawBgImage){
+    ctx.drawImage(rawBgImage, 0, 0, W, H);
+  } else {
     ctx.save();
     let ccx=0.5*W, ccy=0.42*H, rx=1.2*W, k=(0.9*H)/rx;
     ctx.translate(ccx,ccy); ctx.scale(1,k);
@@ -13333,19 +13356,28 @@ function drawProPassContent(ctx, W, H){
   let priceOff = window.layerState.priceVis_propass === false;
   let boost = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
 
-  PROPASS_STYLE1_LAYERS.forEach(L=>{
+    PROPASS_STYLE1_LAYERS.forEach(L=>{
+    if (L.id==='brawler' && isFankitOrReady) return; 
     if (L.id==='rays'   && window.layerState.luchVisible===false) return;
     if (L.id==='stars'  && window.layerState.starsVisible===false) return;
     if (L.id==='points' && window.layerState.pointsVisible===false) return;
-    if (L.type==='text' && String(L.id).indexOf('nick_')===0 && window.layerState.watermarksVisible===false) return;
+
+    if (L.type==='text' && String(L.id).indexOf('nick_')===0) return;
 
     if (priceOff && (L.id==='price' || L.id==='price2888')) return;
     if (priceOff && PROPASS_GREEN_CIRCLES.indexOf(L.id)!==-1) return;
 
-    if (L.id==='icon' && window.layerState.textVisible!==false && cachedTextCanvas){
-      ctx.save();
-      ctx.drawImage(cachedTextCanvas, 0, 0, W, H);
-      ctx.restore();
+    if (L.id==='icon'){
+      if (window.layerState.watermarksVisible!==false){
+        PROPASS_STYLE1_LAYERS.forEach(N=>{
+          if (N.type==='text' && String(N.id).indexOf('nick_')===0) drawProPassLayer(ctx, N, W, H);
+        });
+      }
+      if (window.layerState.textVisible!==false && cachedTextCanvas){
+        ctx.save();
+        ctx.drawImage(cachedTextCanvas, 0, 0, W, H);
+        ctx.restore();
+      }
     }
 
     if (priceOff && (L.id==='icon' || PROPASS_ICON_CIRCLES.indexOf(L.id)!==-1)){
