@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(13)";
+  const APP_VERSION = "v2.4.4(14)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -13209,7 +13209,7 @@ const PROPASS_STYLE1_LAYERS = [
 const PROPASS_ICON_CIRCLES = ['circle_mr7uqut7','circle_mr7v20n6','circle_mr7v2g6d','circle_mr7v2j8m','circle_mr7v2zxf'];
 const PROPASS_GREEN_CIRCLES = ['circle_mr7v3sw8','circle_mr7v49d6','circle_mr7v4bez'];
 window.PP_ICON_BOOST = { scale: 1.21, offY: 10.5 };  
-window.PP_BG_BLUR_ALPHA = 0.36; 
+window.PP_BG_BLUR_ALPHA = 0.31; 
 window.PP_BG_BLUR_PX = 26; 
 
 window.selectProPassStyle = function(styleId){
@@ -13383,6 +13383,31 @@ function drawProPassContent(ctx, Wc, Hc){
   if (isFankitOrReady){
     ctx.fillStyle = '#a100fa';
     ctx.fillRect(0, 0, Wc, Hc);
+
+    let blurPx = window.PP_BG_BLUR_PX !== undefined ? window.PP_BG_BLUR_PX : 12;
+    let blurA  = window.PP_BG_BLUR_ALPHA !== undefined ? window.PP_BG_BLUR_ALPHA : 0.3;
+
+    let down = Math.max(0.02, Math.min(0.5, 8 / blurPx)); // ~0.06..0.5
+    let smallW = Math.max(2, Math.round(Wc * down));
+    let smallH = Math.max(2, Math.round(Hc * down));
+
+    if (!window._ppBlurSmall) window._ppBlurSmall = document.createElement('canvas');
+    let sc = window._ppBlurSmall, scx = sc.getContext('2d');
+    if (sc.width !== smallW || sc.height !== smallH){ sc.width = smallW; sc.height = smallH; }
+    scx.clearRect(0,0,smallW,smallH);
+    scx.imageSmoothingEnabled = true;
+    scx.imageSmoothingQuality = 'high';
+    let ir = rawBgImage.width / rawBgImage.height, cr = smallW / smallH, dw, dh, dx, dy;
+    if (ir > cr){ dh = smallH; dw = smallH * ir; dx = (smallW - dw)/2; dy = 0; }
+    else { dw = smallW; dh = smallW / ir; dx = 0; dy = (smallH - dh)/2; }
+    scx.drawImage(rawBgImage, dx, dy, dw, dh);
+
+    ctx.save();
+    ctx.globalAlpha = blurA;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(sc, 0, 0, smallW, smallH, 0, 0, Wc, Hc);
+    ctx.restore();
   } else if (isColorBg && rawBgImage){
     ctx.drawImage(rawBgImage, 0, 0, Wc, Hc);
   } else {
@@ -13402,33 +13427,6 @@ function drawProPassContent(ctx, Wc, Hc){
 
   let W = BASE_W, H = BASE_H;
 
-  if (isFankitOrReady){
-    let blurPx = window.PP_BG_BLUR_PX !== undefined ? window.PP_BG_BLUR_PX : 12;
-    let blurA  = window.PP_BG_BLUR_ALPHA !== undefined ? window.PP_BG_BLUR_ALPHA : 0.3;
-    if (!window._ppBlurCanvas){ window._ppBlurCanvas = document.createElement('canvas'); }
-    let bc = window._ppBlurCanvas, bcx = bc.getContext('2d');
-    if (bc.width !== W || bc.height !== H){ bc.width = W; bc.height = H; }
-    bcx.clearRect(0,0,W,H);
-    bcx.save();
-    if ('filter' in bcx) bcx.filter = `blur(${blurPx}px)`;
-    let ov = blurPx * 3;
-    bcx.drawImage(rawBgImage, -ov, -ov, W + ov*2, H + ov*2);
-    bcx.restore();
-    bcx.filter = 'none';
-    if (!('filter' in bcx)){
-      bcx.clearRect(0,0,W,H);
-      for (let i=0;i<6;i++){
-        let e = (i+1) * (blurPx/2);
-        bcx.globalAlpha = 0.5;
-        bcx.drawImage(rawBgImage, -e, -e, W + e*2, H + e*2);
-      }
-      bcx.globalAlpha = 1;
-    }
-    ctx.save();
-    ctx.globalAlpha = blurA;
-    ctx.drawImage(bc, 0, 0, W, H);
-    ctx.restore();
-  }
 
   let priceOff = window.layerState.priceVis_propass === false;
   let boost = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
