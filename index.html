@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(7)";
+  const APP_VERSION = "v2.4.4(8)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5523,7 +5523,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -13172,6 +13172,10 @@ const PROPASS_STYLE1_LAYERS = [
   {"id":"circle_mr7v4bez","type":"circle","x":61.8,"y":81.7,"rot":0,"opacity":70,"blend":"screen","color":"#47ba25","size":11.5,"blur":45}
 ];
 
+const PROPASS_ICON_CIRCLES = ['circle_mr7uqut7','circle_mr7v20n6','circle_mr7v2g6d','circle_mr7v2j8m','circle_mr7v2zxf'];
+const PROPASS_GREEN_CIRCLES = ['circle_mr7v3sw8','circle_mr7v49d6','circle_mr7v4bez'];
+window.PP_ICON_BOOST = { scale: 1.35, offY: 8 }; 
+
 window.selectProPassStyle = function(styleId){
   if (styleId !== 1){
     let m='Этот стиль пока в разработке.';
@@ -13326,16 +13330,30 @@ function drawProPassContent(ctx, W, H){
     g.addColorStop(0,'#c65cff'); g.addColorStop(0.34,'#a136ef'); g.addColorStop(0.62,'#7d1fce'); g.addColorStop(1,'#5a13a6');
     ctx.fillStyle=g; ctx.fillRect(-4000,-8000,8000,16000); ctx.restore();
   }
-PROPASS_STYLE1_LAYERS.forEach(L=>{
+  let priceOff = window.layerState.priceVis_propass === false;
+  let boost = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
+
+  PROPASS_STYLE1_LAYERS.forEach(L=>{
     if (L.id==='rays'   && window.layerState.luchVisible===false) return;
     if (L.id==='stars'  && window.layerState.starsVisible===false) return;
     if (L.id==='points' && window.layerState.pointsVisible===false) return;
     if (L.type==='text' && String(L.id).indexOf('nick_')===0 && window.layerState.watermarksVisible===false) return;
 
+    if (priceOff && (L.id==='price' || L.id==='price2888')) return;
+    if (priceOff && PROPASS_GREEN_CIRCLES.indexOf(L.id)!==-1) return;
+
     if (L.id==='icon' && window.layerState.textVisible!==false && cachedTextCanvas){
       ctx.save();
       ctx.drawImage(cachedTextCanvas, 0, 0, W, H);
       ctx.restore();
+    }
+
+    if (priceOff && (L.id==='icon' || PROPASS_ICON_CIRCLES.indexOf(L.id)!==-1)){
+      let mod = Object.assign({}, L);
+      mod.size = L.size * boost.scale;
+      mod.y = L.y + boost.offY;
+      drawProPassLayer(ctx, mod, W, H);
+      return;
     }
 
     drawProPassLayer(ctx, L, W, H);
@@ -13400,13 +13418,33 @@ function renderProPassLayerPanel(isInitialLoad){
   });
   html += `</div></div>`;
 
+  let ppPriceVis = window.layerState.priceVis_propass !== false;
   html += `<div class="ios-layer-group ${a}">
       <div class="ios-layer-row" style="border-bottom:none;">
+        <div class="ios-icon-btn ios-eye-icon ${ppPriceVis?'':'hidden'}" onclick="togglePriceVis('propass')">${getEyeSVG(ppPriceVis)}</div>
         <div class="ios-layer-name">Pro Pass</div>
         <div class="ios-layer-action-text">значение</div>
         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft||''}" maxlength="5" oninput="updateProPassPrice(this)" style="width:65px;">
       </div>
     </div>`;
+
+  if (window.ENABLE_TEMP_EDITOR){
+    let b = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
+    html += `<div class="ios-section-title ${a}" style="margin-left:0;">РЕДАКТОР ИКОНКИ (ЦЕНА ВЫКЛ)</div>`;
+    html += `<div class="ios-layer-group ${a}">
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Размер (scale)</div>
+          <div id="v-pp-icon-s" style="margin-right:10px; color:#8E8E93;">${b.scale}</div>
+          <input type="range" class="ios-slider" min="1" max="2.5" step="0.01" value="${b.scale}" oninput="document.getElementById('v-pp-icon-s').innerText=this.value; window.PP_ICON_BOOST.scale=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row"><div class="ios-layer-name" style="font-size:14px;">Сдвиг вниз (offY %)</div>
+          <div id="v-pp-icon-y" style="margin-right:10px; color:#8E8E93;">${b.offY}</div>
+          <input type="range" class="ios-slider" min="-20" max="40" step="0.5" value="${b.offY}" oninput="document.getElementById('v-pp-icon-y').innerText=this.value; window.PP_ICON_BOOST.offY=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
+          <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;" onclick="window.copyProPassIconBoost()">📋 Скопировать координаты</button>
+        </div>
+      </div>`;
+  }
   html += `<div class="ios-layer-group ${a}">`;
   html += ppRow('luch','Лучи', window.layerState.luchVisible!==false, window.layerState.luchOpacity!==undefined?window.layerState.luchOpacity:1, false);
   html += ppRow('stars','Звёзды', window.layerState.starsVisible!==false, window.layerState.starsOpacity!==undefined?window.layerState.starsOpacity:1, false);
@@ -13422,6 +13460,19 @@ function renderProPassLayerPanel(isInitialLoad){
   layerPanel.innerHTML = html;
   layerPanel.style.display = 'flex';
 }
+
+window.copyProPassIconBoost = function(){
+  let b = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
+  let code = `window.PP_ICON_BOOST = { scale: ${b.scale}, offY: ${b.offY} };`;
+  let done = () => {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert)
+      window.Telegram.WebApp.showAlert('✅ Код скопирован! Вставь его рядом с PROPASS_ICON_CIRCLES.');
+    else alert('✅ Код скопирован!');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(code).then(done).catch(()=>prompt('Скопируй вручную:', code));
+  else prompt('Скопируй вручную:', code);
+};
 
 window.openProPassEditor = function(){
   if (window.triggerHaptic) window.triggerHaptic();
@@ -13443,7 +13494,7 @@ window.openProPassEditor = function(){
     window.layerState.textPosition = 'top';
     if (window.layerState.textFont === undefined) window.layerState.textFont = 'Font16103';
     if (window.layerState.textStyleIndex === undefined) window.layerState.textStyleIndex = 0;
-    if (window.layerState.mainTextOffsetY === undefined) window.layerState.mainTextOffsetY = -16;
+    if (window.layerState.mainTextOffsetY === undefined) window.layerState.mainTextOffsetY = -19;
     if (window.layerState.mainTextScale === undefined) window.layerState.mainTextScale = 0.7;
   }
   setTimeout(async ()=>{
