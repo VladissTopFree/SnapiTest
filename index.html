@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(4)";
+  const APP_VERSION = "v2.4.4(5)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2604,10 +2604,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
   left: 50%;
   width: 16px;
   height: 16px;
-  background: color-mix(in srgb, var(--tg-theme-bg-color, #ffffff) 80%, transparent);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  border-radius: 0 0 5px 0;
+  background: var(--tg-theme-bg-color, #ffffff);
+  border-radius: 4px 0 5px 0;
   transform: translateX(-50%) translateY(-65%) rotate(45deg);
   z-index: -1;
 }
@@ -3039,6 +3037,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp1_1.jpg", "demo_png/demo_png_dopBP_bp1_2.jpg", "demo_png/demo_png_dopBP_bp1_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_dopBP_bp1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name" style="font-size: 16px;">Brawl Pass</div>
@@ -3053,6 +3052,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp2_1.jpg", "demo_png/demo_png_dopBP_bp2_2.jpg", "demo_png/demo_png_dopBP_bp2_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_dopBP_bp2_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name" style="font-size: 16px;">Brawl Pass (скидка)</div>
@@ -3067,6 +3067,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp3_1.jpg", "demo_png/demo_png_dopBP_bp3_2.jpg", "demo_png/demo_png_dopBP_bp3_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_dopBP_bp3_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name" style="font-size: 16px;">Brawl Pass Plus</div>
@@ -3081,6 +3082,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_dopBP_bp4_1.jpg", "demo_png/demo_png_dopBP_bp4_2.jpg", "demo_png/demo_png_dopBP_bp4_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_dopBP_bp4_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name" style="font-size: 16px;">Brawl Pass + (улучшение)</div>
@@ -11872,6 +11874,7 @@ window.openBPDopEditor = function() {
 
 window.openBPStyle3Editor = function() {
     window.triggerHaptic();
+    window.showGenLoader();
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
@@ -11916,6 +11919,7 @@ window.openBPStyle3Editor = function() {
 
 window.openBPStyle4Editor = function() {
     window.triggerHaptic();
+    window.showGenLoader();
     document.getElementById('ios-dashboard').style.display = 'none';
     document.getElementById('result-box').style.display = 'block';
     window.scrollTo(0,0);
