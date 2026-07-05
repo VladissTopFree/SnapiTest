@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(12)";
+  const APP_VERSION = "v2.4.4(13)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2906,6 +2906,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
         <div class="cat-card" id="propass-main-card" onclick="selectCategory('propass')">
             <div class="cat-img-wrapper" style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
                 <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" style="object-fit: cover; width: 100%; height: 100%;" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+                <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info">
                 <div class="cat-name">Создание Pro Pass</div>
@@ -3051,6 +3052,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-radio" id="propass-radio-1"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
                 <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" style="object-fit: cover; width: 100%; height: 100%;" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+                <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name">Стиль #1</div>
@@ -3060,7 +3062,9 @@ body:not(.os-non-apple) .ios-icon-box > * {
 
         <div class="cat-card" onclick="selectProPassStyle(2)">
             <div class="cat-radio" id="propass-radio-2"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none;"></div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none; position: relative;">
+                <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
+            </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name">Стиль #2</div>
                 <div class="cat-desc">Скоро.</div>
@@ -13205,7 +13209,7 @@ const PROPASS_STYLE1_LAYERS = [
 const PROPASS_ICON_CIRCLES = ['circle_mr7uqut7','circle_mr7v20n6','circle_mr7v2g6d','circle_mr7v2j8m','circle_mr7v2zxf'];
 const PROPASS_GREEN_CIRCLES = ['circle_mr7v3sw8','circle_mr7v49d6','circle_mr7v4bez'];
 window.PP_ICON_BOOST = { scale: 1.21, offY: 10.5 };  
-window.PP_BG_BLUR_ALPHA = 0.21; 
+window.PP_BG_BLUR_ALPHA = 0.36; 
 window.PP_BG_BLUR_PX = 26; 
 
 window.selectProPassStyle = function(styleId){
