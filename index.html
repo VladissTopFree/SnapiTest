@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(14)";
+  const APP_VERSION = "v2.4.4(15)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -13380,33 +13380,50 @@ function drawProPassContent(ctx, Wc, Hc){
   let isColorBg = window.layerState.isGeneratedBg && !!window.layerState.bgColorType;
   let isFankitOrReady = !!rawBgImage && !isColorBg;
 
-  if (isFankitOrReady){
+if (isFankitOrReady){
+    let blurPx = window.PP_BG_BLUR_PX !== undefined ? window.PP_BG_BLUR_PX : 26;
+    let blurA  = window.PP_BG_BLUR_ALPHA !== undefined ? window.PP_BG_BLUR_ALPHA : 0.31;
+
     ctx.fillStyle = '#a100fa';
     ctx.fillRect(0, 0, Wc, Hc);
 
-    let blurPx = window.PP_BG_BLUR_PX !== undefined ? window.PP_BG_BLUR_PX : 12;
-    let blurA  = window.PP_BG_BLUR_ALPHA !== undefined ? window.PP_BG_BLUR_ALPHA : 0.3;
-
-    let down = Math.max(0.02, Math.min(0.5, 8 / blurPx)); // ~0.06..0.5
-    let smallW = Math.max(2, Math.round(Wc * down));
-    let smallH = Math.max(2, Math.round(Hc * down));
-
-    if (!window._ppBlurSmall) window._ppBlurSmall = document.createElement('canvas');
-    let sc = window._ppBlurSmall, scx = sc.getContext('2d');
-    if (sc.width !== smallW || sc.height !== smallH){ sc.width = smallW; sc.height = smallH; }
-    scx.clearRect(0,0,smallW,smallH);
-    scx.imageSmoothingEnabled = true;
-    scx.imageSmoothingQuality = 'high';
-    let ir = rawBgImage.width / rawBgImage.height, cr = smallW / smallH, dw, dh, dx, dy;
-    if (ir > cr){ dh = smallH; dw = smallH * ir; dx = (smallW - dw)/2; dy = 0; }
-    else { dw = smallW; dh = smallW / ir; dx = 0; dy = (smallH - dh)/2; }
-    scx.drawImage(rawBgImage, dx, dy, dw, dh);
+    let ir = rawBgImage.width / rawBgImage.height, cr = Wc / Hc, dw, dh, dx, dy;
+    if (ir > cr){ dh = Hc; dw = Hc * ir; dx = (Wc - dw) / 2; dy = 0; }
+    else { dw = Wc; dh = Wc / ir; dx = 0; dy = (Hc - dh) / 2; }
 
     ctx.save();
-    ctx.globalAlpha = blurA;
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(sc, 0, 0, smallW, smallH, 0, 0, Wc, Hc);
+    ctx.beginPath();
+    ctx.rect(0, 0, Wc, Hc);
+    ctx.clip();
+
+    let supportsFilter = (typeof ctx.filter !== 'undefined');
+    if (supportsFilter){
+      let over = blurPx * 3;
+      ctx.filter = `blur(${blurPx}px)`;
+      ctx.drawImage(rawBgImage, dx - over, dy - over, dw + over * 2, dh + over * 2);
+      ctx.filter = 'none';
+    } else {
+      let down = 0.05;
+      let smallW = Math.max(2, Math.round(Wc * down));
+      let smallH = Math.max(2, Math.round(Hc * down));
+      if (!window._ppBlurSmall) window._ppBlurSmall = document.createElement('canvas');
+      let sc = window._ppBlurSmall, scx = sc.getContext('2d');
+      if (sc.width !== smallW || sc.height !== smallH){ sc.width = smallW; sc.height = smallH; }
+      scx.clearRect(0, 0, smallW, smallH);
+      scx.imageSmoothingEnabled = true;
+      scx.imageSmoothingQuality = 'high';
+      let sir = rawBgImage.width / rawBgImage.height, scr = smallW / smallH, sdw, sdh, sdx, sdy;
+      if (sir > scr){ sdh = smallH; sdw = smallH * sir; sdx = (smallW - sdw) / 2; sdy = 0; }
+      else { sdw = smallW; sdh = smallW / sir; sdx = 0; sdy = (smallH - sdh) / 2; }
+      scx.drawImage(rawBgImage, sdx, sdy, sdw, sdh);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(sc, 0, 0, smallW, smallH, 0, 0, Wc, Hc);
+    }
+
+    ctx.globalAlpha = 1 - blurA;
+    ctx.fillStyle = '#a100fa';
+    ctx.fillRect(0, 0, Wc, Hc);
     ctx.restore();
   } else if (isColorBg && rawBgImage){
     ctx.drawImage(rawBgImage, 0, 0, Wc, Hc);
