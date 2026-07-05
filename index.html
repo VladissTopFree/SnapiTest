@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(5)";
+  const APP_VERSION = "v2.4.4(6)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2892,7 +2892,22 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-info">
                 <div class="cat-name">Создание акции</div>
                 <div class="cat-desc">На основе Ваших скриншотов, фона, деталей, генерируется готовая работа с акциями из игры.</div>
-                <div id="cat-badge-wrap-action" class="cat-badge-wrap">
+                    <div id="cat-badge-wrap-action" class="cat-badge-wrap">
+                    <div class="cat-badge-inner">
+                        <div class="cat-badge">выбрано</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cat-card" id="propass-main-card" onclick="selectCategory('propass')">
+            <div class="cat-img-wrapper" style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
+                <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" style="object-fit: cover; width: 100%; height: 100%;" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+            </div>
+            <div class="cat-info">
+                <div class="cat-name">Создание Pro Pass</div>
+                <div class="cat-desc">На основе Ваших пожеланий, фона, ника, деталей, генерируется готовая работа Pro Pass.</div>
+                <div id="cat-badge-wrap-propass" class="cat-badge-wrap">
                     <div class="cat-badge-inner">
                         <div class="cat-badge">выбрано</div>
                     </div>
@@ -2900,7 +2915,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             </div>
         </div>
         
-        <div class="cat-card" id="bp-main-card" onclick="selectCategory('bp')" style="border-bottom-color: transparent; transition: border-bottom-color 0.3s ease;">            
+        <div class="cat-card" id="bp-main-card" onclick="selectCategory('bp')" style="border-bottom-color: transparent; transition: border-bottom-color 0.3s ease;">          
             <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_bp2_1.jpg", "demo_png/demo_png_dop_bp4_3.jpg", "demo_png/demo_png_osnBP4_2.jpg"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_bp2_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
@@ -3020,6 +3035,47 @@ body:not(.os-non-apple) .ios-icon-box > * {
 
     <div class="bottom-fade-container">
         <button id="bp-style-btn-next" class="ios-action-btn">Далее</button>
+    </div>
+  </div>
+</div>
+
+<div id="propass-style-overlay" style="display: none; width: 100%; height: var(--tg-viewport-stable-height, 100vh); overflow: hidden; background: var(--tg-theme-secondary-bg-color, #F2F2F7); flex-direction: column; box-sizing: border-box; position: relative;">
+  <div class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); position: relative; height: 100%; display: flex; flex-direction: column;">
+    <div class="cat-title-main">Выберите стиль Pro Pass</div>
+    <div style="padding: 0 0 180px 0; flex-grow: 1; overflow-y: auto;">
+
+        <div class="cat-card" onclick="selectProPassStyle(1)">
+            <div class="cat-radio" id="propass-radio-1"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
+                <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" style="object-fit: cover; width: 100%; height: 100%;" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+            </div>
+            <div class="cat-info" style="justify-content: center; min-height: 56px;">
+                <div class="cat-name">Стиль #1</div>
+                <div class="cat-desc">Классическая работа Pro Pass.</div>
+            </div>
+        </div>
+
+        <div class="cat-card" onclick="selectProPassStyle(2)">
+            <div class="cat-radio" id="propass-radio-2"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none;"></div>
+            <div class="cat-info" style="justify-content: center; min-height: 56px;">
+                <div class="cat-name">Стиль #2</div>
+                <div class="cat-desc">Скоро.</div>
+            </div>
+        </div>
+
+        <div class="cat-card" onclick="selectProPassStyle(3)" style="border-bottom: none;">
+            <div class="cat-radio" id="propass-radio-3"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none;"></div>
+            <div class="cat-info" style="justify-content: center; min-height: 56px;">
+                <div class="cat-name">Стиль #3</div>
+                <div class="cat-desc">Скоро.</div>
+            </div>
+        </div>
+
+    </div>
+    <div class="bottom-fade-container">
+        <button id="propass-style-btn-next" class="ios-action-btn">Далее</button>
     </div>
   </div>
 </div>
@@ -3506,6 +3562,20 @@ window.checkBPStyle4Ready = function() {
     <button id="wizard-next-btn3-bp-dop" class="ios-action-btn ios-btn-next">Далее</button>
 </div>
 
+<div id="wizard-step3-propass" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
+    <div class="ios-wizard-title">Создание Pro Pass</div>
+    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цена. Укажите цену для Pro Pass.</div>
+    <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Pro Pass</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="ws-propass-p0" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); window.checkProPassReady();">
+            </div>
+        </div>
+    </div>
+    <button id="wizard-next-btn3-propass" class="ios-action-btn ios-btn-next">Далее</button>
+</div>
+
 </div> <div id="result-box">
   <div id="result-layout">
     <div id="cards-container"></div>
@@ -3959,7 +4029,7 @@ function handleBackButtonClick() {
             'wizard-overlay', 'result-box', 'download-overlay', 
             'saved-projects-overlay', 'settings-overlay', 
             'subscription-overlay', 'bp-overlay', 
-            'category-overlay', 'bp-style-overlay', 'bp-variant-overlay'
+            'category-overlay', 'bp-style-overlay', 'bp-variant-overlay', 'propass-style-overlay'
         ];
         
         overlays.forEach(id => {
@@ -4196,6 +4266,13 @@ window.restoreProject = async function(rec) {
     document.getElementById('saved-projects-overlay').style.display = 'none';
 
     let si = st.bpStyleIndex;
+
+    if (st.isProPassMode) {
+        window._spRestoring = true;
+        window.openProPassEditor();
+        setTimeout(() => { window._spRestoring = false; }, 600);
+        return;
+    }
 
     if (st.isBrawlPassMode && (si === 2 || si === 3 || si === 4 || si === 'dop')) {
         window._spRestoring = true;
@@ -4451,6 +4528,10 @@ window.closeDownloadOverlay = () => {
 };
 
 function spProjectMeta(st, seq) {
+    if (st && st.isProPassMode) {
+        seq.propass = (seq.propass || 0) + 1;
+        return { title: 'Pro Pass', badge: '#' + seq.propass };
+    }
     if (!st || !st.isBrawlPassMode) {
         seq.akcia = (seq.akcia || 0) + 1;
         return { title: 'Акция', badge: '#' + seq.akcia };
@@ -4572,6 +4653,7 @@ window.selectBPSub = function(subType) {
 window.selectCategory = function(cat) {
     const bpSubWrap = document.getElementById('bp-sub-options-wrap');
     const bpMainCard = document.getElementById('bp-main-card');
+    const wrapPropass = document.getElementById('cat-badge-wrap-propass');
     
     if (selectedCategory === cat && cat === 'bp') {
         if (bpSubWrap) {
@@ -4594,14 +4676,24 @@ window.selectCategory = function(cat) {
     
     if (cat === 'action') {
         if (wrapAction) wrapAction.classList.add('show');
+        if (wrapPropass) wrapPropass.classList.remove('show');
         if (bpSubWrap) {
             bpSubWrap.classList.remove('show');
             if (bpMainCard) bpMainCard.style.borderBottomColor = 'transparent';
         }
         
         nextBtn.classList.add('show'); 
+    } else if (cat === 'propass') {
+        if (wrapAction) wrapAction.classList.remove('show');
+        if (wrapPropass) wrapPropass.classList.add('show');
+        if (bpSubWrap) {
+            bpSubWrap.classList.remove('show');
+            if (bpMainCard) bpMainCard.style.borderBottomColor = 'transparent';
+        }
+        nextBtn.classList.add('show');
     } else if (cat === 'bp') {
         if (wrapAction) wrapAction.classList.remove('show');
+        if (wrapPropass) wrapPropass.classList.remove('show');
         
         if (bpSubWrap) {
             bpSubWrap.classList.add('show'); 
@@ -4671,6 +4763,8 @@ document.getElementById('ios-btn-create').addEventListener('click', async functi
 
     let wrapAction = document.getElementById('cat-badge-wrap-action');
     if (wrapAction) wrapAction.classList.remove('show');
+    let wrapPropass = document.getElementById('cat-badge-wrap-propass');
+    if (wrapPropass) wrapPropass.classList.remove('show');
 
     let bpSubWrap = document.getElementById('bp-sub-options-wrap');
     if (bpSubWrap) bpSubWrap.classList.remove('show');
@@ -4690,6 +4784,16 @@ document.getElementById('cat-btn-next').addEventListener('click', function() {
     
     if (!selectedCategory) {
         alert("Пожалуйста, выберите раздел.");
+        return;
+    }
+
+    if (selectedCategory === 'propass') {
+        document.getElementById('category-overlay').style.display = 'none';
+        window._ppStyle = null;
+        for (let i = 1; i <= 3; i++) { let r = document.getElementById(`propass-radio-${i}`); if (r) r.classList.remove('checked'); }
+        document.getElementById('propass-style-btn-next').classList.remove('show');
+        document.getElementById('propass-style-overlay').style.display = 'flex';
+        window.scrollTo(0,0);
         return;
     }
 
@@ -5810,6 +5914,7 @@ function renderLayerPanel(isInitialLoad = false) {
             if (window.hideGenLoader) window.hideGenLoader();
         }));
     }
+    if (window.layerState.isProPassMode) { renderProPassLayerPanel(isInitialLoad); return; }
     layerPanel.innerHTML = '';
     let html = '';
     let animCls = isInitialLoad ? 'fade-in-anim' : '';
@@ -8087,7 +8192,7 @@ function setupPersistentCanvas() {
     let addScreensLink = document.createElement('div');
     addScreensLink.className = 'ios-add-screens-link';
         
-    if (window.layerState.isBrawlPassMode) {
+    if (window.layerState.isBrawlPassMode || window.layerState.isProPassMode) {
         addScreensLink.innerHTML = `Новый фон с Fankit <svg viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" fill="none" stroke="var(--tg-theme-accent-text-color)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         addScreensLink.onclick = () => {
             window.fankitContext = 'editor';
@@ -8138,7 +8243,7 @@ function setupPersistentCanvas() {
     
     let scale = getHDScale();
         
-    if (window.layerState.isBrawlPassMode) {
+    if (window.layerState.isBrawlPassMode || window.layerState.isProPassMode) {
         const outW = window.layerState.outputW || 1280;
         const outH = window.layerState.outputH || 720;
         persistentCanvas.width = outW;
@@ -8571,6 +8676,11 @@ function drawScene() {
 
     if (rawBgImage) {
         persistentCtx.drawImage(rawBgImage, 0, 0, w, h);
+    }
+
+    if (window.layerState.isProPassMode) {
+        drawProPassContent(persistentCtx, w, h);
+        return;
     }
 
     if (window.layerState.isBrawlPassMode) {
@@ -10438,9 +10548,11 @@ window.resetWizardState = () => {
     let bpNextBtn3Style2 = document.getElementById('wizard-next-btn3-bp-style2');
     if (bpNextBtn3Style2) bpNextBtn3Style2.classList.remove('show');
 
-        window.layerState.offers = [];
+      window.layerState.offers = [];
       window.layerState.customTexts = []; 
       window.layerState.isBrawlPassMode = false;
+      window.layerState.isProPassMode = false;
+      window._ppStyle = null;
       window.layerState.bpStyleIndex = null;
 
         selectedBPStyle = null;
@@ -10539,7 +10651,9 @@ if (fankitGrid && fankitGrid.children.length === 0) {
                 window.layerState.isReadyBg = false;
                 isCurrentProjectSaved = false; 
                 
-                if (window.layerState.isBrawlPassMode) {
+                if (window.layerState.isProPassMode) {
+                    if (typeof startAnimation === 'function') startAnimation();
+                } else if (window.layerState.isBrawlPassMode) {
                 if (window.layerState.isBrawlPassMode) {
                     if (window.layerState.bpStyleIndex === 2 || window.layerState.bpStyleIndex === 3 || window.layerState.bpStyleIndex === 'dop' || window.layerState.bpStyleIndex === 4) {
                         if (typeof startAnimation === 'function') startAnimation();
@@ -10925,6 +11039,13 @@ wizardNextBtn2.onclick = async () => {
         return;
     }
 
+  if (wizardMode === 'propass') {
+        window.layerState.textValue = currentNick || "SNAPI";
+        let targetStep3pp = document.getElementById('wizard-step3-propass');
+        transitionStep(step2, targetStep3pp, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
+        return;
+    }
+
     let targetStep3 = (wizardMode === 'bp') ? document.getElementById('wizard-step3-bp') : document.getElementById('wizard-step3');
     transitionStep(step2, targetStep3, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
   };
@@ -11119,6 +11240,43 @@ document.getElementById('wizard-next-btn3-bp-dop').onclick = async () => {
     let targetStep4 = document.getElementById('wizard-step4-bp');
     transitionStep(document.getElementById('wizard-step3-bp-dop'), targetStep4, document.getElementById('prog-step3'), document.getElementById('prog-step4'), document.getElementById('prog-line3'));
 };
+
+document.getElementById('wizard-next-btn3-propass').onclick = async () => {
+    window.triggerHaptic();
+    let btn = document.getElementById('wizard-next-btn3-propass');
+    let orig = btn.innerHTML;
+    btn.style.pointerEvents = 'none';
+    btn.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"></circle></svg>`;
+    setTimeout(async () => {
+        await document.fonts.ready;
+        window.layerState.isProPassMode = true;
+        window.layerState.isBrawlPassMode = false;
+        let nick = wizardNickInput.value.trim().substring(0,16) || "Snapi";
+        window.layerState.textValue = nick;
+        window.layerState.bpPriceLeft = document.getElementById('ws-propass-p0').value || "9999";
+        window.layerState.bgColorType = selectedColor;
+
+        if (uploadMode === 'ready_bg') { window.layerState.isReadyBg = true; window.layerState.isGeneratedBg = false; rawBgImage = uploadedReadyBaseImg; }
+        else if (selectedColor) { window.layerState.isReadyBg = false; window.layerState.isGeneratedBg = true; rawBgImage = await createGradientBg(selectedColor); }
+        else if (uploadedBaseImg.src) { window.layerState.isReadyBg = false; window.layerState.isGeneratedBg = false; rawBgImage = uploadedBaseImg; }
+        else { rawBgImage = null; }
+
+        window.layerState.luchVisible = true;
+        window.layerState.starsVisible = true;
+        window.layerState.pointsVisible = true;
+        window.layerState.watermarksVisible = true;
+        window.layerState.luchOpacity = 1;
+        window.layerState.starsOpacity = 1;
+        window.layerState.pointsOpacity = 1;
+        window.layerState.watermarksOpacity = 0.36;
+        window.layerState.watermarksFont = window.layerState.watermarksFont || 'Font16103';
+
+        btn.style.pointerEvents = 'auto';
+        btn.innerHTML = orig;
+        document.getElementById('wizard-overlay').style.display = 'none';
+        window.openProPassEditor();
+    }, 50);
+  };
 
 document.getElementById('wizard-next-btn4-bp').onclick = async () => {
     window.triggerHaptic();
@@ -12967,6 +13125,221 @@ window.addEventListener('load', () => {
         }
     }, true);
 })();
+
+window._ppStyle = null;
+
+const PROPASS_IMG_SRC = {
+  brawler: 'BP/brawler_pro_pass.png',
+  rays:    'BP/luch_pro_pass.png',
+  stars:   'BP/stars_pro_pass.png',
+  points:  'BP/points_pro_pass.png',
+  icon:    'BP/pro_pass_icon_gl.png',
+  price:   'BP/price_pro_pass.png'
+};
+
+const PROPASS_STYLE1_LAYERS = [
+  {"id":"brawler","type":"image","x":51.7,"y":88.3,"rot":-7,"opacity":12,"blend":"normal","size":139},
+  {"id":"rays","type":"image","x":50,"y":50,"rot":0,"opacity":100,"blend":"overlay","size":100},
+  {"id":"stars","type":"image","x":50,"y":50,"rot":0,"opacity":100,"blend":"normal","size":100},
+  {"id":"points","type":"image","x":50,"y":50,"rot":0,"opacity":100,"blend":"normal","size":100},
+  {"id":"circle_mr7uqut7","type":"circle","x":50.4,"y":45.9,"rot":0,"opacity":36,"blend":"normal","color":"#5c0700","size":56,"blur":67},
+  {"id":"icon","type":"image","x":50.5,"y":48.5,"rot":0,"opacity":100,"blend":"normal","size":70.5},
+  {"id":"price","type":"image","x":48.5,"y":86.6,"rot":0,"opacity":100,"blend":"normal","size":35},
+  {"id":"price2888","type":"text","x":49,"y":85,"rot":0,"opacity":100,"blend":"normal","text":"2888 ₽","font":"lilita","color":"#000000","size":104,"stroke":"#a4de35","strokeWidth":12,"shadowColor":"#a4de35","shadowX":0,"shadowY":10,"shadowBlur":0},
+  {"id":"nick_mr7u8r1d","type":"text","x":97.1,"y":11.9,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":21},
+  {"id":"nick_mr7u9fok","type":"text","x":82.3,"y":20.5,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":9},
+  {"id":"nick_mr7u9str","type":"text","x":88.7,"y":40.8,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":14},
+  {"id":"nick_mr7ua7wo","type":"text","x":79,"y":56.5,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":8},
+  {"id":"nick_mr7uakk9","type":"text","x":98.6,"y":74.8,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":28},
+  {"id":"nick_mr7uatsb","type":"text","x":74.6,"y":83.8,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":15},
+  {"id":"nick_mr7ub6v5","type":"text","x":83.9,"y":94.8,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":8},
+  {"id":"nick_mr7ubld9","type":"text","x":27.3,"y":11.2,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":13},
+  {"id":"nick_mr7ubwym","type":"text","x":20.2,"y":25.8,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":9},
+  {"id":"nick_mr7uc5du","type":"text","x":-4,"y":18.6,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":39},
+  {"id":"nick_mr7uco0e","type":"text","x":10.2,"y":47.9,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":21},
+  {"id":"nick_mr7udezh","type":"text","x":15.4,"y":75.6,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":13},
+  {"id":"nick_mr7udo5r","type":"text","x":3.9,"y":84.6,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":8},
+  {"id":"nick_mr7ue06x","type":"text","x":24.4,"y":94.1,"rot":0,"opacity":36,"blend":"overlay","text":"ARTZA DONATE","font":"artza","color":"#000000","size":8},
+  {"id":"circle_mr7v20n6","type":"circle","x":63.2,"y":42,"rot":0,"opacity":36,"blend":"screen","color":"#ffd36b","size":15.5,"blur":75},
+  {"id":"circle_mr7v2g6d","type":"circle","x":37.7,"y":45.6,"rot":0,"opacity":36,"blend":"screen","color":"#ffd36b","size":15.5,"blur":75},
+  {"id":"circle_mr7v2j8m","type":"circle","x":56.6,"y":34.1,"rot":0,"opacity":36,"blend":"screen","color":"#95f325","size":10.5,"blur":75},
+  {"id":"circle_mr7v2zxf","type":"circle","x":49,"y":61.5,"rot":0,"opacity":36,"blend":"screen","color":"#95f325","size":10.5,"blur":75},
+  {"id":"circle_mr7v3sw8","type":"circle","x":36.3,"y":81.3,"rot":0,"opacity":70,"blend":"screen","color":"#47ba25","size":11.5,"blur":45},
+  {"id":"circle_mr7v49d6","type":"circle","x":50.4,"y":90.3,"rot":0,"opacity":70,"blend":"screen","color":"#47ba25","size":11.5,"blur":45},
+  {"id":"circle_mr7v4bez","type":"circle","x":61.8,"y":81.7,"rot":0,"opacity":70,"blend":"screen","color":"#47ba25","size":11.5,"blur":45}
+];
+
+window.selectProPassStyle = function(styleId){
+  if (styleId !== 1){
+    let m='Этот стиль пока в разработке.';
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert) window.Telegram.WebApp.showAlert(m); else alert(m);
+    return;
+  }
+  if (window._ppStyle === styleId) return;
+  window._ppStyle = styleId;
+  if (window.triggerHaptic) window.triggerHaptic();
+  for (let i=1;i<=3;i++){ let el=document.getElementById('propass-radio-'+i); if(el) el.classList.remove('checked'); }
+  document.getElementById('propass-radio-'+styleId).classList.add('checked');
+  document.getElementById('propass-style-btn-next').classList.add('show');
+};
+
+document.getElementById('propass-style-btn-next').addEventListener('click', function(){
+  if (window.triggerHaptic) window.triggerHaptic();
+  if (!window._ppStyle) return;
+  document.getElementById('propass-style-overlay').style.display='none';
+  window.layerState.propassStyleIndex = window._ppStyle;
+  wizardMode = 'propass';
+  document.getElementById('wizard-title-step1').innerText='Создание Pro Pass';
+  document.getElementById('wizard-title-step2').innerText='Создание Pro Pass';
+  document.getElementById('result-box').style.display='none';
+  document.getElementById('prog-line3').style.display='none';
+  document.getElementById('prog-step4').style.display='none';
+  document.getElementById('prog-line1').style.display='block';
+  document.getElementById('prog-step2').style.display='flex';
+  document.getElementById('prog-line2').style.display='block';
+  document.getElementById('prog-step3').style.display='flex';
+  document.querySelectorAll('.wizard-step').forEach(s=>s.classList.remove('active','fade-out'));
+  document.getElementById('wizard-step1').classList.add('active');
+  document.getElementById('prog-step1').className='step active';
+  document.getElementById('prog-line1').className='line';
+  document.getElementById('prog-step2').className='step small';
+  document.getElementById('prog-line2').className='line';
+  document.getElementById('prog-step3').className='step small';
+  document.getElementById('wizard-next-btn1').classList.remove('show');
+  document.getElementById('wizard-overlay').style.display='flex';
+  window.scrollTo(0,0);
+});
+
+window.checkProPassReady = function(){
+  let el=document.getElementById('ws-propass-p0'), btn=document.getElementById('wizard-next-btn3-propass');
+  if(!el||!btn) return;
+  if (el.value.trim()!=='') btn.classList.add('show'); else btn.classList.remove('show');
+};
+
+window.updateProPassPrice = function(el){
+  let v=el.value.replace(/[^0-9]/g,''); if(v && parseInt(v)>99999) v='99999';
+  el.value=v; window.layerState.bpPriceLeft=v; window.requestRender();
+};
+
+function ppOpacity(L){
+  if (L.id==='rays')   return window.layerState.luchOpacity   !== undefined ? window.layerState.luchOpacity   : L.opacity/100;
+  if (L.id==='stars')  return window.layerState.starsOpacity  !== undefined ? window.layerState.starsOpacity  : L.opacity/100;
+  if (L.id==='points') return window.layerState.pointsOpacity !== undefined ? window.layerState.pointsOpacity : L.opacity/100;
+  if (L.type==='text' && String(L.id).indexOf('nick_')===0)
+                       return window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : L.opacity/100;
+  return L.opacity/100;
+}
+function ppText(L){
+  if (L.id==='price2888') return (window.layerState.bpPriceLeft || '2888') + ' ₽';
+  if (String(L.id).indexOf('nick_')===0) return window.layerState.textValue || 'SNAPI';
+  return L.text || '';
+}
+function drawProPassLayer(ctx, L, W, H){
+  const s=H/720, cx=(L.x/100)*W, cy=(L.y/100)*H;
+  ctx.save();
+  ctx.globalAlpha = ppOpacity(L);
+  ctx.globalCompositeOperation = (L.blend && L.blend!=='normal') ? L.blend : 'source-over';
+  ctx.translate(cx, cy);
+  if (L.rot) ctx.rotate(L.rot*Math.PI/180);
+  if (L.type==='image'){
+    let img=globalAssets['pp_'+L.id];
+    if (img){ let w=(L.size/100)*W, h=w*(img.height/img.width); ctx.drawImage(img,-w/2,-h/2,w,h); }
+  } else if (L.type==='circle'){
+    let r=((L.size/100)*W)/2;
+    if (L.blur) ctx.filter=`blur(${L.blur*s}px)`;
+    ctx.fillStyle=L.color||'#fff'; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+  } else if (L.type==='text'){
+    ctx.transform(1,0,Math.tan(-8*Math.PI/180),1,0,0);
+    let text=ppText(L);
+    let fam=(L.font==='lilita')?'LilitaOneRus':(window.layerState.watermarksFont||'Font16103');
+    ctx.font=`${L.size*s}px '${fam}', sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round';
+    if (L.shadowColor){
+      ctx.save(); ctx.fillStyle=L.shadowColor;
+      if (L.strokeWidth){ ctx.strokeStyle=L.shadowColor; ctx.lineWidth=L.strokeWidth*s; ctx.strokeText(text,(L.shadowX||0)*s,(L.shadowY||0)*s); }
+      ctx.fillText(text,(L.shadowX||0)*s,(L.shadowY||0)*s); ctx.restore();
+    }
+    if (L.stroke && L.strokeWidth){ ctx.strokeStyle=L.stroke; ctx.lineWidth=L.strokeWidth*s; ctx.strokeText(text,0,0); }
+    ctx.fillStyle=L.color||'#fff'; ctx.fillText(text,0,0);
+  }
+  ctx.restore();
+}
+function drawProPassContent(ctx, W, H){
+  if (!rawBgImage){
+    ctx.save();
+    let ccx=0.5*W, ccy=0.42*H, rx=1.2*W, k=(0.9*H)/rx;
+    ctx.translate(ccx,ccy); ctx.scale(1,k);
+    let g=ctx.createRadialGradient(0,0,0,0,0,rx);
+    g.addColorStop(0,'#c65cff'); g.addColorStop(0.34,'#a136ef'); g.addColorStop(0.62,'#7d1fce'); g.addColorStop(1,'#5a13a6');
+    ctx.fillStyle=g; ctx.fillRect(-4000,-8000,8000,16000); ctx.restore();
+  }
+  PROPASS_STYLE1_LAYERS.forEach(L=>{
+    if (L.id==='rays'   && window.layerState.luchVisible===false) return;
+    if (L.id==='stars'  && window.layerState.starsVisible===false) return;
+    if (L.id==='points' && window.layerState.pointsVisible===false) return;
+    if (L.type==='text' && String(L.id).indexOf('nick_')===0 && window.layerState.watermarksVisible===false) return;
+    drawProPassLayer(ctx, L, W, H);
+  });
+}
+
+function ppRow(key,name,vis,op,isLast){
+  return `<div class="ios-layer-row" ${isLast?'style="border-bottom:none;"':''}>
+      <div class="ios-icon-btn ios-eye-icon ${vis?'':'hidden'}" onclick="toggleCosmeticLayer('${key}')">${getEyeSVG(vis)}</div>
+      <div class="ios-layer-name">${name}</div>
+      <div class="ios-layer-action-text">прозрачность</div>
+      <input type="range" class="ios-slider" min="0" max="1" step="0.05" value="${op}" oninput="changeOpacity('${key}', this.value)">
+    </div>`;
+}
+function renderProPassLayerPanel(isInitialLoad){
+  let a=isInitialLoad?'fade-in-anim':'', html='';
+  html += `<div class="ios-section-title ${a}">СЛОИ ДЛЯ РЕДАКТИРОВАНИЯ</div>`;
+  html += `<div class="ios-layer-group ${a}">
+      <div class="ios-layer-row" style="border-bottom:none;">
+        <div class="ios-layer-name">Pro Pass</div>
+        <div class="ios-layer-action-text">значение</div>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft||''}" maxlength="5" oninput="updateProPassPrice(this)" style="width:65px;">
+      </div>
+    </div>`;
+  html += `<div class="ios-layer-group ${a}">`;
+  html += ppRow('luch','Лучи', window.layerState.luchVisible!==false, window.layerState.luchOpacity!==undefined?window.layerState.luchOpacity:1, false);
+  html += ppRow('stars','Звёзды', window.layerState.starsVisible!==false, window.layerState.starsOpacity!==undefined?window.layerState.starsOpacity:1, false);
+  html += ppRow('points','Точки', window.layerState.pointsVisible!==false, window.layerState.pointsOpacity!==undefined?window.layerState.pointsOpacity:1, false);
+  html += ppRow('watermarks','Маленькие ники', window.layerState.watermarksVisible!==false, window.layerState.watermarksOpacity!==undefined?window.layerState.watermarksOpacity:0.36, true);
+  html += `<div class="ios-font-label">Шрифт маленьких ников</div><div class="ios-font-grid">`;
+  FONT_OPTIONS.forEach(f=>{
+    let act=(window.layerState.watermarksFont||'Font16103')===f.family?'active':'';
+    let t=(window.layerState.textValue||'TEXT').substring(0,6);
+    html+=`<div class="ios-font-item wm-font-item ${act}" data-font="${f.family}" style="font-family:'${f.family}',sans-serif;" onclick="setWmFont('${f.family}')">${t}</div>`;
+  });
+  html += `</div></div>`;
+  layerPanel.innerHTML = html;
+  layerPanel.style.display = 'flex';
+}
+
+window.openProPassEditor = function(){
+  if (window.triggerHaptic) window.triggerHaptic();
+  window.showGenLoader();
+  document.getElementById('ios-dashboard').style.display='none';
+  document.getElementById('result-box').style.display='block';
+  window.scrollTo(0,0);
+  if (window.Telegram && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.show();
+  cardsContainer.innerHTML='<div class="skeleton-box skeleton-canvas fade-in-anim"></div>';
+  layerPanel.style.display='flex';
+  layerPanel.innerHTML='<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
+  window.layerState.isProPassMode=true;
+  window.layerState.isBrawlPassMode=false;
+  window.layerState.propassStyleIndex=1;
+  window.layerState.outputW=1280;
+  window.layerState.outputH=720;
+  setTimeout(async ()=>{
+    const load=(src)=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});
+    for (let id in PROPASS_IMG_SRC){ if(!globalAssets['pp_'+id]) globalAssets['pp_'+id]=await load(PROPASS_IMG_SRC[id]); }
+    try{ await document.fonts.load("16px 'LilitaOneRus'"); await document.fonts.load(`16px '${window.layerState.watermarksFont||'Font16103'}'`); await document.fonts.ready; }catch(e){}
+    setupPersistentCanvas();
+    renderLayerPanel(true);
+    startAnimation();
+  },100);
+};
 </script>
 </body>
 </html>
