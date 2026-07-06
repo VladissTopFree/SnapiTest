@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(17)";
+  const APP_VERSION = "v2.4.4(18)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -13209,8 +13209,8 @@ const PROPASS_STYLE1_LAYERS = [
 const PROPASS_ICON_CIRCLES = ['circle_mr7uqut7','circle_mr7v20n6','circle_mr7v2g6d','circle_mr7v2j8m','circle_mr7v2zxf'];
 const PROPASS_GREEN_CIRCLES = ['circle_mr7v3sw8','circle_mr7v49d6','circle_mr7v4bez'];
 window.PP_ICON_BOOST = { scale: 1.21, offY: 10.5 };  
-window.PP_BG_BLUR_ALPHA = 0.41; 
-window.PP_BG_BLUR_PX = 26; 
+window.PP_BG_BLUR_ALPHA = 0.51; 
+window.PP_BG_BLUR_PX = 21; 
 
 window.selectProPassStyle = function(styleId){
   if (styleId !== 1){
@@ -13396,6 +13396,8 @@ window.getProPassBgTint = function(img){
     if (count === 0) return fallback;
     r = r / count; g = g / count; b = b / count;
 
+    window._ppTintLum = 0.299*r + 0.587*g + 0.114*b;
+
     let gray = 0.299*r + 0.587*g + 0.114*b;
     let sat = 1.25;
     r = gray + (r - gray) * sat;
@@ -13497,6 +13499,12 @@ if (isFankitOrReady){
   let priceOff = window.layerState.priceVis_propass === false;
   let boost = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
 
+  let ppNickColor = '#000000';
+  if (isFankitOrReady){
+    window.getProPassBgTint(rawBgImage); 
+    ppNickColor = (window._ppTintLum !== undefined && window._ppTintLum < 140) ? '#ffffff' : '#000000';
+  }
+
   PROPASS_STYLE1_LAYERS.forEach(L=>{
     if (L.id==='brawler' && isFankitOrReady) return;
     if (L.id==='rays'   && window.layerState.luchVisible===false) return;
@@ -13511,7 +13519,11 @@ if (isFankitOrReady){
     if (L.id==='icon'){
       if (window.layerState.watermarksVisible!==false){
         PROPASS_STYLE1_LAYERS.forEach(N=>{
-          if (N.type==='text' && String(N.id).indexOf('nick_')===0) drawProPassLayer(ctx, N, W, H);
+          if (N.type==='text' && String(N.id).indexOf('nick_')===0){
+            let NN = Object.assign({}, N);
+            NN.color = ppNickColor;
+            drawProPassLayer(ctx, NN, W, H);
+          }
         });
       }
     if (window.layerState.textVisible!==false && cachedTextCanvas){
