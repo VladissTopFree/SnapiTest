@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(16)";
+  const APP_VERSION = "v2.4.4(17)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -13374,6 +13374,53 @@ function drawProPassLayer(ctx, L, W, H){
   }
   ctx.restore();
 }
+
+window.getProPassBgTint = function(img){
+  if (!img || !img.src) return '#a100fa';
+  if (window._ppTintSrc === img.src && window._ppTintCache) return window._ppTintCache;
+
+  let fallback = '#a100fa';
+  try {
+    let sw = 40, sh = 40;
+    let c = document.createElement('canvas');
+    c.width = sw; c.height = sh;
+    let cx = c.getContext('2d', { willReadFrequently: true });
+    cx.drawImage(img, 0, 0, sw, sh);
+    let d = cx.getImageData(0, 0, sw, sh).data;
+
+    let r = 0, g = 0, b = 0, count = 0;
+    for (let i = 0; i < d.length; i += 4){
+      if (d[i+3] < 125) continue;
+      r += d[i]; g += d[i+1]; b += d[i+2]; count++;
+    }
+    if (count === 0) return fallback;
+    r = r / count; g = g / count; b = b / count;
+
+    let gray = 0.299*r + 0.587*g + 0.114*b;
+    let sat = 1.25;
+    r = gray + (r - gray) * sat;
+    g = gray + (g - gray) * sat;
+    b = gray + (b - gray) * sat;
+
+    let MAX_LUM = 105; 
+    let lum = 0.299*r + 0.587*g + 0.114*b;
+    if (lum > MAX_LUM){
+      let f = MAX_LUM / lum;
+      r *= f; g *= f; b *= f;
+    }
+
+    let clamp = (n) => Math.max(0, Math.min(255, Math.round(n)));
+    let toHex = (n) => clamp(n).toString(16).padStart(2, '0');
+    let hex = '#' + toHex(r) + toHex(g) + toHex(b);
+
+    window._ppTintSrc = img.src;
+    window._ppTintCache = hex;
+    return hex;
+  } catch(e){
+    return fallback;
+  }
+};
+
 function drawProPassContent(ctx, Wc, Hc){
   const BASE_W = 1280, BASE_H = 720;
 
@@ -13384,7 +13431,9 @@ if (isFankitOrReady){
     let blurPx = window.PP_BG_BLUR_PX !== undefined ? window.PP_BG_BLUR_PX : 26;
     let blurA  = window.PP_BG_BLUR_ALPHA !== undefined ? window.PP_BG_BLUR_ALPHA : 0.31;
 
-    ctx.fillStyle = '#a100fa';
+    let ppTint = window.getProPassBgTint(rawBgImage);
+
+    ctx.fillStyle = ppTint;
     ctx.fillRect(0, 0, Wc, Hc);
 
     let ir = rawBgImage.width / rawBgImage.height, cr = Wc / Hc, dw, dh, dx, dy;
@@ -13422,7 +13471,7 @@ if (isFankitOrReady){
     }
 
     ctx.globalAlpha = 1 - blurA;
-    ctx.fillStyle = '#a100fa';
+    ctx.fillStyle = ppTint;
     ctx.fillRect(0, 0, Wc, Hc);
     ctx.restore();
   } else if (isColorBg && rawBgImage){
