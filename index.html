@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(18)";
+  const APP_VERSION = "v2.4.4(19)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -4363,50 +4363,76 @@ window.closeSettings = () => {
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) window.Telegram.WebApp.BackButton.hide();
 };
 
-window.openBPOverlay = () => {
-    document.getElementById('ios-dashboard').style.display = 'none';
-    document.getElementById('bp-overlay').style.display = 'flex';
-    window.scrollTo(0,0);
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
-        window.Telegram.WebApp.BackButton.show();
-    }
+        window.openBPOverlay = () => {
+            document.getElementById('ios-dashboard').style.display = 'none';
+            document.getElementById('bp-overlay').style.display = 'flex';
+            window.scrollTo(0,0);
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+                window.Telegram.WebApp.BackButton.show();
+            }
 
-    const wmCanvas = document.getElementById('wm-canvas');
-    const wmCtx = wmCanvas.getContext('2d');
-    const textCanvas = document.getElementById('main-text-canvas');
-    const textCtx = textCanvas.getContext('2d');
+            const wmCanvas = document.getElementById('wm-canvas');
+            const wmCtx = wmCanvas.getContext('2d');
+            const textCanvas = document.getElementById('main-text-canvas');
+            const textCtx = textCanvas.getContext('2d');
 
-    const WIDTH = 1200;
-    const HEIGHT = 675;
+            const WIDTH = 1200;
+            const HEIGHT = 675;
 
-    wmCanvas.width = WIDTH; wmCanvas.height = HEIGHT;
-    textCanvas.width = WIDTH; textCanvas.height = HEIGHT;
+            wmCanvas.width = WIDTH; wmCanvas.height = HEIGHT;
+            textCanvas.width = WIDTH; textCanvas.height = HEIGHT;
 
-    function drawBrawlText(ctx, text, x, y, fontSize, styleIndex) {
-        const style = TEXT_STYLES[styleIndex];
-        ctx.save();
-        ctx.font = `${fontSize}px 'Font16103', 'Arial Black', sans-serif`; 
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.lineJoin = "round";
-        ctx.miterLimit = 2;
+            function drawBrawlText(ctx, text, x, y, fontSize, styleIndex) {
+                const style = TEXT_STYLES[styleIndex];
+                ctx.save();
+                ctx.font = `${fontSize}px 'Font16103', 'Arial Black', sans-serif`; 
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.lineJoin = "round";
+                ctx.miterLimit = 2;
 
-        if (style.shadow) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.shadow; ctx.strokeText(text, x, y + fontSize * 0.08); }
-        if (style.outer2) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.outer2; ctx.strokeText(text, x, y); }
-        if (style.outer) { ctx.lineWidth = fontSize * 0.2; ctx.strokeStyle = style.outer; ctx.strokeText(text, x, y); }
-        if (style.inner) { ctx.lineWidth = fontSize * 0.08; ctx.strokeStyle = style.inner; ctx.strokeText(text, x, y); }
+                if (style.shadow) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.shadow; ctx.strokeText(text, x, y + fontSize * 0.08); }
+                if (style.outer2) { ctx.lineWidth = fontSize * 0.28; ctx.strokeStyle = style.outer2; ctx.strokeText(text, x, y); }
+                if (style.outer) { ctx.lineWidth = fontSize * 0.2; ctx.strokeStyle = style.outer; ctx.strokeText(text, x, y); }
+                if (style.inner) { ctx.lineWidth = fontSize * 0.08; ctx.strokeStyle = style.inner; ctx.strokeText(text, x, y); }
 
-        if (style.grad) {
-            const grad = ctx.createLinearGradient(0, y - fontSize * 0.4, 0, y + fontSize * 0.4);
-            grad.addColorStop(0, style.grad[0]);
-            grad.addColorStop(0.5, style.grad[1] || style.grad[0]);
-            grad.addColorStop(1, style.grad[2] || style.grad[1] || style.grad[0]);
-            ctx.fillStyle = grad;
-        } else { ctx.fillStyle = "#ffffff"; }
-        
-        ctx.fillText(text, x, y);
-        ctx.restore();
-    }
+                if (style.grad) {
+                    const grad = ctx.createLinearGradient(0, y - fontSize * 0.4, 0, y + fontSize * 0.4);
+                    grad.addColorStop(0, style.grad[0]);
+                    grad.addColorStop(0.5, style.grad[1] || style.grad[0]);
+                    grad.addColorStop(1, style.grad[2] || style.grad[1] || style.grad[0]);
+                    ctx.fillStyle = grad;
+                } else { ctx.fillStyle = "#ffffff"; }
+                
+                ctx.fillText(text, x, y);
+                ctx.restore();
+            }
+
+            window.getActionBgLum = function(img){
+        if (!img || !img.src) return 0; 
+        if (window._actBgLumSrc === img.src && window._actBgLum !== undefined) return window._actBgLum;
+
+        let lum = 0;
+        try {
+            let sw = 40, sh = 40;
+            let c = document.createElement('canvas');
+            c.width = sw; c.height = sh;
+            let cx = c.getContext('2d', { willReadFrequently: true });
+            cx.drawImage(img, 0, 0, sw, sh);
+            let d = cx.getImageData(0, 0, sw, sh).data;
+            let r = 0, g = 0, b = 0, count = 0;
+            for (let i = 0; i < d.length; i += 4){
+            if (d[i+3] < 125) continue;
+            r += d[i]; g += d[i+1]; b += d[i+2]; count++;
+            }
+            if (count === 0) return 0;
+            r /= count; g /= count; b /= count;
+            lum = 0.299*r + 0.587*g + 0.114*b;
+            window._actBgLumSrc = img.src;
+            window._actBgLum = lum;
+        } catch(e){ return 0; }
+        return lum;
+        };
 
     function drawWatermarks(ctx, text, w, h, forExport = false) {
         ctx.clearRect(0, 0, w, h);
@@ -7204,7 +7230,9 @@ window.downloadCosmeticLayer = (layerName) => {
             }
             
             if (window.layerState.watermarksVisible && window.layerState.textValue) {
-                drawWatermarks(ctx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity !== undefined ? window.layerState.watermarksOpacity : 0.8, false);
+                    let actLum = window.getActionBgLum(rawBgImage);
+                    let actWmColor = actLum < 140 ? "#ffffff" : "#000000";
+                    drawWatermarks(persistentCtx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity, false, actWmColor);
             }
             
         if (window.layerState.textVisible && window.layerState.textValue) {
@@ -7244,7 +7272,9 @@ window.downloadCosmeticLayer = (layerName) => {
         if (window.layerState.isBrawlPassMode) {
             drawBPWatermarks(ctx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity);
         } else {
-            drawWatermarks(ctx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity, true);
+            let actLum = window.getActionBgLum(rawBgImage);
+            let actWmColor = actLum < 140 ? "#ffffff" : "#000000";
+            drawWatermarks(ctx, window.layerState.textValue, w, h, window.layerState.watermarksOpacity, true, actWmColor);
         }
     } else if (layerName === 'stars' && globalAssets.starImg) {
         drawStars(ctx, globalAssets.starImg, w, h, window.layerState.starsOpacity, true);
@@ -10182,11 +10212,11 @@ function drawImageCover(ctx, img, x, y, w, h) {
     ctx.restore();
 }
 
-function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false) {
+function drawWatermarks(ctx, text, w, h, opacity = 0.8, forExport = false, color = "#ffffff") {
     ctx.save(); 
     ctx.globalCompositeOperation = forExport ? "source-over" : "overlay"; 
     ctx.globalAlpha = opacity; 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = color;
     ctx.textBaseline = "middle";
     
     let wmArray = window.layerState.customWatermarks;
@@ -11297,7 +11327,7 @@ document.getElementById('wizard-next-btn3-propass').onclick = async () => {
         window.layerState.luchOpacity = 1;
         window.layerState.starsOpacity = 1;
         window.layerState.pointsOpacity = 1;
-        window.layerState.watermarksOpacity = 0.36;
+        window.layerState.watermarksOpacity = 0.65;
         window.layerState.watermarksFont = window.layerState.watermarksFont || 'Font16103';
 
         btn.style.pointerEvents = 'auto';
@@ -13427,9 +13457,15 @@ function drawProPassContent(ctx, Wc, Hc){
   const BASE_W = 1280, BASE_H = 720;
 
   let isColorBg = window.layerState.isGeneratedBg && !!window.layerState.bgColorType;
-  let isFankitOrReady = !!rawBgImage && !isColorBg;
+  let isReady = !!window.layerState.isReadyBg && !!rawBgImage;
+  let isFankit = !!rawBgImage && !isColorBg && !isReady;
 
-if (isFankitOrReady){
+  if (isReady){
+    let ir = rawBgImage.width / rawBgImage.height, cr = Wc / Hc, dw, dh, dx, dy;
+    if (ir > cr){ dh = Hc; dw = Hc * ir; dx = (Wc - dw) / 2; dy = 0; }
+    else { dw = Wc; dh = Wc / ir; dx = 0; dy = (Hc - dh) / 2; }
+    ctx.drawImage(rawBgImage, dx, dy, dw, dh);
+  } else if (isFankit){
     let blurPx = window.PP_BG_BLUR_PX !== undefined ? window.PP_BG_BLUR_PX : 26;
     let blurA  = window.PP_BG_BLUR_ALPHA !== undefined ? window.PP_BG_BLUR_ALPHA : 0.31;
 
@@ -13500,13 +13536,13 @@ if (isFankitOrReady){
   let boost = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
 
   let ppNickColor = '#000000';
-  if (isFankitOrReady){
+  if (isFankit || isReady){
     window.getProPassBgTint(rawBgImage); 
     ppNickColor = (window._ppTintLum !== undefined && window._ppTintLum < 140) ? '#ffffff' : '#000000';
   }
 
   PROPASS_STYLE1_LAYERS.forEach(L=>{
-    if (L.id==='brawler' && isFankitOrReady) return;
+    if (L.id==='brawler' && (isFankit || isReady)) return;
     if (L.id==='rays'   && window.layerState.luchVisible===false) return;
     if (L.id==='stars'  && window.layerState.starsVisible===false) return;
     if (L.id==='points' && window.layerState.pointsVisible===false) return;
