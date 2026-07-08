@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(19)";
+  const APP_VERSION = "v2.4.4(20)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3056,7 +3056,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name">Стиль #1</div>
-                <div class="cat-desc">Классическая работа Pro Pass.</div>
+                <div class="cat-desc">Включает в себя Pro Pass и детали для улучшения работы.</div>
             </div>
         </div>
 
@@ -3067,7 +3067,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name">Стиль #2</div>
-                <div class="cat-desc">Скоро.</div>
+                <div class="cat-desc">Скоро...</div>
             </div>
         </div>
 
@@ -3076,7 +3076,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none;"></div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name">Стиль #3</div>
-                <div class="cat-desc">Скоро.</div>
+                <div class="cat-desc">Включает в себя BP, BP+, Pro Pass и детали для улучшения работы.</div>
             </div>
         </div>
 
@@ -11332,9 +11332,15 @@ document.getElementById('wizard-next-btn3-propass').onclick = async () => {
 
         btn.style.pointerEvents = 'auto';
         btn.innerHTML = orig;
-        window._sizeContext = 'propass';
         document.getElementById('wizard-overlay').style.display = 'none';
-        window.openSizeOverlay();
+        if (window.layerState.propassStyleIndex === 3){
+            window.layerState.outputW = 1280;
+            window.layerState.outputH = 720;
+            window.openProPassEditor();
+        } else {
+            window._sizeContext = 'propass';
+            window.openSizeOverlay();
+        }
     }, 50);
   };
 
@@ -13242,8 +13248,167 @@ window.PP_ICON_BOOST = { scale: 1.21, offY: 10.5 };
 window.PP_BG_BLUR_ALPHA = 0.51; 
 window.PP_BG_BLUR_PX = 21; 
 
+/* ==================== PRO PASS — СТИЛЬ #3 (точь-в-точь превью) ==================== */
+const PP3_IMG_SRC = {
+  points:  'BP/points_propass_3style.png',
+  stars:   'BP/ProPass_stars_3style.png',
+  gems:    'BP/bp_gems.png',
+  bpplus:  'BP/bp_icon_brawl_pass_plus.png',
+  bppass:  'BP/bp_icon_brawl_pass.png',
+  lvl11:   'BP/3style_PP_11lvl.png',
+  brawler: 'BP/brawler_PP_3style.png',
+  price:   'BP/price_pro_pass.png',
+  maxicon: 'BP/3style_PP_maxIcon.png'
+};
+const PP3_KEY2ASSET = {
+  points_propass:'points', stars:'stars', gems:'gems', bpplus:'bpplus',
+  bppass:'bppass', lvl11:'lvl11', brawler:'brawler', price:'price', maxicon:'maxicon'
+};
+const PP3_FONT_MAP = { 'Pusia Bold':'PusiaBold', 'Lilita One':'LilitaOneRus' };
+
+const PP3_LAYERS = [
+  {"order":0,"key":"points_propass","type":"image","opacity":1,"visible":true,"src":"BP/points_propass_3style.png","x":660,"y":367,"scale":1.035,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":0,"shadowBlur":0,"shadowOp":1},
+  {"order":1,"key":"pnl_base","type":"poly","opacity":1,"visible":true,"fill":"#f3d53b","points":[[-185,17],[466,-17],[387,729],[-148,736]],"strokeW":0,"strokeColor":"#000000","shadow":false},
+  {"order":2,"key":"pnl_orange","type":"poly","opacity":1,"visible":true,"fill":"#e89e32","points":[[-10,476],[277,575],[417,485],[399,721],[-18,728]],"strokeW":0,"strokeColor":"#000000","shadow":false},
+  {"order":3,"key":"pnl_top","type":"poly","opacity":1,"visible":false,"fill":"#fbd24c","points":[[0,0],[652,0],[600,340],[150,470],[0,405]],"strokeW":0,"strokeColor":"#000000","shadow":false},
+  {"order":4,"key":"pnl_bolt","type":"poly","opacity":1,"visible":true,"fill":"#f9ea59","points":[[453,142],[469,-9],[-10,0],[-7,213],[170,132],[94,265]],"strokeW":0,"strokeColor":"#000000","shadow":false},
+  {"order":5,"key":"glow_a","type":"glow","opacity":1,"visible":true,"x":848,"y":372,"radius":376,"blur":76,"color":"#d6a50d","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":6,"key":"pnl_edge_shadow","type":"poly","opacity":0.26,"visible":true,"fill":"#000000","points":[[474,-2],[492,-3],[418,722],[400,723]],"strokeW":0,"strokeColor":"#000000","shadow":false},
+  {"order":7,"key":"pnl_edge","type":"poly","opacity":1,"visible":true,"fill":"#fee98c","points":[[460,-2],[478,-3],[404,722],[386,723]],"strokeW":0,"strokeColor":"#000000","shadow":false},
+  {"order":8,"key":"wm1","type":"text","opacity":0.36,"visible":true,"x":1252,"y":2,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":21,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":9,"key":"wm2","type":"text","opacity":0.36,"visible":true,"x":1254,"y":207,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":8,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":10,"key":"wm3","type":"text","opacity":0.36,"visible":true,"x":1273,"y":371,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":17,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":11,"key":"wm4","type":"text","opacity":0.36,"visible":true,"x":1341,"y":647,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":33,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":12,"key":"wm5","type":"text","opacity":0.36,"visible":true,"x":1222,"y":522,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":8,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":13,"key":"wm6","type":"text","opacity":0.36,"visible":true,"x":470,"y":642,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":8,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":14,"key":"wm7","type":"text","opacity":0.36,"visible":true,"x":488,"y":486,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":8,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":15,"key":"wm8","type":"text","opacity":0.36,"visible":true,"x":550,"y":102,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":14,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":16,"key":"wm9","type":"text","opacity":0.36,"visible":true,"x":617,"y":0,"text":"ARTZA DONATE","font":"Pusia Bold","fontSize":23,"color":"#000000","rot":0,"skew":-8,"strokeW":0,"strokeColor":"#3a2a00","shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":0.55,"blend":"overlay"},
+  {"order":17,"key":"stars","type":"image","opacity":1,"visible":true,"src":"BP/ProPass_stars_3style.png","x":652,"y":359,"scale":1,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false},
+  {"order":18,"key":"gems","type":"image","opacity":1,"visible":true,"src":"BP/bp_gems.png","x":860,"y":368,"scale":0.278,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":0.36},
+  {"order":19,"key":"rect1","type":"rrect","opacity":0.36,"visible":true,"x":1057,"y":669,"w":215,"h":71,"radius":26,"rot":0,"fill":"#000000","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":20,"key":"rect2","type":"rrect","opacity":0.36,"visible":true,"x":722,"y":669,"w":215,"h":71,"radius":26,"rot":0,"fill":"#000000","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":21,"key":"bpplus","type":"image","opacity":1,"visible":true,"src":"BP/bp_icon_brawl_pass_plus.png","x":923,"y":669,"scale":0.5,"rot":5,"flipH":false,"flipV":false,"strokes":[{"w":1,"color":"#000000"},{"w":2,"color":"#ffffff"}],"shadow":false},
+  {"order":22,"key":"glow_b","type":"glow","opacity":1,"visible":true,"x":211,"y":437,"radius":233,"blur":84,"color":"#fff5a0","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":23,"key":"bppass","type":"image","opacity":1,"visible":true,"src":"BP/bp_icon_brawl_pass.png","x":587,"y":669,"scale":0.46,"rot":5,"flipH":false,"flipV":false,"strokes":[{"w":1,"color":"#000000"},{"w":2,"color":"#ffffff"}],"shadow":false},
+  {"order":24,"key":"lvl11","type":"image","opacity":1,"visible":true,"src":"BP/3style_PP_11lvl.png","x":224,"y":351,"scale":0.31,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false},
+  {"order":25,"key":"t_propass","type":"text","opacity":1,"visible":true,"x":239,"y":60,"text":"PRO PASS","font":"Lilita One","fontSize":96,"color":"#000000","rot":-3,"skew":-12,"strokeW":10,"strokeColor":"#a4de35","shadow":true,"shadowColor":"#a4de35","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":26,"key":"t_brawl","type":"text","opacity":1,"visible":true,"x":342,"y":127,"text":"BRAWL","font":"Lilita One","fontSize":64,"color":"#ffffff","rot":-3,"skew":-12,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":27,"key":"brawler","type":"image","opacity":1,"visible":true,"src":"BP/brawler_PP_3style.png","x":317,"y":397,"scale":0.39,"rot":-3,"flipH":false,"flipV":false,"strokes":[{"w":3,"color":"#000000"}],"shadow":false},
+  {"order":28,"key":"price","type":"image","opacity":1,"visible":true,"src":"BP/price_pro_pass.png","x":195,"y":640,"scale":0.26,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false},
+  {"order":29,"key":"maxicon","type":"image","opacity":1,"visible":true,"src":"BP/3style_PP_maxIcon.png","x":108,"y":528,"scale":0.062,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false},
+  {"order":30,"key":"t_kubok","type":"text","opacity":1,"visible":true,"x":124,"y":133,"text":"КУБОК","font":"Pusia Bold","fontSize":64,"color":"#ffffff","rot":-3,"skew":-12,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":31,"key":"t_maks","type":"text","opacity":1,"visible":true,"x":251,"y":530,"text":"МАКС.","font":"Pusia Bold","fontSize":64,"color":"#ffffff","rot":0,"skew":-8,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":32,"key":"t_99999_big","type":"text","opacity":1,"visible":true,"x":195,"y":630,"text":"99999 1","font":"Lilita One","fontSize":76,"color":"#000000","rot":0,"skew":-8,"strokeW":10,"strokeColor":"#a4de34","shadow":true,"shadowColor":"#a4de34","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":33,"key":"n1","type":"text","opacity":1,"visible":true,"x":639,"y":324,"text":"99999 1","font":"Lilita One","fontSize":38,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":34,"key":"n2","type":"text","opacity":1,"visible":true,"x":865,"y":324,"text":"99999 1","font":"Lilita One","fontSize":38,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":35,"key":"n3","type":"text","opacity":1,"visible":true,"x":1090,"y":324,"text":"99999 1","font":"Lilita One","fontSize":38,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":36,"key":"n4","type":"text","opacity":1,"visible":true,"x":620,"y":577,"text":"99999 1","font":"Lilita One","fontSize":38,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":37,"key":"n5","type":"text","opacity":1,"visible":true,"x":843,"y":577,"text":"99999 1","font":"Lilita One","fontSize":38,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":38,"key":"n6","type":"text","opacity":1,"visible":true,"x":1067,"y":578,"text":"99999 1","font":"Lilita One","fontSize":38,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":39,"key":"n7","type":"text","opacity":1,"visible":true,"x":738,"y":667,"text":"99999 1","font":"Lilita One","fontSize":41,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":40,"key":"n8","type":"text","opacity":1,"visible":true,"x":1075,"y":667,"text":"99999 1","font":"Lilita One","fontSize":41,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":41,"key":"g1","type":"glow","opacity":0.36,"visible":true,"x":648,"y":227,"radius":86,"blur":50,"color":"#aef700","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":42,"key":"g2","type":"glow","opacity":0.36,"visible":true,"x":871,"y":225,"radius":86,"blur":50,"color":"#aef700","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":43,"key":"g3","type":"glow","opacity":0.36,"visible":true,"x":1095,"y":221,"radius":86,"blur":50,"color":"#aef700","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":44,"key":"g4","type":"glow","opacity":0.36,"visible":true,"x":1081,"y":469,"radius":86,"blur":50,"color":"#aef700","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":45,"key":"g5","type":"glow","opacity":0.36,"visible":true,"x":849,"y":480,"radius":86,"blur":50,"color":"#aef700","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":46,"key":"g6","type":"glow","opacity":0.36,"visible":true,"x":629,"y":487,"radius":86,"blur":50,"color":"#aef700","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":47,"key":"g7","type":"glow","opacity":0.36,"visible":true,"x":570,"y":669,"radius":61,"blur":50,"color":"#fef701","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":48,"key":"g8","type":"glow","opacity":0.36,"visible":true,"x":934,"y":666,"radius":61,"blur":50,"color":"#e4f8ff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":49,"key":"g9","type":"glow","opacity":0.21,"visible":true,"x":1030,"y":668,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":50,"key":"g10","type":"glow","opacity":0.21,"visible":true,"x":1079,"y":673,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":51,"key":"g11","type":"glow","opacity":0.21,"visible":true,"x":1129,"y":664,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":52,"key":"g12","type":"glow","opacity":0.21,"visible":true,"x":693,"y":668,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":53,"key":"g13","type":"glow","opacity":0.21,"visible":true,"x":742,"y":669,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":54,"key":"g14","type":"glow","opacity":0.21,"visible":true,"x":790,"y":665,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":55,"key":"g15","type":"glow","opacity":0.21,"visible":true,"x":600,"y":327,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":56,"key":"g16","type":"glow","opacity":0.21,"visible":true,"x":635,"y":327,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":57,"key":"g17","type":"glow","opacity":0.21,"visible":true,"x":679,"y":328,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":58,"key":"g18","type":"glow","opacity":0.21,"visible":true,"x":818,"y":326,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":59,"key":"g19","type":"glow","opacity":0.21,"visible":true,"x":870,"y":333,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":60,"key":"g20","type":"glow","opacity":0.21,"visible":true,"x":910,"y":325,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":61,"key":"g21","type":"glow","opacity":0.21,"visible":true,"x":1042,"y":332,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":62,"key":"g22","type":"glow","opacity":0.21,"visible":true,"x":1086,"y":331,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":63,"key":"g23","type":"glow","opacity":0.21,"visible":true,"x":1131,"y":327,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":64,"key":"g24","type":"glow","opacity":0.21,"visible":true,"x":580,"y":575,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":65,"key":"g25","type":"glow","opacity":0.21,"visible":true,"x":623,"y":581,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":66,"key":"g26","type":"glow","opacity":0.21,"visible":true,"x":666,"y":577,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":67,"key":"g27","type":"glow","opacity":0.21,"visible":true,"x":800,"y":585,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":68,"key":"g28","type":"glow","opacity":0.21,"visible":true,"x":844,"y":580,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":69,"key":"g29","type":"glow","opacity":0.21,"visible":true,"x":886,"y":588,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":70,"key":"g30","type":"glow","opacity":0.21,"visible":true,"x":1030,"y":574,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":71,"key":"g31","type":"glow","opacity":0.21,"visible":true,"x":1067,"y":587,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":72,"key":"g32","type":"glow","opacity":0.21,"visible":true,"x":1108,"y":585,"radius":35,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":73,"key":"g33","type":"glow","opacity":0.36,"visible":true,"x":53,"y":149,"radius":65,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":74,"key":"g34","type":"glow","opacity":0.36,"visible":true,"x":142,"y":147,"radius":65,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":75,"key":"g35","type":"glow","opacity":0.36,"visible":true,"x":372,"y":131,"radius":65,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":76,"key":"g36","type":"glow","opacity":0.26,"visible":true,"x":202,"y":537,"radius":56,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":77,"key":"g37","type":"glow","opacity":0.26,"visible":true,"x":281,"y":540,"radius":56,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":78,"key":"g38","type":"glow","opacity":0.26,"visible":true,"x":109,"y":532,"radius":56,"blur":50,"color":"#c4f551","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":79,"key":"g39","type":"glow","opacity":0.36,"visible":true,"x":293,"y":452,"radius":56,"blur":50,"color":"#fee1fe","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":80,"key":"g40","type":"glow","opacity":0.36,"visible":true,"x":122,"y":380,"radius":56,"blur":50,"color":"#fee1fe","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":81,"key":"g41","type":"glow","opacity":0.26,"visible":true,"x":92,"y":631,"radius":56,"blur":50,"color":"#aae13a","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":82,"key":"g42","type":"glow","opacity":0.26,"visible":true,"x":172,"y":650,"radius":56,"blur":50,"color":"#aae13a","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":83,"key":"g43","type":"glow","opacity":0.26,"visible":true,"x":261,"y":626,"radius":56,"blur":50,"color":"#aae13a","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":84,"key":"g44","type":"glow","opacity":0.26,"visible":true,"x":308,"y":665,"radius":56,"blur":50,"color":"#aae13a","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":85,"key":"g45","type":"glow","opacity":0.36,"visible":true,"x":278,"y":142,"radius":65,"blur":50,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false}
+];
+
+window.loadPP3Assets = async function(){
+  const load=(src)=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});
+  for (let id in PP3_IMG_SRC){ if(!globalAssets['pp3_'+id]) globalAssets['pp3_'+id]=await load(PP3_IMG_SRC[id]); }
+};
+
+function pp3Hex(hex,a){hex=(hex||"#000").replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');const n=parseInt(hex,16)||0;return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
+function pp3RoundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function pp3ApplyShadow(ctx,l){if(l.shadow){ctx.shadowColor=pp3Hex(l.shadowColor||"#000000",l.shadowOp!=null?l.shadowOp:1);ctx.shadowBlur=l.shadowBlur||0;ctx.shadowOffsetX=l.shadowDx||0;ctx.shadowOffsetY=l.shadowDy||0;}}
+function pp3Img(l){let k=PP3_KEY2ASSET[l.key];return k?globalAssets['pp3_'+k]:null;}
+function pp3GetSil(l,img,color){if(!l._sil)l._sil={};if(l._sil[color])return l._sil[color];const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;const cx=c.getContext('2d');cx.drawImage(img,0,0);cx.globalCompositeOperation="source-in";cx.fillStyle=color;cx.fillRect(0,0,c.width,c.height);l._sil[color]=c;return c;}
+function pp3StampSil(cx,sil,CX,CY,R,dw,dh){if(R<=0){cx.drawImage(sil,CX-dw/2,CY-dh/2,dw,dh);return;}const N=Math.min(64,Math.max(20,Math.ceil(R*2)));[R,R*0.6].forEach(ring=>{for(let a=0;a<N;a++){const ang=a/N*6.2831853;cx.drawImage(sil,CX+Math.cos(ang)*ring-dw/2,CY+Math.sin(ang)*ring-dh/2,dw,dh);}});cx.drawImage(sil,CX-dw/2,CY-dh/2,dw,dh);}
+function pp3BuildStroked(l,img,dw,dh,strokes){const sig=(dw|0)+"x"+(dh|0)+"|"+strokes.map(s=>s.w+s.color).join(",");if(l._strk&&l._strk.sig===sig)return l._strk.canvas;const total=strokes.reduce((a,s)=>a+s.w,0);const pad=Math.ceil(total)+3;const ow=Math.ceil(dw)+pad*2,oh=Math.ceil(dh)+pad*2;const c=document.createElement('canvas');c.width=ow;c.height=oh;const cx=c.getContext('2d');const CX=ow/2,CY=oh/2;let cum=0;const cums=strokes.map(s=>cum+=s.w);for(let k=strokes.length-1;k>=0;k--){const sil=pp3GetSil(l,img,strokes[k].color);pp3StampSil(cx,sil,CX,CY,cums[k],dw,dh);}cx.drawImage(img,CX-dw/2,CY-dh/2,dw,dh);l._strk={sig,canvas:c};return c;}
+
+function pp3DrawPoly(ctx,l){if(l.visible===false||l.points.length<2)return;ctx.save();ctx.globalAlpha=l.opacity;pp3ApplyShadow(ctx,l);ctx.fillStyle=l.fill;ctx.beginPath();ctx.moveTo(l.points[0][0],l.points[0][1]);for(let i=1;i<l.points.length;i++)ctx.lineTo(l.points[i][0],l.points[i][1]);ctx.closePath();ctx.fill();if(l.strokeW>0){ctx.shadowColor="transparent";ctx.lineJoin="round";ctx.lineWidth=l.strokeW;ctx.strokeStyle=l.strokeColor||"#000000";ctx.stroke();}ctx.restore();}
+function pp3DrawRRect(ctx,l){if(l.visible===false)return;const w=l.w,h=l.h,r=Math.max(0,Math.min(l.radius,Math.min(w,h)/2));ctx.save();ctx.globalAlpha=l.opacity;ctx.translate(l.x,l.y);ctx.rotate((l.rot||0)*Math.PI/180);pp3ApplyShadow(ctx,l);ctx.fillStyle=l.fill;pp3RoundRect(ctx,-w/2,-h/2,w,h,r);ctx.fill();ctx.restore();}
+function pp3DrawGlow(ctx,l){if(l.visible===false)return;ctx.save();ctx.globalCompositeOperation=l.blend||"screen";ctx.globalAlpha=l.opacity;if(l.blur>0)ctx.filter=`blur(${l.blur}px)`;const g=ctx.createRadialGradient(l.x,l.y,0,l.x,l.y,Math.max(1,l.radius));g.addColorStop(0,l.color);g.addColorStop(1,pp3Hex(l.color,0));ctx.fillStyle=g;ctx.beginPath();ctx.arc(l.x,l.y,Math.max(1,l.radius),0,Math.PI*2);ctx.fill();ctx.restore();}
+function pp3DrawImage(ctx,l,alpha){if(l.visible===false)return;const img=pp3Img(l);if(!img)return;const dw=img.naturalWidth*l.scale,dh=img.naturalHeight*l.scale;const strokes=(Array.isArray(l.strokes)?l.strokes:[]).filter(s=>s&&s.w>0);ctx.save();ctx.globalAlpha=alpha!=null?alpha:l.opacity;ctx.translate(l.x,l.y);ctx.rotate((l.rot||0)*Math.PI/180);ctx.scale(l.flipH?-1:1,l.flipV?-1:1);pp3ApplyShadow(ctx,l);if(strokes.length){const c=pp3BuildStroked(l,img,dw,dh,strokes);ctx.drawImage(c,-c.width/2,-c.height/2);}else ctx.drawImage(img,-dw/2,-dh/2,dw,dh);ctx.restore();}
+function pp3DrawText(ctx,l,textOverride,alphaOverride,fontOverride){if(l.visible===false)return;const txt=(textOverride!=null?textOverride:l.text)||"";const lines=txt.split("\n");const fam=fontOverride||PP3_FONT_MAP[l.font]||l.font;ctx.save();ctx.font=`${l.fontSize}px "${fam}"`;ctx.textAlign="center";ctx.textBaseline="middle";const lh=l.fontSize*1.08,totalH=lh*lines.length;ctx.globalAlpha=alphaOverride!=null?alphaOverride:l.opacity;ctx.globalCompositeOperation=l.blend||"source-over";ctx.translate(l.x,l.y);ctx.rotate((l.rot||0)*Math.PI/180);ctx.transform(1,0,Math.tan((l.skew||0)*Math.PI/180),1,0,0);ctx.lineJoin="round";ctx.miterLimit=2;const startY=-totalH/2+lh/2;
+  if(l.shadow){ctx.save();ctx.globalAlpha=(alphaOverride!=null?alphaOverride:l.opacity)*(l.shadowOp!=null?l.shadowOp:1);if(l.shadowBlur>0){ctx.shadowColor=l.shadowColor;ctx.shadowBlur=l.shadowBlur;}ctx.fillStyle=l.shadowColor;ctx.strokeStyle=l.shadowColor;lines.forEach((t,i)=>{const y=startY+i*lh+(l.shadowDy||0),x=(l.shadowDx||0);if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeText(t,x,y);}ctx.fillText(t,x,y);});ctx.restore();}
+  if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeStyle=l.strokeColor;lines.forEach((t,i)=>ctx.strokeText(t,0,startY+i*lh));}
+  ctx.fillStyle=l.color;lines.forEach((t,i)=>ctx.fillText(t,0,startY+i*lh));ctx.restore();}
+
+function drawPP3Content(ctx, Wc, Hc){
+  const W=1280,H=720;
+  ctx.save();
+  let g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,"#93380d");g.addColorStop(1,"#93380d");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  let rg=ctx.createRadialGradient(W*0.62,H*0.42,60,W*0.62,H*0.42,620);rg.addColorStop(0,"rgba(255,210,120,.18)");rg.addColorStop(1,"rgba(255,210,120,0)");ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
+
+  const priceOff = window.layerState.priceVis_propass === false;
+  const nick = window.layerState.textValue || "SNAPI";
+
+  PP3_LAYERS.forEach(l=>{
+    if (l.key==='points_propass'){ if(window.layerState.pointsVisible===false)return; pp3DrawImage(ctx,l, window.layerState.pointsOpacity!==undefined?window.layerState.pointsOpacity:l.opacity); return; }
+    if (l.key==='stars'){ if(window.layerState.starsVisible===false)return; pp3DrawImage(ctx,l, window.layerState.starsOpacity!==undefined?window.layerState.starsOpacity:l.opacity); return; }
+    if (String(l.key).indexOf('wm')===0 && l.type==='text'){ if(window.layerState.watermarksVisible===false)return; pp3DrawText(ctx,l, nick, window.layerState.watermarksOpacity!==undefined?window.layerState.watermarksOpacity:l.opacity, window.layerState.watermarksFont||'Font16103'); return; }
+    if (l.key==='price'){ if(priceOff)return; pp3DrawImage(ctx,l); return; }
+    if (l.key==='t_99999_big'){ if(priceOff)return; pp3DrawText(ctx,l, (window.layerState.bpPriceLeft||'99999')+' 1'); return; }
+
+    if (l.type==='poly') pp3DrawPoly(ctx,l);
+    else if (l.type==='glow') pp3DrawGlow(ctx,l);
+    else if (l.type==='rrect') pp3DrawRRect(ctx,l);
+    else if (l.type==='text') pp3DrawText(ctx,l);
+    else pp3DrawImage(ctx,l);
+  });
+
+  // основной ник (1 строка, как в стиле #1) — позицию скажешь, поставлю сюда
+  if (window.layerState.textVisible!==false && cachedTextCanvas){
+    ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, W, H);
+  }
+  ctx.restore();
+}
+
 window.selectProPassStyle = function(styleId){
-  if (styleId !== 1){
+  if (styleId !== 1 && styleId !== 3){
     let m='Этот стиль пока в разработке.';
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert) window.Telegram.WebApp.showAlert(m); else alert(m);
     return;
@@ -13454,6 +13619,7 @@ window.getProPassBgTint = function(img){
 };
 
 function drawProPassContent(ctx, Wc, Hc){
+  if (window.layerState.propassStyleIndex === 3){ drawPP3Content(ctx, Wc, Hc); return; }
   const BASE_W = 1280, BASE_H = 720;
 
   let isColorBg = window.layerState.isGeneratedBg && !!window.layerState.bgColorType;
@@ -13643,13 +13809,15 @@ function renderProPassLayerPanel(isInitialLoad){
 
   let ppPriceVis = window.layerState.priceVis_propass !== false;
   let ppPriceColor = window.layerState.propassPriceColor || '#000000';
+  let ppShowColor = window.layerState.propassStyleIndex !== 3;
   html += `<div class="ios-layer-group ${a}">
-      <div class="ios-layer-row">
+      <div class="ios-layer-row" ${ppShowColor ? '' : 'style="border-bottom:none;"'}>
         <div class="ios-icon-btn ios-eye-icon ${ppPriceVis?'':'hidden'}" onclick="togglePriceVis('propass')">${getEyeSVG(ppPriceVis)}</div>
         <div class="ios-layer-name">Pro Pass</div>
         <div class="ios-layer-action-text">значение</div>
         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft||''}" maxlength="5" oninput="updateProPassPrice(this)" style="width:65px;">
-      </div>
+      </div>`;
+  if (ppShowColor) html += `
       <div class="ios-layer-row" style="border-bottom:none;">
         <div class="ios-layer-name" style="flex-grow:1;">Цвет цены</div>
         <div class="ios-layer-action-text" style="margin-right:4px;">цвет</div>
@@ -13659,8 +13827,8 @@ function renderProPassLayerPanel(isInitialLoad){
             <svg id="pp-price-color-icon" viewBox="0 0 24 24" style="width:12px; height:12px; fill:${(ppPriceColor.toLowerCase()==='#ffffff')?'#b7b7b7':'#ffffff'};"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
           </div>
         </div>
-      </div>
-    </div>`;
+      </div>`;
+  html += `</div>`;
 
   if (window.ENABLE_TEMP_EDITOR){
     let b = window.PP_ICON_BOOST || { scale: 1.35, offY: 8 };
@@ -13680,7 +13848,7 @@ function renderProPassLayerPanel(isInitialLoad){
       </div>`;
   }
   html += `<div class="ios-layer-group ${a}">`;
-  html += ppRow('luch','Лучи', window.layerState.luchVisible!==false, window.layerState.luchOpacity!==undefined?window.layerState.luchOpacity:1, false);
+  if (window.layerState.propassStyleIndex !== 3) html += ppRow('luch','Лучи', window.layerState.luchVisible!==false, window.layerState.luchOpacity!==undefined?window.layerState.luchOpacity:1, false);
   html += ppRow('stars','Звёзды', window.layerState.starsVisible!==false, window.layerState.starsOpacity!==undefined?window.layerState.starsOpacity:1, false);
   html += ppRow('points','Точки', window.layerState.pointsVisible!==false, window.layerState.pointsOpacity!==undefined?window.layerState.pointsOpacity:1, false);
   html += ppRow('watermarks','Текст min', window.layerState.watermarksVisible!==false, window.layerState.watermarksOpacity!==undefined?window.layerState.watermarksOpacity:0.36, true);
@@ -13720,9 +13888,15 @@ window.openProPassEditor = function(){
   layerPanel.innerHTML='<div class="skeleton-panel-wrapper fade-in-anim"><div class="skeleton-box skeleton-row"></div><div class="skeleton-box skeleton-row"></div></div>';
   window.layerState.isProPassMode=true;
   window.layerState.isBrawlPassMode=false;
-  window.layerState.propassStyleIndex=1;
-  if (!window.layerState.outputW) window.layerState.outputW=1280;
-  if (!window.layerState.outputH) window.layerState.outputH=720;
+  if (!window.layerState.propassStyleIndex) window.layerState.propassStyleIndex = window._ppStyle || 1;
+  if (window.layerState.propassStyleIndex === 3){
+    window.layerState.outputW = 1280;
+    window.layerState.outputH = 720;
+    if (!window._spRestoring) window.layerState.watermarksOpacity = 0.36;
+  } else {
+    if (!window.layerState.outputW) window.layerState.outputW=1280;
+    if (!window.layerState.outputH) window.layerState.outputH=720;
+  }
   if (!window._spRestoring) {
     if (window.layerState.textVisible === undefined) window.layerState.textVisible = true;
     window.layerState.textPosition = 'top';
@@ -13733,9 +13907,14 @@ window.openProPassEditor = function(){
   }
   setTimeout(async ()=>{
     const load=(src)=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});
-    for (let id in PROPASS_IMG_SRC){ if(!globalAssets['pp_'+id]) globalAssets['pp_'+id]=await load(PROPASS_IMG_SRC[id]); }
+    if (window.layerState.propassStyleIndex === 3){
+      await window.loadPP3Assets();
+    } else {
+      for (let id in PROPASS_IMG_SRC){ if(!globalAssets['pp_'+id]) globalAssets['pp_'+id]=await load(PROPASS_IMG_SRC[id]); }
+    }
   try{
       await document.fonts.load("16px 'LilitaOneRus'");
+      await document.fonts.load("16px 'PusiaBold'");
       await document.fonts.load(`16px '${window.layerState.watermarksFont||'Font16103'}'`);
       await document.fonts.load(`16px '${window.layerState.textFont||'Font16103'}'`);
       await document.fonts.ready;
