@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(28)";
+  const APP_VERSION = "v2.4.4(29)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -8395,16 +8395,39 @@ window.applyColorCorrection = async function() {
         const h = persistentCanvas.height;
         const ctx = persistentCtx;
 
-        const sat = 1.38;            
-        const contrast = 1.12;       
-        const brightness = 1.04;     
-        const vignetteStrength = 0.40; 
-        const vignettePower = 2.3;   
-        const grainAmount = 6;      
-        const sharpenAmount = 0.46;  
+        const contrast     = 1.14;
+        const brightness   = 1.03;
+        const vibrance     = 0.55;   
+        const splitWarm    = 10;    
+        const splitCool    = 10;     
+        const vignette     = 0.34;
+        const vignettePow  = 2.4;
+        const centerDark   = 0.30;   
+        const centerRadius = 0.62;   
+        const bloomThresh  = 205;    
+        const bloomAmount  = 0.42;
+        const bloomBlur    = 14;
+        const highpass     = 0.55;   
+        const highpassBlur = 2.2;
+        const grainAmount  = 5;
 
         let imgData = ctx.getImageData(0, 0, w, h);
         let d = imgData.data;
+
+        let aR = 0, aB = 0, samp = 0;
+        for (let i = 0; i < d.length; i += 64) { aR += d[i]; aB += d[i + 2]; samp++; }
+        let warmBias = ((aR - aB) / samp) / 255;              
+        let warmMul = 1 - Math.max(0, warmBias) * 0.6;        
+        let coolMul = 1 + Math.max(0, warmBias) * 0.4;        
+
+        if (!window._ccBlurC) window._ccBlurC = document.createElement('canvas');
+        let _bc = window._ccBlurC; _bc.width = w; _bc.height = h;
+        let _bcx = _bc.getContext('2d');
+        _bcx.filter = `blur(${highpassBlur}px)`;
+        _bcx.drawImage(persistentCanvas, 0, 0);
+        _bcx.filter = 'none';
+        let blur = _bcx.getImageData(0, 0, w, h).data;
+
         const cx = w / 2, cy = h / 2;
         const maxDist = Math.sqrt(cx * cx + cy * cy);
 
@@ -8418,19 +8441,33 @@ window.applyColorCorrection = async function() {
                 r = (r - 128) * contrast + 128;
                 g = (g - 128) * contrast + 128;
                 b = (b - 128) * contrast + 128;
-                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-                r = gray + (r - gray) * sat;
-                g = gray + (g - gray) * sat;
-                b = gray + (b - gray) * sat;
-                if (vignetteStrength > 0) {
-                    const dx = x - cx;
-                    const dist = Math.sqrt(dx * dx + dy * dy) / maxDist;
-                    const vig = 1 - vignetteStrength * Math.pow(dist, vignettePower);
-                    r *= vig; g *= vig; b *= vig;
-                }
+
+                let mx = Math.max(r, g, b), avg = (r + g + b) / 3;
+                let amt = (Math.abs(mx - avg) * 2 / 255) * vibrance;
+                r += (mx - r) * amt; g += (mx - g) * amt; b += (mx - b) * amt;
+
+                let lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                let hi = lum, lo = 1 - lum;
+                r += splitWarm * hi * warmMul - splitCool * lo * 0.4;
+                b += splitCool * lo * coolMul - splitWarm * hi * 0.4;
+                g += splitWarm * hi * warmMul * 0.15;
+
+                r += (r - blur[i])     * highpass;
+                g += (g - blur[i + 1]) * highpass;
+                b += (b - blur[i + 2]) * highpass;
+
+                const dx = x - cx;
+                const dist = Math.sqrt(dx * dx + dy * dy) / maxDist;
+                let vig = 1 - vignette * Math.pow(dist, vignettePow);
+                let sp = dist > centerRadius
+                    ? 1 - centerDark * Math.pow((dist - centerRadius) / (1 - centerRadius), 2)
+                    : 1;
+                let dark = vig * sp;
+                r *= dark; g *= dark; b *= dark;
+
                 if (grainAmount > 0) {
-                    const noise = (Math.random() - 0.5) * grainAmount;
-                    r += noise; g += noise; b += noise;
+                    let n = (Math.random() - 0.5) * grainAmount;
+                    r += n; g += n; b += n;
                 }
 
                 d[i]     = r < 0 ? 0 : r > 255 ? 255 : r;
@@ -8438,31 +8475,28 @@ window.applyColorCorrection = async function() {
                 d[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
             }
         }
-
-        if (sharpenAmount > 0) {
-            const src = d;                      
-            const out = new Uint8ClampedArray(src); 
-            const a = sharpenAmount;
-            const center = 1 + 4 * a;
-            for (let y = 1; y < h - 1; y++) {
-                for (let x = 1; x < w - 1; x++) {
-                    const i = (y * w + x) * 4;
-                    for (let c = 0; c < 3; c++) {
-                        const p = i + c;
-                        const val =
-                            src[p] * center
-                            - a * src[p - 4]
-                            - a * src[p + 4]
-                            - a * src[p - w * 4]
-                            - a * src[p + w * 4];
-                        out[p] = val < 0 ? 0 : val > 255 ? 255 : val;
-                    }
-                }
-            }
-            imgData = new ImageData(out, w, h);
-        }
-
         ctx.putImageData(imgData, 0, 0);
+
+        if (bloomAmount > 0) {
+            if (!window._ccBloomC) window._ccBloomC = document.createElement('canvas');
+            let blc = window._ccBloomC; blc.width = w; blc.height = h;
+            let blx = blc.getContext('2d');
+            blx.clearRect(0, 0, w, h);
+            blx.drawImage(persistentCanvas, 0, 0);
+            let bd = blx.getImageData(0, 0, w, h), bpx = bd.data;
+            for (let i = 0; i < bpx.length; i += 4) {
+                let l = 0.299 * bpx[i] + 0.587 * bpx[i + 1] + 0.114 * bpx[i + 2];
+                if (l < bloomThresh) { bpx[i] = bpx[i + 1] = bpx[i + 2] = 0; }
+            }
+            blx.putImageData(bd, 0, 0);
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            ctx.globalAlpha = bloomAmount;
+            ctx.filter = `blur(${bloomBlur}px)`;
+            ctx.drawImage(blc, 0, 0);
+            ctx.filter = 'none';
+            ctx.restore();
+        }
 
         await new Promise(resolve => setTimeout(resolve, 400));
         document.body.removeChild(overlay);
