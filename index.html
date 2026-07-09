@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(27)";
+  const APP_VERSION = "v2.4.4(28)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -13378,8 +13378,8 @@ const PP3_KEY2ASSET = {
 };
 const PP3_FONT_MAP = { 'Pusia Bold':'PusiaBold', 'Lilita One':'LilitaOneRus' };
 const PP3_NICK_OFFSET_X = 246; 
-const PP3_NICK_OFFSET_Y = 38;
-const PP3_RUB_OFFSET_Y = 3; 
+const PP3_NICK_OFFSET_Y = 16;
+const PP3_RUB_OFFSET_Y = -0.16; 
 const PP3_BG_CENTER_X = 0.896; 
 const PP3_BG_CENTER_Y = 0.47; 
 
@@ -13529,17 +13529,54 @@ function pp3DrawRRect(ctx,l){if(l.visible===false)return;const w=l.w,h=l.h,r=Mat
 function pp3DrawGlow(ctx,l){if(l.visible===false)return;ctx.save();ctx.globalCompositeOperation=l.blend||"screen";ctx.globalAlpha=l.opacity;if(l.blur>0)ctx.filter=`blur(${l.blur}px)`;const g=ctx.createRadialGradient(l.x,l.y,0,l.x,l.y,Math.max(1,l.radius));g.addColorStop(0,l.color);g.addColorStop(1,pp3Hex(l.color,0));ctx.fillStyle=g;ctx.beginPath();ctx.arc(l.x,l.y,Math.max(1,l.radius),0,Math.PI*2);ctx.fill();ctx.restore();}
 function pp3DrawImage(ctx,l,alpha){if(l.visible===false)return;const img=pp3Img(l);if(!img)return;const dw=img.naturalWidth*l.scale,dh=img.naturalHeight*l.scale;const strokes=(Array.isArray(l.strokes)?l.strokes:[]).filter(s=>s&&s.w>0);ctx.save();ctx.globalAlpha=alpha!=null?alpha:l.opacity;ctx.translate(l.x,l.y);ctx.rotate((l.rot||0)*Math.PI/180);ctx.scale(l.flipH?-1:1,l.flipV?-1:1);pp3ApplyShadow(ctx,l);if(strokes.length){const c=pp3BuildStroked(l,img,dw,dh,strokes);ctx.drawImage(c,-c.width/2,-c.height/2);}else ctx.drawImage(img,-dw/2,-dh/2,dw,dh);ctx.restore();}
 function pp3DrawText(ctx,l,textOverride,alphaOverride,fontOverride){if(l.visible===false)return;const txt=(textOverride!=null?textOverride:l.text)||"";const lines=txt.split("\n");const fam=fontOverride||PP3_FONT_MAP[l.font]||l.font;ctx.save();ctx.font=`${l.fontSize}px "${fam}"`;ctx.textAlign="center";ctx.textBaseline="middle";const lh=l.fontSize*1.08,totalH=lh*lines.length;ctx.globalAlpha=alphaOverride!=null?alphaOverride:l.opacity;ctx.globalCompositeOperation=l.blend||"source-over";ctx.translate(l.x,l.y);ctx.rotate((l.rot||0)*Math.PI/180);ctx.transform(1,0,Math.tan((l.skew||0)*Math.PI/180),1,0,0);ctx.lineJoin="round";ctx.miterLimit=2;const startY=-totalH/2+lh/2;
-  if(l.shadow){ctx.save();ctx.globalAlpha=(alphaOverride!=null?alphaOverride:l.opacity)*(l.shadowOp!=null?l.shadowOp:1);if(l.shadowBlur>0){ctx.shadowColor=l.shadowColor;ctx.shadowBlur=l.shadowBlur;}ctx.fillStyle=l.shadowColor;ctx.strokeStyle=l.shadowColor;lines.forEach((t,i)=>{const y=startY+i*lh+(l.shadowDy||0),x=(l.shadowDx||0);if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeText(t,x,y);}ctx.fillText(t,x,y);});ctx.restore();}
-  const rubRaise = (txt.indexOf('₽')!==-1) ? PP3_RUB_OFFSET_Y : 0;
+  if(l.shadow){
+    ctx.save();
+    ctx.globalAlpha=(alphaOverride!=null?alphaOverride:l.opacity)*(l.shadowOp!=null?l.shadowOp:1);
+    if(l.shadowBlur>0){ctx.shadowColor=l.shadowColor;ctx.shadowBlur=l.shadowBlur;}
+    ctx.fillStyle=l.shadowColor;ctx.strokeStyle=l.shadowColor;
+    const _hasRub = txt.indexOf('₽')!==-1;
+    const _numFont = ctx.font;
+    const _rubFont = `normal ${Math.max(l.fontSize-4,16)}px 'Rockwell', serif`;
+    const _rubRaise = _hasRub ? l.fontSize * PP3_RUB_OFFSET_Y : 0;
+    lines.forEach((t,i)=>{
+      const y=startY+i*lh+(l.shadowDy||0), x=(l.shadowDx||0);
+      if(!_hasRub){
+        if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeText(t,x,y);}
+        ctx.fillText(t,x,y);
+      } else {
+        let ri=t.indexOf('₽'), head=t.slice(0,ri), tail=t.slice(ri);
+        ctx.font=_numFont; let headW=ctx.measureText(head).width;
+        ctx.font=_rubFont; let tailW=ctx.measureText(tail).width;
+        let fullW=headW+tailW, sx=x-fullW/2;
+        ctx.save(); ctx.textAlign="left";
+        ctx.font=_numFont;
+        if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeText(head,sx,y);}
+        ctx.fillText(head,sx,y);
+        ctx.font=_rubFont;
+        if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeText(tail,sx+headW,y-_rubRaise);}
+        ctx.fillText(tail,sx+headW,y-_rubRaise);
+        ctx.restore();
+      }
+    });
+    ctx.restore();
+  }
+  const hasRub = txt.indexOf('₽')!==-1;
+  const rubRaise = hasRub ? l.fontSize * PP3_RUB_OFFSET_Y : 0;
+  const numFont = ctx.font;                                   
+  const rubFont = `normal ${Math.max(l.fontSize-4,16)}px 'Rockwell', serif`; 
   const drawLineParts=(t,ly,stroke)=>{
-    if(rubRaise===0){ if(stroke)ctx.strokeText(t,0,ly); else ctx.fillText(t,0,ly); return; }
+    if(!hasRub){ if(stroke)ctx.strokeText(t,0,ly); else ctx.fillText(t,0,ly); return; }
     let ri=t.indexOf('₽');
-    let head=t.slice(0,ri), tail=t.slice(ri); // "₽" и всё после
-    let fullW=ctx.measureText(t).width, headW=ctx.measureText(head).width;
+    let head=t.slice(0,ri), tail=t.slice(ri); 
+    ctx.font=numFont; let headW=ctx.measureText(head).width;
+    ctx.font=rubFont; let tailW=ctx.measureText(tail).width;
+    let fullW=headW+tailW;
     ctx.save(); ctx.textAlign="left";
     let sx=-fullW/2;
-    if(stroke){ ctx.strokeText(head,sx,ly); ctx.strokeText(tail,sx+headW,ly-rubRaise); }
-    else { ctx.fillText(head,sx,ly); ctx.fillText(tail,sx+headW,ly-rubRaise); }
+    ctx.font=numFont;
+    if(stroke) ctx.strokeText(head,sx,ly); else ctx.fillText(head,sx,ly);
+    ctx.font=rubFont;
+    if(stroke) ctx.strokeText(tail,sx+headW,ly-rubRaise); else ctx.fillText(tail,sx+headW,ly-rubRaise);
     ctx.restore();
   };
   if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeStyle=l.strokeColor;lines.forEach((t,i)=>drawLineParts(t,startY+i*lh,true));}
@@ -13553,8 +13590,8 @@ function drawPP3Content(ctx, Wc, Hc){
     if(ir>cr){dh=H;dw=H*ir;} else {dw=W;dh=W/ir;}
     let bcx = window.layerState.pp3BgCenterX !== undefined ? window.layerState.pp3BgCenterX : PP3_BG_CENTER_X;
     let bcy = window.layerState.pp3BgCenterY !== undefined ? window.layerState.pp3BgCenterY : PP3_BG_CENTER_Y;
-    let dx = W*bcx - dw/2;
-    let dy = H*bcy - dh/2;
+    let dx = W/2 - dw*bcx;
+    let dy = H/2 - dh*bcy;
     if(dx>0)dx=0; if(dy>0)dy=0;
     if(dx<W-dw)dx=W-dw; if(dy<H-dh)dy=H-dh;
     ctx.drawImage(rawBgImage,dx,dy,dw,dh);
@@ -13628,7 +13665,7 @@ function drawPP3Content(ctx, Wc, Hc){
 
   if (window.layerState.textVisible!==false && cachedTextCanvas){
     ctx.save();
-    ctx.translate(PP3_NICK_OFFSET_X, 0);
+    ctx.translate(PP3_NICK_OFFSET_X, PP3_NICK_OFFSET_Y);
     ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, W, H);
     ctx.restore();
   }
