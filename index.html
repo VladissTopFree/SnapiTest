@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(25)";
+  const APP_VERSION = "v2.4.4(26)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -13378,9 +13378,9 @@ const PP3_KEY2ASSET = {
 };
 const PP3_FONT_MAP = { 'Pusia Bold':'PusiaBold', 'Lilita One':'LilitaOneRus' };
 const PP3_NICK_OFFSET_X = 246; 
-const PP3_NICK_OFFSET_Y = 36;
+const PP3_NICK_OFFSET_Y = 38;
 const PP3_RUB_OFFSET_Y = 3; 
-const PP3_BG_CENTER_X = 0.816; 
+const PP3_BG_CENTER_X = 0.896; 
 const PP3_BG_CENTER_Y = 0.47; 
 
 const PP3_LAYERS = [
@@ -13600,8 +13600,26 @@ function drawPP3Content(ctx, Wc, Hc){
     if (l.key==='n8'){ pp3DrawText(ctx,l, (window.layerState.pp3PriceBPP||'99999')+' ₽'); return; }
     if (/^n[1-6]$/.test(l.key)){ let gi=parseInt(l.key.slice(1))-1; let gv=(window.layerState.pp3Gems&&window.layerState.pp3Gems[gi])?window.layerState.pp3Gems[gi]:'99999'; pp3DrawText(ctx,l, gv+' ₽'); return; }
 
+    if (l.type==='poly' && (l.key==='pnl_bolt'||l.key==='pnl_base'||l.key==='pnl_orange'||l.key==='pnl_edge')){
+      let pc = window.getPP3PanelColors();
+      let pl = Object.assign({}, l);
+      if (l.key==='pnl_bolt')   pl.fill = pc.bolt;
+      if (l.key==='pnl_base')   pl.fill = pc.base;
+      if (l.key==='pnl_orange') pl.fill = pc.orange;
+      if (l.key==='pnl_edge')   pl.fill = pc.edge;
+      pp3DrawPoly(ctx, pl);
+      return;
+    }
     if (l.type==='poly') pp3DrawPoly(ctx,l);
-    else if (l.type==='glow') pp3DrawGlow(ctx,l);
+    else if (l.type==='glow'){
+      if ((l.color||'').toLowerCase()==='#ffffff'){
+        let gl = Object.assign({}, l);
+        gl.opacity = l.opacity * 0.5;   
+        pp3DrawGlow(ctx, gl);
+      } else {
+        pp3DrawGlow(ctx, l);
+      }
+    }
     else if (l.type==='rrect') pp3DrawRRect(ctx,l);
     else if (l.type==='text') pp3DrawText(ctx,l);
     else pp3DrawImage(ctx,l);
@@ -13833,6 +13851,49 @@ window.getProPassBgTint = function(img){
   } catch(e){
     return fallback;
   }
+};
+
+window.getPP3BgColor = function(){
+  if (window.layerState.isGeneratedBg && window.layerState.bgColorType){
+    const map = { green:[46,170,60], blue:[40,110,230], orange:[230,150,30], purple:[150,60,220], black:[70,70,70] };
+    let c = map[window.layerState.bgColorType] || [230,190,60];
+    return { r:c[0], g:c[1], b:c[2] };
+  }
+  if (rawBgImage){
+    try {
+      let sw=32, sh=32;
+      if(!window._pp3PanelC) window._pp3PanelC=document.createElement('canvas');
+      let c=window._pp3PanelC; c.width=sw; c.height=sh;
+      let cx=c.getContext('2d',{willReadFrequently:true});
+      let sx=rawBgImage.width*0.5, sWid=rawBgImage.width*0.5;
+      cx.drawImage(rawBgImage, sx, 0, sWid, rawBgImage.height, 0, 0, sw, sh);
+      let d=cx.getImageData(0,0,sw,sh).data;
+      let r=0,g=0,b=0,n=0;
+      for(let i=0;i<d.length;i+=4){ if(d[i+3]<125)continue; r+=d[i];g+=d[i+1];b+=d[i+2];n++; }
+      if(n>0){ r/=n; g/=n; b/=n;
+        let gray=0.299*r+0.587*g+0.114*b, sat=1.35;
+        r=gray+(r-gray)*sat; g=gray+(g-gray)*sat; b=gray+(b-gray)*sat;
+        return { r:Math.max(0,Math.min(255,r)), g:Math.max(0,Math.min(255,g)), b:Math.max(0,Math.min(255,b)) };
+      }
+    } catch(e){}
+  }
+  return { r:243, g:213, b:59 };
+};
+
+function pp3Shade(c, f){
+  let mix = (v) => f >= 0 ? v + (255 - v) * f : v * (1 + f);
+  let h = (v) => Math.max(0,Math.min(255,Math.round(mix(v)))).toString(16).padStart(2,'0');
+  return '#' + h(c.r) + h(c.g) + h(c.b);
+}
+
+window.getPP3PanelColors = function(){
+  let base = window.getPP3BgColor();
+  return {
+    bolt:   pp3Shade(base,  0.28),  
+    base:   pp3Shade(base,  0.05), 
+    orange: pp3Shade(base, -0.30),  
+    edge:   pp3Shade(base,  0.42)   
+  };
 };
 
 function drawProPassContent(ctx, Wc, Hc){
