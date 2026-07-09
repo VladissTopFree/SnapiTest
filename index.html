@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(21)";
+  const APP_VERSION = "v2.4.4(22)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3251,7 +3251,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
 
 <div id="wizard-step3-bp" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
       <div class="ios-wizard-title">Создание Brawl Pass</div>
-      <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цены. Укажите цены для 1-го стиля.</div>
+      <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цены. Укажите нужные значения.</div>
 
       <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
           <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
@@ -3556,7 +3556,7 @@ window.checkBPStyle4Ready = function() {
 
 <div id="wizard-step3-bp-dop" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
     <div class="ios-wizard-title">Создание Brawl Pass</div>
-    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цена. Укажите цену для работы.</div>
+    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цена. Укажите нужные значения.</div>
 
     <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
         <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
@@ -3572,7 +3572,7 @@ window.checkBPStyle4Ready = function() {
 
 <div id="wizard-step3-propass" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
     <div class="ios-wizard-title">Создание Pro Pass</div>
-    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цена. Укажите цену для Pro Pass.</div>
+    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цена. Укажите нужные значения.</div>
     <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto;">
         <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px;">
             <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
@@ -3582,6 +3582,64 @@ window.checkBPStyle4Ready = function() {
         </div>
     </div>
     <button id="wizard-next-btn3-propass" class="ios-action-btn ios-btn-next">Далее</button>
+</div>
+
+<div id="wizard-step3-propass-s3" class="wizard-step" style="height: 100%; padding-bottom: 100px;">
+    <div class="ios-wizard-title">Создание Pro Pass</div>
+    <div class="ios-wizard-subtitle" style="margin-bottom: 4px;">Цены. Укажите нужные значения.</div>
+
+    <div style="width: 100%; max-width: 440px; margin-top: 15px; flex-grow: 1; overflow-y: auto; padding-bottom: 40px; -webkit-overflow-scrolling: touch;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 20px;">
+
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">30 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p0" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">80 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p1" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">170 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p2" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">360 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p3" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">950 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p4" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">2000 gems</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p5" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p6" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+            <div style="position: relative; width: 100%; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Brawl Pass Plus</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p7" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+            <div style="position: relative; width: 100%; grid-column: span 2; background: var(--tg-theme-section-bg-color, #ffffff); border-radius: 14px; padding: 24px 12px 10px 12px; box-sizing: border-box;">
+                <div style="position: absolute; top: 8px; right: 12px; font-size: 13px; color: var(--tg-theme-text-color, #000); pointer-events: none; font-weight: 500;">Pro Pass</div>
+                <input type="text" inputmode="numeric" maxlength="5" id="pp3-p8" placeholder="Введите цену..." style="width: 100%; background: transparent; border: none; font-size: 17px; text-align: left; color: var(--tg-theme-text-color, #000); outline: none; padding: 0;" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value>99999)this.value='99999'; window.checkPP3Ready();">
+            </div>
+
+        </div>
+    </div>
+
+    <button id="wizard-next-btn3-propass-s3" class="ios-action-btn ios-btn-next">Далее</button>
 </div>
 
 </div> <div id="result-box">
@@ -5560,7 +5618,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -6623,7 +6681,7 @@ if (window.layerState.isBrawlPassMode) {
             <div class="ios-layer-name" style="flex-shrink: 1; min-width: 0; max-width: 75px; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">Высота</div>
             
             <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-right: 8px;">вверх</div>
-            <input type="range" class="ios-slider" min="-500" max="500" step="1" value="${window.layerState.globalOffersOffsetY || 0}" oninput="window.changeOffersOffsetY(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
+            <input type="range" class="ios-slider" min="-1000" max="1000" step="1" value="${window.layerState.globalOffersOffsetY || 0}" oninput="window.changeOffersOffsetY(this.value)" style="flex-grow: 1; flex-shrink: 1; min-width: 40px; margin: 0;">
             <div class="ios-layer-action-text" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; margin-left: 8px; margin-right: 0;">вниз</div>
         </div>
         `;
@@ -10575,6 +10633,13 @@ window.resetWizardState = () => {
       if (ppPrice) ppPrice.value = '';
       let ppNextBtn = document.getElementById('wizard-next-btn3-propass');
       if (ppNextBtn) ppNextBtn.classList.remove('show');
+
+      for (let i=0;i<=8;i++){ let el=document.getElementById('pp3-p'+i); if(el) el.value=''; }
+      let pp3NextBtn = document.getElementById('wizard-next-btn3-propass-s3');
+      if (pp3NextBtn) pp3NextBtn.classList.remove('show');
+      window.layerState.pp3Gems = [];
+      window.layerState.pp3PriceBP = undefined;
+      window.layerState.pp3PriceBPP = undefined;
       window._ppStyle = null;
       window.layerState.propassPriceColor = undefined;
 
@@ -11099,9 +11164,11 @@ wizardNextBtn2.onclick = async () => {
         return;
     }
 
-  if (wizardMode === 'propass') {
+    if (wizardMode === 'propass') {
         window.layerState.textValue = currentNick || "SNAPI";
-        let targetStep3pp = document.getElementById('wizard-step3-propass');
+        let targetStep3pp = (window.layerState.propassStyleIndex === 3)
+            ? document.getElementById('wizard-step3-propass-s3')
+            : document.getElementById('wizard-step3-propass');
         transitionStep(step2, targetStep3pp, document.getElementById('prog-step2'), document.getElementById('prog-step3'), document.getElementById('prog-line2'));
         return;
     }
@@ -11342,6 +11409,50 @@ document.getElementById('wizard-next-btn3-propass').onclick = async () => {
             window._sizeContext = 'propass';
             window.openSizeOverlay();
         }
+    }, 50);
+  };
+
+  document.getElementById('wizard-next-btn3-propass-s3').onclick = async () => {
+    if (window.triggerHaptic) window.triggerHaptic();
+    let btn = document.getElementById('wizard-next-btn3-propass-s3');
+    let orig = btn.innerHTML;
+    btn.style.pointerEvents = 'none';
+    btn.innerHTML = `<svg class="loading-spinner" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"></circle></svg>`;
+
+    setTimeout(async () => {
+        await document.fonts.ready;
+        window.layerState.isProPassMode = true;
+        window.layerState.isBrawlPassMode = false;
+        window.layerState.propassStyleIndex = 3;
+
+        window.layerState.pp3Gems = [];
+        for (let i = 0; i <= 5; i++) { window.layerState.pp3Gems[i] = document.getElementById('pp3-p'+i).value || "99999"; }
+        window.layerState.pp3PriceBP  = document.getElementById('pp3-p6').value || "99999";
+        window.layerState.pp3PriceBPP = document.getElementById('pp3-p7').value || "99999";
+        window.layerState.bpPriceLeft = document.getElementById('pp3-p8').value || "99999";
+
+        window.layerState.bgColorType = selectedColor;
+
+        if (uploadMode === 'ready_bg') { window.layerState.isReadyBg = true; window.layerState.isGeneratedBg = false; rawBgImage = uploadedReadyBaseImg; }
+        else if (selectedColor) { window.layerState.isReadyBg = false; window.layerState.isGeneratedBg = true; rawBgImage = await createGradientBg(selectedColor); }
+        else if (uploadedBaseImg.src) { window.layerState.isReadyBg = false; window.layerState.isGeneratedBg = false; rawBgImage = uploadedBaseImg; }
+        else { rawBgImage = null; }
+
+        window.layerState.starsVisible = true;
+        window.layerState.pointsVisible = true;
+        window.layerState.watermarksVisible = true;
+        window.layerState.starsOpacity = 1.0;
+        window.layerState.pointsOpacity = 1.0;
+        window.layerState.watermarksOpacity = 0.36;
+        window.layerState.watermarksFont = window.layerState.watermarksFont || 'Font16103';
+
+        btn.style.pointerEvents = 'auto';
+        btn.innerHTML = orig;
+
+        window.layerState.outputW = 1280;
+        window.layerState.outputH = 720;
+        document.getElementById('wizard-overlay').style.display = 'none';
+        window.openProPassEditor();
     }, 50);
   };
 
@@ -13265,6 +13376,10 @@ const PP3_KEY2ASSET = {
   bppass:'bppass', lvl11:'lvl11', brawler:'brawler', price:'price', maxicon:'maxicon'
 };
 const PP3_FONT_MAP = { 'Pusia Bold':'PusiaBold', 'Lilita One':'LilitaOneRus' };
+const PP3_NICK_OFFSET_X = 246; 
+const PP3_RUB_OFFSET_Y = 3; 
+const PP3_BG_CENTER_X = 0.62; 
+const PP3_BG_CENTER_Y = 0.47; 
 
 const PP3_LAYERS = [
   {"order":0,"key":"points_propass","type":"image","opacity":1,"visible":true,"src":"BP/points_propass_3style.png","x":660,"y":367,"scale":1.035,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":0,"shadowBlur":0,"shadowOp":1},
@@ -13358,12 +13473,50 @@ const PP3_LAYERS = [
 window.loadPP3Assets = async function(){
   const load=(src)=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});
   for (let id in PP3_IMG_SRC){ if(!globalAssets['pp3_'+id]) globalAssets['pp3_'+id]=await load(PP3_IMG_SRC[id]); }
+  if(!globalAssets['pp3_brawler2']) globalAssets['pp3_brawler2']=await load('BP/brawler_PP_3style_2.png');
+  if(!globalAssets['pp3_brawler3']) globalAssets['pp3_brawler3']=await load('BP/brawler_PP_3style_3.png');
+};
+
+window.ensurePP3BrawlerVariant = async function(v){
+  const map={1:'BP/brawler_PP_3style.png',2:'BP/brawler_PP_3style_2.png',3:'BP/brawler_PP_3style_3.png'};
+  const key={1:'brawler',2:'brawler2',3:'brawler3'}[v]||'brawler';
+  if(globalAssets['pp3_'+key]) return globalAssets['pp3_'+key];
+  const load=(src)=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});
+  globalAssets['pp3_'+key]=await load(map[v]);
+  return globalAssets['pp3_'+key];
+};
+
+window.selectPP3BrawlerVariant = function(v){
+  if(window.triggerHaptic) window.triggerHaptic();
+  if((window.layerState.brawler1Variant||1)===v) return;
+  window.layerState.brawler1Variant=v;
+  renderLayerPanel();
+  window.ensurePP3BrawlerVariant(v).then(()=>{ if(typeof startAnimation==='function') startAnimation(); });
+};
+
+window.updatePP3Price = function(field, el){
+  let v=el.value.replace(/[^0-9]/g,''); if(v && parseInt(v)>99999) v='99999'; el.value=v;
+  window.layerState[field]=v; window.requestRender();
+};
+window.updatePP3Gem = function(idx, el){
+  let v=el.value.replace(/[^0-9]/g,''); if(v && parseInt(v)>99999) v='99999'; el.value=v;
+  if(!window.layerState.pp3Gems) window.layerState.pp3Gems=[];
+  window.layerState.pp3Gems[idx]=v; window.requestRender();
 };
 
 function pp3Hex(hex,a){hex=(hex||"#000").replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');const n=parseInt(hex,16)||0;return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
 function pp3RoundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function pp3ApplyShadow(ctx,l){if(l.shadow){ctx.shadowColor=pp3Hex(l.shadowColor||"#000000",l.shadowOp!=null?l.shadowOp:1);ctx.shadowBlur=l.shadowBlur||0;ctx.shadowOffsetX=l.shadowDx||0;ctx.shadowOffsetY=l.shadowDy||0;}}
-function pp3Img(l){let k=PP3_KEY2ASSET[l.key];return k?globalAssets['pp3_'+k]:null;}
+function pp3Img(l){
+  if(l.key==='brawler'){
+    let v=window.layerState.brawler1Variant||1;
+    let key={1:'brawler',2:'brawler2',3:'brawler3'}[v]||'brawler';
+    let img = globalAssets['pp3_'+key] || globalAssets['pp3_brawler'];
+    if(l._lastVar!==v){ l._sil=null; l._strk=null; l._lastVar=v; } 
+    return img;
+  }
+  let k=PP3_KEY2ASSET[l.key];return k?globalAssets['pp3_'+k]:null;
+}
 function pp3GetSil(l,img,color){if(!l._sil)l._sil={};if(l._sil[color])return l._sil[color];const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;const cx=c.getContext('2d');cx.drawImage(img,0,0);cx.globalCompositeOperation="source-in";cx.fillStyle=color;cx.fillRect(0,0,c.width,c.height);l._sil[color]=c;return c;}
 function pp3StampSil(cx,sil,CX,CY,R,dw,dh){if(R<=0){cx.drawImage(sil,CX-dw/2,CY-dh/2,dw,dh);return;}const N=Math.min(64,Math.max(20,Math.ceil(R*2)));[R,R*0.6].forEach(ring=>{for(let a=0;a<N;a++){const ang=a/N*6.2831853;cx.drawImage(sil,CX+Math.cos(ang)*ring-dw/2,CY+Math.sin(ang)*ring-dh/2,dw,dh);}});cx.drawImage(sil,CX-dw/2,CY-dh/2,dw,dh);}
 function pp3BuildStroked(l,img,dw,dh,strokes){const sig=(dw|0)+"x"+(dh|0)+"|"+strokes.map(s=>s.w+s.color).join(",");if(l._strk&&l._strk.sig===sig)return l._strk.canvas;const total=strokes.reduce((a,s)=>a+s.w,0);const pad=Math.ceil(total)+3;const ow=Math.ceil(dw)+pad*2,oh=Math.ceil(dh)+pad*2;const c=document.createElement('canvas');c.width=ow;c.height=oh;const cx=c.getContext('2d');const CX=ow/2,CY=oh/2;let cum=0;const cums=strokes.map(s=>cum+=s.w);for(let k=strokes.length-1;k>=0;k--){const sil=pp3GetSil(l,img,strokes[k].color);pp3StampSil(cx,sil,CX,CY,cums[k],dw,dh);}cx.drawImage(img,CX-dw/2,CY-dh/2,dw,dh);l._strk={sig,canvas:c};return c;}
@@ -13374,24 +13527,76 @@ function pp3DrawGlow(ctx,l){if(l.visible===false)return;ctx.save();ctx.globalCom
 function pp3DrawImage(ctx,l,alpha){if(l.visible===false)return;const img=pp3Img(l);if(!img)return;const dw=img.naturalWidth*l.scale,dh=img.naturalHeight*l.scale;const strokes=(Array.isArray(l.strokes)?l.strokes:[]).filter(s=>s&&s.w>0);ctx.save();ctx.globalAlpha=alpha!=null?alpha:l.opacity;ctx.translate(l.x,l.y);ctx.rotate((l.rot||0)*Math.PI/180);ctx.scale(l.flipH?-1:1,l.flipV?-1:1);pp3ApplyShadow(ctx,l);if(strokes.length){const c=pp3BuildStroked(l,img,dw,dh,strokes);ctx.drawImage(c,-c.width/2,-c.height/2);}else ctx.drawImage(img,-dw/2,-dh/2,dw,dh);ctx.restore();}
 function pp3DrawText(ctx,l,textOverride,alphaOverride,fontOverride){if(l.visible===false)return;const txt=(textOverride!=null?textOverride:l.text)||"";const lines=txt.split("\n");const fam=fontOverride||PP3_FONT_MAP[l.font]||l.font;ctx.save();ctx.font=`${l.fontSize}px "${fam}"`;ctx.textAlign="center";ctx.textBaseline="middle";const lh=l.fontSize*1.08,totalH=lh*lines.length;ctx.globalAlpha=alphaOverride!=null?alphaOverride:l.opacity;ctx.globalCompositeOperation=l.blend||"source-over";ctx.translate(l.x,l.y);ctx.rotate((l.rot||0)*Math.PI/180);ctx.transform(1,0,Math.tan((l.skew||0)*Math.PI/180),1,0,0);ctx.lineJoin="round";ctx.miterLimit=2;const startY=-totalH/2+lh/2;
   if(l.shadow){ctx.save();ctx.globalAlpha=(alphaOverride!=null?alphaOverride:l.opacity)*(l.shadowOp!=null?l.shadowOp:1);if(l.shadowBlur>0){ctx.shadowColor=l.shadowColor;ctx.shadowBlur=l.shadowBlur;}ctx.fillStyle=l.shadowColor;ctx.strokeStyle=l.shadowColor;lines.forEach((t,i)=>{const y=startY+i*lh+(l.shadowDy||0),x=(l.shadowDx||0);if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeText(t,x,y);}ctx.fillText(t,x,y);});ctx.restore();}
-  if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeStyle=l.strokeColor;lines.forEach((t,i)=>ctx.strokeText(t,0,startY+i*lh));}
-  ctx.fillStyle=l.color;lines.forEach((t,i)=>ctx.fillText(t,0,startY+i*lh));ctx.restore();}
+  const rubRaise = (txt.indexOf('₽')!==-1) ? PP3_RUB_OFFSET_Y : 0;
+  const drawLineParts=(t,ly,stroke)=>{
+    if(rubRaise===0){ if(stroke)ctx.strokeText(t,0,ly); else ctx.fillText(t,0,ly); return; }
+    let ri=t.indexOf('₽');
+    let head=t.slice(0,ri), tail=t.slice(ri); // "₽" и всё после
+    let fullW=ctx.measureText(t).width, headW=ctx.measureText(head).width;
+    ctx.save(); ctx.textAlign="left";
+    let sx=-fullW/2;
+    if(stroke){ ctx.strokeText(head,sx,ly); ctx.strokeText(tail,sx+headW,ly-rubRaise); }
+    else { ctx.fillText(head,sx,ly); ctx.fillText(tail,sx+headW,ly-rubRaise); }
+    ctx.restore();
+  };
+  if(l.strokeW>0){ctx.lineWidth=l.strokeW;ctx.strokeStyle=l.strokeColor;lines.forEach((t,i)=>drawLineParts(t,startY+i*lh,true));}
+  ctx.fillStyle=l.color;lines.forEach((t,i)=>drawLineParts(t,startY+i*lh,false));ctx.restore();}
 
 function drawPP3Content(ctx, Wc, Hc){
   const W=1280,H=720;
   ctx.save();
-  let g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,"#93380d");g.addColorStop(1,"#93380d");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  let rg=ctx.createRadialGradient(W*0.62,H*0.42,60,W*0.62,H*0.42,620);rg.addColorStop(0,"rgba(255,210,120,.18)");rg.addColorStop(1,"rgba(255,210,120,0)");ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
+  if (rawBgImage){
+    let ir=rawBgImage.width/rawBgImage.height, cr=W/H, dw,dh;
+    if(ir>cr){dh=H;dw=H*ir;} else {dw=W;dh=W/ir;}
+    let bcx = window.layerState.pp3BgCenterX !== undefined ? window.layerState.pp3BgCenterX : PP3_BG_CENTER_X;
+    let bcy = window.layerState.pp3BgCenterY !== undefined ? window.layerState.pp3BgCenterY : PP3_BG_CENTER_Y;
+    let dx = W*bcx - dw/2;
+    let dy = H*bcy - dh/2;
+    if(dx>0)dx=0; if(dy>0)dy=0;
+    if(dx<W-dw)dx=W-dw; if(dy<H-dh)dy=H-dh;
+    ctx.drawImage(rawBgImage,dx,dy,dw,dh);
+  } else {
+    let g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,"#93380d");g.addColorStop(1,"#93380d");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
 
-  const priceOff = window.layerState.priceVis_propass === false;
   const nick = window.layerState.textValue || "SNAPI";
 
   PP3_LAYERS.forEach(l=>{
     if (l.key==='points_propass'){ if(window.layerState.pointsVisible===false)return; pp3DrawImage(ctx,l, window.layerState.pointsOpacity!==undefined?window.layerState.pointsOpacity:l.opacity); return; }
     if (l.key==='stars'){ if(window.layerState.starsVisible===false)return; pp3DrawImage(ctx,l, window.layerState.starsOpacity!==undefined?window.layerState.starsOpacity:l.opacity); return; }
-    if (String(l.key).indexOf('wm')===0 && l.type==='text'){ if(window.layerState.watermarksVisible===false)return; pp3DrawText(ctx,l, nick, window.layerState.watermarksOpacity!==undefined?window.layerState.watermarksOpacity:l.opacity, window.layerState.watermarksFont||'Font16103'); return; }
-    if (l.key==='price'){ if(priceOff)return; pp3DrawImage(ctx,l); return; }
-    if (l.key==='t_99999_big'){ if(priceOff)return; pp3DrawText(ctx,l, (window.layerState.bpPriceLeft||'99999')+' 1'); return; }
+    if (l.key==='glow_a'){
+      let gl = Object.assign({}, l);
+      if (window.layerState.isGeneratedBg && window.layerState.bgColorType){
+        const glowMap = { green:'#aef700', blue:'#46b3ff', orange:'#ffcc00', purple:'#c861ff', black:'#ffffff' };
+        gl.color = glowMap[window.layerState.bgColorType] || '#d6a50d';
+        gl.blend = 'screen';
+      } else if (rawBgImage){
+        gl.color = '#ffffff';
+        gl.blend = 'overlay';
+      }
+      pp3DrawGlow(ctx, gl);
+      return;
+    }
+    if (String(l.key).indexOf('wm')===0 && l.type==='text'){
+      if(window.layerState.watermarksVisible===false)return;
+      let wmL = Object.assign({}, l);
+      if (window.layerState.isGeneratedBg && window.layerState.bgColorType){
+        const nickMap = { green:'#ffffff', blue:'#ffffff', orange:'#000000', purple:'#ffffff', black:'#ffffff' };
+        wmL.color = nickMap[window.layerState.bgColorType] || '#000000';
+      } else if (rawBgImage){
+        window.getProPassBgTint(rawBgImage);
+        wmL.color = (window._ppTintLum !== undefined && window._ppTintLum < 140) ? '#ffffff' : '#000000';
+      } else {
+        wmL.color = '#000000';
+      }
+      pp3DrawText(ctx, wmL, nick, window.layerState.watermarksOpacity!==undefined?window.layerState.watermarksOpacity:l.opacity, window.layerState.watermarksFont||'Font16103');
+      return;
+    }
+    if (l.key==='price'){ pp3DrawImage(ctx,l); return; }
+    if (l.key==='t_99999_big'){ pp3DrawText(ctx,l, (window.layerState.bpPriceLeft||'99999')+' ₽'); return; }
+    if (l.key==='n7'){ pp3DrawText(ctx,l, (window.layerState.pp3PriceBP||'99999')+' ₽'); return; }
+    if (l.key==='n8'){ pp3DrawText(ctx,l, (window.layerState.pp3PriceBPP||'99999')+' ₽'); return; }
+    if (/^n[1-6]$/.test(l.key)){ let gi=parseInt(l.key.slice(1))-1; let gv=(window.layerState.pp3Gems&&window.layerState.pp3Gems[gi])?window.layerState.pp3Gems[gi]:'99999'; pp3DrawText(ctx,l, gv+' ₽'); return; }
 
     if (l.type==='poly') pp3DrawPoly(ctx,l);
     else if (l.type==='glow') pp3DrawGlow(ctx,l);
@@ -13401,7 +13606,10 @@ function drawPP3Content(ctx, Wc, Hc){
   });
 
   if (window.layerState.textVisible!==false && cachedTextCanvas){
+    ctx.save();
+    ctx.translate(PP3_NICK_OFFSET_X, 0);
     ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, W, H);
+    ctx.restore();
   }
   ctx.restore();
 }
@@ -13457,6 +13665,14 @@ window.checkProPassReady = function(){
   if(!el||!btn) return;
   if (el.value.trim()!=='') btn.classList.add('show'); else btn.classList.remove('show');
 };
+
+window.checkPP3Ready = function(){
+    let ok = true;
+    for (let i=0;i<=8;i++){ let el=document.getElementById('pp3-p'+i); if(!el||el.value.trim()===''){ ok=false; break; } }
+    let btn=document.getElementById('wizard-next-btn3-propass-s3');
+    if(btn){ if(ok) btn.classList.add('show'); else btn.classList.remove('show'); }
+};
+setTimeout(window.checkPP3Ready, 50);
 
 window.updateProPassPrice = function(el){
   let v=el.value.replace(/[^0-9]/g,''); if(v && parseInt(v)>99999) v='99999';
@@ -13809,13 +14025,36 @@ function renderProPassLayerPanel(isInitialLoad){
   let ppPriceVis = window.layerState.priceVis_propass !== false;
   let ppPriceColor = window.layerState.propassPriceColor || '#000000';
   let ppShowColor = window.layerState.propassStyleIndex !== 3;
+  let pp3 = window.layerState.propassStyleIndex === 3;
   html += `<div class="ios-layer-group ${a}">
-      <div class="ios-layer-row" ${ppShowColor ? '' : 'style="border-bottom:none;"'}>
-        <div class="ios-icon-btn ios-eye-icon ${ppPriceVis?'':'hidden'}" onclick="togglePriceVis('propass')">${getEyeSVG(ppPriceVis)}</div>
+      <div class="ios-layer-row" ${(!ppShowColor && !pp3) ? 'style="border-bottom:none;"' : ''}>
+        ${pp3 ? '' : `<div class="ios-icon-btn ios-eye-icon ${ppPriceVis?'':'hidden'}" onclick="togglePriceVis('propass')">${getEyeSVG(ppPriceVis)}</div>`}
         <div class="ios-layer-name">Pro Pass</div>
         <div class="ios-layer-action-text">значение</div>
         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft||''}" maxlength="5" oninput="updateProPassPrice(this)" style="width:65px;">
       </div>`;
+  if (pp3){
+      html += `
+      <div class="ios-layer-row">
+        <div class="ios-layer-name">Brawl Pass</div>
+        <div class="ios-layer-action-text">значение</div>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.pp3PriceBP||''}" maxlength="5" oninput="updatePP3Price('pp3PriceBP', this)" style="width:65px;">
+      </div>
+      <div class="ios-layer-row">
+        <div class="ios-layer-name">Brawl Pass Plus</div>
+        <div class="ios-layer-action-text">значение</div>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.pp3PriceBPP||''}" maxlength="5" oninput="updatePP3Price('pp3PriceBPP', this)" style="width:65px;">
+      </div>`;
+      ['30 gems','80 gems','170 gems','360 gems','950 gems','2000 gems'].forEach((lab,i)=>{
+        let gv=(window.layerState.pp3Gems&&window.layerState.pp3Gems[i])?window.layerState.pp3Gems[i]:'';
+        html += `
+      <div class="ios-layer-row" ${i===5?'style="border-bottom:none;"':''}>
+        <div class="ios-layer-name">${lab}</div>
+        <div class="ios-layer-action-text">значение</div>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${gv}" maxlength="5" oninput="updatePP3Gem(${i}, this)" style="width:65px;">
+      </div>`;
+      });
+  }
   if (ppShowColor) html += `
       <div class="ios-layer-row" style="border-bottom:none;">
         <div class="ios-layer-name" style="flex-grow:1;">Цвет цены</div>
@@ -13846,6 +14085,41 @@ function renderProPassLayerPanel(isInitialLoad){
         </div>
       </div>`;
   }
+if (window.layerState.propassStyleIndex === 3){
+    let bcx = window.layerState.pp3BgCenterX !== undefined ? window.layerState.pp3BgCenterX : PP3_BG_CENTER_X;
+    let bcy = window.layerState.pp3BgCenterY !== undefined ? window.layerState.pp3BgCenterY : PP3_BG_CENTER_Y;
+    html += `<div class="ios-section-title ${a}" style="color:#ff9500;">⚙ ВРЕМЕННО: ЦЕНТР ФОНА</div>`;
+    html += `<div class="ios-layer-group ${a}">
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Центр X</div>
+          <div id="v-pp3-bcx" style="margin-right:10px; color:#8E8E93; width:52px; text-align:right; font-family:monospace;">${bcx.toFixed(3)}</div>
+          <input type="range" class="ios-slider" min="0" max="1" step="0.001" value="${bcx}" oninput="document.getElementById('v-pp3-bcx').innerText=parseFloat(this.value).toFixed(3); window.layerState.pp3BgCenterX=parseFloat(this.value); if(typeof startAnimation==='function') startAnimation();">
+        </div>
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Центр Y</div>
+          <div id="v-pp3-bcy" style="margin-right:10px; color:#8E8E93; width:52px; text-align:right; font-family:monospace;">${bcy.toFixed(3)}</div>
+          <input type="range" class="ios-slider" min="0" max="1" step="0.001" value="${bcy}" oninput="document.getElementById('v-pp3-bcy').innerText=parseFloat(this.value).toFixed(3); window.layerState.pp3BgCenterY=parseFloat(this.value); if(typeof startAnimation==='function') startAnimation();">
+        </div>
+        <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
+          <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;" onclick="window.copyPP3BgCenter()">📋 Скопировать значения</button>
+        </div>
+      </div>`;
+
+    let cur = window.layerState.brawler1Variant || 1;
+    html += `<div class="ios-section-title ${a}">ЦВЕТ ПЕРСОНАЖА</div>`;
+    html += `<div class="ios-layer-group ${a}">`;
+    for (let v=1; v<=3; v++){
+      let vis = cur===v;
+      html += `
+        <div class="ios-layer-row" ${v===3?'style="border-bottom:none;"':''}>
+          <div class="ios-icon-btn ios-eye-icon ${vis?'':'hidden'}" onclick="selectPP3BrawlerVariant(${v})">${getEyeSVG(vis)}</div>
+          <div class="ios-layer-name">${v} вариант скина</div>
+          <div style="flex-grow:1;"></div>
+        </div>`;
+    }
+    html += `</div>`;
+  }
+
   html += `<div class="ios-layer-group ${a}">`;
   if (window.layerState.propassStyleIndex !== 3) html += ppRow('luch','Лучи', window.layerState.luchVisible!==false, window.layerState.luchOpacity!==undefined?window.layerState.luchOpacity:1, false);
   html += ppRow('stars','Звёзды', window.layerState.starsVisible!==false, window.layerState.starsOpacity!==undefined?window.layerState.starsOpacity:1, false);
@@ -13869,6 +14143,20 @@ window.copyProPassIconBoost = function(){
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert)
       window.Telegram.WebApp.showAlert('✅ Код скопирован! Вставь его рядом с PROPASS_ICON_CIRCLES.');
     else alert('✅ Код скопирован!');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(code).then(done).catch(()=>prompt('Скопируй вручную:', code));
+  else prompt('Скопируй вручную:', code);
+};
+
+window.copyPP3BgCenter = function(){
+  let x = window.layerState.pp3BgCenterX !== undefined ? window.layerState.pp3BgCenterX : PP3_BG_CENTER_X;
+  let y = window.layerState.pp3BgCenterY !== undefined ? window.layerState.pp3BgCenterY : PP3_BG_CENTER_Y;
+  let code = `const PP3_BG_CENTER_X = ${x.toFixed(3)};\nconst PP3_BG_CENTER_Y = ${y.toFixed(3)};`;
+  let done = () => {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert)
+      window.Telegram.WebApp.showAlert('✅ Скопировано! Замени этими строками PP3_BG_CENTER_X / PP3_BG_CENTER_Y.');
+    else alert('✅ Скопировано!');
   };
   if (navigator.clipboard && navigator.clipboard.writeText)
     navigator.clipboard.writeText(code).then(done).catch(()=>prompt('Скопируй вручную:', code));
