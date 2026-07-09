@@ -8,11 +8,12 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(29)";
+  const APP_VERSION = "v2.4.4(30)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = false; 
+  const SHOW_PROMO_BANNER = false;  
+  const SHOW_PROMO_BANNER_PP = true; 
   const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
@@ -2160,6 +2161,17 @@
   opacity: 0.8;
 }
 
+.promo-banner-green {
+  background: #3fae4a;
+}
+
+.promo-pp-icon {
+  height: 82%;              /* размер: было 75% у общего .promo-bp-icon */
+  margin-right: 4px;        /* правее/левее (отрицательное = левее) */
+  margin-bottom: 6px;       /* выше (положительное = приподнять) */
+  transform: translateX(-6px) translateY(-2px); /* точная подгонка */
+}
+
 .promo-bp-icon {
   height: 75%; 
   width: auto;
@@ -2202,6 +2214,15 @@
     height: 75%; 
     width: auto;
     object-fit: contain;
+}
+
+.promo-banner-green .promo-action {
+  color: #29ff29;   
+}
+
+.promo-banner-green .promo-timer-box {
+    background: #002c002e;;
+    color: #e1ffdc;
 }
 
 .promo-timer-box {
@@ -2817,6 +2838,27 @@ body:not(.os-non-apple) .ios-icon-box > * {
   
   <div class="promo-icon-wrapper">
     <img src="BP/bp_icon_brawl_pass.png" class="promo-bp-icon" alt="" draggable="false">
+  </div>
+</div>
+
+<div class="promo-banner promo-banner-green" id="propass-promo" onclick="window.openProPassFromPromo()">
+  <div class="promo-bg-arrows">
+    <svg viewBox="0 0 512 512"><g transform="translate(0,512) scale(0.1,-0.1)" fill="#ffffff" stroke="none"><path d="M1519 4852 c-123 -32 -234 -128 -292 -250 -30 -64 -32 -73 -32 -187 0 -207 -71 -120 859 -1053 l801 -802 -811 -813 c-758 -760 -812 -816 -838 -875 -38 -88 -51 -177 -36 -260 45 -262 303 -432 555 -367 126 33 106 15 1124 1029 530 529 983 987 1007 1019 114 153 114 381 0 534 -24 32 -473 486 -997 1010 -1015 1012 -984 984 -1116 1018 -73 19 -141 18 -224 -3z"/></g></svg>
+    <svg viewBox="0 0 512 512"><g transform="translate(0,512) scale(0.1,-0.1)" fill="#ffffff" stroke="none"><path d="M1519 4852 c-123 -32 -234 -128 -292 -250 -30 -64 -32 -73 -32 -187 0 -207 -71 -120 859 -1053 l801 -802 -811 -813 c-758 -760 -812 -816 -838 -875 -38 -88 -51 -177 -36 -260 45 -262 303 -432 555 -367 126 33 106 15 1124 1029 530 529 983 987 1007 1019 114 153 114 381 0 534 -24 32 -473 486 -997 1010 -1015 1012 -984 984 -1116 1018 -73 19 -141 18 -224 -3z"/></g></svg>
+    <svg viewBox="0 0 512 512"><g transform="translate(0,512) scale(0.1,-0.1)" fill="#ffffff" stroke="none"><path d="M1519 4852 c-123 -32 -234 -128 -292 -250 -30 -64 -32 -73 -32 -187 0 -207 -71 -120 859 -1053 l801 -802 -811 -813 c-758 -760 -812 -816 -838 -875 -38 -88 -51 -177 -36 -260 45 -262 303 -432 555 -367 126 33 106 15 1124 1029 530 529 983 987 1007 1019 114 153 114 381 0 534 -24 32 -473 486 -997 1010 -1015 1012 -984 984 -1116 1018 -73 19 -141 18 -224 -3z"/></g></svg>
+  </div>
+  <div class="promo-content">
+    <div class="promo-subtitle">Новый Pro Pass</div>
+    <div class="promo-timer-box" id="pp-promo-timer-container">
+        через&nbsp;<span id="pp-promo-timer">00:00:00</span>    
+    </div>
+    <div class="promo-action">
+      Оформить
+      <svg viewBox="0 0 512 512"><g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor" stroke="none"><path d="M1519 4852 c-123 -32 -234 -128 -292 -250 -30 -64 -32 -73 -32 -187 0 -207 -71 -120 859 -1053 l801 -802 -811 -813 c-758 -760 -812 -816 -838 -875 -38 -88 -51 -177 -36 -260 45 -262 303 -432 555 -367 126 33 106 15 1124 1029 530 529 983 987 1007 1019 114 153 114 381 0 534 -24 32 -473 486 -997 1010 -1015 1012 -984 984 -1116 1018 -73 19 -141 18 -224 -3z"/></g></svg>
+    </div>
+  </div>
+  <div class="promo-icon-wrapper">
+    <img src="BP/bp_icon_pro_pass_icon.png" class="promo-bp-icon promo-pp-icon" alt="" draggable="false">
   </div>
 </div>
 
@@ -8397,7 +8439,7 @@ window.applyColorCorrection = async function() {
 
         const contrast     = 1.14;
         const brightness   = 1.03;
-        const vibrance     = 0.55;   
+        const vibrance     = 0.75;   
         const splitWarm    = 10;    
         const splitCool    = 10;     
         const vignette     = 0.34;
@@ -8442,14 +8484,18 @@ window.applyColorCorrection = async function() {
                 g = (g - 128) * contrast + 128;
                 b = (b - 128) * contrast + 128;
 
-                let mx = Math.max(r, g, b), avg = (r + g + b) / 3;
-                let amt = (Math.abs(mx - avg) * 2 / 255) * vibrance;
-                r += (mx - r) * amt; g += (mx - g) * amt; b += (mx - b) * amt;
+                let mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+                let avg = (r + g + b) / 3;
+                let curSat = (mx - mn) / 255;                 
+                let amt = 1 + vibrance * (1 - curSat);        
+                r = avg + (r - avg) * amt;
+                g = avg + (g - avg) * amt;
+                b = avg + (b - avg) * amt;
 
                 let lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
                 let hi = lum, lo = 1 - lum;
-                r += splitWarm * hi * warmMul - splitCool * lo * 0.4;
-                b += splitCool * lo * coolMul - splitWarm * hi * 0.4;
+                r += splitWarm * hi * warmMul - splitCool * lo * 0.2;
+                b += splitCool * lo * coolMul - splitWarm * hi * 0.2;
                 g += splitWarm * hi * warmMul * 0.15;
 
                 r += (r - blur[i])     * highpass;
@@ -12775,8 +12821,11 @@ setTimeout(() => { window.renderPromoBgStars(); }, 150);
 
 window.initPromoTimer = function() {
 
+    let ppBannerEl = document.getElementById('propass-promo');
+    if (ppBannerEl) ppBannerEl.style.display = SHOW_PROMO_BANNER_PP ? 'flex' : 'none';
+
+    let bannerEl = document.getElementById('main-promo');
     if (!SHOW_PROMO_BANNER) {
-        let bannerEl = document.getElementById('main-promo');
         if (bannerEl) bannerEl.style.display = 'none';
         return;
     }
@@ -12836,7 +12885,49 @@ window.initPromoTimer = function() {
         });
 };
 
+window.initPromoTimerPP = function() {
+    if (!SHOW_PROMO_BANNER_PP) return;
+
+    const timerEl = document.getElementById('pp-promo-timer');
+    const container = document.getElementById('pp-promo-timer-container');
+    if (!timerEl || !container) return;
+
+    const targetTime = new Date("2026-07-17T11:00:00+03:00").getTime();
+    let timeOffset = 0;
+    let timerInterval;
+
+    if (targetTime - new Date().getTime() <= 0) { container.style.display = 'none'; return; }
+
+    const hideSmoothly = () => {
+        container.classList.add('hidden-smooth');
+        setTimeout(() => { container.style.display = 'none'; }, 500);
+    };
+
+    const updateTimer = () => {
+        const diff = targetTime - (new Date().getTime() + timeOffset);
+        if (diff <= 0) { clearInterval(timerInterval); hideSmoothly(); return; }
+        const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+        const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+        const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+        timerEl.innerText = `${h}:${m}:${s}`;
+    };
+
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+
+    fetch('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Moscow')
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.dateTime) {
+                timeOffset = new Date(data.dateTime).getTime() - new Date().getTime();
+                updateTimer();
+            }
+        })
+        .catch(e => console.warn("API времени недоступно", e));
+};
+
 window.initPromoTimer();
+window.initPromoTimerPP();
 
 window.openBPFromPromo = function() {
     if (window.triggerHaptic) window.triggerHaptic();
@@ -12866,6 +12957,29 @@ window.openBPFromPromo = function() {
     document.getElementById('bp-style-overlay').style.display = 'flex';
     window.scrollTo(0,0);
     
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+        window.Telegram.WebApp.BackButton.show();
+    }
+};
+
+window.openProPassFromPromo = function() {
+    if (window.triggerHaptic) window.triggerHaptic();
+    if (window.resetWizardState) window.resetWizardState();
+    isCurrentProjectSaved = false;
+    document.getElementById('ios-dashboard').style.display = 'none';
+    document.getElementById('result-box').style.display = 'none';
+    let btnWrap = document.getElementById('download-btn-wrap');
+    if (btnWrap) btnWrap.style.display = 'none';
+
+    selectedCategory = 'propass';
+    window._ppStyle = null;
+    for (let i = 1; i <= 3; i++) {
+        let r = document.getElementById(`propass-radio-${i}`);
+        if (r) r.classList.remove('checked');
+    }
+    document.getElementById('propass-style-btn-next').classList.remove('show');
+    document.getElementById('propass-style-overlay').style.display = 'flex';
+    window.scrollTo(0, 0);
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
         window.Telegram.WebApp.BackButton.show();
     }
@@ -13412,7 +13526,7 @@ const PP3_KEY2ASSET = {
 };
 const PP3_FONT_MAP = { 'Pusia Bold':'PusiaBold', 'Lilita One':'LilitaOneRus' };
 const PP3_NICK_OFFSET_X = 246; 
-const PP3_NICK_OFFSET_Y = 16;
+const PP3_NICK_OFFSET_Y = 6;
 const PP3_RUB_OFFSET_Y = -0.16; 
 const PP3_BG_CENTER_X = 0.896; 
 const PP3_BG_CENTER_Y = 0.47; 
