@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(30)";
+  const APP_VERSION = "v2.4.4(31)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2156,6 +2156,55 @@
   transition: transform 0.1s ease, opacity 0.1s ease; 
 }
 
+.promo-banner {
+  position: relative;
+  overflow: hidden;   
+}
+
+.promo-banner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  filter: blur(12px);
+  transform: translateX(-160%) skewX(-18deg);
+  pointer-events: none;
+  z-index: 3;
+  animation: promoShine 4s ease-in-out infinite;
+}
+
+@keyframes promoShine {
+  0%   { transform: translateX(-160%) skewX(-18deg); }
+  25%  { transform: translateX(320%)  skewX(-18deg); }  
+  100% { transform: translateX(320%)  skewX(-18deg); }  
+}
+
+#main-promo::after {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 240, 150, 0) 0%,
+    rgba(255, 240, 150, 0.4) 50%,
+    rgba(255, 240, 150, 0) 100%
+  );
+}
+
+#propass-promo::after {
+  background: linear-gradient(
+    100deg,
+    rgba(180, 255, 170, 0) 0%,
+    rgba(180, 255, 170, 0.4) 50%,
+    rgba(180, 255, 170, 0) 100%
+  );
+}
+
 .promo-banner:active {
   transform: scale(0.95);
   opacity: 0.8;
@@ -2166,10 +2215,10 @@
 }
 
 .promo-pp-icon {
-  height: 82%;              /* размер: было 75% у общего .promo-bp-icon */
-  margin-right: 4px;        /* правее/левее (отрицательное = левее) */
-  margin-bottom: 6px;       /* выше (положительное = приподнять) */
-  transform: translateX(-6px) translateY(-2px); /* точная подгонка */
+  height: 100%;              
+  margin-right: 16px;        
+  margin-bottom: -3px;       
+  transform: translateX(-6px) translateY(-2px); 
 }
 
 .promo-bp-icon {
@@ -8437,19 +8486,19 @@ window.applyColorCorrection = async function() {
         const h = persistentCanvas.height;
         const ctx = persistentCtx;
 
-        const contrast     = 1.14;
+        const contrast     = 1.06;
         const brightness   = 1.03;
-        const vibrance     = 0.75;   
+        const vibrance     = 0.31;   
         const splitWarm    = 10;    
         const splitCool    = 10;     
         const vignette     = 0.34;
         const vignettePow  = 2.4;
         const centerDark   = 0.30;   
         const centerRadius = 0.62;   
-        const bloomThresh  = 205;    
-        const bloomAmount  = 0.42;
+        const bloomThresh  = 231;    
+        const bloomAmount  = 0.21;
         const bloomBlur    = 14;
-        const highpass     = 0.55;   
+        const highpass     = 0.31;   
         const highpassBlur = 2.2;
         const grainAmount  = 5;
 
@@ -13526,7 +13575,7 @@ const PP3_KEY2ASSET = {
 };
 const PP3_FONT_MAP = { 'Pusia Bold':'PusiaBold', 'Lilita One':'LilitaOneRus' };
 const PP3_NICK_OFFSET_X = 246; 
-const PP3_NICK_OFFSET_Y = 6;
+const PP3_NICK_OFFSET_Y = 3;
 const PP3_RUB_OFFSET_Y = -0.16; 
 const PP3_BG_CENTER_X = 0.896; 
 const PP3_BG_CENTER_Y = 0.47; 
