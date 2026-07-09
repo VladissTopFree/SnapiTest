@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(23)";
+  const APP_VERSION = "v2.4.4(24)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5619,7 +5619,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.needsTextCacheUpdate = false;
@@ -13379,7 +13379,7 @@ const PP3_KEY2ASSET = {
 const PP3_FONT_MAP = { 'Pusia Bold':'PusiaBold', 'Lilita One':'LilitaOneRus' };
 const PP3_NICK_OFFSET_X = 246; 
 const PP3_RUB_OFFSET_Y = 3; 
-const PP3_BG_CENTER_X = 0.62; 
+const PP3_BG_CENTER_X = 0.734; 
 const PP3_BG_CENTER_Y = 0.47; 
 
 const PP3_LAYERS = [
@@ -14094,12 +14094,12 @@ if (window.layerState.propassStyleIndex === 3){
         <div class="ios-layer-row">
           <div class="ios-layer-name" style="font-size:14px;">Центр X</div>
           <div id="v-pp3-bcx" style="margin-right:10px; color:#8E8E93; width:52px; text-align:right; font-family:monospace;">${bcx.toFixed(3)}</div>
-          <input type="range" class="ios-slider" min="0" max="1" step="0.001" value="${bcx}" oninput="document.getElementById('v-pp3-bcx').innerText=parseFloat(this.value).toFixed(3); window.layerState.pp3BgCenterX=parseFloat(this.value); if(typeof startAnimation==='function') startAnimation();">
+          <input type="range" class="ios-slider" min="0" max="1" step="0.001" value="${bcx}" oninput="document.getElementById('v-pp3-bcx').innerText=parseFloat(this.value).toFixed(3); window.layerState.pp3BgCenterX=parseFloat(this.value); window.pp3ForceRedraw();">
         </div>
         <div class="ios-layer-row">
           <div class="ios-layer-name" style="font-size:14px;">Центр Y</div>
           <div id="v-pp3-bcy" style="margin-right:10px; color:#8E8E93; width:52px; text-align:right; font-family:monospace;">${bcy.toFixed(3)}</div>
-          <input type="range" class="ios-slider" min="0" max="1" step="0.001" value="${bcy}" oninput="document.getElementById('v-pp3-bcy').innerText=parseFloat(this.value).toFixed(3); window.layerState.pp3BgCenterY=parseFloat(this.value); if(typeof startAnimation==='function') startAnimation();">
+          <input type="range" class="ios-slider" min="0" max="1" step="0.001" value="${bcy}" oninput="document.getElementById('v-pp3-bcy').innerText=parseFloat(this.value).toFixed(3); window.layerState.pp3BgCenterY=parseFloat(this.value); window.pp3ForceRedraw();">
         </div>
         <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
           <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;" onclick="window.copyPP3BgCenter()">📋 Скопировать значения</button>
@@ -14162,6 +14162,12 @@ window.copyPP3BgCenter = function(){
   if (navigator.clipboard && navigator.clipboard.writeText)
     navigator.clipboard.writeText(code).then(done).catch(()=>prompt('Скопируй вручную:', code));
   else prompt('Скопируй вручную:', code);
+};
+
+window.pp3ForceRedraw = function(){
+  if (animReq) { cancelAnimationFrame(animReq); animReq = null; }
+  window.renderThrottle = false;
+  if (typeof drawScene === 'function') drawScene();
 };
 
 window.openProPassEditor = function(){
