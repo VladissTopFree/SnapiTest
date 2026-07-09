@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(26)";
+  const APP_VERSION = "v2.4.4(27)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -13408,6 +13408,7 @@ const PP3_LAYERS = [
   {"order":21,"key":"bpplus","type":"image","opacity":1,"visible":true,"src":"BP/bp_icon_brawl_pass_plus.png","x":923,"y":669,"scale":0.5,"rot":5,"flipH":false,"flipV":false,"strokes":[{"w":1,"color":"#000000"},{"w":2,"color":"#ffffff"}],"shadow":false},
   {"order":22,"key":"glow_b","type":"glow","opacity":1,"visible":true,"x":211,"y":437,"radius":233,"blur":84,"color":"#fff5a0","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
   {"order":23,"key":"bppass","type":"image","opacity":1,"visible":true,"src":"BP/bp_icon_brawl_pass.png","x":587,"y":669,"scale":0.46,"rot":5,"flipH":false,"flipV":false,"strokes":[{"w":1,"color":"#000000"},{"w":2,"color":"#ffffff"}],"shadow":false},
+  {"order":23.5,"key":"lvl11_glow","type":"glow","opacity":0.6,"visible":true,"x":224,"y":351,"radius":95,"blur":55,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
   {"order":24,"key":"lvl11","type":"image","opacity":1,"visible":true,"src":"BP/3style_PP_11lvl.png","x":224,"y":351,"scale":0.31,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false},
   {"order":25,"key":"t_propass","type":"text","opacity":1,"visible":true,"x":239,"y":60,"text":"PRO PASS","font":"Lilita One","fontSize":96,"color":"#000000","rot":-3,"skew":-12,"strokeW":10,"strokeColor":"#a4de35","shadow":true,"shadowColor":"#a4de35","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
   {"order":26,"key":"t_brawl","type":"text","opacity":1,"visible":true,"x":342,"y":127,"text":"BRAWL","font":"Lilita One","fontSize":64,"color":"#ffffff","rot":-3,"skew":-12,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
@@ -13612,9 +13613,9 @@ function drawPP3Content(ctx, Wc, Hc){
     }
     if (l.type==='poly') pp3DrawPoly(ctx,l);
     else if (l.type==='glow'){
-      if ((l.color||'').toLowerCase()==='#ffffff'){
+    if ((l.color||'').toLowerCase()==='#ffffff' && l.key!=='lvl11_glow'){
         let gl = Object.assign({}, l);
-        gl.opacity = l.opacity * 0.5;   
+        gl.opacity = l.opacity * 0.5;
         pp3DrawGlow(ctx, gl);
       } else {
         pp3DrawGlow(ctx, l);
