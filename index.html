@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(31)";
+  const APP_VERSION = "v2.4.4(32)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2066,11 +2066,26 @@
       box-shadow: 0 2px 6px rgba(255, 184, 0, 0.35), inset 0 1px 0.5px rgba(255,255,255,0.5);
       flex-shrink: 0;
   }
-  .resize-badge svg {
+.resize-badge svg {
       width: 14px;
       height: 14px;
       fill: #fff;
       display: block;
+  }
+
+  .cat-new-badge {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      z-index: 6;
+      background: var(--tg-theme-button-color);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 8px;
+      line-height: 1;
   }
 
 .promo-bg-arrows {
@@ -2998,6 +3013,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
         <div class="cat-card" id="propass-main-card" onclick="selectCategory('propass')">
             <div class="cat-img-wrapper" style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
                 <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" style="object-fit: cover; width: 100%; height: 100%;" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+                <span class="cat-new-badge">НОВОЕ</span>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info">
@@ -7982,42 +7998,59 @@ function runMagicLogic(img) {
         }
     }
 
-    const validLabels = new Uint8Array(currentLabel + 1);
-    for (let i = 0; i < comps.length; i++) {
-        const comp = comps[i];
-        const compW = comp.maxX - comp.minX;
-        const compH = comp.maxY - comp.minY;
-        const bboxArea = compW * compH;
-        const fillRatio = comp.area / (bboxArea || 1); 
-        
-        const centerX = comp.minX + compW / 2;
-        const centerY = comp.minY + compH / 2;
+        const runValidation = (strict) => {
+        const vl = new Uint8Array(currentLabel + 1);
+        for (let i = 0; i < comps.length; i++) {
+            const comp = comps[i];
+            const compW = comp.maxX - comp.minX;
+            const compH = comp.maxY - comp.minY;
+            const bboxArea = compW * compH;
+            const fillRatio = comp.area / (bboxArea || 1);
 
-        const isLeftUI = (centerX < w * 0.18); 
-        const isTopUI = (centerY < h * 0.18);
+            const centerX = comp.minX + compW / 2;
+            const centerY = comp.minY + compH / 2;
 
+            const isLeftUI = strict && (centerX < w * 0.18);
+            const isTopUI  = strict && (centerY < h * 0.18);
 
-        const tooWide = compW > w * 0.72;
-        const tooBig  = comp.area > totalPixels * 0.45;
+            const tooWide = compW > w * (strict ? 0.72 : 0.99);
+            const tooBig  = comp.area > totalPixels * (strict ? 0.45 : 0.98);
 
-        const touchesRightEdge = comp.maxX >= w - 3; 
-        const touchesLeftEdge  = comp.minX <= 2;
+            const touchesRightEdge = strict && (comp.maxX >= w - 3);
+            const touchesLeftEdge  = strict && (comp.minX <= 2);
 
-        if (comp.area > totalPixels * 0.015 && 
-            compH > h * 0.25 &&          
-            fillRatio > 0.40 &&
-            !isLeftUI && 
-            !isTopUI &&
-            !tooWide &&
-            !tooBig &&
-            !touchesRightEdge &&
-            !touchesLeftEdge)    
-        {
-            validLabels[comp.label] = 1;
+            const minArea = totalPixels * (strict ? 0.015 : 0.05);
+            const minH    = h * (strict ? 0.25 : 0.40);
+            const minFill = strict ? 0.40 : 0.35;
+
+            if (comp.area > minArea &&
+                compH > minH &&
+                fillRatio > minFill &&
+                !isLeftUI &&
+                !isTopUI &&
+                !tooWide &&
+                !tooBig &&
+                !touchesRightEdge &&
+                !touchesLeftEdge)
+            {
+                vl[comp.label] = 1;
+            }
         }
-    }
-    
+        return vl;
+    };
+
+    let validLabels = runValidation(true);
+
     let hasValid = false;
+    for (let i = 0; i < totalPixels; i++) {
+        if (validLabels[labels[i]]) { hasValid = true; break; }
+    }
+
+    if (!hasValid) {
+        validLabels = runValidation(false);
+    }
+
+    hasValid = false;
     for (let i = 0; i < totalPixels; i++) {
         if (validLabels[labels[i]]) {
             fgMask[i] = 1;
@@ -8488,19 +8521,19 @@ window.applyColorCorrection = async function() {
 
         const contrast     = 1.06;
         const brightness   = 1.03;
-        const vibrance     = 0.31;   
+        const vibrance     = 0.41;   
         const splitWarm    = 10;    
         const splitCool    = 10;     
         const vignette     = 0.34;
         const vignettePow  = 2.4;
-        const centerDark   = 0.30;   
-        const centerRadius = 0.62;   
+        const centerDark   = 0.16;   
+        const centerRadius = 0.71;   
         const bloomThresh  = 231;    
         const bloomAmount  = 0.21;
         const bloomBlur    = 14;
         const highpass     = 0.31;   
         const highpassBlur = 2.2;
-        const grainAmount  = 5;
+        const grainAmount  = 8;
 
         let imgData = ctx.getImageData(0, 0, w, h);
         let d = imgData.data;
@@ -13579,6 +13612,7 @@ const PP3_NICK_OFFSET_Y = 3;
 const PP3_RUB_OFFSET_Y = -0.16; 
 const PP3_BG_CENTER_X = 0.896; 
 const PP3_BG_CENTER_Y = 0.47; 
+const PP3_BG_ZOOM = 1.15;
 
 const PP3_LAYERS = [
   {"order":0,"key":"points_propass","type":"image","opacity":1,"visible":true,"src":"BP/points_propass_3style.png","x":660,"y":367,"scale":1.035,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":0,"shadowBlur":0,"shadowOp":1},
@@ -13783,10 +13817,13 @@ function drawPP3Content(ctx, Wc, Hc){
   const W=1280,H=720;
   ctx.save();
   if (rawBgImage){
-    let ir=rawBgImage.width/rawBgImage.height, cr=W/H, dw,dh;
-    if(ir>cr){dh=H;dw=H*ir;} else {dw=W;dh=W/ir;}
     let bcx = window.layerState.pp3BgCenterX !== undefined ? window.layerState.pp3BgCenterX : PP3_BG_CENTER_X;
     let bcy = window.layerState.pp3BgCenterY !== undefined ? window.layerState.pp3BgCenterY : PP3_BG_CENTER_Y;
+    let zoom = window.layerState.pp3BgZoom !== undefined ? window.layerState.pp3BgZoom : PP3_BG_ZOOM;
+    let coverScale = Math.max(W / rawBgImage.width, H / rawBgImage.height);
+    let scale = coverScale * zoom;
+    let dw = rawBgImage.width * scale;
+    let dh = rawBgImage.height * scale;
     let dx = W/2 - dw*bcx;
     let dy = H/2 - dh*bcy;
     if(dx>0)dx=0; if(dy>0)dy=0;
