@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(32)";
+  const APP_VERSION = "v2.4.4(33)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2083,7 +2083,7 @@
       font-size: 10px;
       font-weight: 500;
       letter-spacing: 0.5px;
-      padding: 3px 8px;
+      padding: 3px 4px;
       border-radius: 8px;
       line-height: 1;
   }
@@ -4184,6 +4184,8 @@ let isCurrentProjectSaved = false;
 
 function handleBackButtonClick() {
     try {
+        if (typeof window.hideResizeHint === 'function') window.hideResizeHint();
+
         let genLoader = document.getElementById('gen-loading-overlay');
         if (genLoader) { window._genLoading = false; genLoader.remove(); }
 
@@ -5284,6 +5286,8 @@ const FONT_OPTIONS = [
 ];
 
 const TEXT_STYLES = [
+    { grad:['#e59921','#f6e63a','#e59921'], emboss:'#f2fea1', embossThickness:0.05, shadow:'#7b360e' },
+    { grad:['#cacaca','#ffffff','#cacaca'], emboss:'#ffffff', embossThickness:0.05, shadow:'#3b3b3b' },
     { isClassic: true, grad: ['#ffba00', '#fcff00', '#ffba00'], inner: '#fcff00' },
     { grad: ['#ff9600', '#ffde00', '#ff9600'], inner: '#ffde00', shadow: '#000000', outer: '#000000' },
     { grad: ['#d90646', '#ff2a6b', '#d90646'], inner: '#ff2a6b', shadow: '#000000', outer: '#000000' },
@@ -5298,8 +5302,29 @@ const TEXT_STYLES = [
     { grad: ['#ffc000', '#ffc000', '#ffc000'], inner: null, shadow: '#2b1a00', outer: '#573500', solidColor: '#ffc000' },
     { grad: ['#49de00', '#49de00', '#49de00'], inner: null, shadow: '#0c2500', outer: '#174700', solidColor: '#49de00' },
     { grad: ['#c600f0', '#c600f0', '#c600f0'], inner: null, shadow: '#280031', outer: '#550067', solidColor: '#c600f0' },
-    { grad: ['#008df0', '#008df0', '#008df0'], inner: null, shadow: '#002138', outer: '#003e6a', solidColor: '#008df0' }
+    { grad: ['#008df0', '#008df0', '#008df0'], inner: null, shadow: '#002138', outer: '#003e6a', solidColor: '#008df0' },
+    { grad:['#ffffff','#ffffff','#ffffff'], emboss:'#ada9ab', embossThickness:0.05, shadow:'#252525', outer:'#252525', noBottomEdge:true },
+    { grad:['#ffc939','#ffc939','#ffc939'], emboss:'#fff4d8', embossThickness:0.05, shadow:'#3e1f00', outer:'#3e1f00', noBottomEdge:true },
+    { grad:['#f267ff','#f267ff','#f267ff'], emboss:'#fac7ff', embossThickness:0.05, shadow:'#29002d', outer:'#29002d', noBottomEdge:true }
 ];
+
+function drawSharpEmboss(ctx, text, fontSize, style, mainFill) {
+    if (!style.emboss) return;
+
+    let thickness = fontSize * (style.embossThickness !== undefined ? style.embossThickness : 0.05);
+
+    ctx.save();
+    ctx.globalCompositeOperation = "source-atop";
+
+    ctx.fillStyle = style.emboss;
+    ctx.fillText(text, 0, 0);
+
+    ctx.fillStyle = mainFill || (style.grad[2] || style.grad[0]);
+    ctx.fillText(text, 0, thickness);
+
+    ctx.restore();
+    ctx.globalCompositeOperation = "source-over";
+}
 
 function createStylePreviewURL(style, font) {
     let c = document.createElement('canvas');
@@ -5329,10 +5354,12 @@ function createStylePreviewURL(style, font) {
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
-        } else if (style.outer) {
-            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
-            txCtx.strokeText(text, 0, shadowDepth);
-            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
+            } else if (style.outer) {
+            if (!style.noBottomEdge) {
+                txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
+                txCtx.strokeText(text, 0, shadowDepth);
+            }
+            txCtx.lineWidth = fontSize * 0.16; txCtx.strokeStyle = style.outer; 
             txCtx.strokeText(text, 0, 0);
         } else {
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
@@ -5350,7 +5377,9 @@ function createStylePreviewURL(style, font) {
     grad.addColorStop(style.isClassic ? 0.48 : 0.52, style.grad[1]); 
     grad.addColorStop(1, style.grad[2]);
     tCtx.fillStyle = grad; tCtx.fillText(text, 0, 0);
-    
+
+    drawSharpEmboss(tCtx, text, fontSize, style, grad);
+
     if (style.inner) {
         tCtx.globalCompositeOperation = "source-atop"; 
         tCtx.lineWidth = fontSize * 0.06; 
@@ -8716,9 +8745,11 @@ function drawCustomBeautifulNick(ctx, text, w, h, customX, customY, customScale,
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
         } else if (style.outer) {
-            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
-            txCtx.strokeText(text, 0, shadowDepth);
-            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
+            if (!style.noBottomEdge) {
+                txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
+                txCtx.strokeText(text, 0, shadowDepth);
+            }
+            txCtx.lineWidth = fontSize * 0.16; txCtx.strokeStyle = style.outer; 
             txCtx.strokeText(text, 0, 0);
         } else {
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
@@ -8738,7 +8769,9 @@ let tempCanvas = window._sharedTempCanvas;
     grad.addColorStop(style.isClassic ? 0.48 : 0.52, style.grad[1]); 
     grad.addColorStop(1, style.grad[2]);
     tCtx.fillStyle = grad; tCtx.fillText(text, 0, 0);
-    
+
+    drawSharpEmboss(tCtx, text, fontSize, style, grad);
+
     if (style.inner) {
         tCtx.globalCompositeOperation = "source-atop"; 
         tCtx.lineWidth = fontSize * 0.06; 
@@ -10613,9 +10646,11 @@ function drawBeautifulNick(ctx, text, w, h) {
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
             for (let i = shadowDepth; i >= 0; i--) txCtx.strokeText(text, 0, i);
         } else if (style.outer) {
-            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
-            txCtx.strokeText(text, 0, shadowDepth);
-            txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.outer; 
+            if (!style.noBottomEdge) {
+                txCtx.lineWidth = fontSize * 0.12; txCtx.strokeStyle = style.shadow; 
+                txCtx.strokeText(text, 0, shadowDepth);
+            }
+            txCtx.lineWidth = fontSize * 0.16; txCtx.strokeStyle = style.outer; 
             txCtx.strokeText(text, 0, 0);
         } else {
             txCtx.lineWidth = fontSize * 0.0154; txCtx.strokeStyle = style.shadow; 
@@ -10637,7 +10672,9 @@ function drawBeautifulNick(ctx, text, w, h) {
     grad.addColorStop(style.isClassic ? 0.48 : 0.52, style.grad[1]); 
     grad.addColorStop(1, style.grad[2]);
     tCtx.fillStyle = grad; tCtx.fillText(text, 0, 0);
-    
+
+    drawSharpEmboss(tCtx, text, fontSize, style, grad);
+
     if (style.inner) {
         tCtx.globalCompositeOperation = "source-atop"; 
         tCtx.lineWidth = fontSize * 0.06; 
@@ -12165,17 +12202,19 @@ let y1, y2;
             drawStrokeLayer(bpFontSize * 0.0154, bpStyle.shadow); 
         } else if (bpStyle.outer) {
             sCtx.lineWidth = bpFontSize * 0.12;
-            sCtx.strokeStyle = bpStyle.shadow;
-            lines.forEach(({ text, yOffset }) => {
-                sCtx.save();
-                sCtx.translate(bpTextX, blockCenterY + offsetPx);
-                sCtx.scale(tScale, tScale);
-                sCtx.translate(0, yOffset);
-                sCtx.transform(1, 0, skewVal, 1, 0, 0);
-                sCtx.rotate(-0.02);
-                sCtx.strokeText(text, 0, bpShadowDepth);
-                sCtx.restore();
-            });
+            if (!bpStyle.noBottomEdge) {
+                sCtx.strokeStyle = bpStyle.shadow;
+                lines.forEach(({ text, yOffset }) => {
+                    sCtx.save();
+                    sCtx.translate(bpTextX, blockCenterY + offsetPx);
+                    sCtx.scale(tScale, tScale);
+                    sCtx.translate(0, yOffset);
+                    sCtx.transform(1, 0, skewVal, 1, 0, 0);
+                    sCtx.rotate(-0.02);
+                    sCtx.strokeText(text, 0, bpShadowDepth);
+                    sCtx.restore();
+                });
+            }
             
             sCtx.strokeStyle = bpStyle.outer;
             lines.forEach(({ text, yOffset }) => {
@@ -12214,7 +12253,9 @@ let y1, y2;
         bpGrad.addColorStop(1, bpStyle.grad[2] || bpStyle.grad[0]);
         fCtx.fillStyle = bpGrad;
         fCtx.fillText(text, 0, 0);
-        
+
+        drawSharpEmboss(fCtx, text, bpFontSize, bpStyle, bpGrad);
+
         if (bpStyle.inner) {
             fCtx.globalCompositeOperation = "source-atop";
             fCtx.lineWidth = bpFontSize * 0.06;
