@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(36)";
+  const APP_VERSION = "v2.4.4(37)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3156,26 +3156,27 @@ body:not(.os-non-apple) .ios-icon-box > * {
     <div class="cat-title-main">Выберите стиль</div>
     <div style="padding: 0 0 180px 0; flex-grow: 1; overflow-y: auto;">
 
-        <div class="cat-card" onclick="selectProPassStyle(1)">
-            <div class="cat-radio" id="propass-radio-1"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
-                <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" style="object-fit: cover; width: 100%; height: 100%;" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+        <div class="cat-card" onclick="selectProPassStyle(2)">
+            <div class="cat-radio" id="propass-radio-2">...</div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none; position: relative;">
+                <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" ...>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name">Стиль #1</div>
-                <div class="cat-desc">Включает в себя Pro Pass и детали для улучшения работы.</div>
+                <div class="cat-desc">Скоро...</div>
             </div>
         </div>
 
-        <div class="cat-card" onclick="selectProPassStyle(2)">
-            <div class="cat-radio" id="propass-radio-2"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none; position: relative;">
+        <div class="cat-card" onclick="selectProPassStyle(1)">
+            <div class="cat-radio" id="propass-radio-1">...</div>
+            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
+                <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" ...>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name">Стиль #2</div>
-                <div class="cat-desc">Скоро...</div>
+                <div class="cat-desc">Включает в себя Pro Pass и детали для улучшения работы.</div>
             </div>
         </div>
 
@@ -13678,16 +13679,16 @@ const PP3_LAYERS = [
   {"order":19,"key":"rect1","type":"rrect","opacity":0.36,"visible":true,"x":1057,"y":669,"w":215,"h":71,"radius":26,"rot":0,"fill":"#000000","strokeW":0,"strokeColor":"#ffffff","shadow":false},
   {"order":20,"key":"rect2","type":"rrect","opacity":0.36,"visible":true,"x":722,"y":669,"w":215,"h":71,"radius":26,"rot":0,"fill":"#000000","strokeW":0,"strokeColor":"#ffffff","shadow":false},
   {"order":21,"key":"bpplus","type":"image","opacity":1,"visible":true,"src":"BP/bp_icon_brawl_pass_plus.png","x":923,"y":669,"scale":0.5,"rot":5,"flipH":false,"flipV":false,"strokes":[{"w":1,"color":"#000000"},{"w":2,"color":"#ffffff"}],"shadow":false},
-  {"order":22,"key":"glow_b","type":"glow","opacity":1,"visible":true,"x":211,"y":437,"radius":233,"blur":84,"color":"#fff5a0","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
+  {"order":22,"key":"glow_b","type":"glow","opacity":1,"visible":true,"x":211,"y":437,"radius":233,"blur":84,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
   {"order":23,"key":"bppass","type":"image","opacity":1,"visible":true,"src":"BP/bp_icon_brawl_pass.png","x":587,"y":669,"scale":0.46,"rot":5,"flipH":false,"flipV":false,"strokes":[{"w":1,"color":"#000000"},{"w":2,"color":"#ffffff"}],"shadow":false},
   {"order":23.5,"key":"lvl11_glow","type":"glow","opacity":0.6,"visible":true,"x":224,"y":351,"radius":95,"blur":55,"color":"#ffffff","blend":"screen","strokeW":0,"strokeColor":"#ffffff","shadow":false},
   {"order":24,"key":"lvl11","type":"image","opacity":1,"visible":true,"src":"BP/3style_PP_11lvl.png","x":224,"y":351,"scale":0.31,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false},
   {"order":25,"key":"t_propass","type":"text","opacity":1,"visible":true,"x":239,"y":60,"text":"PRO PASS","font":"Lilita One","fontSize":96,"color":"#000000","rot":-3,"skew":-12,"strokeW":10,"strokeColor":"#a4de35","shadow":true,"shadowColor":"#a4de35","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
-  {"order":26,"key":"t_brawl","type":"text","opacity":1,"visible":true,"x":342,"y":127,"text":"BRAWL","font":"Lilita One","fontSize":64,"color":"#ffffff","rot":-3,"skew":-12,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":26,"key":"t_brawl","type":"text","opacity":1,"visible":true,"x":331,"y":127,"text":"PASS","font":"Lilita One","fontSize":71,"color":"#ffffff","rot":-3,"skew":-12,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
   {"order":27,"key":"brawler","type":"image","opacity":1,"visible":true,"src":"BP/brawler_PP_3style.png","x":317,"y":397,"scale":0.39,"rot":-3,"flipH":false,"flipV":false,"strokes":[{"w":3,"color":"#000000"}],"shadow":false},
   {"order":28,"key":"price","type":"image","opacity":1,"visible":true,"src":"BP/price_pro_pass.png","x":195,"y":640,"scale":0.26,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false},
   {"order":29,"key":"maxicon","type":"image","opacity":1,"visible":true,"src":"BP/3style_PP_maxIcon.png","x":108,"y":528,"scale":0.062,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false},
-  {"order":30,"key":"t_kubok","type":"text","opacity":1,"visible":true,"x":124,"y":133,"text":"КУБОК","font":"Pusia Bold","fontSize":64,"color":"#ffffff","rot":-3,"skew":-12,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
+  {"order":30,"key":"t_kubok","type":"text","opacity":1,"visible":true,"x":134,"y":136,"text":"CYBER","font":"Lilita One","fontSize":71,"color":"#ffffff","rot":-3,"skew":-12,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
   {"order":31,"key":"t_maks","type":"text","opacity":1,"visible":true,"x":251,"y":530,"text":"МАКС.","font":"Pusia Bold","fontSize":64,"color":"#ffffff","rot":0,"skew":-8,"strokeW":6,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":6,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
   {"order":32,"key":"t_99999_big","type":"text","opacity":1,"visible":true,"x":195,"y":630,"text":"99999 1","font":"Lilita One","fontSize":76,"color":"#000000","rot":0,"skew":-8,"strokeW":10,"strokeColor":"#a4de34","shadow":true,"shadowColor":"#a4de34","shadowDx":0,"shadowDy":9,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
   {"order":33,"key":"n1","type":"text","opacity":1,"visible":true,"x":639,"y":324,"text":"99999 1","font":"Lilita One","fontSize":38,"color":"#ffffff","rot":0,"skew":-8,"strokeW":5,"strokeColor":"#000000","shadow":true,"shadowColor":"#000000","shadowDx":0,"shadowDy":4,"shadowBlur":0,"shadowOp":1,"blend":"source-over"},
@@ -13973,6 +13974,8 @@ document.getElementById('propass-style-btn-next').addEventListener('click', func
   document.getElementById('wizard-title-step2').innerHTML = ppTitleHtml;
   let ppStep3Title = document.querySelector('#wizard-step3-propass .ios-wizard-title');
   if (ppStep3Title) ppStep3Title.innerHTML = ppTitleHtml;
+  let ppStep3S3Title = document.querySelector('#wizard-step3-propass-s3 .ios-wizard-title');
+  if (ppStep3S3Title) ppStep3S3Title.innerHTML = ppTitleHtml;
 
   document.getElementById('result-box').style.display='none';
   document.getElementById('prog-line3').style.display='none';
