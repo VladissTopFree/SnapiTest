@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(37)";
+  const APP_VERSION = "v2.4.4(38)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -3156,8 +3156,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
     <div class="cat-title-main">Выберите стиль</div>
     <div style="padding: 0 0 180px 0; flex-grow: 1; overflow-y: auto;">
 
-        <div class="cat-card" onclick="selectProPassStyle(2)">
-            <div class="cat-radio" id="propass-radio-2">...</div>
+        <div class="cat-card" onclick="selectProPassStyle(1)">
+            <div class="cat-radio" id="propass-radio-1"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none; position: relative;">
                 <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" ...>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
@@ -3168,8 +3168,8 @@ body:not(.os-non-apple) .ios-icon-box > * {
             </div>
         </div>
 
-        <div class="cat-card" onclick="selectProPassStyle(1)">
-            <div class="cat-radio" id="propass-radio-1">...</div>
+        <div class="cat-card" onclick="selectProPassStyle(2)">
+            <div class="cat-radio" id="propass-radio-2"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
             <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
                 <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" ...>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
@@ -13654,7 +13654,7 @@ const PP3_NICK_OFFSET_Y = 3;
 const PP3_RUB_OFFSET_Y = -0.16; 
 const PP3_BG_CENTER_X = -0.8; 
 const PP3_BG_CENTER_Y = 0.47; 
-const PP3_BG_ZOOM = 1.15;
+const PP3_BG_ZOOM = 1.6;
 
 const PP3_LAYERS = [
   {"order":0,"key":"points_propass","type":"image","opacity":1,"visible":true,"src":"BP/points_propass_3style.png","x":660,"y":367,"scale":1.035,"rot":0,"flipH":false,"flipV":false,"strokes":[],"shadow":false,"shadowColor":"#000000","shadowDx":0,"shadowDy":0,"shadowBlur":0,"shadowOp":1},
@@ -13949,7 +13949,7 @@ function drawPP3Content(ctx, Wc, Hc){
 }
 
 window.selectProPassStyle = function(styleId){
-  if (styleId !== 1 && styleId !== 3){
+  if (styleId !== 2 && styleId !== 3){
     let m='Этот стиль пока в разработке.';
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert) window.Telegram.WebApp.showAlert(m); else alert(m);
     return;
