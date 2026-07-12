@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(54)";
+  const APP_VERSION = "v2.4.4(55)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -500,9 +500,62 @@
   .ios-icon-btn:active { opacity: 0.4; }
 
   .ios-icon-btn svg { width: 22px; height: 22px; transition: fill 0.2s; }
-  
-  .ios-eye-icon.hidden { display: flex !important; }
-  .ios-eye-icon.hidden svg { fill: var(--tg-theme-section-separator-color, #E5E5EA) !important; }
+
+  .ios-eye-icon {
+    position: relative;
+    background: transparent !important;
+    color: var(--tg-theme-text-color, #000000);
+    transition: color .3s cubic-bezier(.4,0,.2,1);
+  }
+  .ios-eye-icon.hidden {
+    display: flex !important;
+    color: var(--tg-theme-section-separator-color, #E5E5EA);
+  }
+
+  .ios-eye-icon .eye-icon-box {
+    position: relative;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s ease;
+  }
+  .ios-eye-icon .eye-icon-box svg {
+    width: 22px; height: 22px;
+    fill: currentColor;
+  }
+
+  .ios-eye-icon .eye-slash {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 26px;
+    height: 5px;                 
+    transform: translate(-50%, -50%) rotate(-45deg);
+    transform-origin: center;
+    pointer-events: none;
+  }
+  .ios-eye-icon .eye-slash::before {
+    content: "";
+    display: block;
+    width: 100%; height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(
+      to bottom,
+      var(--tg-theme-section-bg-color, #ffffff) 0 2px,   
+      currentColor 2px 100%                              
+    );
+
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .ios-eye-icon.hidden .eye-slash::before {
+    transform: scaleX(1);
+    transform-origin: 0% 50%;
+    transition: transform .34s cubic-bezier(.22,.8,.28,1);
+  }
+
+  .ios-eye-icon:active { opacity: 1; background: transparent !important; }
+  .ios-eye-icon:active .eye-icon-box { transform: scale(.85); }
+  .ios-eye-icon .android-ripple { display: none !important; }
 
   .ios-stroke-control {
     display: flex;
@@ -2537,6 +2590,25 @@ body.os-desktop #wizard-step3.dragover {
 .size-preset-card.selected {
   border-color: var(--tg-theme-button-color, #3390ec) !important;
 }
+
+.size-preset-row {
+  position: relative;
+  margin-left: -20px !important;
+  margin-right: -20px !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  -webkit-tap-highlight-color: transparent;
+  background-clip: padding-box !important;
+}
+.size-preset-row > * { position: relative; z-index: 1; }
+.size-preset-row:active {
+  background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
+}
+body.os-non-apple .size-preset-row { overflow: hidden; }
+body.os-non-apple .size-preset-row:active { background-color: transparent !important; }
+
+body.os-not-ios .size-preset-row { border-bottom-color: transparent !important; }
+
 #custom-w-wrap.focused, #custom-h-wrap.focused {
   border-color: var(--tg-theme-button-color, #3390ec);
 }
@@ -4383,7 +4455,8 @@ if (window.Telegram && window.Telegram.WebApp) {
         });
         
         document.body.addEventListener('pointerdown', function(e) {
-            let target = e.target.closest('.ios-menu-item, .sp-row, .cat-card, .settings-header-btn');
+            if (e.target.closest('.size-del-btn, .sp-del-btn')) return;
+            let target = e.target.closest('.ios-menu-item, .sp-row, .cat-card, .settings-header-btn, .size-preset-row');
             if (!target) return;
             
             let rect = target.getBoundingClientRect();
@@ -5754,8 +5827,27 @@ const eyeHiddenSVG = `<svg viewBox="0 0 512 512" fill="currentColor"><g transfor
 const downloadIconSVG = `<svg viewBox="0 0 512 512" fill="currentColor"><g transform="translate(0,512) scale(0.1,-0.1)"><path d="M2510 4389 c-32 -13 -87 -66 -108 -104 -15 -27 -17 -122 -22 -1038 l-5 -1007 -345 346 c-226 227 -359 353 -385 365 -72 33 -163 17 -224 -41 -33 -32 -61 -98 -61 -145 0 -87 13 -102 563 -653 287 -288 540 -534 562 -547 56 -32 102 -38 160 -20 46 13 89 54 601 567 536 537 552 554 563 604 30 128 -68 254 -198 254 -80 0 -92 -9 -463 -379 l-358 -355 0 1002 c0 1086 2 1041 -53 1100 -51 55 -157 79 -227 51z"/><path d="M870 1724 c-46 -20 -77 -50 -103 -99 -19 -36 -22 -60 -25 -242 -7 -333 17 -459 110 -599 78 -117 202 -208 343 -251 57 -17 131 -18 1390 -18 l1330 0 75 23 c105 33 196 89 271 169 77 82 122 164 149 269 17 67 20 111 20 344 0 260 -1 268 -23 311 -66 125 -235 145 -331 39 -19 -21 -39 -56 -45 -77 -6 -22 -11 -139 -11 -273 0 -206 -3 -240 -19 -275 -23 -51 -79 -101 -128 -114 -56 -16 -2528 -15 -2574 0 -51 18 -97 55 -122 102 -21 40 -22 57 -27 307 -5 284 -8 296 -62 347 -54 51 -149 67 -218 37z"/></g></svg>`;
 
 function getEyeSVG(isVisible) {
-  return isVisible ? eyeVisibleSVG : eyeHiddenSVG;
+  return `<div class="eye-icon-box">${eyeVisibleSVG}</div><div class="eye-slash"></div>`;
 }
+
+document.addEventListener('click', function(e){
+    window._lastEyeEl = e.target.closest('.ios-eye-icon') || null;
+}, true);
+
+window.setEyeState = function(isVisible){
+    let el = window._lastEyeEl;
+    if (!el) return false;
+    el.classList.toggle('hidden', !isVisible);
+    window._lastEyeEl = null;
+    return true;
+};
+
+window.setEyeGroup = function(group, val){
+    let list = document.querySelectorAll('[data-eye-group="'+group+'"]');
+    if (!list.length) return false;
+    list.forEach(el => el.classList.toggle('hidden', parseInt(el.dataset.eyeVal) !== val));
+    return true;
+};
 
 const trashBinSVG = `<svg viewBox="0 0 512 512" fill="#ffffff" width="14" height="14"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2055 4674 c-97 -34 -159 -118 -181 -244 -15 -88 -28 -113 -71 -141 -26 -17 -55 -19 -386 -19 -230 0 -374 -4 -402 -11 -27 -7 -63 -28 -90 -51 -112 -98 -88 -275 46 -342 l53 -26 1536 0 1536 0 53 26 c127 64 155 219 59 328 -64 73 -81 76 -502 76 -334 0 -363 1 -389 19 -43 28 -56 53 -71 141 -23 129 -84 211 -185 245 -64 22 -945 21 -1006 -1z"/><path d="M1195 3396 c-40 -17 -95 -72 -111 -113 -8 -18 -14 -56 -14 -85 0 -111 170 -2066 185 -2128 22 -92 104 -254 167 -330 125 -150 299 -255 488 -295 105 -22 1195 -22 1300 0 199 42 386 160 506 318 57 74 126 218 148 307 20 79 188 2043 184 2142 -3 56 -9 74 -35 110 -17 24 -50 53 -74 65 l-42 23 -1336 0 c-1085 -1 -1342 -3 -1366 -14z"/></g></svg>`;
 
@@ -6232,7 +6324,7 @@ window.selectBrawlerVariant = async function(charNum, variant) {
     if (window.layerState[stateKey] === variant) return; 
 
     window.layerState[stateKey] = variant;
-    renderLayerPanel();
+    if (!window.setEyeGroup('b' + charNum, variant)) renderLayerPanel();
     await window.loadBrawlerVariant(charNum, variant);
     if (typeof startAnimation === 'function') startAnimation();
 };
@@ -6465,7 +6557,7 @@ function buildBrawlerColorSection(animCls) {
             let isLastRow = (ci === chars.length - 1) && (v === 3);
             html += `
                 <div class="ios-layer-row" ${isLastRow ? 'style="border-bottom:none;"' : ''}>
-                    <div class="ios-icon-btn ios-eye-icon ${isVisible ? '' : 'hidden'}" onclick="selectBrawlerVariant(${ch.num}, ${v})">
+                    <div class="ios-icon-btn ios-eye-icon ${isVisible ? '' : 'hidden'}" data-eye-group="b${ch.num}" data-eye-val="${v}" onclick="selectBrawlerVariant(${ch.num}, ${v})">
                         ${getEyeSVG(isVisible)}
                     </div>
                     <div class="ios-layer-name">${v} вариант скина</div>
@@ -7656,9 +7748,10 @@ window.changeOffersOffsetY = (val) => {
 
 window.toggleTextLayer = () => {
     window.layerState.textVisible = !window.layerState.textVisible;
-    renderLayerPanel();
+    if (window.triggerHaptic) window.triggerHaptic();
+    if (!window.setEyeState(window.layerState.textVisible)) renderLayerPanel();
     if (window.layerState.isProPassMode) { if (typeof startAnimation === 'function') startAnimation(); return; }
-    calculateLayoutTarget(); 
+    calculateLayoutTarget();
 };
 
 window.toggleTextPosition = () => {
@@ -7677,8 +7770,9 @@ window.toggleOffersPosition = () => {
 window.toggleOffer = (idx) => {
     let offer = window.layerState.offers[idx];
     offer.visible = !offer.visible;
-    renderLayerPanel();
-    calculateLayoutTarget(); 
+    if (window.triggerHaptic) window.triggerHaptic();
+    if (!window.setEyeState(offer.visible)) renderLayerPanel();
+    calculateLayoutTarget();
 };
 
 window.moveOfferLayer = (idx, direction) => {
@@ -7714,16 +7808,17 @@ window.updateOfferPriceFromLayer = (idx, inputEl) => {
 
 window.toggleCosmeticLayer = (layerName) => {
     window.layerState[layerName + 'Visible'] = !window.layerState[layerName + 'Visible'];
-    renderLayerPanel();
-    startAnimation(); 
+    if (window.triggerHaptic) window.triggerHaptic();
+    if (!window.setEyeState(window.layerState[layerName + 'Visible'])) renderLayerPanel();
+    startAnimation();
 };
 
 window.togglePriceVis = (key) => {
     let flag = 'priceVis_' + key;
-    let cur = window.layerState[flag] !== false; 
+    let cur = window.layerState[flag] !== false;
     window.layerState[flag] = !cur;
     if (window.triggerHaptic) window.triggerHaptic();
-    renderLayerPanel();
+    if (!window.setEyeState(!cur)) renderLayerPanel();
     if (typeof startAnimation === 'function') startAnimation();
 };
 
@@ -14266,7 +14361,7 @@ window.selectPP3BrawlerVariant = function(v){
   if(window.triggerHaptic) window.triggerHaptic();
   if((window.layerState.brawler1Variant||1)===v) return;
   window.layerState.brawler1Variant=v;
-  renderLayerPanel();
+  if (!window.setEyeGroup('pp3', v)) renderLayerPanel();
   window.ensurePP3BrawlerVariant(v).then(()=>{ if(typeof startAnimation==='function') startAnimation(); });
 };
 
@@ -14741,7 +14836,7 @@ window.selectPP1BrawlerVariant = function(v){
   if (window.triggerHaptic) window.triggerHaptic();
   if ((window.layerState.brawler1Variant || 1) === v) return;
   window.layerState.brawler1Variant = v;
-  renderLayerPanel();
+  if (!window.setEyeGroup('pp1', v)) renderLayerPanel();
   if (typeof startAnimation === 'function') startAnimation();
 };
 
@@ -15272,7 +15367,7 @@ function renderProPass1LayerPanel(isInitialLoad){
     let vis = bv === v;
     html += `
       <div class="ios-layer-row" ${v===3?'style="border-bottom:none;"':''}>
-        <div class="ios-icon-btn ios-eye-icon ${vis?'':'hidden'}" onclick="selectPP1BrawlerVariant(${v})">${getEyeSVG(vis)}</div>
+        <div class="ios-icon-btn ios-eye-icon ${vis?'':'hidden'}" data-eye-group="pp1" data-eye-val="${v}" onclick="selectPP1BrawlerVariant(${v})">${getEyeSVG(vis)}</div>
         <div class="ios-layer-name">${v} вариант скина</div>
         <div style="flex-grow:1;"></div>
       </div>`;
@@ -15529,7 +15624,7 @@ if (window.layerState.propassStyleIndex === 3){
       let vis = cur===v;
       html += `
         <div class="ios-layer-row" ${v===3?'style="border-bottom:none;"':''}>
-          <div class="ios-icon-btn ios-eye-icon ${vis?'':'hidden'}" onclick="selectPP3BrawlerVariant(${v})">${getEyeSVG(vis)}</div>
+          <div class="ios-icon-btn ios-eye-icon ${vis?'':'hidden'}" data-eye-group="pp3" data-eye-val="${v}" onclick="selectPP3BrawlerVariant(${v})">${getEyeSVG(vis)}</div>
           <div class="ios-layer-name">${v} вариант скина</div>
           <div style="flex-grow:1;"></div>
         </div>`;
