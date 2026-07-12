@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(44)";
+  const APP_VERSION = "v2.4.4(45)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5756,7 +5756,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = true; 
+window.ENABLE_TEMP_EDITOR = false; 
 
 
 window.needsTextCacheUpdate = false;
@@ -14216,7 +14216,7 @@ const PP1_W = 1876, PP1_H = 1054;
 const PP1_TITLE_DY = 574;   
 const PP1_TITLE_DX = 0;
 const PP1_TITLE_SCALE = 0.83;
-const PP1_PANEL_OFF = { scale: 1.10, dy: 40 };   
+const PP1_PANEL_OFF = { scale: 1.05, dy: 24 };    
 function pp1PanelOffScale(){ return window.layerState.pp1PanelOffScale !== undefined ? window.layerState.pp1PanelOffScale : PP1_PANEL_OFF.scale; }
 function pp1PanelOffDy(){ return window.layerState.pp1PanelOffDy !== undefined ? window.layerState.pp1PanelOffDy : PP1_PANEL_OFF.dy; }
 function pp1PriceOff(){ return window.layerState.priceVis_propass === false; }
@@ -14225,12 +14225,22 @@ function pp1TitleDY(){ return window.layerState.pp1TitleDY !== undefined ? windo
 function pp1TitleScale(){ return window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : PP1_TITLE_SCALE; }
 
 const PP1_IMG_SRC = {
-  detali:  'BP/detali_pp_1style.png',
-  points:  'BP/points_pp_1style.png',
-  stars:   'BP/stars_1style_pp.png',
-  brawler: 'BP/brawler_PP_3style.png',
-  panel:   'BP/pp_panel.png',
-  price:   'BP/price_pro_pass.png'
+  detali:   'BP/detali_pp_1style.png',
+  points:   'BP/points_pp_1style.png',
+  stars:    'BP/stars_1style_pp.png',
+  brawler:  'BP/brawler_PP_3style.png',
+  brawler2: 'BP/brawler_PP_3style_2.png',
+  brawler3: 'BP/brawler_PP_3style_3.png',
+  panel:    'BP/pp_panel.png',
+  price:    'BP/price_pro_pass.png'
+};
+
+window.selectPP1BrawlerVariant = function(v){
+  if (window.triggerHaptic) window.triggerHaptic();
+  if ((window.layerState.brawler1Variant || 1) === v) return;
+  window.layerState.brawler1Variant = v;
+  renderLayerPanel();
+  if (typeof startAnimation === 'function') startAnimation();
 };
 
 const PP1_LAYERS = [
@@ -14238,7 +14248,7 @@ const PP1_LAYERS = [
   { id:'points', type:'image', z:2, x:0, y:0, scale:1, rot:0, opacity:0.76, blend:'normal', visible:true, w:1876 },
   { id:'stars',  type:'image', z:3, x:0, y:0, scale:1, rot:0, opacity:1, blend:'overlay', visible:true, w:1876 },
   { id:'shadow_4', type:'shape', z:4, x:238, y:816, scale:0.67, rot:0, opacity:0.27, blend:'multiply', visible:true, w:600, h:98, color:'#000000', blur:0, softness:100 },
-  { id:'light_5',  type:'shape', z:5, x:285, y:278, scale:1.16, rot:0, opacity:1, blend:'normal', visible:true, w:500, h:500, color:'#ffffff', blur:51, softness:45 },
+  { id:'light_5',  type:'shape', z:5, x:285, y:278, scale:1.16, rot:0, opacity:1, blend:'normal', visible:true, w:500, h:500, color:'#ffffff', blur:110, softness:18 },
   { id:'brawler', type:'image', z:6, x:299, y:28, scale:1, rot:0, opacity:1, blend:'normal', visible:true, w:834,
     glow:{ on:true, color:'#ffffff', blur:0, x:0, y:-10, strength:2, op:1 } },
   { id:'panel', type:'image', z:7, x:927, y:41,  scale:1.04, rot:0, opacity:1, blend:'normal', visible:true, w:640 },
@@ -14367,7 +14377,12 @@ function pp1Text(l){
 }
 
 function pp1DrawImage(ctx,l){
-  const img = globalAssets['pp1_'+l.id];
+  let key = l.id;
+  if (l.id === 'brawler'){
+    let v = window.layerState.brawler1Variant || 1;
+    key = { 1:'brawler', 2:'brawler2', 3:'brawler3' }[v] || 'brawler';
+  }
+  const img = globalAssets['pp1_'+key] || globalAssets['pp1_brawler'];
   if(!img) return;
   const w0=l.w, h0=l.w*(img.naturalHeight/img.naturalWidth);
   ctx.save();
@@ -14377,7 +14392,7 @@ function pp1DrawImage(ctx,l){
   if(l.rot) ctx.rotate(l.rot*Math.PI/180);
   ctx.scale(l.scale,l.scale);
   if(l.glow&&l.glow.on){
-    const sil=pp1Sil(l.id,img,l.glow.color);
+    const sil=pp1Sil(key,img,l.glow.color);
     ctx.save();
     ctx.globalAlpha=pp1Op(l)*(l.glow.op!==undefined?l.glow.op:1);
     const reps=Math.max(1,l.glow.strength||1);
@@ -14440,9 +14455,22 @@ function pp1DrawText(ctx,l){
     if(sw){ ctx.lineWidth=sw; ctx.strokeStyle=ts.color; ctx.strokeText(txt,ts.x||0,ts.y||0); }
     ctx.fillStyle=ts.color; ctx.fillText(txt,ts.x||0,ts.y||0);
   }
-  if(sw){ ctx.lineWidth=sw; ctx.strokeStyle=l.stroke.color; ctx.strokeText(txt,0,0); }
-  ctx.fillStyle=l.color; ctx.fillText(txt,0,0);
+if(sw){ ctx.lineWidth=sw; ctx.strokeStyle=l.stroke.color; ctx.strokeText(txt,0,0); }
+  ctx.fillStyle = pp1IsWm(l) ? pp1WmColor() : l.color;
+  ctx.fillText(txt,0,0);
   ctx.restore();
+}
+
+function pp1WmColor(){
+  if (window.layerState.isGeneratedBg && window.layerState.bgColorType){
+    const map = { green:'#ffffff', blue:'#ffffff', orange:'#000000', purple:'#ffffff', black:'#ffffff' };
+    return map[window.layerState.bgColorType] || '#ffffff';
+  }
+  if (rawBgImage){
+    window.getProPassBgTint(rawBgImage);   
+    return (window._ppTintLum !== undefined && window._ppTintLum < 140) ? '#ffffff' : '#000000';
+  }
+  return '#ffffff';
 }
 
 function drawPP1Content(ctx, Wc, Hc){
@@ -14691,6 +14719,20 @@ function renderProPass1LayerPanel(isInitialLoad){
         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft||''}" maxlength="5" oninput="updateProPassPrice(this)" style="width:65px;">
       </div>
     </div>`;
+
+  let bv = window.layerState.brawler1Variant || 1;
+  html += `<div class="ios-section-title ${a}">ЦВЕТ ПЕРСОНАЖА</div>`;
+  html += `<div class="ios-layer-group ${a}">`;
+  for (let v = 1; v <= 3; v++){
+    let vis = bv === v;
+    html += `
+      <div class="ios-layer-row" ${v===3?'style="border-bottom:none;"':''}>
+        <div class="ios-icon-btn ios-eye-icon ${vis?'':'hidden'}" onclick="selectPP1BrawlerVariant(${v})">${getEyeSVG(vis)}</div>
+        <div class="ios-layer-name">${v} вариант скина</div>
+        <div style="flex-grow:1;"></div>
+      </div>`;
+  }
+  html += `</div>`;
 
   html += `<div class="ios-layer-group ${a}">`;
   html += ppRow('stars','Звёзды', window.layerState.starsVisible!==false, window.layerState.starsOpacity!==undefined?window.layerState.starsOpacity:1, false);
@@ -15023,6 +15065,7 @@ window.openProPassEditor = function(){
       window.layerState.pointsOpacity     = 0.76;
       window.layerState.watermarksVisible = true;
       window.layerState.watermarksOpacity = 0.76;
+      if (window.layerState.brawler1Variant === undefined) window.layerState.brawler1Variant = 1;
     }
   }
   if (window.layerState.propassStyleIndex === 3){
