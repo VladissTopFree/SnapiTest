@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(48)";
+  const APP_VERSION = "v2.4.4(49)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -7198,6 +7198,7 @@ if (window.layerState.isBrawlPassMode) {
     }
 
     layerPanel.innerHTML = html;
+    if (window.watchFxBtn) setTimeout(window.watchFxBtn, 300);
     setTimeout(() => {
         let bpInput = document.getElementById('bp-nick-input');
         if(bpInput && window.updateBPTextCounter) {
@@ -8813,7 +8814,10 @@ window.updateCachedTextCanvas = () => {
 if (!persistentCanvas) return;
 let tw, th;
     if (window.layerState.isProPassMode) {
-        if (window.layerState.propassStyleIndex === 1) { tw = PP1_W; th = PP1_H; }
+        if (window.layerState.propassStyleIndex === 1) {
+            tw = window.layerState.outputW || 1280;
+            th = window.layerState.outputH || 720;
+        }
         else { tw = 1280; th = 720; }
     } else if (window.layerState.isBrawlPassMode) {
         tw = persistentCanvas.width;
@@ -8850,6 +8854,23 @@ let tw, th;
             });
         }
     }
+
+        window._pp1TextBottomRatio = 1;
+    try {
+        const _c = cachedTextCanvas;
+        if (_c && _c.width && _c.height) {
+            const d = ctx.getImageData(0, 0, _c.width, _c.height).data;
+            let last = -1;
+            for (let y = _c.height - 1; y >= 0; y--) {
+                let row = y * _c.width * 4;
+                for (let x = 0; x < _c.width; x++) {
+                    if (d[row + x * 4 + 3] > 8) { last = y; break; }
+                }
+                if (last >= 0) break;
+            }
+            if (last >= 0) window._pp1TextBottomRatio = (last + 1) / _c.height;
+        }
+    } catch(e) {}
 };
 
 function calculateLayoutTarget() {
@@ -13608,29 +13629,37 @@ window.addEventListener('load', () => {
         clearTimeout(hoverTimer);
     };
 
-    document.addEventListener('pointerover', function(e) {
-        let btn = e.target.closest('.details-fx-btn');
-        if (!btn || btn === currentBtn) return;
-        if (window.isFxHintDisabled()) return;
-        currentBtn = btn;
-        clearTimeout(hoverTimer);
-        hoverTimer = setTimeout(() => window.showFxHint(btn), 900);
-    }, true);
+    let io = null;
+    let shownOnce = false;   
 
-    document.addEventListener('pointerout', function(e) {
-        let btn = e.target.closest('.details-fx-btn');
+    window.watchFxBtn = function(){
+        if (window.isFxHintDisabled() || shownOnce) return;
+
+        let btn = document.querySelector('.details-fx-btn');
         if (!btn) return;
-        currentBtn = null;
-        clearTimeout(hoverTimer);
-    }, true);
+
+        if (io) io.disconnect();
+        io = new IntersectionObserver(function(entries){
+            entries.forEach(function(en){
+                if (en.isIntersecting && en.intersectionRatio >= 0.9){
+                    if (window.isFxHintDisabled() || shownOnce) return;
+                    clearTimeout(hoverTimer);
+                    hoverTimer = setTimeout(function(){
+                        if (window.isFxHintDisabled() || shownOnce) return;
+                        shownOnce = true;
+                        window.showFxHint(en.target);
+                    }, 1200);   
+                } else {
+                    clearTimeout(hoverTimer);
+                }
+            });
+        }, { threshold: [0, 0.9, 1] });
+
+        io.observe(btn);
+    };
 
     document.addEventListener('pointerdown', function(e) {
-        clearTimeout(hoverTimer);
-        window.hideFxHint();
-    }, true);
-
-    document.addEventListener('scroll', function() {
-        clearTimeout(hoverTimer);
+        if (!document.getElementById('fx-hint-bubble')?.classList.contains('show')) return;
         window.hideFxHint();
     }, true);
 })();
@@ -14323,9 +14352,10 @@ window.getPP3PanelColors = function(){
 };
 
 const PP1_W = 1876, PP1_H = 1054;
-const PP1_TITLE_DY = 574;   
+const PP1_TITLE_BOTTOM = 12;   
 const PP1_TITLE_DX = 0;
 const PP1_TITLE_SCALE = 0.83;
+function pp1TitleBottom(){ return window.layerState.pp1TitleBottom !== undefined ? window.layerState.pp1TitleBottom : PP1_TITLE_BOTTOM; }
 const PP1_PANEL_OFF = { scale: 1.05, dy: 24 };    
 function pp1PanelOffScale(){ return window.layerState.pp1PanelOffScale !== undefined ? window.layerState.pp1PanelOffScale : PP1_PANEL_OFF.scale; }
 function pp1PanelOffDy(){ return window.layerState.pp1PanelOffDy !== undefined ? window.layerState.pp1PanelOffDy : PP1_PANEL_OFF.dy; }
@@ -14388,7 +14418,7 @@ window.loadPP1Assets = async function(){
 };
 
 window.copyPP1TitlePos = function(){
-  let code = `const PP1_TITLE_DY = ${pp1TitleDY()};\nconst PP1_TITLE_DX = ${pp1TitleDX()};\nconst PP1_TITLE_SCALE = ${pp1TitleScale()};`;
+  let code = `const PP1_TITLE_BOTTOM = ${pp1TitleBottom()};\nconst PP1_TITLE_DX = ${pp1TitleDX()};\nconst PP1_TITLE_SCALE = ${pp1TitleScale()};`;
   let done = () => {
     if (window.Telegram?.WebApp?.showAlert) window.Telegram.WebApp.showAlert('✅ Скопировано! Замени константы PP1_TITLE_DX / DY / SCALE.');
     else alert('✅ Скопировано!');
@@ -14596,7 +14626,8 @@ function drawPP1Content(ctx, Wc, Hc){
   }
   ctx.restore();
 
-  const s = Math.max(Wc / PP1_W, Hc / PP1_H);   
+  const baseTf = ctx.getTransform();   
+  const s = Math.max(Wc / PP1_W, Hc / PP1_H);
   ctx.save();
   ctx.translate((Wc-PP1_W*s)/2, (Hc-PP1_H*s)/2);
   ctx.scale(s,s);
@@ -14607,8 +14638,15 @@ function drawPP1Content(ctx, Wc, Hc){
     if(l.id==='title'){
       if (window.layerState.textVisible!==false && cachedTextCanvas){
         ctx.save();
-        ctx.translate(pp1TitleDX(), pp1TitleDY());
-        ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, PP1_W, PP1_H);
+        ctx.setTransform(baseTf);   
+
+        const r = (window._pp1TextBottomRatio !== undefined) ? window._pp1TextBottomRatio : 1;
+        const textBottomPx = r * Hc;
+        const dy = (Hc - pp1TitleBottom()) - textBottomPx;  
+
+        ctx.translate(pp1TitleDX(), dy);
+        ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, Wc, Hc);
+
         ctx.restore();
       }
       return;
@@ -14880,9 +14918,10 @@ function renderProPass1LayerPanel(isInitialLoad){
           <input type="range" class="ios-slider" min="-900" max="900" step="1" value="${pp1TitleDX()}" oninput="document.getElementById('v-pp1-tdx').innerText=this.value; window.layerState.pp1TitleDX=parseFloat(this.value); startAnimation();">
         </div>
         <div class="ios-layer-row">
-          <div class="ios-layer-name" style="font-size:14px;">Сдвиг Y</div>
-          <div id="v-pp1-tdy" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleDY()}</div>
-          <input type="range" class="ios-slider" min="-900" max="900" step="1" value="${pp1TitleDY()}" oninput="document.getElementById('v-pp1-tdy').innerText=this.value; window.layerState.pp1TitleDY=parseFloat(this.value); startAnimation();">        </div>
+          <div class="ios-layer-name" style="font-size:14px;">Отступ снизу</div>
+          <div id="v-pp1-tdy" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleBottom()}</div>
+          <input type="range" class="ios-slider" min="-100" max="400" step="1" value="${pp1TitleBottom()}" oninput="document.getElementById('v-pp1-tdy').innerText=this.value; window.layerState.pp1TitleBottom=parseFloat(this.value); startAnimation();">
+        </div>
         <div class="ios-layer-row">
           <div class="ios-layer-name" style="font-size:14px;">Размер</div>
           <div id="v-pp1-tsc" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleScale()}</div>
@@ -14955,6 +14994,7 @@ function renderProPass1LayerPanel(isInitialLoad){
 
   layerPanel.innerHTML = html;
   layerPanel.style.display = 'flex';
+  if (window.watchFxBtn) setTimeout(window.watchFxBtn, 300);
 }
 
 function renderProPassLayerPanel(isInitialLoad){
