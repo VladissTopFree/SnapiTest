@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(43)";
+  const APP_VERSION = "v2.4.4(44)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -14213,9 +14213,13 @@ window.getPP3PanelColors = function(){
 };
 
 const PP1_W = 1876, PP1_H = 1054;
-const PP1_TITLE_DY = 42;  
+const PP1_TITLE_DY = 574;   
 const PP1_TITLE_DX = 0;
-const PP1_TITLE_SCALE = 1.38;
+const PP1_TITLE_SCALE = 0.83;
+const PP1_PANEL_OFF = { scale: 1.10, dy: 40 };   
+function pp1PanelOffScale(){ return window.layerState.pp1PanelOffScale !== undefined ? window.layerState.pp1PanelOffScale : PP1_PANEL_OFF.scale; }
+function pp1PanelOffDy(){ return window.layerState.pp1PanelOffDy !== undefined ? window.layerState.pp1PanelOffDy : PP1_PANEL_OFF.dy; }
+function pp1PriceOff(){ return window.layerState.priceVis_propass === false; }
 function pp1TitleDX(){ return window.layerState.pp1TitleDX !== undefined ? window.layerState.pp1TitleDX : PP1_TITLE_DX; }
 function pp1TitleDY(){ return window.layerState.pp1TitleDY !== undefined ? window.layerState.pp1TitleDY : PP1_TITLE_DY; }
 function pp1TitleScale(){ return window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : PP1_TITLE_SCALE; }
@@ -14243,19 +14247,19 @@ const PP1_LAYERS = [
   { id:'text_11', type:'text', z:10, x:1041, y:750, scale:1, rot:0, opacity:1, blend:'normal', visible:true, size:101, color:'#111111', tracking:2, skew:6,
     refText:'99999 ₽',
     stroke:{ on:true, color:'#bae04c', width:6 }, tshadow:{ on:true, color:'#bae04c', x:0, y:8, blur:0 } },
-  { id:'text_12',      type:'text', z:11, x:1250, y:-56, scale:0.6,  rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_13', type:'text', z:12, x:1484, y:424, scale:0.21, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_14', type:'text', z:13, x:1448, y:760, scale:0.46, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_15', type:'text', z:14, x:1336, y:997, scale:0.96, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_16', type:'text', z:15, x:502,  y:603, scale:0.18, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_17', type:'text', z:16, x:484,  y:7,   scale:0.25, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_18', type:'text', z:17, x:600,  y:519, scale:0.12, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_19', type:'text', z:18, x:-68,  y:-55, scale:0.82, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_20', type:'text', z:19, x:54,   y:139, scale:0.17, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_21', type:'text', z:20, x:-168, y:294, scale:0.41, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_22', type:'text', z:21, x:-20,  y:491, scale:0.22, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_23', type:'text', z:22, x:-133, y:714, scale:0.36, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
-  { id:'text_copy_24', type:'text', z:23, x:36,   y:997, scale:0.8,  rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 }
+  { id:'text_12',      type:'text', z:11, x:1256, y:-56,  scale:0.77, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_13', type:'text', z:12, x:1257, y:394,  scale:0.24, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_14', type:'text', z:13, x:1405, y:760,  scale:0.44, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_15', type:'text', z:14, x:1387, y:1009, scale:0.96, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_16', type:'text', z:15, x:348,  y:603,  scale:0.13, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_17', type:'text', z:16, x:446,  y:517,  scale:0.06, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_18', type:'text', z:17, x:337,  y:32,   scale:0.13, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_19', type:'text', z:18, x:-201, y:-55,  scale:0.73, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_20', type:'text', z:19, x:-109, y:139,  scale:0.13, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_21', type:'text', z:20, x:-333, y:295,  scale:0.3,  rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_22', type:'text', z:21, x:-217, y:491,  scale:0.16, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_23', type:'text', z:22, x:-400, y:714,  scale:0.33, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
+  { id:'text_copy_24', type:'text', z:23, x:-356, y:1009, scale:0.78, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 }
 ];
 
 window.loadPP1Assets = async function(){
@@ -14267,6 +14271,16 @@ window.copyPP1TitlePos = function(){
   let code = `const PP1_TITLE_DY = ${pp1TitleDY()};\nconst PP1_TITLE_DX = ${pp1TitleDX()};\nconst PP1_TITLE_SCALE = ${pp1TitleScale()};`;
   let done = () => {
     if (window.Telegram?.WebApp?.showAlert) window.Telegram.WebApp.showAlert('✅ Скопировано! Замени константы PP1_TITLE_DX / DY / SCALE.');
+    else alert('✅ Скопировано!');
+  };
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(code).then(done).catch(()=>prompt('Скопируй вручную:', code));
+  else prompt('Скопируй вручную:', code);
+};
+
+window.copyPP1PanelOff = function(){
+  let code = `const PP1_PANEL_OFF = { scale: ${pp1PanelOffScale()}, dy: ${pp1PanelOffDy()} };`;
+  let done = () => {
+    if (window.Telegram?.WebApp?.showAlert) window.Telegram.WebApp.showAlert('✅ Скопировано! Замени константу PP1_PANEL_OFF.');
     else alert('✅ Скопировано!');
   };
   if (navigator.clipboard?.writeText) navigator.clipboard.writeText(code).then(done).catch(()=>prompt('Скопируй вручную:', code));
@@ -14333,6 +14347,7 @@ function pp1Sil(id,img,color){
 }
 function pp1IsWm(l){ return l.type==='text' && l.blend==='overlay'; }
 function pp1Vis(l){
+  if(l.id==='price' || l.id==='text_11') return !pp1PriceOff();
   if(l.id==='detali') return window.layerState.detailsVisible!==false;
   if(l.id==='points') return window.layerState.pointsVisible!==false;
   if(l.id==='stars')  return window.layerState.starsVisible!==false;
@@ -14374,20 +14389,32 @@ function pp1DrawImage(ctx,l){
 }
 
 function pp1DrawShape(ctx,l){
+  const rx = (l.w * l.scale) / 2;
+  const ry = (l.h * l.scale) / 2;
+
   ctx.save();
-  ctx.globalAlpha=l.opacity;
-  ctx.globalCompositeOperation=(l.blend&&l.blend!=='normal')?l.blend:'source-over';
-  if(l.blur>0 && typeof ctx.filter!=='undefined') ctx.filter=`blur(${l.blur}px)`;
-  ctx.translate(l.x+l.w/2, l.y+l.h/2);
-  if(l.rot) ctx.rotate(l.rot*Math.PI/180);
-  ctx.scale((l.w*l.scale)/2, (l.h*l.scale)/2);
-  const soft=Math.min(100,Math.max(1,l.softness===undefined?100:l.softness))/100;
-  const g=ctx.createRadialGradient(0,0,0,0,0,1);
-  g.addColorStop(0, pp1Rgba(l.color,1));
-  g.addColorStop(soft, pp1Rgba(l.color,1));
-  g.addColorStop(1, pp1Rgba(l.color,0));
-  ctx.fillStyle=g;
-  ctx.fillRect(-2,-2,4,4);
+  ctx.globalAlpha = l.opacity;
+  ctx.globalCompositeOperation = (l.blend && l.blend!=='normal') ? l.blend : 'source-over';
+  if (l.blur > 0 && typeof ctx.filter !== 'undefined') ctx.filter = `blur(${l.blur}px)`;
+
+  ctx.translate(l.x + l.w/2, l.y + l.h/2);
+  if (l.rot) ctx.rotate(l.rot * Math.PI / 180);
+
+  ctx.scale(rx, ry);   
+
+  let soft = Math.min(100, Math.max(1, l.softness === undefined ? 100 : l.softness)) / 100;
+  if (soft >= 1) soft = 0.999;   
+
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+  g.addColorStop(0,    pp1Rgba(l.color, 1));
+  g.addColorStop(soft, pp1Rgba(l.color, 1));
+  g.addColorStop(1,    pp1Rgba(l.color, 0));
+
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(0, 0, 1, 0, Math.PI * 2);
+  ctx.fill();
+
   ctx.restore();
 }
 
@@ -14447,6 +14474,14 @@ function drawPP1Content(ctx, Wc, Hc){
         ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, Wc, Hc);
         ctx.restore();
       }
+      return;
+    }
+
+    if(l.id==='panel' && pp1PriceOff()){
+      let mod = Object.assign({}, l);
+      mod.scale = l.scale * pp1PanelOffScale();
+      mod.y = l.y + pp1PanelOffDy();
+      pp1DrawImage(ctx, mod);
       return;
     }
 
@@ -14647,8 +14682,10 @@ function renderProPass1LayerPanel(isInitialLoad){
   });
   html += `</div></div>`;
 
+  let ppVis = window.layerState.priceVis_propass !== false;
   html += `<div class="ios-layer-group ${a}">
       <div class="ios-layer-row" style="border-bottom:none;">
+        <div class="ios-icon-btn ios-eye-icon ${ppVis?'':'hidden'}" onclick="togglePriceVis('propass')">${getEyeSVG(ppVis)}</div>
         <div class="ios-layer-name">Pro Pass</div>
         <div class="ios-layer-action-text">значение</div>
         <input type="text" inputmode="numeric" pattern="[0-9]*" class="ios-price-input" value="${window.layerState.bpPriceLeft||''}" maxlength="5" oninput="updateProPassPrice(this)" style="width:65px;">
@@ -14686,8 +14723,25 @@ function renderProPass1LayerPanel(isInitialLoad){
           <div id="v-pp1-tsc" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleScale()}</div>
           <input type="range" class="ios-slider" min="0.1" max="3" step="0.01" value="${pp1TitleScale()}" oninput="document.getElementById('v-pp1-tsc').innerText=this.value; window.changeMainTextScale(this.value);">
         </div>
-        <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
+    <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
           <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;" onclick="window.copyPP1TitlePos()">📋 Скопировать координаты текста</button>
+        </div>
+      </div>`;
+
+    html += `<div class="ios-section-title ${a}" style="color:#ff9500;">⚙ ВРЕМЕННО: ПАНЕЛЬ (ЦЕНА ВЫКЛ)</div>`;
+    html += `<div class="ios-layer-group ${a}">
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Размер</div>
+          <div id="v-pp1-ps" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1PanelOffScale()}</div>
+          <input type="range" class="ios-slider" min="1" max="1.6" step="0.01" value="${pp1PanelOffScale()}" oninput="document.getElementById('v-pp1-ps').innerText=this.value; window.layerState.pp1PanelOffScale=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Сдвиг вниз</div>
+          <div id="v-pp1-pdy" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1PanelOffDy()}</div>
+          <input type="range" class="ios-slider" min="-100" max="250" step="1" value="${pp1PanelOffDy()}" oninput="document.getElementById('v-pp1-pdy').innerText=this.value; window.layerState.pp1PanelOffDy=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
+          <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;" onclick="window.copyPP1PanelOff()">📋 Скопировать координаты панели</button>
         </div>
       </div>`;
 
