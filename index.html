@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(42)";
+  const APP_VERSION = "v2.4.4(43)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -14213,10 +14213,12 @@ window.getPP3PanelColors = function(){
 };
 
 const PP1_W = 1876, PP1_H = 1054;
-const PP1_TITLE_DY = 42;   
+const PP1_TITLE_DY = 42;  
 const PP1_TITLE_DX = 0;
+const PP1_TITLE_SCALE = 1.38;
 function pp1TitleDX(){ return window.layerState.pp1TitleDX !== undefined ? window.layerState.pp1TitleDX : PP1_TITLE_DX; }
 function pp1TitleDY(){ return window.layerState.pp1TitleDY !== undefined ? window.layerState.pp1TitleDY : PP1_TITLE_DY; }
+function pp1TitleScale(){ return window.layerState.mainTextScale !== undefined ? window.layerState.mainTextScale : PP1_TITLE_SCALE; }
 
 const PP1_IMG_SRC = {
   detali:  'BP/detali_pp_1style.png',
@@ -14262,9 +14264,9 @@ window.loadPP1Assets = async function(){
 };
 
 window.copyPP1TitlePos = function(){
-  let code = `const PP1_TITLE_DY = ${pp1TitleDY()};\nconst PP1_TITLE_DX = ${pp1TitleDX()};`;
+  let code = `const PP1_TITLE_DY = ${pp1TitleDY()};\nconst PP1_TITLE_DX = ${pp1TitleDX()};\nconst PP1_TITLE_SCALE = ${pp1TitleScale()};`;
   let done = () => {
-    if (window.Telegram?.WebApp?.showAlert) window.Telegram.WebApp.showAlert('✅ Скопировано! Замени константы PP1_TITLE_DX / PP1_TITLE_DY.');
+    if (window.Telegram?.WebApp?.showAlert) window.Telegram.WebApp.showAlert('✅ Скопировано! Замени константы PP1_TITLE_DX / DY / SCALE.');
     else alert('✅ Скопировано!');
   };
   if (navigator.clipboard?.writeText) navigator.clipboard.writeText(code).then(done).catch(()=>prompt('Скопируй вручную:', code));
@@ -14679,6 +14681,11 @@ function renderProPass1LayerPanel(isInitialLoad){
           <div id="v-pp1-tdy" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleDY()}</div>
           <input type="range" class="ios-slider" min="-600" max="600" step="1" value="${pp1TitleDY()}" oninput="document.getElementById('v-pp1-tdy').innerText=this.value; window.layerState.pp1TitleDY=parseFloat(this.value); startAnimation();">
         </div>
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Размер</div>
+          <div id="v-pp1-tsc" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleScale()}</div>
+          <input type="range" class="ios-slider" min="0.1" max="3" step="0.01" value="${pp1TitleScale()}" oninput="document.getElementById('v-pp1-tsc').innerText=this.value; window.changeMainTextScale(this.value);">
+        </div>
         <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
           <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;" onclick="window.copyPP1TitlePos()">📋 Скопировать координаты текста</button>
         </div>
@@ -14952,7 +14959,7 @@ window.openProPassEditor = function(){
       window.layerState.textPosition  = 'bottom';
       if (window.layerState.textFont === undefined)       window.layerState.textFont = 'Font16103';
       if (window.layerState.textStyleIndex === undefined) window.layerState.textStyleIndex = 1;
-      if (window.layerState.mainTextScale === undefined)  window.layerState.mainTextScale = 1.38;
+      if (window.layerState.mainTextScale === undefined)  window.layerState.mainTextScale = PP1_TITLE_SCALE;
       if (window.layerState.mainTextOffsetY === undefined)window.layerState.mainTextOffsetY = 0;
       window.layerState.detailsVisible    = true;
       window.layerState.detailsOpacity    = 1;
