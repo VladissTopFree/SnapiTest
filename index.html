@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(45)";
+  const APP_VERSION = "v2.4.4(46)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -14510,6 +14510,31 @@ function drawPP1Content(ctx, Wc, Hc){
       mod.scale = l.scale * pp1PanelOffScale();
       mod.y = l.y + pp1PanelOffDy();
       pp1DrawImage(ctx, mod);
+      return;
+    }
+
+    if(l.id==='detali'){
+      const img = globalAssets['pp1_detali'];
+      if(!img) return;
+      const w0 = l.w, h0 = l.w*(img.naturalHeight/img.naturalWidth);
+      const detA = window.layerState.detailsOpacity !== undefined ? window.layerState.detailsOpacity : l.opacity;
+
+      ctx.save();
+      ctx.translate(l.x, l.y);
+
+      ctx.globalCompositeOperation = 'soft-light';
+      ctx.globalAlpha = detA;
+      ctx.drawImage(img, 0, 0, w0, h0);
+
+      ctx.globalCompositeOperation = 'overlay';
+      ctx.globalAlpha = detA * 0.55;
+      ctx.drawImage(img, 0, 0, w0, h0);
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = detA * 0.35;
+      ctx.drawImage(img, 0, 0, w0, h0);
+
+      ctx.restore();
       return;
     }
 
