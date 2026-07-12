@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(53)";
+  const APP_VERSION = "v2.4.4(54)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -1374,7 +1374,9 @@
   #dl-btn-save-project:active,
   #ios-btn-download-all:active,
   #cat-btn-next:active,
+  #zoom-btn-close:active,
   #sp-btn-back:active,
+  #size-generate-btn:active,
   #bp-style-btn-next:active {
     scale: 0.95 !important;
     opacity: 0.8 !important;
@@ -2551,6 +2553,7 @@ body:not(.os-non-apple) #cat-btn-next,
 body:not(.os-non-apple) #bp-style-btn-next,
 body:not(.os-non-apple) #bp-variant-btn-next,
 body:not(.os-non-apple) #size-generate-btn,
+body:not(.os-non-apple) #zoom-btn-close,
 body:not(.os-non-apple) #sp-btn-back, 
 body:not(.os-non-apple) #ios-btn-download-all {
     position: relative;
@@ -2571,6 +2574,7 @@ body:not(.os-non-apple) #cat-btn-next::before,
 body:not(.os-non-apple) #bp-style-btn-next::before,
 body:not(.os-non-apple) #bp-variant-btn-next::before,
 body:not(.os-non-apple) #size-generate-btn::before,
+body:not(.os-non-apple) #zoom-btn-close::before, 
 body:not(.os-non-apple) #sp-btn-back::before, 
 body:not(.os-non-apple) #ios-btn-download-all::before {
     content: "";
@@ -2746,6 +2750,263 @@ body:not(.os-non-apple) .ios-icon-box > * {
 }
 #fx-hint-bubble::after {
   left: var(--arrow-left, 50%);
+}
+
+#zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
+  display: none;
+  overflow: hidden;
+  touch-action: none;
+}
+#zoom-overlay.open { display: block; }
+
+#zoom-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.833);  
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  opacity: 0;
+  transition: opacity 0.32s cubic-bezier(0.4,0,0.2,1), backdrop-filter 0.32s cubic-bezier(0.4,0,0.2,1), -webkit-backdrop-filter 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+#zoom-overlay.shown #zoom-backdrop {
+  opacity: 1;
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+}
+
+#zoom-stage {
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+#zoom-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+body.os-non-apple #zoom-img { border-radius: 14px; }
+
+#zoom-hint {
+  position: absolute;
+  left: 0; right: 0;
+  text-align: center;
+  padding: 0 40px;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--tg-theme-subtitle-text-color, #8E8E93);
+  opacity: 0;
+  filter: blur(6px);
+  transform: scale(0.97);
+  transition: opacity 0.35s ease 0.1s, filter 0.35s ease 0.1s, transform 0.35s ease 0.1s;
+  pointer-events: none;
+}
+#zoom-overlay.shown #zoom-hint {
+  opacity: 1;
+  filter: blur(0px);
+  transform: scale(1);
+}
+#zoom-overlay.zoomed #zoom-hint {
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(0.95);
+  transition-delay: 0s;
+}
+
+#zoom-btn-wrap::before { display: none; }
+#zoom-btn-close {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.3s cubic-bezier(0.4,0,0.2,1) 0.12s,
+              transform 0.42s cubic-bezier(0.22,0.8,0.28,1) 0.12s;
+}
+#zoom-overlay.shown #zoom-btn-close {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#zoom-overlay:not(.shown) #zoom-btn-close {
+  transition-delay: 0s;
+}
+
+.canvas-display-wrapper { cursor: zoom-in; }
+
+
+.canvas-display-wrapper { position: relative; }
+
+#canvas-pin-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+  height: 38px;
+  border-radius: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  border: none;
+  padding: 0 9px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.42);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+body.os-non-apple #canvas-pin-btn { border-radius: 12px; }
+#canvas-pin-btn:active { transform: scale(0.9); opacity: 0.8; }
+
+#canvas-pin-btn.morphing,
+#canvas-pin-btn.morphing .pin-label-inner {
+  overflow: visible;
+}
+.pin-ch-out {
+  z-index: 3;
+}
+
+body:not(.os-non-apple) #canvas-pin-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 0.8px;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, .40)  0%,
+      rgba(230, 240, 255, .20) 12%,
+      rgba(255, 255, 255, 0)   38%,
+      rgba(255, 255, 255, 0)   62%,
+      rgba(190, 220, 255, .18) 88%,
+      rgba(255, 255, 255, .34) 100%);
+  -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+body.os-non-apple #canvas-pin-btn {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08),
+              inset 0 -1px 0 rgba(0,0,0,0.12);
+}
+
+#canvas-pin-btn > * { position: relative; z-index: 2; }
+
+.pin-icon-box {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pin-icon-box svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+.pin-slash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 2.5px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+.pin-slash::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  background: #ffffff;
+
+  transform: scaleX(0);
+  transform-origin: 100% 50%;   
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#canvas-pin-btn.unpinned .pin-slash::before {
+  transform: scaleX(1);
+  transform-origin: 0% 50%;     
+  transition: transform 0.34s cubic-bezier(0.22, 0.8, 0.28, 1);
+}
+
+.pin-label {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 0.34s cubic-bezier(0.4,0,0.2,1),
+              margin-left 0.34s cubic-bezier(0.4,0,0.2,1);
+  margin-left: 0;
+}
+#canvas-pin-btn.expanded .pin-label {
+  grid-template-columns: 1fr;
+  margin-left: 7px;
+}
+.pin-label-inner {
+  overflow: hidden;
+  white-space: nowrap;
+  transform: translateY(-1px);   
+}
+.pin-label #pin-label-text {
+  display: block;
+  font-size: 15px;
+  font-weight: 300;
+  color: #ffffff;
+  padding-right: 4px;
+  opacity: 0;
+  filter: blur(4px);
+  transition: opacity 0.28s ease, filter 0.28s ease;
+}
+#canvas-pin-btn.expanded .pin-label #pin-label-text {
+  opacity: 1;
+  filter: blur(0px);
+  transition-delay: 0.06s;
+}
+
+#pin-label-text {
+  position: relative;
+  white-space: nowrap;
+}
+.pin-ch {
+  display: inline-block;
+  white-space: pre;
+  will-change: transform, opacity, filter;
+}
+.pin-ch.shift {
+  transition: transform 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pin-ch-out {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  z-index: 3;
+  animation: pinChOut 0.22s cubic-bezier(0.35, 0, 0.75, 0.35) forwards;
+}
+@keyframes pinChOut {
+  0%   { opacity: 1; filter: blur(0px); transform: translate(0, 0) scale(1); }
+  45%  { opacity: 0.5; }
+  100% { opacity: 0; filter: blur(7px); transform: translate(6px, -22px) scale(0.78); }
+}
+
+.pin-ch-in {
+  animation: pinChIn 0.3s cubic-bezier(0.22, 0.85, 0.3, 1) backwards;
+}
+@keyframes pinChIn {
+  0%   { opacity: 0; filter: blur(6px); transform: translateY(20px) scale(0.8); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; filter: blur(0px); transform: translateY(0) scale(1); }
 }
 
 </style>
@@ -3435,7 +3696,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">52 сезон</div>
-                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 2 июля.</div> <!--Текущий-->
+                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 2 июля.</div> <!--Новый-->
             </div>
          </div>
          
@@ -3448,7 +3709,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">51 сезон</div>
-                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 4 июня.</div> <!--Прошлый-->
+                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 4 июня.</div> <!--Текущий-->
             </div>
          </div>
 
@@ -3461,7 +3722,7 @@ body:not(.os-non-apple) .ios-icon-box > * {
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
                 <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 7 мая.</div> <!--Старый-->
+                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 7 мая.</div> <!--Прошлый-->
             </div>
          </div>
 
@@ -4038,6 +4299,17 @@ window.checkBPStyle4Ready = function() {
     <button id="size-generate-btn" class="ios-action-btn" style="margin: 0 auto; display: none;" onclick="window.onSizeGenerateClick()">Сгенерировать</button>
   </div>
 </div>
+
+<div id="zoom-overlay">
+  <div id="zoom-backdrop"></div>
+  <div id="zoom-stage">
+    <img id="zoom-img" draggable="false" alt="">
+  </div>
+  <div id="zoom-hint">Чтобы увеличить изображение, просто раздвиньте пальцы на экране</div>
+  <div class="bottom-fade-container" id="zoom-btn-wrap">
+    <button id="zoom-btn-close" class="ios-action-btn">Отмена</button>
+  </div>
+</div>
 <div id="resize-hint-bubble" class="save-hint-bubble" style="position: fixed; z-index: 5000;">Можно менять размер работы</div>
 <div id="fx-hint-bubble" class="save-hint-bubble" style="position: fixed; z-index: 5000;">Наложить эффект</div>
 <script>
@@ -4234,6 +4506,12 @@ let isCurrentProjectSaved = false;
 function handleBackButtonClick() {
     try {
         if (typeof window.hideResizeHint === 'function') window.hideResizeHint();
+
+        let zoomOv = document.getElementById('zoom-overlay');
+        if (zoomOv && zoomOv.classList.contains('open')) {
+            window.closeZoomViewer();
+            return;
+        }
 
         let genLoader = document.getElementById('gen-loading-overlay');
         if (genLoader) { window._genLoading = false; genLoader.remove(); }
@@ -8495,9 +8773,25 @@ function setupPersistentCanvas() {
     let canvasWrapper = document.createElement('div');
     canvasWrapper.className = 'canvas-display-wrapper';
     canvasWrapper.appendChild(persistentCanvas);
-    
+
+    let pinBtn = document.createElement('button');
+    pinBtn.id = 'canvas-pin-btn';
+    if (!window._canvasPinned) pinBtn.classList.add('unpinned');
+    pinBtn.innerHTML = `
+      <div class="pin-icon-box">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.1835 7.80516L16.2188 4.83755C14.1921 2.8089 13.1788 1.79457 12.0904 2.03468C11.0021 2.2748 10.5086 3.62155 9.5217 6.31506L8.85373 8.1381C8.59063 8.85617 8.45908 9.2152 8.22239 9.49292C8.11619 9.61754 7.99536 9.72887 7.86251 9.82451C7.56644 10.0377 7.19811 10.1392 6.46145 10.3423C4.80107 10.8 3.97088 11.0289 3.65804 11.5721C3.5228 11.8069 3.45242 12.0735 3.45413 12.3446C3.45809 12.9715 4.06698 13.581 5.28476 14.8L6.69935 16.2163L2.22345 20.6964C1.92552 20.9946 1.92552 21.4782 2.22345 21.7764C2.52138 22.0746 3.00443 22.0746 3.30236 21.7764L7.77841 17.2961L9.24441 18.7635C10.4699 19.9902 11.0827 20.6036 11.7134 20.6045C11.9792 20.6049 12.2404 20.5358 12.4713 20.4041C13.0192 20.0914 13.2493 19.2551 13.7095 17.5825C13.9119 16.8472 14.013 16.4795 14.2254 16.1835C14.3184 16.054 14.4262 15.9358 14.5468 15.8314C14.8221 15.593 15.1788 15.459 15.8922 15.191L17.7362 14.4981C20.4 13.4973 21.7319 12.9969 21.9667 11.9115C22.2014 10.826 21.1954 9.81905 19.1835 7.80516Z" fill="#ffffff"/>
+        </svg>
+        <div class="pin-slash"></div>
+      </div>
+      <div class="pin-label"><div class="pin-label-inner"><span id="pin-label-text">закреплено</span></div></div>
+    `;
+    pinBtn.onclick = (e) => { e.stopPropagation(); window.toggleCanvasPin(); };
+    canvasWrapper.appendChild(pinBtn);
+
     container.appendChild(canvasWrapper);
     cardsContainer.appendChild(container);
+    window.syncCanvasPin();
 
     let oldBtnWrap = document.getElementById('download-btn-wrap');
     if (oldBtnWrap) {
@@ -15366,6 +15660,335 @@ window.openProPassEditor = function(){
     renderLayerPanel(true);
     startAnimation();
   },100);
+};
+
+
+(function initZoomViewer(){
+  const ov   = document.getElementById('zoom-overlay');
+  const st   = document.getElementById('zoom-stage');
+  const img  = document.getElementById('zoom-img');
+  const hint = document.getElementById('zoom-hint');
+  const btn  = document.getElementById('zoom-btn-close');
+
+  let base = { x:0, y:0, w:0, h:0 };
+  let tr   = { x:0, y:0, s:1 };
+  let closing = false;
+
+  const isDesktop = () => document.body.classList.contains('os-desktop');
+  const apply = () => {
+    st.style.transform = `translate(${tr.x}px, ${tr.y}px) scale(${tr.s})`;
+    if (tr.s > 1.02) ov.classList.add('zoomed');
+    else ov.classList.remove('zoomed');
+  };
+
+  const setStage = (r) => {
+    st.style.width  = r.w + 'px';
+    st.style.height = r.h + 'px';
+    tr = { x:r.x, y:r.y, s:1 };
+    apply();
+  };
+
+  window.openZoomViewer = function(){
+    if (!persistentCanvas || !persistentCanvas.width) return;
+    if (ov.classList.contains('open')) return;
+    if (window.triggerHaptic) window.triggerHaptic();
+
+    const wrap = document.querySelector('.canvas-display-wrapper');
+    if (!wrap) return;
+    const from = wrap.getBoundingClientRect();
+
+    try { img.src = persistentCanvas.toDataURL('image/png'); } catch(e){ return; }
+
+    hint.innerText = isDesktop()
+      ? 'Чтобы увеличить изображение, прокрутите колесико мыши вперед'
+      : 'Чтобы увеличить изображение, просто раздвиньте пальцы на экране';
+
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const ratio = persistentCanvas.height / persistentCanvas.width;
+    const maxW = Math.min(vw - 32, 900);
+    let w = maxW, h = w * ratio;
+    const maxH = vh * 0.5;
+    if (h > maxH) { h = maxH; w = h / ratio; }
+    base = { w, h, x: (vw - w)/2, y: (vh - h)/2 - vh*0.12 };
+
+    st.style.transition = 'none';
+    setStage({ x: from.left, y: from.top, w: from.width, h: from.height });
+    st.style.width = base.w + 'px';
+    st.style.height = base.h + 'px';
+    const sx = from.width / base.w;
+    tr = { x: from.left, y: from.top, s: sx };
+    apply();
+
+    hint.style.top = (base.y + base.h + 24) + 'px';
+
+    ov.classList.remove('zoomed');
+    ov.classList.add('open');
+    ov.getBoundingClientRect();
+
+    requestAnimationFrame(() => {
+      st.style.transition = 'transform 0.42s cubic-bezier(0.22,0.8,0.28,1)';
+      ov.classList.add('shown');
+      tr = { x: base.x, y: base.y, s: 1 };
+      apply();
+    });
+
+    closing = false;
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+      window.Telegram.WebApp.BackButton.onClick(window.closeZoomViewer);
+    }
+  };
+
+  window.closeZoomViewer = function(){
+    if (!ov.classList.contains('open') || closing) return;
+    closing = true;
+    if (window.triggerHaptic) window.triggerHaptic();
+
+    const wrap = document.querySelector('.canvas-display-wrapper');
+    const to = wrap ? wrap.getBoundingClientRect() : { left: base.x, top: base.y, width: base.w, height: base.h };
+
+    st.style.transition = 'transform 0.38s cubic-bezier(0.4,0,0.2,1)';
+    ov.classList.remove('shown');
+    tr = { x: to.left, y: to.top, s: to.width / base.w };
+    apply();
+
+    setTimeout(() => {
+      ov.classList.remove('open');
+      ov.classList.remove('zoomed');
+      st.style.transition = 'none';
+      img.src = '';
+      closing = false;
+    }, 400);
+
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.BackButton) {
+      window.Telegram.WebApp.BackButton.offClick(window.closeZoomViewer);
+    }
+  };
+
+  btn.onclick = window.closeZoomViewer;
+  document.getElementById('zoom-backdrop').onclick = window.closeZoomViewer;
+
+  const MIN = 1, MAX = 6;
+  const clampS = (s) => Math.max(MIN * 0.85, Math.min(MAX, s));
+
+  const zoomAt = (cx, cy, ns) => {
+    ns = clampS(ns);
+    const k = ns / tr.s;
+    tr.x = cx - (cx - tr.x) * k;
+    tr.y = cy - (cy - tr.y) * k;
+    tr.s = ns;
+    apply();
+  };
+
+  const settle = () => {
+    if (tr.s < 1.02) {
+      st.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+      tr = { x: base.x, y: base.y, s: 1 };
+      apply();
+      setTimeout(() => { st.style.transition = 'none'; }, 320);
+    }
+  };
+
+  let pts = new Map(), sp = 0, sc = 1, scx = 0, scy = 0;
+
+  st.addEventListener('pointerdown', (e) => {
+    st.setPointerCapture(e.pointerId);
+    st.style.transition = 'none';
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 2) {
+      const [a, b] = [...pts.values()];
+      sp = Math.hypot(a.x - b.x, a.y - b.y);
+      sc = tr.s;
+      scx = (a.x + b.x) / 2;
+      scy = (a.y + b.y) / 2;
+    }
+  });
+
+  st.addEventListener('pointermove', (e) => {
+    if (!pts.has(e.pointerId)) return;
+    const prev = pts.get(e.pointerId);
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pts.size === 2) {
+      const [a, b] = [...pts.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (sp > 0) zoomAt(scx, scy, sc * (d / sp));
+    } else if (pts.size === 1 && tr.s > 1) {
+      tr.x += e.clientX - prev.x;
+      tr.y += e.clientY - prev.y;
+      apply();
+    }
+  });
+
+  const up = (e) => {
+    pts.delete(e.pointerId);
+    if (pts.size < 2) sp = 0;
+    if (pts.size === 0) settle();
+  };
+  st.addEventListener('pointerup', up);
+  st.addEventListener('pointercancel', up);
+
+  st.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    st.style.transition = 'none';
+    zoomAt(e.clientX, e.clientY, tr.s * (e.deltaY < 0 ? 1.12 : 1/1.12));
+    settle();
+  }, { passive: false });
+
+  st.addEventListener('dblclick', (e) => {
+    st.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+    if (tr.s > 1.05) { tr = { x: base.x, y: base.y, s: 1 }; apply(); }
+    else zoomAt(e.clientX, e.clientY, 2.5);
+    setTimeout(() => { st.style.transition = 'none'; }, 320);
+  });
+
+  cardsContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.canvas-display-wrapper')) window.openZoomViewer();
+  });
+})();
+
+window._canvasPinned = localStorage.getItem('Snapi_canvas_pinned') !== 'false';
+
+window.syncCanvasPin = function(){
+  if (!cardsContainer || !layerPanel) return;
+  if (window._canvasPinned) { cardsContainer.style.marginTop = '0px'; return; }
+  const h = cardsContainer.offsetHeight;
+  const st = Math.max(0, Math.min(layerPanel.scrollTop, h));
+  cardsContainer.style.marginTop = (-st) + 'px';
+};
+
+window.toggleCanvasPin = function(){
+  window._canvasPinned = !window._canvasPinned;
+  localStorage.setItem('Snapi_canvas_pinned', String(window._canvasPinned));
+  if (window.triggerHaptic) window.triggerHaptic();
+
+const btn = document.getElementById('canvas-pin-btn');
+  if (btn) {
+    btn.classList.toggle('unpinned', !window._canvasPinned);
+    window.setPinLabelText(window._canvasPinned ? 'закреплено' : 'откреплено');
+    btn.classList.add('expanded');
+    clearTimeout(window._pinLabelTimer);
+    window._pinLabelTimer = setTimeout(() => {
+      btn.classList.remove('expanded');
+    }, 1600);
+  }
+
+  cardsContainer.style.transition = 'margin-top 0.35s cubic-bezier(0.4,0,0.2,1)';
+  window.syncCanvasPin();
+  setTimeout(() => { cardsContainer.style.transition = 'none'; }, 400);
+};
+
+layerPanel.addEventListener('scroll', () => {
+  if (window._canvasPinned) return;
+  if (window._pinRaf) return;
+  window._pinRaf = requestAnimationFrame(() => {
+    window._pinRaf = null;
+    window.syncCanvasPin();
+  });
+}, { passive: true });
+
+function pinMkCh(c){
+  const sp = document.createElement('span');
+  sp.className = 'pin-ch';
+  sp.textContent = (c === ' ') ? '\u00A0' : c;
+  return sp;
+}
+
+window.setPinLabelText = function(next){
+  const host = document.getElementById('pin-label-text');
+  if (!host) return;
+
+  const prev = (host.dataset.text !== undefined) ? host.dataset.text : host.textContent.trim();
+  if (prev === next) return;
+
+  host.querySelectorAll('.pin-ch-out').forEach(el => el.remove());
+  host.querySelectorAll('.pin-ch-in').forEach(el => {
+    el.classList.remove('pin-ch-in');
+    el.style.animation = '';
+    el.style.animationDelay = '';
+  });
+
+  if (!host.querySelector('.pin-ch')) {
+    host.textContent = '';
+    for (const c of prev) host.appendChild(pinMkCh(c));
+  }
+
+  const oldSpans = Array.from(host.querySelectorAll('.pin-ch:not(.pin-ch-out)'));
+  if (oldSpans.length !== prev.length) {
+    host.textContent = '';
+    for (const c of prev) host.appendChild(pinMkCh(c));
+    oldSpans.length = 0;
+    host.querySelectorAll('.pin-ch').forEach(el => oldSpans.push(el));
+  }
+  const oldLeft = oldSpans.map(s => s.offsetLeft);
+
+  let p = 0;
+  while (p < prev.length && p < next.length && prev[p] === next[p]) p++;
+  let s = 0;
+  while (s < prev.length - p && s < next.length - p &&
+         prev[prev.length - 1 - s] === next[next.length - 1 - s]) s++;
+
+  const keepHead = oldSpans.slice(0, p);
+  const keepTail = oldSpans.slice(prev.length - s);
+  const gone     = oldSpans.slice(p, prev.length - s);
+
+  gone.forEach((sp, i) => {
+    const w = sp.offsetWidth;
+    sp.style.left = oldLeft[p + i] + 'px';
+    sp.style.width = w + 'px';
+    sp.classList.remove('pin-ch', 'pin-ch-in', 'shift');
+    sp.style.transform = '';
+    sp.style.animation = 'none';
+    sp.style.animationDelay = '';
+    void sp.offsetWidth;
+    sp.style.animation = '';
+    sp.classList.add('pin-ch-out');
+    sp.style.animationDelay = (i * 0.02) + 's';
+    sp.addEventListener('animationend', () => sp.remove(), { once: true });
+    setTimeout(() => { if (sp.parentNode) sp.remove(); }, 400);
+  });
+
+  const anchor = keepTail[0] || null;
+  const added = [];
+  for (let i = p; i < next.length - s; i++) {
+    const sp = pinMkCh(next[i]);
+    sp.classList.add('pin-ch-in');
+    sp.style.animationDelay = ((i - p) * 0.025) + 's';
+    host.insertBefore(sp, anchor);
+    added.push(sp);
+  }
+
+  const stay   = keepHead.concat(keepTail);
+  const before = stay.map(sp => oldLeft[oldSpans.indexOf(sp)]);
+
+  requestAnimationFrame(() => {
+    stay.forEach((sp, i) => {
+      const dx = before[i] - sp.offsetLeft;
+      if (!dx) return;
+      sp.classList.remove('shift');
+      sp.style.transform = 'translateX(' + dx + 'px)';
+      requestAnimationFrame(() => {
+        sp.classList.add('shift');
+        sp.style.transform = 'translateX(0)';
+      });
+    });
+  });
+
+  const btnEl = document.getElementById('canvas-pin-btn');
+  if (btnEl) {
+    btnEl.classList.add('morphing');
+    clearTimeout(window._pinMorphTimer);
+    window._pinMorphTimer = setTimeout(() => {
+      host.querySelectorAll('.pin-ch-in').forEach(el => {
+        el.classList.remove('pin-ch-in');
+        el.style.animationDelay = '';
+      });
+      if (!host.querySelector('.pin-ch-out')) {
+        btnEl.classList.remove('morphing');
+      }
+    }, 380);
+  }
+
+  host.dataset.text = next;
 };
 </script>
 </body>
