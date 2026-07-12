@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(47)";
+  const APP_VERSION = "v2.4.4(48)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2711,6 +2711,18 @@ body:not(.os-non-apple) .ios-icon-box > * {
   left: var(--arrow-left, 50%);
 }
 
+#fx-hint-bubble {
+  left: 0;
+  bottom: auto;
+  transform: translateX(0) translateY(6px) scale(0.95);
+}
+#fx-hint-bubble.show {
+  transform: translateX(0) translateY(0) scale(1);
+}
+#fx-hint-bubble::after {
+  left: var(--arrow-left, 50%);
+}
+
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -3992,6 +4004,7 @@ window.checkBPStyle4Ready = function() {
   </div>
 </div>
 <div id="resize-hint-bubble" class="save-hint-bubble" style="position: fixed; z-index: 5000;">Можно менять размер работы</div>
+<div id="fx-hint-bubble" class="save-hint-bubble" style="position: fixed; z-index: 5000;">Наложить эффект</div>
 <script>
 window.triggerHaptic = function() {
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
@@ -5756,7 +5769,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -8800,7 +8813,8 @@ window.updateCachedTextCanvas = () => {
 if (!persistentCanvas) return;
 let tw, th;
     if (window.layerState.isProPassMode) {
-        tw = 1280; th = 720; 
+        if (window.layerState.propassStyleIndex === 1) { tw = PP1_W; th = PP1_H; }
+        else { tw = 1280; th = 720; }
     } else if (window.layerState.isBrawlPassMode) {
         tw = persistentCanvas.width;
         th = persistentCanvas.height;
@@ -10419,6 +10433,8 @@ function drawFallbackRays(ctx, w, h, opacity = 1.0) {
 }
 
 window.toggleDetailsEffect = function(){
+  if (window.disableFxHint) window.disableFxHint();
+  if (window.hideFxHint) window.hideFxHint();
   window.layerState.detailsEffect = (window.layerState.detailsEffect === false);
   if (window.triggerHaptic) window.triggerHaptic();
   renderLayerPanel();
@@ -10450,7 +10466,7 @@ function drawDetailsLayer(ctx, img, x, y, w, h, alpha, cover){
 
 function detailsFxBtn(){
   let on = window.layerState.detailsEffect !== false;
-  return `<div class="ios-icon-btn" onclick="window.toggleDetailsEffect()" title="Эффект"
+  return `<div class="ios-icon-btn details-fx-btn" onclick="window.toggleDetailsEffect()" title="Эффект"
       style="flex-shrink:0; width:28px; height:28px; margin-left:10px; border-radius:6px; transition:0.2s;
       background:${on?'var(--tg-theme-button-color, #3390ec)':'transparent'};
       color:${on?'#ffffff':'var(--tg-theme-subtitle-text-color, #8E8E93)'};">
@@ -13546,6 +13562,79 @@ window.addEventListener('load', () => {
   else setTimeout(go, 800);
 })();
 
+(function() {
+    let hoverTimer = null;
+    let hideTimer = null;
+    let currentBtn = null;
+
+    window.isFxHintDisabled = function(){
+        return localStorage.getItem('Snapi_fx_hint_disabled') === 'true';
+    };
+    window.disableFxHint = function(){
+        localStorage.setItem('Snapi_fx_hint_disabled', 'true');
+    };
+
+    window.showFxHint = function(btnEl) {
+        let bubble = document.getElementById('fx-hint-bubble');
+        if (!bubble || window.isFxHintDisabled()) return;
+
+        bubble.style.visibility = 'hidden';
+        bubble.classList.add('show');
+
+        let rect = btnEl.getBoundingClientRect();
+        let bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+        let centerX = rect.left + rect.width / 2;
+        let left = centerX - bw / 2;
+        let margin = 10;
+        if (left < margin) left = margin;
+        if (left + bw > window.innerWidth - margin) left = window.innerWidth - margin - bw;
+
+        let top = rect.top - bh - 14;
+        if (top < margin) top = rect.bottom + 14;
+
+        bubble.style.left = left + 'px';
+        bubble.style.top = top + 'px';
+        bubble.style.setProperty('--arrow-left', (centerX - left) + 'px');
+        bubble.style.visibility = 'visible';
+
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(window.hideFxHint, 4000);
+    };
+
+    window.hideFxHint = function() {
+        let bubble = document.getElementById('fx-hint-bubble');
+        if (bubble) bubble.classList.remove('show');
+        clearTimeout(hideTimer);
+        clearTimeout(hoverTimer);
+    };
+
+    document.addEventListener('pointerover', function(e) {
+        let btn = e.target.closest('.details-fx-btn');
+        if (!btn || btn === currentBtn) return;
+        if (window.isFxHintDisabled()) return;
+        currentBtn = btn;
+        clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(() => window.showFxHint(btn), 900);
+    }, true);
+
+    document.addEventListener('pointerout', function(e) {
+        let btn = e.target.closest('.details-fx-btn');
+        if (!btn) return;
+        currentBtn = null;
+        clearTimeout(hoverTimer);
+    }, true);
+
+    document.addEventListener('pointerdown', function(e) {
+        clearTimeout(hoverTimer);
+        window.hideFxHint();
+    }, true);
+
+    document.addEventListener('scroll', function() {
+        clearTimeout(hoverTimer);
+        window.hideFxHint();
+    }, true);
+})();
+
 
 (function() {
     let hideTimer = null;
@@ -14518,9 +14607,8 @@ function drawPP1Content(ctx, Wc, Hc){
     if(l.id==='title'){
       if (window.layerState.textVisible!==false && cachedTextCanvas){
         ctx.save();
-        ctx.setTransform(1,0,0,1,0,0);           
         ctx.translate(pp1TitleDX(), pp1TitleDY());
-        ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, Wc, Hc);
+        ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, PP1_W, PP1_H);
         ctx.restore();
       }
       return;
@@ -14789,13 +14877,12 @@ function renderProPass1LayerPanel(isInitialLoad){
         <div class="ios-layer-row">
           <div class="ios-layer-name" style="font-size:14px;">Сдвиг X</div>
           <div id="v-pp1-tdx" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleDX()}</div>
-          <input type="range" class="ios-slider" min="-600" max="600" step="1" value="${pp1TitleDX()}" oninput="document.getElementById('v-pp1-tdx').innerText=this.value; window.layerState.pp1TitleDX=parseFloat(this.value); startAnimation();">
+          <input type="range" class="ios-slider" min="-900" max="900" step="1" value="${pp1TitleDX()}" oninput="document.getElementById('v-pp1-tdx').innerText=this.value; window.layerState.pp1TitleDX=parseFloat(this.value); startAnimation();">
         </div>
         <div class="ios-layer-row">
           <div class="ios-layer-name" style="font-size:14px;">Сдвиг Y</div>
           <div id="v-pp1-tdy" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleDY()}</div>
-          <input type="range" class="ios-slider" min="-600" max="600" step="1" value="${pp1TitleDY()}" oninput="document.getElementById('v-pp1-tdy').innerText=this.value; window.layerState.pp1TitleDY=parseFloat(this.value); startAnimation();">
-        </div>
+          <input type="range" class="ios-slider" min="-900" max="900" step="1" value="${pp1TitleDY()}" oninput="document.getElementById('v-pp1-tdy').innerText=this.value; window.layerState.pp1TitleDY=parseFloat(this.value); startAnimation();">        </div>
         <div class="ios-layer-row">
           <div class="ios-layer-name" style="font-size:14px;">Размер</div>
           <div id="v-pp1-tsc" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleScale()}</div>
