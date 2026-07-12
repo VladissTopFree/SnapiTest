@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(41)";
+  const APP_VERSION = "v2.4.4(42)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -5756,7 +5756,7 @@ window.updateBPPrice = (side, inputEl) => {
     window.requestRender();
 };
 
-window.ENABLE_TEMP_EDITOR = false; 
+window.ENABLE_TEMP_EDITOR = true; 
 
 
 window.needsTextCacheUpdate = false;
@@ -14215,6 +14215,8 @@ window.getPP3PanelColors = function(){
 const PP1_W = 1876, PP1_H = 1054;
 const PP1_TITLE_DY = 42;   
 const PP1_TITLE_DX = 0;
+function pp1TitleDX(){ return window.layerState.pp1TitleDX !== undefined ? window.layerState.pp1TitleDX : PP1_TITLE_DX; }
+function pp1TitleDY(){ return window.layerState.pp1TitleDY !== undefined ? window.layerState.pp1TitleDY : PP1_TITLE_DY; }
 
 const PP1_IMG_SRC = {
   detali:  'BP/detali_pp_1style.png',
@@ -14237,6 +14239,7 @@ const PP1_LAYERS = [
   { id:'price', type:'image', z:8, x:1008, y:729, scale:1.03, rot:0, opacity:1, blend:'normal', visible:true, w:421 },
   { id:'title', type:'text', z:9, x:659, y:906, scale:1, rot:0, opacity:1, blend:'normal', visible:true, size:119, color:'#ffffff', tracking:2, skew:6 },
   { id:'text_11', type:'text', z:10, x:1041, y:750, scale:1, rot:0, opacity:1, blend:'normal', visible:true, size:101, color:'#111111', tracking:2, skew:6,
+    refText:'99999 ₽',
     stroke:{ on:true, color:'#bae04c', width:6 }, tshadow:{ on:true, color:'#bae04c', x:0, y:8, blur:0 } },
   { id:'text_12',      type:'text', z:11, x:1250, y:-56, scale:0.6,  rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
   { id:'text_copy_13', type:'text', z:12, x:1484, y:424, scale:0.21, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },
@@ -14256,6 +14259,56 @@ const PP1_LAYERS = [
 window.loadPP1Assets = async function(){
   const load=(src)=>new Promise(r=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});
   for (let id in PP1_IMG_SRC){ if(!globalAssets['pp1_'+id]) globalAssets['pp1_'+id]=await load(PP1_IMG_SRC[id]); }
+};
+
+window.copyPP1TitlePos = function(){
+  let code = `const PP1_TITLE_DY = ${pp1TitleDY()};\nconst PP1_TITLE_DX = ${pp1TitleDX()};`;
+  let done = () => {
+    if (window.Telegram?.WebApp?.showAlert) window.Telegram.WebApp.showAlert('✅ Скопировано! Замени константы PP1_TITLE_DX / PP1_TITLE_DY.');
+    else alert('✅ Скопировано!');
+  };
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(code).then(done).catch(()=>prompt('Скопируй вручную:', code));
+  else prompt('Скопируй вручную:', code);
+};
+
+window.copyPP1Watermarks = function(){
+  let arr = PP1_LAYERS.filter(pp1IsWm).map(l =>
+    `  { id:'${l.id}', type:'text', z:${l.z}, x:${Math.round(l.x)}, y:${Math.round(l.y)}, scale:${l.scale}, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 },`
+  ).join('\n');
+  let done = () => {
+    if (window.Telegram?.WebApp?.showAlert) window.Telegram.WebApp.showAlert('✅ Скопировано! Замени строки ников в PP1_LAYERS.');
+    else alert('✅ Скопировано!');
+  };
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(arr).then(done).catch(()=>prompt('Скопируй вручную:', arr));
+  else prompt('Скопируй вручную:', arr);
+};
+
+window.pp1SetWm = function(idx, prop, val){
+  let wms = PP1_LAYERS.filter(pp1IsWm);
+  if (!wms[idx]) return;
+  wms[idx][prop] = parseFloat(val);
+  if (typeof startAnimation === 'function') startAnimation();
+};
+window.pp1SelectWm = function(idx){
+  window.layerState.pp1ActiveWm = parseInt(idx);
+  renderLayerPanel();
+};
+window.pp1AddWm = function(){
+  let n = PP1_LAYERS.filter(pp1IsWm).length;
+  PP1_LAYERS.push({ id:'text_new_'+Date.now(), type:'text', z:30+n, x:600, y:400, scale:0.4, rot:0, opacity:0.76, blend:'overlay', visible:true, size:110, color:'#ffffff', tracking:2, skew:6 });
+  window.layerState.pp1ActiveWm = n;
+  renderLayerPanel();
+  if (typeof startAnimation === 'function') startAnimation();
+};
+window.pp1RemoveWm = function(){
+  let wms = PP1_LAYERS.filter(pp1IsWm);
+  let i = window.layerState.pp1ActiveWm || 0;
+  if (!wms[i]) return;
+  let pos = PP1_LAYERS.indexOf(wms[i]);
+  PP1_LAYERS.splice(pos, 1);
+  window.layerState.pp1ActiveWm = Math.max(0, i - 1);
+  renderLayerPanel();
+  if (typeof startAnimation === 'function') startAnimation();
 };
 
 function pp1Rgba(hex,a){
@@ -14342,8 +14395,8 @@ function pp1DrawText(ctx,l){
   ctx.save();
   ctx.font=`${l.size}px '${fam}','Arial Black',sans-serif`;
   if('letterSpacing' in ctx) ctx.letterSpacing=(l.tracking||0)+'px';
-  const w0=ctx.measureText(txt).width;
-  const h0=l.size*1.05;
+  const w0 = l.refText ? ctx.measureText(l.refText).width : ctx.measureText(txt).width;
+  const h0 = l.size*1.05;
   ctx.globalAlpha=pp1Op(l);
   ctx.globalCompositeOperation=(l.blend&&l.blend!=='normal')?l.blend:'source-over';
   ctx.translate(l.x+w0/2, l.y+h0/2);
@@ -14380,14 +14433,15 @@ function drawPP1Content(ctx, Wc, Hc){
   ctx.save();
   ctx.translate((Wc-PP1_W*s)/2, (Hc-PP1_H*s)/2);
   ctx.scale(s,s);
-  PP1_LAYERS.slice().sort((a,b)=>a.z-b.z).forEach(l=>{
+  const pp1Z = (l) => pp1IsWm(l) ? -1 : l.z;   
+  PP1_LAYERS.slice().sort((a,b)=>pp1Z(a)-pp1Z(b)).forEach(l=>{
     if(!pp1Vis(l)) return;
 
     if(l.id==='title'){
       if (window.layerState.textVisible!==false && cachedTextCanvas){
         ctx.save();
         ctx.setTransform(1,0,0,1,0,0);           
-        ctx.translate(PP1_TITLE_DX, PP1_TITLE_DY);
+        ctx.translate(pp1TitleDX(), pp1TitleDY());
         ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, Wc, Hc);
         ctx.restore();
       }
@@ -14611,6 +14665,67 @@ function renderProPass1LayerPanel(isInitialLoad){
     html += `<div class="ios-font-item wm-font-item ${act}" data-font="${f.family}" style="font-family:'${f.family}',sans-serif;" onclick="setWmFont('${f.family}')">${t}</div>`;
   });
   html += `</div></div>`;
+
+  if (window.ENABLE_TEMP_EDITOR){
+    html += `<div class="ios-section-title ${a}" style="color:#ff9500;">⚙ ВРЕМЕННО: БОЛЬШОЙ ТЕКСТ</div>`;
+    html += `<div class="ios-layer-group ${a}">
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Сдвиг X</div>
+          <div id="v-pp1-tdx" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleDX()}</div>
+          <input type="range" class="ios-slider" min="-600" max="600" step="1" value="${pp1TitleDX()}" oninput="document.getElementById('v-pp1-tdx').innerText=this.value; window.layerState.pp1TitleDX=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Сдвиг Y</div>
+          <div id="v-pp1-tdy" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${pp1TitleDY()}</div>
+          <input type="range" class="ios-slider" min="-600" max="600" step="1" value="${pp1TitleDY()}" oninput="document.getElementById('v-pp1-tdy').innerText=this.value; window.layerState.pp1TitleDY=parseFloat(this.value); startAnimation();">
+        </div>
+        <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
+          <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;" onclick="window.copyPP1TitlePos()">📋 Скопировать координаты текста</button>
+        </div>
+      </div>`;
+
+    let wms = PP1_LAYERS.filter(pp1IsWm);
+    let ai = window.layerState.pp1ActiveWm || 0;
+    if (ai >= wms.length) ai = Math.max(0, wms.length - 1);
+    window.layerState.pp1ActiveWm = ai;
+    let w = wms[ai];
+
+    html += `<div class="ios-section-title ${a}" style="color:#ff9500;">⚙ ВРЕМЕННО: МАЛЕНЬКИЕ НИКИ</div>`;
+    html += `<div class="ios-layer-group ${a}">
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Выбрать ник</div>
+          <select onchange="window.pp1SelectWm(this.value)" style="background:var(--tg-theme-secondary-bg-color, #F2F2F7); border:none; border-radius:8px; padding:6px; outline:none; color:var(--tg-theme-text-color, #000); max-width:120px;">
+            ${wms.map((_,i)=>`<option value="${i}" ${i===ai?'selected':''}>Ник #${i+1}</option>`).join('')}
+          </select>
+        </div>
+        <div class="ios-layer-row">
+          <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1; margin-right:8px;" onclick="window.pp1AddWm()">+ Добавить</button>
+          <button class="ios-pill-btn" style="background: color-mix(in srgb, var(--tg-theme-destructive-text-color) 10%, transparent); color: var(--tg-theme-destructive-text-color); flex-grow:1;" onclick="window.pp1RemoveWm()">- Удалить</button>
+        </div>`;
+    if (w){
+      html += `
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Размер</div>
+          <div id="v-pp1-ws" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${w.scale}</div>
+          <input type="range" class="ios-slider" min="0.05" max="2" step="0.01" value="${w.scale}" oninput="document.getElementById('v-pp1-ws').innerText=this.value; window.pp1SetWm(${ai},'scale',this.value);">
+        </div>
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Позиция X</div>
+          <div id="v-pp1-wx" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${w.x}</div>
+          <input type="range" class="ios-slider" min="-400" max="2000" step="1" value="${w.x}" oninput="document.getElementById('v-pp1-wx').innerText=this.value; window.pp1SetWm(${ai},'x',this.value);">
+        </div>
+        <div class="ios-layer-row">
+          <div class="ios-layer-name" style="font-size:14px;">Позиция Y</div>
+          <div id="v-pp1-wy" style="margin-right:10px; color:#8E8E93; width:44px; text-align:right;">${w.y}</div>
+          <input type="range" class="ios-slider" min="-300" max="1200" step="1" value="${w.y}" oninput="document.getElementById('v-pp1-wy').innerText=this.value; window.pp1SetWm(${ai},'y',this.value);">
+        </div>`;
+    }
+    html += `
+        <div class="ios-layer-row" style="border-bottom:none; padding-top:8px;">
+          <button class="ios-pill-btn" style="background:#00ff591f; color:#16a34a; flex-grow:1;" onclick="window.copyPP1Watermarks()">📋 Скопировать код ников</button>
+        </div>
+      </div>`;
+  }
 
   layerPanel.innerHTML = html;
   layerPanel.style.display = 'flex';
