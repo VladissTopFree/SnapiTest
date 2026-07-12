@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(52)";
+  const APP_VERSION = "v2.4.4(53)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -1374,6 +1374,7 @@
   #dl-btn-save-project:active,
   #ios-btn-download-all:active,
   #cat-btn-next:active,
+  #sp-btn-back:active,
   #bp-style-btn-next:active {
     scale: 0.95 !important;
     opacity: 0.8 !important;
@@ -1867,11 +1868,11 @@
     transform: scale(1);
   }
 
-  #bp-style-btn-next, #bp-variant-btn-next, #propass-style-btn-next {
+  #bp-style-btn-next, #bp-variant-btn-next, #propass-style-btn-next, #sp-btn-back {
     display: none; 
     margin: 0 auto;
   }
-  #bp-style-btn-next.show, #bp-variant-btn-next.show, #propass-style-btn-next.show {
+  #bp-style-btn-next.show, #bp-variant-btn-next.show, #propass-style-btn-next.show, #sp-btn-back.show {
     display: flex;
     animation: slideUpFade 0.3s ease-out forwards;
   }
@@ -2550,6 +2551,7 @@ body:not(.os-non-apple) #cat-btn-next,
 body:not(.os-non-apple) #bp-style-btn-next,
 body:not(.os-non-apple) #bp-variant-btn-next,
 body:not(.os-non-apple) #size-generate-btn,
+body:not(.os-non-apple) #sp-btn-back, 
 body:not(.os-non-apple) #ios-btn-download-all {
     position: relative;
     box-shadow:
@@ -2569,6 +2571,7 @@ body:not(.os-non-apple) #cat-btn-next::before,
 body:not(.os-non-apple) #bp-style-btn-next::before,
 body:not(.os-non-apple) #bp-variant-btn-next::before,
 body:not(.os-non-apple) #size-generate-btn::before,
+body:not(.os-non-apple) #sp-btn-back::before, 
 body:not(.os-non-apple) #ios-btn-download-all::before {
     content: "";
     position: absolute;
@@ -3045,8 +3048,9 @@ body:not(.os-non-apple) .ios-icon-box > * {
         </div>
 
         <div class="cat-card" id="propass-main-card" onclick="selectCategory('propass')">
-            <div class="cat-img-wrapper" style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
-                <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" style="object-fit: cover; width: 100%; height: 100%;" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_pp1_1.jpg", "demo_png/demo_png_pp2_1.jpg", "demo_png/demo_png_pp3_1.jpg"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_pp1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 <span class="cat-new-badge">НОВОЕ</span>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
@@ -3192,8 +3196,9 @@ body:not(.os-non-apple) .ios-icon-box > * {
 
         <div class="cat-card" onclick="selectProPassStyle(1)">
             <div class="cat-radio" id="propass-radio-1"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none; position: relative;">
-                <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" ...>
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_pp1_1.jpg", "demo_png/demo_png_pp1_2.jpg", "demo_png/demo_png_pp1_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_pp1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
@@ -3204,8 +3209,9 @@ body:not(.os-non-apple) .ios-icon-box > * {
 
         <div class="cat-card" onclick="selectProPassStyle(2)">
             <div class="cat-radio" id="propass-radio-2"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative; animation: none; background: radial-gradient(120% 90% at 50% 42%, #c65cff 0%, #a136ef 34%, #7d1fce 62%, #5a13a6 100%);">
-                <img src="demo_png/demo_png_propass_1.jpg" class="cat-img" ...>
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_pp2_1.jpg", "demo_png/demo_png_pp2_2.jpg", "demo_png/demo_png_pp2_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_pp2_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
@@ -3216,7 +3222,10 @@ body:not(.os-non-apple) .ios-icon-box > * {
 
         <div class="cat-card" onclick="selectProPassStyle(3)" style="border-bottom: none;">
             <div class="cat-radio" id="propass-radio-3"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-            <div class="cat-img-wrapper" style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; background: var(--tg-theme-section-separator-color, #E5E5EA); animation: none;"></div>
+            <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_pp3_1.jpg", "demo_png/demo_png_pp3_2.jpg", "demo_png/demo_png_pp3_3.jpg"]' style="width: 100px; height: 56px; border-radius: 6px; margin-right: 14px; position: relative;">
+                <img src="demo_png/demo_png_pp3_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
+                <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+            </div>
             <div class="cat-info" style="justify-content: center; min-height: 56px;">
                 <div class="cat-name">Стиль #3</div>
                 <div class="cat-desc">Включает в себя BP, BP+, Pro Pass, кристаллы и детали для улучшения работы.</div>
@@ -3843,7 +3852,7 @@ window.checkBPStyle4Ready = function() {
      <div class="sp-empty-subtitle">У Вас ещё нет сохранённых работ<br>для изменений.</div>
   </div>
 
-  <div id="sp-content-state" class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); display: none;">
+<div id="sp-content-state" class="ios-container" style="margin: 0 auto; padding-top: var(--app-top-padding); display: none;">
      <div class="ios-section-title" style="margin-top: 0;">СОХРАНЁННЫЕ РАБОТЫ</div>
      <div class="ios-layer-group" id="sp-list" style="padding: 0 20px; overflow: hidden;">
      </div>
@@ -3851,6 +3860,10 @@ window.checkBPStyle4Ready = function() {
             Список Ваших сохранённых работ.<br>
             Выбирайте любой для редактирования или удаления.
      </div>
+  </div>
+
+  <div class="bottom-fade-container" id="sp-back-btn-wrap" style="display: none;">
+    <button id="sp-btn-back" class="ios-action-btn" onclick="window.triggerHaptic(); window.closeSavedProjects();">Назад</button>
   </div>
 </div>
 
@@ -4820,13 +4833,26 @@ window.renderSavedProjects = async () => {
     try { projects = await window.spGetAll(); } catch (e) {}
     projects.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 
+    let backWrap = document.getElementById('sp-back-btn-wrap');
+    let backBtn = document.getElementById('sp-btn-back');
+
     if (!projects.length) {
         emptyState.style.display = 'flex';
         emptyState.classList.add('show');
         contentState.style.display = 'none';
         if (container) container.innerHTML = '';
+
+        if (backWrap) backWrap.style.display = 'flex';
+        if (backBtn) {
+            backBtn.classList.remove('show');
+            void backBtn.offsetWidth;
+            setTimeout(() => backBtn.classList.add('show'), 250);
+        }
         return;
     }
+
+    if (backWrap) backWrap.style.display = 'none';
+    if (backBtn) backBtn.classList.remove('show');
 
     emptyState.style.display = 'none';
     contentState.style.display = 'block';
@@ -10693,7 +10719,8 @@ function drawBeautifulNick(ctx, text, w, h) {
 
     let tOffsetY = window.layerState.mainTextOffsetY !== undefined ? window.layerState.mainTextOffsetY : 0;
     let hdScale = typeof getHDScale === 'function' ? getHDScale() : 1;
-    y += tOffsetY * hdScale;
+    let isPP1 = window.layerState.isProPassMode && window.layerState.propassStyleIndex === 1;
+    if (!isPP1) y += tOffsetY * hdScale;
     
     let shadowDepth = Math.max(1, Math.floor(fontSize * 0.10));
 
@@ -10957,6 +10984,15 @@ window.resetWizardState = () => {
       window.layerState.customTexts = []; 
       window.layerState.isBrawlPassMode = false;
       window.layerState.isProPassMode = false;
+
+      delete window.layerState.mainTextOffsetY;
+      delete window.layerState.mainTextScale;
+      delete window.layerState.mainTextLetterSpacing;
+      delete window.layerState.mainTextItalic;
+      delete window.layerState.pp1TitleBottom;
+      delete window.layerState.pp1TitleDX;
+      delete window.layerState.pp1PanelOffScale;
+      delete window.layerState.pp1PanelOffDy;
       window._ppStyle = null;
       window.layerState.bpStyleIndex = null;
       window.layerState.bpPriceLeft = "";
@@ -14700,7 +14736,8 @@ function drawPP1Content(ctx, Wc, Hc){
 
         const r = (window._pp1TextBottomRatio !== undefined) ? window._pp1TextBottomRatio : 1;
         const textBottomPx = r * Hc;
-        const dy = (Hc - pp1TitleBottom()) - textBottomPx;  
+        const offY = (window.layerState.mainTextOffsetY || 0) * (Hc / 720);
+        const dy = (Hc - pp1TitleBottom()) - textBottomPx + offY;
 
         ctx.translate(pp1TitleDX(), dy);
         ctx.drawImage(cachedTextCanvas, 0, 0, cachedTextCanvas.width, cachedTextCanvas.height, 0, 0, Wc, Hc);
