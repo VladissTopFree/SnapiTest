@@ -3087,6 +3087,24 @@ body.os-non-apple #canvas-pin-btn {
   100% { opacity: 1; filter: blur(0px); transform: translateY(0) scale(1); }
 }
 
+.settings-header-btn {
+    position: relative;
+    overflow: hidden;                       
+    -webkit-tap-highlight-color: transparent;
+    background-clip: padding-box !important;
+    transition: background-color 0.2s;
+  }
+  .settings-header-btn > * {
+    position: relative;
+    z-index: 1;
+  }
+  .settings-header-btn:active {
+    background-color: color-mix(in srgb, var(--tg-theme-destructive-text-color) 24%, transparent);
+  }
+  body.os-non-apple .settings-header-btn:active {
+    background-color: color-mix(in srgb, var(--tg-theme-destructive-text-color) 12%, transparent) !important;
+  }
+
 </style>
 </head>
 <body oncontextmenu="return false;">
