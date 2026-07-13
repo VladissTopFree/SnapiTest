@@ -8,7 +8,7 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.4(55)";
+  const APP_VERSION = "v2.4.4(56)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
@@ -2591,6 +2591,11 @@ body.os-desktop #wizard-step3.dragover {
   border-color: var(--tg-theme-button-color, #3390ec) !important;
 }
 
+#size-presets-grid,
+#custom-presets-list {
+  overflow: hidden;   
+}
+
 .size-preset-row {
   position: relative;
   margin-left: -20px !important;
@@ -2600,6 +2605,7 @@ body.os-desktop #wizard-step3.dragover {
   -webkit-tap-highlight-color: transparent;
   background-clip: padding-box !important;
 }
+
 .size-preset-row > * { position: relative; z-index: 1; }
 .size-preset-row:active {
   background-color: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 50%, transparent);
@@ -3002,7 +3008,7 @@ body.os-non-apple #canvas-pin-btn {
   width: 100%;
   height: 100%;
   border-radius: 2px;
-  background: #ffffff;
+  background: var(--tg-theme-subtitle-text-color, #8E8E93);
 
   transform: scaleX(0);
   transform-origin: 100% 50%;   
