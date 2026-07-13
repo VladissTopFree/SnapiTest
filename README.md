@@ -1,1 +1,1 @@
-v2.4.4 - Test version (1 July 2026)
+v2.4.5 - Test version (13 July 2026)
