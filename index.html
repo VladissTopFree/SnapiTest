@@ -8,12 +8,12 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.5";
+  const APP_VERSION = "v2.4.5(1)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
   const SHOW_PROMO_BANNER = false;  
-  const SHOW_PROMO_BANNER_PP = true; 
+  const SHOW_PROMO_BANNER_PP = false; 
   const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
@@ -1529,8 +1529,9 @@
     background: var(--tg-theme-secondary-bg-color, #F2F2F7);
     width: 100%;
     max-height: 91vh;
-    border-radius: 21px 21px 0 0;
-    padding: 0 0 40px 0; 
+    overflow: hidden;
+    border-radius: 43px 43px 0 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -1543,12 +1544,16 @@
 
   }
 
+  body.os-non-apple .fankit-sheet {
+    border-radius: 21px 21px 0 0;
+  }
+
     #fankit-sheet {
         height: 86%; 
     }
 
     body.os-non-apple #fankit-sheet {
-        height: 71%;
+        height: 81%;
     }
 
     body.os-android #fankit-sheet {
@@ -1560,50 +1565,242 @@
   }
 
   .fankit-drag-pill {
-    width: 36px; 
-    height: 8px;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 11;
+    width: 36px;
+    min-width: 36px;
+    max-width: 36px;
+    height: 5px;
+    touch-action: none;
+    cursor: grab;
+    flex-shrink: 0;
     background: var(--tg-theme-subtitle-text-color, #8E8E93);
-    border-radius: 6px;
-    margin: 8px auto 20px auto;
+    border-radius: 3px;
+    margin: 0;
+  }
+
+  .fankit-circle-btn { touch-action: manipulation; }
+
+
+  .fankit-blur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 86px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .fankit-blur > div {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .fankit-blur > div:nth-child(1) {
+    -webkit-backdrop-filter: blur(1px);
+            backdrop-filter: blur(1px);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 100%);
+            mask-image: linear-gradient(to bottom, black 0%, black 100%);
+  }
+  .fankit-blur > div:nth-child(2) {
+    -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 80%);
+            mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 80%);
+  }
+  .fankit-blur > div:nth-child(3) {
+    -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 28%, transparent 60%);
+            mask-image: linear-gradient(to bottom, black 0%, black 28%, transparent 60%);
+  }
+  .fankit-blur > div:nth-child(4) {
+    -webkit-backdrop-filter: blur(18px);
+            backdrop-filter: blur(18px);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 14%, transparent 42%);
+            mask-image: linear-gradient(to bottom, black 0%, black 14%, transparent 42%);
+  }
+
+  .fankit-blur > div:nth-child(5) {
+    background: var(--tg-theme-secondary-bg-color, #F2F2F7);
+    opacity: 0.6;
+    height: 116px;                 
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+  }
+
+  .fankit-header {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: transparent;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2px 20px 18px 20px;
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
+  .fankit-header-titles { position: relative; z-index: 2; }
+
+  .fankit-header-titles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    max-width: calc(100% - 130px);
   }
 
   .fankit-title {
     font-size: 18px;
-    color: var(--tg-theme-subtitle-text-color, #8E8E93);
-    margin-bottom: 16px;
-    text-align: left;
-    padding: 0 20px;
+    font-weight: 600;
+    color: var(--tg-theme-text-color, #000000);
+    text-align: center;
+    margin: 0;
+    padding: 0;
   }
 
+  .fankit-subtitle {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--tg-theme-subtitle-text-color, #8E8E93);
+    text-align: center;
+  }
+
+  .fankit-circle-btn {
+    position: absolute;
+    z-index: 2;
+    top: -6px;               
+    transform: none;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--tg-theme-text-color, #000000);
+    background: color-mix(in srgb, var(--tg-theme-section-bg-color, #ffffff) 65%, transparent);
+    -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);    
+    -webkit-tap-highlight-color: transparent;
+    box-shadow:
+        inset 0px 1px 0px rgba(255, 255, 255, 0.2),
+        inset 0px -1px 0px rgba(0, 0, 0, 0.15),
+        0px 16px 32px rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .fankit-circle-btn:active { transform: scale(0.9); opacity: 0.8; }
+  .fankit-circle-btn svg {
+    width: 30px; height: 30px;
+    display: block; position: relative; z-index: 2;
+    overflow: visible;
+  }
+  .fankit-btn-info svg  { transform: translateY(-0.3px); }   
+  .fankit-btn-close svg { width: 35px; height: 35px; }  
+
+  .fankit-btn-close { left: 20px; }
+  .fankit-btn-info  { right: 20px; }
+
+  body:not(.os-non-apple) .fankit-circle-btn {
+    box-shadow:
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.95),
+        inset 0 -1px 0.5px rgba(255, 255, 255, 0.60),
+        0px 16px 32px rgba(0, 0, 0, 0.12);
+  }
+  body.os-non-apple .fankit-circle-btn {
+    border-radius: 14px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.14),
+                inset 0 -1px 0 rgba(0,0,0,0.12),
+                0px 12px 24px rgba(0,0,0,0.12);
+  }
+
+  .fankit-section-label {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--tg-theme-subtitle-text-color, #8E8E93);
+    padding: 0;
+    margin-bottom: 18px;
+    grid-column: 1 / -1;
+  }
+  body.os-non-apple .fankit-section-label { font-weight: 400; }
+
+  .fankit-add-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 80%;              
+    height: 48px;
+    margin: 18px auto;
+    border: none;
+    border-radius: 40px;
+    background: var(--tg-theme-button-color, #3390ec);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    font-size: 18px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow:
+        inset 0px 1px 0px rgba(255, 255, 255, 0.2),
+        inset 0px -1px 0px rgba(0, 0, 0, 0.15),
+        0px 16px 32px rgba(0, 0, 0, 0.12);
+    transform-origin: center center;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+  }
+  .fankit-add-btn:active { transform: scale(0.96); opacity: 0.85; }
+  .fankit-add-btn > * { position: relative; z-index: 2; }
+  .fankit-add-btn svg {
+    width: 26px; height: 26px;
+    display: block;
+    transform: translateY(1.5px);   
+  }
+
+  body:not(.os-non-apple) .fankit-add-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    top: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    border-radius: inherit;
+    padding: 1px;
+    will-change: transform;
+    background: linear-gradient(180deg,
+        rgba(214, 240, 255, .95)  0%,
+        rgba(150, 210, 255, .55) 10%,
+        rgba(255, 255, 255, 0)   34%,
+        rgba(255, 255, 255, 0)   62%,
+        rgba(120, 190, 255, .50) 88%,
+        rgba(200, 235, 255, .90) 100%);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  body.os-non-apple .fankit-add-btn { border-radius: 16px; box-shadow: none; }
+  
   .fankit-grid-container {
     position: relative;
+    z-index: 1;
     flex-grow: 1;
     overflow: hidden;
     height: 100%;
-  }
-
-  .fankit-grid-container::before,
-  .fankit-grid-container::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 30px; 
-    background: var(--tg-theme-secondary-bg-color, #F2F2F7);
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  .fankit-grid-container::before {
-    top: 0;
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-    mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-  }
-
-  .fankit-grid-container::after {
-    bottom: 0;
-    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
-    mask-image: linear-gradient(to top, black 0%, transparent 100%);
   }
 
     .fankit-grid {
@@ -1614,7 +1811,7 @@
         overflow-x: hidden; 
         touch-action: pan-y; 
         -webkit-overflow-scrolling: touch;
-        padding: 5px 12px 20px 12px; 
+        padding: 96px 20px 20px 20px;
         height: 100%;
         box-sizing: border-box;
         width: 100%;
@@ -1623,10 +1820,10 @@
     }
 
   .fankit-recommended-wrapper {
-    background: var(--tg-theme-section-bg-color, #ffffff);
-    border-radius: 16px;
-    padding: 12px 8px;
-    margin: 0 20px 10px 20px;
+    grid-column: 1 / -1;   
+    padding: 0;
+    margin: 0;
+    background: transparent;
   }
   
   .fankit-rec-title {
@@ -1652,14 +1849,16 @@
     background-color: var(--tg-theme-section-separator-color, #E5E5EA);
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform 0.1s, border-color 0.2s;
+    border: none;
+    box-shadow: inset 0 0 0 0 transparent;
+    transition: transform 0.1s, box-shadow 0.2s;
     overflow: hidden;
   }
   
   .fankit-rec-item.selected {
-    border-color: var(--tg-theme-accent-text-color);
+    box-shadow: inset 0 0 0 2px var(--tg-theme-accent-text-color);
   }
   
   .fankit-rec-item:active {
@@ -1670,13 +1869,14 @@
     position: absolute;
     bottom: 0;
     right: 0;
-    background: var(--tg-theme-accent-text-color);
-    color: #fff;
-    font-size: 8.5px;
+    background: var(--tg-theme-secondary-bg-color, #F2F2F7);
+    color: var(--tg-theme-text-color, #000000);
+    font-size: 10px;
     font-weight: 600;
-    padding: 3px 5px;
-    border-radius: 6px 0 6px 0;
+    padding: 5px 8px;
+    border-radius: 10px 0 0 0;
     font-family: -apple-system, sans-serif;
+    line-height: 1;
   }
 
   .fankit-item {
@@ -4267,9 +4467,38 @@ window.checkBPStyle4Ready = function() {
 </div>
 
 <div id="fankit-overlay">
-  <div class="fankit-sheet" id="fankit-sheet">
-    <div class="fankit-drag-pill"></div>
-    <div class="fankit-title">Выберите фон из Fankit</div>
+    <div class="fankit-sheet" id="fankit-sheet">
+      <div class="fankit-blur" aria-hidden="true">
+        <div></div><div></div><div></div><div></div><div></div>
+      </div>
+        <div class="fankit-drag-pill"></div>
+        <div class="fankit-header">
+        <button type="button" id="fankit-btn-close" class="fankit-circle-btn fankit-btn-close">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"
+             stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 14L34 34"/>
+          <path d="M34 14L14 34"/>
+        </svg>
+      </button>
+
+      <div class="fankit-header-titles">
+        <div class="fankit-title">Фон из Fankit</div>
+        <div class="fankit-subtitle">выберите фон или добавьте свой</div>
+      </div>
+
+      <button type="button" id="fankit-btn-info" class="fankit-circle-btn fankit-btn-info">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"
+             stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="24" cy="24" r="19"/>
+          <g transform="translate(1 0)">
+            <circle cx="24" cy="14" r="1.9" fill="currentColor" stroke="none"/>
+            <path d="M20.5 20.5H24V31.5"/>
+            <path d="M20.5 31.5H27.5"/>
+          </g>
+        </svg>
+      </button>
+    </div>
+
     <div class="fankit-grid-container">
         <div class="fankit-grid" id="fankit-grid">
             </div>
@@ -11472,10 +11701,22 @@ if (fankitGrid && fankitGrid.children.length === 0) {
     const recWrapper = document.createElement('div');
     recWrapper.className = 'fankit-recommended-wrapper';
     recWrapper.innerHTML = `
-        <div class="fankit-rec-title">РЕКОМЕНДУЕМ</div>
+        <div class="fankit-section-label">рекомендуемые</div>
         <div class="fankit-rec-grid" id="fankit-rec-grid"></div>
+        <button class="fankit-add-btn" id="fankit-add-btn" onclick="window.triggerHaptic();">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <mask id="plus-cut">
+                <circle cx="24" cy="24" r="19" fill="#fff"/>
+                <path d="M24 15V33M15 24H33" fill="none" stroke="#000"
+                      stroke-width="4" stroke-linecap="round"/>
+              </mask>
+              <circle cx="24" cy="24" r="19" fill="currentColor" mask="url(#plus-cut)"/>
+            </svg>
+            <span>Добавить фон</span>
+        </button>
+        <div class="fankit-section-label" style="margin-top: 8px; margin-bottom: 4px;">основные</div>
     `;
-    document.querySelector('.fankit-grid-container').before(recWrapper);
+    fankitGrid.appendChild(recWrapper);   
 
     const recGrid = document.getElementById('fankit-rec-grid');
     
@@ -11650,6 +11891,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
   window.openFankitGlobal = function() {
       window.triggerHaptic();
       fankitOverlay.style.display = 'flex';
+      if (fankitGrid) fankitGrid.scrollTop = 0;
       window.preloadFankitImages();
       setTimeout(() => fankitOverlay.classList.add('show'), 10);
   };
@@ -11675,42 +11917,66 @@ if (fankitGrid && fankitGrid.children.length === 0) {
       wizardReadyBgInput.click();
   };
 
+  let closeBtn = document.getElementById('fankit-btn-close');
+  if (closeBtn) closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.triggerHaptic();
+      window.closeFankitGlobal();
+  });
+
+  let infoBtn = document.getElementById('fankit-btn-info');
+  if (infoBtn) infoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.triggerHaptic();
+  });
+
   let startY = 0;
   let currentTranslateY = 0;
   let isDragging = false;
+  let dragId = null;
 
-  fankitSheet.addEventListener('touchstart', (e) => {
+  fankitSheet.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('button, .fankit-item, .fankit-rec-item')) return;
       if (fankitGrid.contains(e.target) && fankitGrid.scrollTop > 0) return;
-      
-      startY = e.touches[0].clientY;
-      isDragging = true;
-      fankitSheet.style.transition = 'none'; 
-  }, { passive: true });
 
-  fankitSheet.addEventListener('touchmove', (e) => {
-      if (!isDragging) return;
-      
-      let deltaY = e.touches[0].clientY - startY;
-      
+      dragId = e.pointerId;
+      startY = e.clientY;
+      isDragging = true;
+      currentTranslateY = 0;
+      fankitSheet.style.transition = 'none';
+  });
+
+  fankitSheet.addEventListener('pointermove', (e) => {
+      if (!isDragging || e.pointerId !== dragId) return;
+
+      let deltaY = e.clientY - startY;
       if (deltaY < 0) deltaY = 0;
-      
+
+      if (deltaY > 3 && !fankitSheet.hasPointerCapture(dragId)) {
+          fankitSheet.setPointerCapture(dragId);
+      }
+
       currentTranslateY = deltaY;
       fankitSheet.style.transform = `translateY(${currentTranslateY}px)`;
-  }, { passive: true });
+  });
 
-  fankitSheet.addEventListener('touchend', () => {
-      if (!isDragging) return;
+  const endFankitDrag = (e) => {
+      if (!isDragging || (e && e.pointerId !== dragId)) return;
       isDragging = false;
-      
+      dragId = null;
+
       fankitSheet.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-      
+
       if (currentTranslateY > 120) {
           window.closeFankitGlobal();
       } else {
           fankitSheet.style.transform = '';
       }
       currentTranslateY = 0;
-  });
+  };
+
+  fankitSheet.addEventListener('pointerup', endFankitDrag);
+  fankitSheet.addEventListener('pointercancel', endFankitDrag);
 
   wizardBgInput.onchange = (e) => {
     if (e.target.files && e.target.files[0]) {
