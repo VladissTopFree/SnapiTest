@@ -8,11 +8,11 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.5(5)";
+  const APP_VERSION = "v2.4.5(6)";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = false;  
+  const SHOW_PROMO_BANNER = true;  
   const SHOW_PROMO_BANNER_PP = false; 
   const REQUIRE_TELEGRAM_APP = false; 
 
@@ -1724,6 +1724,120 @@
                   inset 0 -1px 0 rgba(0,0,0,0.034),
                   0px 12px 24px rgba(0,0,0,0.12);
   }
+
+  .fankit-grid { position: relative; }
+
+  .fankit-osn-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    margin-bottom: 18px;
+    grid-column: 1 / -1;
+  }
+  .fankit-osn-row .fankit-section-label { margin: 0; }
+
+  .fankit-filter-wrap { position: relative; flex-shrink: 0; }
+
+  .fankit-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 36px;
+    padding: 0 7px 0 15px;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--tg-theme-text-color, #000000);
+    background: color-mix(in srgb, var(--tg-theme-section-bg-color, #ffffff) 65%, transparent);
+    -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+    -webkit-tap-highlight-color: transparent;
+    box-shadow:
+      inset 0px 1px 0px rgba(255,255,255,0.056),
+      inset 0px -1px 0px rgba(0,0,0,0.042),
+      0px 16px 32px rgba(0,0,0,0.12);
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .fankit-filter-btn:active { transform: scale(0.94); opacity: 0.85; }
+  .fankit-filter-icon { display: flex; }
+  .fankit-filter-icon svg { width: 22px; height: 22px; display: block; }
+
+  body:not(.os-non-apple) .fankit-filter-btn {
+    box-shadow:
+      inset 0 1px 0.5px rgba(255,255,255,0.267),
+      inset 0 -1px 0.5px rgba(255,255,255,0.169),
+      0px 16px 32px rgba(0,0,0,0.12);
+  }
+  body.os-non-apple .fankit-filter-btn {
+    border-radius: 12px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.039),
+                inset 0 -1px 0 rgba(0,0,0,0.034),
+                0px 12px 24px rgba(0,0,0,0.12);
+  }
+
+  .fankit-filter-menu {
+    position: fixed;
+    z-index: 3000;
+    min-width: 214px;
+    padding: 6px;
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--tg-theme-section-bg-color, #ffffff) 72%, transparent);
+    -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(24px);
+    box-shadow:
+      inset 0px 1px 0px rgba(255,255,255,0.06),
+      inset 0px -1px 0px rgba(0,0,0,0.05),
+      0px 20px 48px rgba(0,0,0,0.28);
+    opacity: 0;
+    transform: scale(0.92) translateY(-6px);
+    transform-origin: top right;
+    pointer-events: none;
+    display: none;
+    transition: opacity 0.22s cubic-bezier(0.22,0.8,0.3,1), transform 0.22s cubic-bezier(0.22,0.8,0.3,1);
+  }
+  body:not(.os-non-apple) .fankit-filter-menu {
+    box-shadow:
+      inset 0 1px 0.5px rgba(255,255,255,0.267),
+      inset 0 -1px 0.5px rgba(255,255,255,0.12),
+      0px 20px 48px rgba(0,0,0,0.28);
+  }
+  body.os-non-apple .fankit-filter-menu { border-radius: 16px; }
+  .fankit-filter-menu.open {
+    display: block;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+  }
+
+  .fankit-filter-opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 17px;
+    color: var(--tg-theme-text-color, #000000);
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s;
+  }
+  body.os-non-apple .fankit-filter-opt { border-radius: 12px; }
+  .fankit-filter-opt:active { background: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 45%, transparent); }
+  .fankit-filter-check {
+    width: 22px; height: 22px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--tg-theme-button-color, #3390ec);
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 0.2s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .fankit-filter-opt.active .fankit-filter-check { opacity: 1; transform: scale(1); }
+  .fankit-filter-check svg { width: 20px; height: 20px; display: block; }
+  .fankit-filter-opt-label { flex-grow: 1; }
 
   .fankit-section-label {
     font-size: 15px;
@@ -3522,7 +3636,7 @@ body.os-non-apple #canvas-pin-btn {
   </div>
 
 <div class="promo-content">
-    <div class="promo-subtitle">Новый 52 сезон</div>
+    <div class="promo-subtitle">Новый 53 сезон</div>
     <div class="promo-timer-box" id="promo-timer-container">
       через <span id="promo-timer">00:00:00</span>
     </div>
@@ -4032,8 +4146,8 @@ body.os-non-apple #canvas-pin-btn {
                 <img src="demo_png50s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">52 сезон</div>
-                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 2 июля.</div> <!--Новый-->
+                <div class="cat-name" style="width: 100%;">53 сезон</div>
+                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 5 августа.</div> <!--Текущий-->
             </div>
          </div>
          
@@ -4045,8 +4159,8 @@ body.os-non-apple #canvas-pin-btn {
                 <img src="demo_png49s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">51 сезон</div>
-                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 4 июня.</div> <!--Текущий-->
+                <div class="cat-name" style="width: 100%;">53 сезон</div>
+                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 2 июля.</div> <!--Прошлый-->
             </div>
          </div>
 
@@ -4058,8 +4172,8 @@ body.os-non-apple #canvas-pin-btn {
                 <img src="demo_png48s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">50 сезон</div>
-                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 7 мая.</div> <!--Прошлый-->
+                <div class="cat-name" style="width: 100%;">51 сезон</div>
+                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 4 июня.</div> <!--Старый-->
             </div>
          </div>
 
@@ -4458,8 +4572,8 @@ window.checkBPStyle4Ready = function() {
             Список Ваших сохранённых работ.<br>
             Выбирайте любой для редактирования или удаления.
      </div>
-     <div id="sp-delete-all-btn" class="ios-card" onclick="window.confirmDeleteAllProjects()" style="padding: 18px 24px; min-height: auto; cursor: pointer; margin-top: 4px; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s, transform 0.15s;" ontouchstart="this.style.opacity='0.7'; this.style.transform='scale(0.98)';" ontouchend="this.style.opacity='1'; this.style.transform='scale(1)';">
-        <span style="font-size: 20px; font-weight: 600; color: var(--tg-theme-destructive-text-color, #ff3b30);">Удалить все</span>
+     <div id="sp-delete-all-btn" class="ios-card ios-menu-item" onclick="window.confirmDeleteAllProjects()" style="justify-content: center; cursor: pointer; margin-top: 4px; border-radius: 24px;">
+        <span style="font-size: 17px; font-weight: 400; color: var(--tg-theme-destructive-text-color, #ff3b30);">Удалить все</span>
      </div>
   </div>
 
@@ -11791,7 +11905,7 @@ if (fankitGrid && fankitGrid.children.length === 0) {
     recWrapper.innerHTML = `
         <div class="fankit-section-label">рекомендуемые</div>
         <div class="fankit-rec-grid" id="fankit-rec-grid"></div>
-        <div class="fankit-section-label" id="fankit-custom-label" style="margin-top: 8px; margin-bottom: 4px; display: none;">добавленные</div>
+        <div class="fankit-section-label" id="fankit-custom-label" style="margin-top: 8px; margin-bottom: 18px; display: none;">добавленные</div>
         <div class="fankit-rec-grid" id="fankit-custom-grid" style="display: none;"></div>
         <input type="file" id="fankit-custom-input" accept="image/*" style="display:none;">
         <button class="fankit-add-btn" id="fankit-add-btn">
@@ -11805,16 +11919,24 @@ if (fankitGrid && fankitGrid.children.length === 0) {
             </svg>
             <span>Добавить фон</span>
         </button>
-        <div class="fankit-section-label" style="margin-top: 8px; margin-bottom: 4px;">основные</div>
+        <div class="fankit-osn-row">
+          <div class="fankit-section-label">основные</div>
+          <div class="fankit-filter-wrap">
+            <button class="fankit-filter-btn" id="fankit-filter-btn" onclick="window.toggleFankitFilter(event)">
+              <span id="fankit-filter-label">Все</span>
+              <span class="fankit-filter-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><line x1="7.5" y1="8" x2="16.5" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10.5" y1="16" x2="13.5" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            </button>
+          </div>
+        </div>
     `;
     fankitGrid.appendChild(recWrapper);   
 
     const recGrid = document.getElementById('fankit-rec-grid');
     
     const recBackgrounds = [
-        { src: 'bg/bg20_BP50.jpg', text: '52 сезон' },
-        { src: 'bg/bg18_BP49.jpg', text: '51 сезон' },
-        { src: 'bg/bg19_BP48.jpg', text: '50 сезон' }
+        { src: 'bg/bg20_BP50.jpg', text: '53 сезон' },
+        { src: 'bg/bg18_BP49.jpg', text: '52 сезон' },
+        { src: 'bg/bg19_BP48.jpg', text: '51 сезон' }
     ];
 
     const handleFankitSelection = (itemElement, imgSrc) => {
@@ -11931,11 +12053,18 @@ if (fankitGrid && fankitGrid.children.length === 0) {
         imageObserver.observe(item); 
     });
 
+        const FANKIT_CAT_MAP = {
+            1:'brawl', 2:'clash_royale', 3:'clash_clans', 4:'brawl', 5:'clash_clans',
+            6:'clash_royale', 7:'brawl', 8:'clash_clans', 9:'clash_royale', 10:'brawl',
+            11:'clash_royale', 12:'clash_clans', 13:'brawl', 14:'clash_clans', 15:'clash_royale',
+            16:'brawl', 17:'clash_clans', 21:'clash_royale', 22:'brawl', 23:'clash_clans'
+        };
         const standardBackgrounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21, 22, 23];
 
         standardBackgrounds.forEach((num) => {
             let item = document.createElement('div');
             item.className = 'fankit-item loading';
+            item.setAttribute('data-cat', FANKIT_CAT_MAP[num] || 'brawl');
 
             if (num === 1 || num === 2) {
                 item.style.position = 'relative';
@@ -13958,7 +14087,7 @@ window.initPromoTimer = function() {
     const container = document.getElementById('promo-timer-container');
     if (!timerEl || !container) return;
 
-    const targetTime = new Date("2026-07-02T11:00:00+03:00").getTime();
+    const targetTime = new Date("2026-08-05T11:00:00+03:00").getTime();
     let timeOffset = 0; 
     let timerInterval;
 
