@@ -8,12 +8,12 @@
 <title>Snapi</title>
 
 <script>
-  const APP_VERSION = "v2.4.5(6)";
+  const APP_VERSION = "v2.4.6";
   const APP_BUILD = "BETA"; 
   document.title = "Snapi " + APP_VERSION + " BETA";
 
-  const SHOW_PROMO_BANNER = true;  
-  const SHOW_PROMO_BANNER_PP = false; 
+  const SHOW_PROMO_BANNER = false;  
+  const SHOW_PROMO_BANNER_PP = true; 
   const REQUIRE_TELEGRAM_APP = false; 
 
   window.isNewUser = localStorage.getItem('Snapi_visited') === null;
@@ -1529,9 +1529,8 @@
     background: var(--tg-theme-secondary-bg-color, #F2F2F7);
     width: 100%;
     max-height: 91vh;
-    overflow: hidden;
-    border-radius: 43px 43px 0 0;
-    padding: 0;
+    border-radius: 21px 21px 0 0;
+    padding: 0 0 40px 0; 
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -1544,16 +1543,12 @@
 
   }
 
-  body.os-non-apple .fankit-sheet {
-    border-radius: 21px 21px 0 0;
-  }
-
     #fankit-sheet {
         height: 86%; 
     }
 
     body.os-non-apple #fankit-sheet {
-        height: 81%;
+        height: 71%;
     }
 
     body.os-android #fankit-sheet {
@@ -1565,398 +1560,50 @@
   }
 
   .fankit-drag-pill {
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 11;
-    width: 36px;
-    min-width: 36px;
-    max-width: 36px;
-    height: 5px;
-    touch-action: none;
-    cursor: grab;
-    flex-shrink: 0;
+    width: 36px; 
+    height: 8px;
     background: var(--tg-theme-subtitle-text-color, #8E8E93);
-    border-radius: 3px;
-    margin: 0;
-  }
-
-  .fankit-circle-btn { touch-action: manipulation; }
-
-
-  .fankit-blur {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 86px;
-    pointer-events: none;
-    z-index: 3;
-  }
-
-  .fankit-blur > div {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-  }
-
-  .fankit-blur > div:nth-child(1) {
-    -webkit-backdrop-filter: blur(1px);
-            backdrop-filter: blur(1px);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 100%);
-            mask-image: linear-gradient(to bottom, black 0%, black 100%);
-  }
-  .fankit-blur > div:nth-child(2) {
-    -webkit-backdrop-filter: blur(3px);
-            backdrop-filter: blur(3px);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 80%);
-            mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 80%);
-  }
-  .fankit-blur > div:nth-child(3) {
-    -webkit-backdrop-filter: blur(8px);
-            backdrop-filter: blur(8px);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 28%, transparent 60%);
-            mask-image: linear-gradient(to bottom, black 0%, black 28%, transparent 60%);
-  }
-  .fankit-blur > div:nth-child(4) {
-    -webkit-backdrop-filter: blur(18px);
-            backdrop-filter: blur(18px);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 14%, transparent 42%);
-            mask-image: linear-gradient(to bottom, black 0%, black 14%, transparent 42%);
-  }
-
-  .fankit-blur > div:nth-child(5) {
-    background: var(--tg-theme-secondary-bg-color, #F2F2F7);
-    opacity: 0.8;
-    height: 116px;                 
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
-            mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
-  }
-
-  .fankit-header {
-    position: absolute;
-    top: 18px;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    background: transparent;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 2px 20px 18px 20px;
-    flex-shrink: 0;
-    overflow: visible;
-  }
-
-  .fankit-header-titles { position: relative; z-index: 2; }
-
-  .fankit-header-titles {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    max-width: calc(100% - 130px);
+    border-radius: 6px;
+    margin: 8px auto 20px auto;
   }
 
   .fankit-title {
     font-size: 18px;
-    font-weight: 600;
-    color: var(--tg-theme-text-color, #000000);
-    text-align: center;
-    margin: 0;
-    padding: 0;
-  }
-
-  .fankit-subtitle {
-    font-size: 12px;
-    font-weight: 300;
     color: var(--tg-theme-subtitle-text-color, #8E8E93);
-    text-align: center;
+    margin-bottom: 16px;
+    text-align: left;
+    padding: 0 20px;
   }
 
-  .fankit-circle-btn {
-    position: absolute;
-    z-index: 2;
-    top: -6px;               
-    transform: none;
-    width: 46px;
-    height: 46px;
-    border: none;
-    border-radius: 50%;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--tg-theme-text-color, #000000);
-    background: color-mix(in srgb, var(--tg-theme-section-bg-color, #ffffff) 65%, transparent);
-    -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);    
-    -webkit-tap-highlight-color: transparent;
-    box-shadow:
-      inset 0px 1px 0px rgba(255, 255, 255, 0.056),
-      inset 0px -1px 0px rgba(0, 0, 0, 0.042),
-      0px 16px 32px rgba(0, 0, 0, 0.12);
-    transition: transform 0.15s ease, opacity 0.15s ease;
-  }
-  .fankit-circle-btn:active { transform: scale(0.9); opacity: 0.8; }
-  .fankit-circle-btn svg {
-    width: 30px; height: 30px;
-    display: block; position: relative; z-index: 2;
-    overflow: visible;
-  }
-  .fankit-btn-info svg  { transform: translateY(-0.3px); }   
-  .fankit-btn-close svg { width: 35px; height: 35px; }  
-
-  .fankit-btn-close { left: 20px; }
-  .fankit-btn-info  { right: 20px; }
-
-  body:not(.os-non-apple) .fankit-circle-btn {
-      box-shadow:
-          inset 0 1px 0.5px rgba(255, 255, 255, 0.267),
-          inset 0 -1px 0.5px rgba(255, 255, 255, 0.169),
-          0px 16px 32px rgba(0, 0, 0, 0.12);
-  }
-  body.os-non-apple .fankit-circle-btn {
-      border-radius: 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.039),
-                  inset 0 -1px 0 rgba(0,0,0,0.034),
-                  0px 12px 24px rgba(0,0,0,0.12);
-  }
-
-  .fankit-grid { position: relative; }
-
-  .fankit-osn-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-    margin-bottom: 18px;
-    grid-column: 1 / -1;
-  }
-  .fankit-osn-row .fankit-section-label { margin: 0; }
-
-  .fankit-filter-wrap { position: relative; flex-shrink: 0; }
-
-  .fankit-filter-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    height: 36px;
-    padding: 0 7px 0 15px;
-    border: none;
-    border-radius: 18px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 400;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: var(--tg-theme-text-color, #000000);
-    background: color-mix(in srgb, var(--tg-theme-section-bg-color, #ffffff) 65%, transparent);
-    -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-    -webkit-tap-highlight-color: transparent;
-    box-shadow:
-      inset 0px 1px 0px rgba(255,255,255,0.056),
-      inset 0px -1px 0px rgba(0,0,0,0.042),
-      0px 16px 32px rgba(0,0,0,0.12);
-    transition: transform 0.15s ease, opacity 0.15s ease;
-  }
-  .fankit-filter-btn:active { transform: scale(0.94); opacity: 0.85; }
-  .fankit-filter-icon { display: flex; }
-  .fankit-filter-icon svg { width: 22px; height: 22px; display: block; }
-
-  body:not(.os-non-apple) .fankit-filter-btn {
-    box-shadow:
-      inset 0 1px 0.5px rgba(255,255,255,0.267),
-      inset 0 -1px 0.5px rgba(255,255,255,0.169),
-      0px 16px 32px rgba(0,0,0,0.12);
-  }
-  body.os-non-apple .fankit-filter-btn {
-    border-radius: 12px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.039),
-                inset 0 -1px 0 rgba(0,0,0,0.034),
-                0px 12px 24px rgba(0,0,0,0.12);
-  }
-
-  .fankit-filter-menu {
-    position: fixed;
-    z-index: 3000;
-    min-width: 214px;
-    padding: 6px;
-    border-radius: 22px;
-    background: color-mix(in srgb, var(--tg-theme-section-bg-color, #ffffff) 72%, transparent);
-    -webkit-backdrop-filter: blur(24px);
-            backdrop-filter: blur(24px);
-    box-shadow:
-      inset 0px 1px 0px rgba(255,255,255,0.06),
-      inset 0px -1px 0px rgba(0,0,0,0.05),
-      0px 20px 48px rgba(0,0,0,0.28);
-    opacity: 0;
-    transform: scale(0.92) translateY(-6px);
-    transform-origin: top right;
-    pointer-events: none;
-    display: none;
-    transition: opacity 0.22s cubic-bezier(0.22,0.8,0.3,1), transform 0.22s cubic-bezier(0.22,0.8,0.3,1);
-  }
-  body:not(.os-non-apple) .fankit-filter-menu {
-    box-shadow:
-      inset 0 1px 0.5px rgba(255,255,255,0.267),
-      inset 0 -1px 0.5px rgba(255,255,255,0.12),
-      0px 20px 48px rgba(0,0,0,0.28);
-  }
-  body.os-non-apple .fankit-filter-menu { border-radius: 16px; }
-  .fankit-filter-menu.open {
-    display: block;
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    pointer-events: auto;
-  }
-
-  .fankit-filter-opt {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 16px;
-    cursor: pointer;
-    font-size: 17px;
-    color: var(--tg-theme-text-color, #000000);
-    -webkit-tap-highlight-color: transparent;
-    transition: background 0.15s;
-  }
-  body.os-non-apple .fankit-filter-opt { border-radius: 12px; }
-  .fankit-filter-opt:active { background: color-mix(in srgb, var(--tg-theme-section-separator-color, #E5E5EA) 45%, transparent); }
-  .fankit-filter-check {
-    width: 22px; height: 22px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--tg-theme-button-color, #3390ec);
-    opacity: 0;
-    transform: scale(0.4);
-    transition: opacity 0.2s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .fankit-filter-opt.active .fankit-filter-check { opacity: 1; transform: scale(1); }
-  .fankit-filter-check svg { width: 20px; height: 20px; display: block; }
-  .fankit-filter-opt-label { flex-grow: 1; }
-
-  .fankit-section-label {
-    font-size: 15px;
-    font-weight: 300;
-    color: var(--tg-theme-subtitle-text-color, #8E8E93);
-    padding: 0;
-    margin-bottom: 18px;
-    grid-column: 1 / -1;
-  }
-  body.os-non-apple .fankit-section-label { font-weight: 400; }
-
-  .fankit-add-btn {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 80%;              
-    height: 48px;
-    margin: 18px auto;
-    border: none;
-    border-radius: 40px;
-    background: var(--tg-theme-button-color, #3390ec);
-    color: var(--tg-theme-button-text-color, #ffffff);
-    font-size: 18px;
-    font-weight: 600;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    box-shadow:
-        inset 0px 1px 0px rgba(255, 255, 255, 0.2),
-        inset 0px -1px 0px rgba(0, 0, 0, 0.15),
-        0px 16px 32px rgba(0, 0, 0, 0.12);
-    transform-origin: center center;
-    transition: transform 0.15s ease, opacity 0.3s ease, filter 0.35s cubic-bezier(0.4,0,0.2,1), max-height 0.35s cubic-bezier(0.4,0,0.2,1), margin 0.35s cubic-bezier(0.4,0,0.2,1), padding 0.35s ease;
-  }
-  .fankit-add-btn:active { transform: scale(0.96); opacity: 0.85; }
-  .fankit-add-btn.fankit-add-hidden {
-    opacity: 0;
-    filter: blur(10px);
-    transform: scale(0.85);
-    max-height: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .fankit-add-btn > * { position: relative; z-index: 2; }
-  .fankit-add-btn svg {
-    width: 26px; height: 26px;
-    display: block;
-    transform: translateY(1.5px);   
-  }
-
-  body:not(.os-non-apple) .fankit-add-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    top: 0;
-    bottom: 0;
-    box-sizing: border-box;
-    border-radius: inherit;
-    padding: 1px;
-    will-change: transform;
-    background: linear-gradient(180deg,
-        rgba(214, 240, 255, .95)  0%,
-        rgba(150, 210, 255, .55) 10%,
-        rgba(255, 255, 255, 0)   34%,
-        rgba(255, 255, 255, 0)   62%,
-        rgba(120, 190, 255, .50) 88%,
-        rgba(200, 235, 255, .90) 100%);
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
-    pointer-events: none;
-    z-index: 1;
-  }
-  body.os-non-apple .fankit-add-btn { border-radius: 16px; box-shadow: none; }
-
-  #fankit-custom-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px;
-    margin-bottom: 4px;
-  }
-  .fankit-custom-item { position: relative; }
-  .fankit-custom-del {
-    position: absolute;
-    top: 6px; right: 6px;
-    width: 34px; height: 34px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    background: color-mix(in srgb, var(--tg-theme-destructive-text-color) 22%, transparent);
-    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-    cursor: pointer; z-index: 4;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    transition: transform 0.15s ease, opacity 0.15s ease;
-  }
-  .fankit-custom-del:active { transform: scale(0.85); opacity: 0.7; }
-  .fankit-custom-del svg { width: 20px; height: 20px; display: block; }
-  @keyframes fankitCustomIn {
-    0% { opacity: 0; filter: blur(8px); transform: scale(0.8); }
-    100% { opacity: 1; filter: blur(0); transform: scale(1); }
-  }
-  @keyframes fankitCustomOut {
-    0% { opacity: 1; filter: blur(0); transform: scale(1); }
-    100% { opacity: 0; filter: blur(9px); transform: scale(0.8); }
-  }
-  .fankit-custom-item.fankit-custom-new { animation: fankitCustomIn 0.42s cubic-bezier(0.22,0.8,0.3,1) both; }
-  .fankit-custom-item.fankit-custom-removing { animation: fankitCustomOut 0.4s cubic-bezier(0.4,0,0.2,1) forwards; pointer-events: none; }
-  
   .fankit-grid-container {
     position: relative;
-    z-index: 1;
     flex-grow: 1;
     overflow: hidden;
     height: 100%;
+  }
+
+  .fankit-grid-container::before,
+  .fankit-grid-container::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 30px; 
+    background: var(--tg-theme-secondary-bg-color, #F2F2F7);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .fankit-grid-container::before {
+    top: 0;
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  }
+
+  .fankit-grid-container::after {
+    bottom: 0;
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+    mask-image: linear-gradient(to top, black 0%, transparent 100%);
   }
 
     .fankit-grid {
@@ -1967,7 +1614,7 @@
         overflow-x: hidden; 
         touch-action: pan-y; 
         -webkit-overflow-scrolling: touch;
-        padding: 96px 20px 20px 20px;
+        padding: 5px 12px 20px 12px; 
         height: 100%;
         box-sizing: border-box;
         width: 100%;
@@ -1976,10 +1623,10 @@
     }
 
   .fankit-recommended-wrapper {
-    grid-column: 1 / -1;   
-    padding: 0;
-    margin: 0;
-    background: transparent;
+    background: var(--tg-theme-section-bg-color, #ffffff);
+    border-radius: 16px;
+    padding: 12px 8px;
+    margin: 0 20px 10px 20px;
   }
   
   .fankit-rec-title {
@@ -2005,16 +1652,14 @@
     background-color: var(--tg-theme-section-separator-color, #E5E5EA);
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     cursor: pointer;
-    border: none;
-    box-shadow: inset 0 0 0 0 transparent;
-    transition: transform 0.1s, box-shadow 0.2s;
+    border: 2px solid transparent;
+    transition: transform 0.1s, border-color 0.2s;
     overflow: hidden;
   }
   
   .fankit-rec-item.selected {
-    box-shadow: inset 0 0 0 2px var(--tg-theme-accent-text-color);
+    border-color: var(--tg-theme-accent-text-color);
   }
   
   .fankit-rec-item:active {
@@ -2025,14 +1670,13 @@
     position: absolute;
     bottom: 0;
     right: 0;
-    background: var(--tg-theme-secondary-bg-color, #F2F2F7);
-    color: var(--tg-theme-text-color, #000000);
-    font-size: 10px;
+    background: var(--tg-theme-accent-text-color);
+    color: #fff;
+    font-size: 8.5px;
     font-weight: 600;
-    padding: 5px 8px;
-    border-radius: 10px 0 0 0;
+    padding: 3px 5px;
+    border-radius: 6px 0 6px 0;
     font-family: -apple-system, sans-serif;
-    line-height: 1;
   }
 
   .fankit-item {
@@ -3636,7 +3280,7 @@ body.os-non-apple #canvas-pin-btn {
   </div>
 
 <div class="promo-content">
-    <div class="promo-subtitle">Новый 53 сезон</div>
+    <div class="promo-subtitle">Новый 52 сезон</div>
     <div class="promo-timer-box" id="promo-timer-container">
       через <span id="promo-timer">00:00:00</span>
     </div>
@@ -3764,6 +3408,7 @@ body.os-non-apple #canvas-pin-btn {
             <div class="cat-img-wrapper slider-wrapper" data-images='["demo_png/demo_png_pp1_1.jpg", "demo_png/demo_png_pp2_1.jpg", "demo_png/demo_png_pp3_1.jpg"]' style="width: 140px; height: 78px; border-radius: 6px; margin-right: 14px; position: relative;">
                 <img src="demo_png/demo_png_pp1_1.jpg" class="cat-img loaded slider-img" style="object-fit: cover; width: 100%; height: 100%;">
                 <canvas class="slider-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                <span class="cat-new-badge">НОВОЕ</span>
                 <span class="resize-badge"><svg viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><g transform="translate(0,512) scale(0.1,-0.1)" stroke="none"><path d="M2425 4662 c-34 -17 -77 -48 -99 -72 -28 -32 -116 -198 -307 -585 l-266 -540 -601 -87 c-654 -95 -661 -97 -735 -171 -63 -63 -92 -137 -92 -232 0 -141 -6 -133 490 -616 239 -233 435 -432 435 -441 0 -9 -45 -281 -101 -605 -76 -446 -99 -598 -94 -633 29 -195 234 -325 415 -263 30 10 288 141 574 291 l519 272 531 -279 c293 -154 554 -285 580 -292 178 -45 371 92 393 279 4 34 -23 210 -97 646 l-102 599 53 52 c654 634 823 804 847 850 23 43 27 62 27 140 0 71 -5 100 -22 137 -27 60 -101 134 -159 160 -33 14 -218 45 -646 107 l-600 87 -257 519 c-142 286 -265 534 -274 551 -25 47 -111 120 -164 138 -77 26 -177 21 -248 -12z"/></g></svg></span>
             </div>
             <div class="cat-info">
@@ -4146,8 +3791,8 @@ body.os-non-apple #canvas-pin-btn {
                 <img src="demo_png50s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">53 сезон</div>
-                <div class="cat-desc">Новый сезон Brawl Pass.<br>Выйдет 5 августа.</div> <!--Текущий-->
+                <div class="cat-name" style="width: 100%;">52 сезон</div>
+                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 2 июля.</div> <!--Новый-->
             </div>
          </div>
          
@@ -4159,8 +3804,8 @@ body.os-non-apple #canvas-pin-btn {
                 <img src="demo_png49s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">53 сезон</div>
-                <div class="cat-desc">Текущий сезон Brawl Pass.<br>Вышел 2 июля.</div> <!--Прошлый-->
+                <div class="cat-name" style="width: 100%;">51 сезон</div>
+                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 4 июня.</div> <!--Текущий-->
             </div>
          </div>
 
@@ -4172,8 +3817,8 @@ body.os-non-apple #canvas-pin-btn {
                 <img src="demo_png48s.png" class="cat-img loaded" style="object-fit: cover;">
             </div>
             <div class="cat-info" style="justify-content: flex-start; align-items: flex-start; text-align: left;">
-                <div class="cat-name" style="width: 100%;">51 сезон</div>
-                <div class="cat-desc">Прошлый сезон Brawl Pass.<br>Вышел 4 июня.</div> <!--Старый-->
+                <div class="cat-name" style="width: 100%;">50 сезон</div>
+                <div class="cat-desc">Старый сезон Brawl Pass.<br>Вышел 7 мая.</div> <!--Прошлый-->
             </div>
          </div>
 
@@ -4568,12 +4213,9 @@ window.checkBPStyle4Ready = function() {
      <div class="ios-section-title" style="margin-top: 0;">СОХРАНЁННЫЕ РАБОТЫ</div>
      <div class="ios-layer-group" id="sp-list" style="padding: 0 20px; overflow: hidden;">
      </div>
-      <div class="sp-info-text">
+     <div class="sp-info-text">
             Список Ваших сохранённых работ.<br>
             Выбирайте любой для редактирования или удаления.
-     </div>
-     <div id="sp-delete-all-btn" class="ios-card ios-menu-item" onclick="window.confirmDeleteAllProjects()" style="justify-content: center; cursor: pointer; margin-top: 4px; border-radius: 24px;">
-        <span style="font-size: 17px; font-weight: 400; color: var(--tg-theme-destructive-text-color, #ff3b30);">Удалить все</span>
      </div>
   </div>
 
@@ -4625,38 +4267,9 @@ window.checkBPStyle4Ready = function() {
 </div>
 
 <div id="fankit-overlay">
-    <div class="fankit-sheet" id="fankit-sheet">
-      <div class="fankit-blur" aria-hidden="true">
-        <div></div><div></div><div></div><div></div><div></div>
-      </div>
-        <div class="fankit-drag-pill"></div>
-        <div class="fankit-header">
-        <button type="button" id="fankit-btn-close" class="fankit-circle-btn fankit-btn-close">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"
-             stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 14L34 34"/>
-          <path d="M34 14L14 34"/>
-        </svg>
-      </button>
-
-      <div class="fankit-header-titles">
-        <div class="fankit-title">Фон из Fankit</div>
-        <div class="fankit-subtitle">выберите фон или добавьте свой</div>
-      </div>
-
-      <button type="button" id="fankit-btn-info" class="fankit-circle-btn fankit-btn-info">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none"
-             stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="24" cy="24" r="19"/>
-          <g transform="translate(1 0)">
-            <circle cx="24" cy="14" r="1.9" fill="currentColor" stroke="none"/>
-            <path d="M20.5 20.5H24V31.5"/>
-            <path d="M20.5 31.5H27.5"/>
-          </g>
-        </svg>
-      </button>
-    </div>
-
+  <div class="fankit-sheet" id="fankit-sheet">
+    <div class="fankit-drag-pill"></div>
+    <div class="fankit-title">Выберите фон из Fankit</div>
     <div class="fankit-grid-container">
         <div class="fankit-grid" id="fankit-grid">
             </div>
@@ -5567,50 +5180,6 @@ window.onSavedRowClick = async (id) => {
     window.restoreProject(rec);
 };
 
-window.spConfirm = function(message, onYes) {
-    if (window.triggerHaptic) window.triggerHaptic();
-    let tg = window.Telegram && window.Telegram.WebApp;
-    if (tg && tg.showPopup) {
-        tg.showPopup({
-            title: 'Удаление',
-            message: message,
-            buttons: [
-                { id: 'cancel', type: 'cancel', text: 'Отмена' },
-                { id: 'yes', type: 'destructive', text: 'Удалить' }
-            ]
-        }, (btnId) => { if (btnId === 'yes') onYes(); });
-    } else {
-        if (confirm(message)) onYes();
-    }
-};
-
-window.confirmDeleteProject = function(id, btnEl) {
-    window.spConfirm('Вы точно хотите удалить сохранённую работу?', () => window.deleteProject(id, btnEl));
-};
-
-window.deleteAllProjects = async function() {
-    if (window.triggerHaptic) window.triggerHaptic();
-    let projects = [];
-    try { projects = await window.spGetAll(); } catch (e) {}
-
-    let rows = document.querySelectorAll('#sp-list .sp-row');
-    rows.forEach((r, i) => {
-        setTimeout(() => r.classList.add('sp-removing'), i * 50);
-    });
-
-    for (let p of projects) {
-        try { await window.spDelete(p.id); } catch (e) {}
-        if (window.currentProjectId === p.id) window.currentProjectId = null;
-    }
-    await window.updateSavedCount();
-
-    setTimeout(() => window.renderSavedProjects(), rows.length * 50 + 460);
-};
-
-window.confirmDeleteAllProjects = function() {
-    window.spConfirm('Вы точно хотите удалить все сохранённые работы?', () => window.deleteAllProjects());
-};
-
 window.deleteProject = async (id, btnEl) => {
     window.triggerHaptic();
     let row = btnEl ? btnEl.closest('.sp-row') : null;
@@ -5685,7 +5254,7 @@ window.renderSavedProjects = async () => {
 
     container.onclick = (e) => {
         let del = e.target.closest('.sp-del-btn');
-        if (del) { e.stopPropagation(); window.confirmDeleteProject(del.getAttribute('data-del'), del); return; }
+        if (del) { e.stopPropagation(); window.deleteProject(del.getAttribute('data-del'), del); return; }
         let row = e.target.closest('.sp-row');
         if (row) window.onSavedRowClick(row.getAttribute('data-id'));
     };
@@ -8400,49 +7969,70 @@ window.downloadOfferLayer = (idx) => {
     downloadCanvas(tempOffer.cache.canvas, `offer_${idx+1}.png`);
 };
 
+window.saveImageToDevice = async function(canvas, filename) {
+    if (!canvas || canvas.width === 0) throw new Error("Холст пуст");
+
+    // при желании уменьшаем гигантские холсты
+    let outC = canvas;
+    if (canvas.width > 2048) {
+        outC = document.createElement('canvas');
+        let ratio = canvas.height / canvas.width;
+        outC.width = 2048;
+        outC.height = Math.round(outC.width * ratio);
+        let cx = outC.getContext('2d');
+        cx.imageSmoothingEnabled = true;
+        cx.imageSmoothingQuality = 'high';
+        cx.drawImage(canvas, 0, 0, outC.width, outC.height);
+    }
+
+    // canvas -> Blob
+    const blob = await new Promise((resolve) => {
+        if (outC.toBlob) {
+            outC.toBlob((b) => resolve(b), 'image/png');
+        } else {
+            let dataUrl = outC.toDataURL('image/png');
+            let bin = atob(dataUrl.split(',')[1]);
+            let arr = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            resolve(new Blob([arr], { type: 'image/png' }));
+        }
+    });
+    if (!blob) throw new Error("Не удалось создать файл");
+
+    const file = new File([blob], filename, { type: 'image/png' });
+
+    // 1) Web Share API — работает в Telegram на Android и iOS (сохранение в галерею)
+    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+        try {
+            await navigator.share({ files: [file] });
+            return true;
+        } catch (err) {
+            if (err && err.name === 'AbortError') return false; // пользователь отменил
+            // иначе падаем на запасной вариант ниже
+        }
+    }
+
+    // 2) Запасной вариант — обычное скачивание (десктоп, iOS Safari)
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 1500);
+    return true;
+};
+
 async function downloadCanvas(canvas, filename) {
     if (!canvas || canvas.width === 0) return;
-    
     try {
-        let tgUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-        if (!tgUserId) {
-            throw new Error("Не удалось получить Ваш Telegram ID. Откройте приложение через бота.");
-        }
-
-        let smallC = document.createElement('canvas');
-        let ratio = canvas.height / canvas.width;
-        smallC.width = Math.min(canvas.width, 2048);
-        smallC.height = Math.round(smallC.width * ratio);
-        let sCtx = smallC.getContext('2d');
-        sCtx.imageSmoothingEnabled = true;
-        sCtx.imageSmoothingQuality = 'high';
-        sCtx.drawImage(canvas, 0, 0, smallC.width, smallC.height);
-
-        let dataUrl = smallC.toDataURL('image/png', 0.90);
-        let base64Image = dataUrl.split(',')[1];
-
-        window.Telegram.WebApp.showAlert("⏳ Отправляем слой в бота...");
-
-        const response = await fetch('https://api.snapi.online/send-result?v=123', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                image: base64Image,
-                chat_id: tgUserId
-            }),
-            mode: 'cors',
-            redirect: 'follow'
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            window.Telegram.WebApp.showAlert("✅ Слой успешно отправлен в бота!");
-        } else {
-            alert("Ошибка сервера: " + data.error);
-        }
+        await window.saveImageToDevice(canvas, filename);
     } catch (err) {
-        alert("Ошибка при отправке слоя: " + err.message);
+        alert("Ошибка при сохранении: " + err.message);
     }
 }
 
@@ -11903,40 +11493,17 @@ if (fankitGrid && fankitGrid.children.length === 0) {
     const recWrapper = document.createElement('div');
     recWrapper.className = 'fankit-recommended-wrapper';
     recWrapper.innerHTML = `
-        <div class="fankit-section-label">рекомендуемые</div>
+        <div class="fankit-rec-title">РЕКОМЕНДУЕМ</div>
         <div class="fankit-rec-grid" id="fankit-rec-grid"></div>
-        <div class="fankit-section-label" id="fankit-custom-label" style="margin-top: 8px; margin-bottom: 18px; display: none;">добавленные</div>
-        <div class="fankit-rec-grid" id="fankit-custom-grid" style="display: none;"></div>
-        <input type="file" id="fankit-custom-input" accept="image/*" style="display:none;">
-        <button class="fankit-add-btn" id="fankit-add-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-              <mask id="plus-cut">
-                <circle cx="24" cy="24" r="19" fill="#fff"/>
-                <path d="M24 15V33M15 24H33" fill="none" stroke="#000"
-                      stroke-width="4" stroke-linecap="round"/>
-              </mask>
-              <circle cx="24" cy="24" r="19" fill="currentColor" mask="url(#plus-cut)"/>
-            </svg>
-            <span>Добавить фон</span>
-        </button>
-        <div class="fankit-osn-row">
-          <div class="fankit-section-label">основные</div>
-          <div class="fankit-filter-wrap">
-            <button class="fankit-filter-btn" id="fankit-filter-btn" onclick="window.toggleFankitFilter(event)">
-              <span id="fankit-filter-label">Все</span>
-              <span class="fankit-filter-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><line x1="7.5" y1="8" x2="16.5" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10.5" y1="16" x2="13.5" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
-            </button>
-          </div>
-        </div>
     `;
-    fankitGrid.appendChild(recWrapper);   
+    document.querySelector('.fankit-grid-container').before(recWrapper);
 
     const recGrid = document.getElementById('fankit-rec-grid');
     
     const recBackgrounds = [
-        { src: 'bg/bg20_BP50.jpg', text: '53 сезон' },
-        { src: 'bg/bg18_BP49.jpg', text: '52 сезон' },
-        { src: 'bg/bg19_BP48.jpg', text: '51 сезон' }
+        { src: 'bg/bg20_BP50.jpg', text: '52 сезон' },
+        { src: 'bg/bg18_BP49.jpg', text: '51 сезон' },
+        { src: 'bg/bg19_BP48.jpg', text: '50 сезон' }
     ];
 
     const handleFankitSelection = (itemElement, imgSrc) => {
@@ -12053,18 +11620,11 @@ if (fankitGrid && fankitGrid.children.length === 0) {
         imageObserver.observe(item); 
     });
 
-        const FANKIT_CAT_MAP = {
-            1:'brawl', 2:'clash_royale', 3:'clash_clans', 4:'brawl', 5:'clash_clans',
-            6:'clash_royale', 7:'brawl', 8:'clash_clans', 9:'clash_royale', 10:'brawl',
-            11:'clash_royale', 12:'clash_clans', 13:'brawl', 14:'clash_clans', 15:'clash_royale',
-            16:'brawl', 17:'clash_clans', 21:'clash_royale', 22:'brawl', 23:'clash_clans'
-        };
         const standardBackgrounds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21, 22, 23];
 
         standardBackgrounds.forEach((num) => {
             let item = document.createElement('div');
             item.className = 'fankit-item loading';
-            item.setAttribute('data-cat', FANKIT_CAT_MAP[num] || 'brawl');
 
             if (num === 1 || num === 2) {
                 item.style.position = 'relative';
@@ -12078,122 +11638,8 @@ if (fankitGrid && fankitGrid.children.length === 0) {
             item.setAttribute('data-src', originalSrc); 
             item.onclick = () => handleFankitSelection(item, originalSrc);
 
-        imageObserver.observe(item); 
+            imageObserver.observe(item); 
         });
-
-        const CUSTOM_BG_MAX = 6;
-        const customTrashSvg = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.2792,2 C15.1401,2 15.9044,2.55086 16.1766,3.36754 L16.7208,5 L20,5 C20.5523,5 21,5.44772 21,6 C21,6.55227 20.5523,6.99998 20,7 L19.9975,7.07125 L19.1301,19.2137 C19.018,20.7837 17.7117,22 16.1378,22 L7.86224,22 C6.28832,22 4.982,20.7837 4.86986,19.2137 L4.00254,7.07125 C4.00083,7.04735 3.99998,7.02359 3.99996,7 C3.44769,6.99998 3,6.55227 3,6 C3,5.44772 3.44772,5 4,5 L7.27924,5 L7.82339,3.36754 C8.09562,2.55086 8.8599,2 9.72076,2 L14.2792,2 Z M17.9975,7 L6.00255,7 L6.86478,19.0712 C6.90216,19.5946 7.3376,20 7.86224,20 L16.1378,20 C16.6624,20 17.0978,19.5946 17.1352,19.0712 L17.9975,7 Z M10,10 C10.51285,10 10.9355092,10.386027 10.9932725,10.8833761 L11,11 L11,16 C11,16.5523 10.5523,17 10,17 C9.48715929,17 9.06449214,16.613973 9.00672766,16.1166239 L9,16 L9,11 C9,10.4477 9.44771,10 10,10 Z M14,10 C14.5523,10 15,10.4477 15,11 L15,16 C15,16.5523 14.5523,17 14,17 C13.4477,17 13,16.5523 13,16 L13,11 C13,10.4477 13.4477,10 14,10 Z M14.2792,4 L9.72076,4 L9.38743,5 L14.6126,5 L14.2792,4 Z" fill="var(--tg-theme-destructive-text-color, #ff3b30)"></path></svg>`;
-
-        window._customBgs = JSON.parse(localStorage.getItem('Snapi_custom_bgs') || '[]');
-
-        window.saveCustomBgs = function() {
-            try { localStorage.setItem('Snapi_custom_bgs', JSON.stringify(window._customBgs)); return true; }
-            catch (e) { return false; }
-        };
-
-        window.renderCustomBgs = function(newIndex) {
-            const grid = document.getElementById('fankit-custom-grid');
-            const label = document.getElementById('fankit-custom-label');
-            const addBtn = document.getElementById('fankit-add-btn');
-            if (!grid) return;
-
-            const bgs = window._customBgs;
-            label.style.display = bgs.length === 0 ? 'none' : 'block';
-            grid.style.display  = bgs.length === 0 ? 'none' : 'grid';
-            if (addBtn) addBtn.classList.toggle('fankit-add-hidden', bgs.length >= CUSTOM_BG_MAX);
-
-            grid.innerHTML = '';
-            bgs.forEach((src, idx) => {
-                const item = document.createElement('div');
-                item.className = 'fankit-rec-item fankit-custom-item';
-                if (idx === newIndex) item.classList.add('fankit-custom-new');
-                item.style.backgroundImage = `url('${src}')`;
-                item.innerHTML = `<div class="fankit-custom-del">${customTrashSvg}</div>`;
-                item.onclick = (e) => {
-                    if (e.target.closest('.fankit-custom-del')) return;
-                    handleFankitSelection(item, src);
-                };
-                item.querySelector('.fankit-custom-del').onclick = (e) => {
-                    e.stopPropagation();
-                    window.confirmRemoveCustomBg(idx, item);
-                };
-                grid.appendChild(item);
-            });
-        };
-
-        window.confirmRemoveCustomBg = function(idx, itemEl) {
-            if (window.triggerHaptic) window.triggerHaptic();
-            const doRemove = () => window.removeCustomBg(idx, itemEl);
-            const tg = window.Telegram && window.Telegram.WebApp;
-            if (tg && tg.showPopup) {
-                tg.showPopup({
-                    title: 'Удаление фона',
-                    message: 'Вы точно хотите удалить добавленный фон?',
-                    buttons: [
-                        { id: 'cancel', type: 'cancel', text: 'Отмена' },
-                        { id: 'del', type: 'destructive', text: 'Удалить' }
-                    ]
-                }, (btnId) => { if (btnId === 'del') doRemove(); });
-            } else {
-                if (confirm('Вы точно хотите удалить добавленный фон?')) doRemove();
-            }
-        };
-
-        window.removeCustomBg = function(idx, itemEl) {
-            if (window.triggerHaptic) window.triggerHaptic();
-            const finalize = () => {
-                window._customBgs.splice(idx, 1);
-                window.saveCustomBgs();
-                window.renderCustomBgs();
-            };
-            if (itemEl) {
-                itemEl.classList.add('fankit-custom-removing');
-                setTimeout(finalize, 400);
-            } else { finalize(); }
-        };
-
-        window.addCustomBg = function() {
-            if (window.triggerHaptic) window.triggerHaptic();
-            if (window._customBgs.length >= CUSTOM_BG_MAX) return;
-            document.getElementById('fankit-custom-input').click();
-        };
-
-        const customInput = document.getElementById('fankit-custom-input');
-        if (customInput) customInput.onchange = (e) => {
-            const file = e.target.files && e.target.files[0];
-            e.target.value = '';
-            if (!file || window._customBgs.length >= CUSTOM_BG_MAX) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const im = new Image();
-                im.onload = () => {
-                    let maxW = 1600;
-                    let scale = Math.min(1, maxW / im.width);
-                    let cc = document.createElement('canvas');
-                    cc.width  = Math.round(im.width  * scale);
-                    cc.height = Math.round(im.height * scale);
-                    cc.getContext('2d').drawImage(im, 0, 0, cc.width, cc.height);
-                    let dataUrl = cc.toDataURL('image/jpeg', 0.85);
-
-                    window._customBgs.push(dataUrl);
-                    if (!window.saveCustomBgs()) {
-                        window._customBgs.pop();
-                        let m = 'Недостаточно места для сохранения фона. Удалите один из добавленных фонов.';
-                        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.showAlert) window.Telegram.WebApp.showAlert(m);
-                        else alert(m);
-                        return;
-                    }
-                    window.renderCustomBgs(window._customBgs.length - 1);
-                };
-                im.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        };
-
-        const customAddBtn = document.getElementById('fankit-add-btn');
-        if (customAddBtn) customAddBtn.onclick = () => window.addCustomBg();
-
-        window.renderCustomBgs();
 }
 
     window.fankitContext = 'wizard'; 
@@ -12225,7 +11671,6 @@ if (fankitGrid && fankitGrid.children.length === 0) {
   window.openFankitGlobal = function() {
       window.triggerHaptic();
       fankitOverlay.style.display = 'flex';
-      if (fankitGrid) fankitGrid.scrollTop = 0;
       window.preloadFankitImages();
       setTimeout(() => fankitOverlay.classList.add('show'), 10);
   };
@@ -12251,66 +11696,42 @@ if (fankitGrid && fankitGrid.children.length === 0) {
       wizardReadyBgInput.click();
   };
 
-  let closeBtn = document.getElementById('fankit-btn-close');
-  if (closeBtn) closeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      window.triggerHaptic();
-      window.closeFankitGlobal();
-  });
-
-  let infoBtn = document.getElementById('fankit-btn-info');
-  if (infoBtn) infoBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      window.triggerHaptic();
-  });
-
   let startY = 0;
   let currentTranslateY = 0;
   let isDragging = false;
-  let dragId = null;
 
-  fankitSheet.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('button, .fankit-item, .fankit-rec-item')) return;
+  fankitSheet.addEventListener('touchstart', (e) => {
       if (fankitGrid.contains(e.target) && fankitGrid.scrollTop > 0) return;
-
-      dragId = e.pointerId;
-      startY = e.clientY;
+      
+      startY = e.touches[0].clientY;
       isDragging = true;
-      currentTranslateY = 0;
-      fankitSheet.style.transition = 'none';
-  });
+      fankitSheet.style.transition = 'none'; 
+  }, { passive: true });
 
-  fankitSheet.addEventListener('pointermove', (e) => {
-      if (!isDragging || e.pointerId !== dragId) return;
-
-      let deltaY = e.clientY - startY;
+  fankitSheet.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      
+      let deltaY = e.touches[0].clientY - startY;
+      
       if (deltaY < 0) deltaY = 0;
-
-      if (deltaY > 3 && !fankitSheet.hasPointerCapture(dragId)) {
-          fankitSheet.setPointerCapture(dragId);
-      }
-
+      
       currentTranslateY = deltaY;
       fankitSheet.style.transform = `translateY(${currentTranslateY}px)`;
-  });
+  }, { passive: true });
 
-  const endFankitDrag = (e) => {
-      if (!isDragging || (e && e.pointerId !== dragId)) return;
+  fankitSheet.addEventListener('touchend', () => {
+      if (!isDragging) return;
       isDragging = false;
-      dragId = null;
-
+      
       fankitSheet.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-
+      
       if (currentTranslateY > 120) {
           window.closeFankitGlobal();
       } else {
           fankitSheet.style.transform = '';
       }
       currentTranslateY = 0;
-  };
-
-  fankitSheet.addEventListener('pointerup', endFankitDrag);
-  fankitSheet.addEventListener('pointercancel', endFankitDrag);
+  });
 
   wizardBgInput.onchange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -12921,61 +12342,24 @@ document.getElementById('dl-btn-save-project').onclick = async (e) => {
     }, 600);
 };
 
-document.getElementById('dl-btn-actual-download').onclick = (e) => {
+document.getElementById('dl-btn-actual-download').onclick = async (e) => {
     let btn = e.currentTarget;
     window.triggerHaptic();
     if (btn.classList.contains('is-loading')) return;
 
-    setTimeout(async () => {
-        btn.classList.add('is-loading');
-        btn.style.pointerEvents = 'none';
+    btn.classList.add('is-loading');
+    btn.style.pointerEvents = 'none';
 
-        try {
-            if (!persistentCanvas || persistentCanvas.width === 0) throw new Error("Холст пуст");
-
-            let tgUserId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-            if (!tgUserId) {
-                throw new Error("Не удалось получить Ваш Telegram ID. Откройте сервис через бота.");
-            }
-
-            let smallC = document.createElement('canvas');
-            let ratio = persistentCanvas.height / persistentCanvas.width;
-            smallC.width = Math.min(persistentCanvas.width, 2048);
-            smallC.height = Math.round(smallC.width * ratio);
-            let sCtx = smallC.getContext('2d');
-            sCtx.imageSmoothingEnabled = true;
-            sCtx.imageSmoothingQuality = 'high';
-            sCtx.drawImage(persistentCanvas, 0, 0, smallC.width, smallC.height);
-
-            let dataUrl = smallC.toDataURL('image/jpeg', 0.90);
-            let base64Image = dataUrl.split(',')[1]; 
-
-            const response = await fetch('https://api.snapi.online/send-result?v=123', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    image: base64Image,
-                    chat_id: tgUserId
-                }),
-                mode: 'cors',
-                redirect: 'follow'
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                window.Telegram.WebApp.showAlert("✅ Готовая работа успешно отправлена Вам в личные сообщения бота!");
-                window.closeDownloadOverlay();
-            } else {
-                alert("Ошибка отправки: " + data.error);
-            }
-        } catch(err) {
-            alert("Ошибка: " + err.message);
-        } finally {
-            btn.classList.remove('is-loading');
-            btn.style.pointerEvents = '';
-        }
-    }, 200);
+    try {
+        if (!persistentCanvas || persistentCanvas.width === 0) throw new Error("Холст пуст");
+        let ok = await window.saveImageToDevice(persistentCanvas, 'snapi_' + Date.now() + '.png');
+        if (ok) window.closeDownloadOverlay();
+    } catch(err) {
+        alert("Ошибка: " + err.message);
+    } finally {
+        btn.classList.remove('is-loading');
+        btn.style.pointerEvents = '';
+    }
 };
   window.updateSavedCount();
 })();
@@ -14087,7 +13471,7 @@ window.initPromoTimer = function() {
     const container = document.getElementById('promo-timer-container');
     if (!timerEl || !container) return;
 
-    const targetTime = new Date("2026-08-05T11:00:00+03:00").getTime();
+    const targetTime = new Date("2026-07-02T11:00:00+03:00").getTime();
     let timeOffset = 0; 
     let timerInterval;
 
